@@ -34,7 +34,15 @@
                 function(){
                   $('#emp_indate').blur();
                 },
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                    })
+                },
                 timepicker:false
+            });
+            $('#emp_indate').change(function(){
+                checkDate($('#emp_indate'));
             });
 
             $('#emp_birthdate').datetimepicker({
@@ -48,7 +56,15 @@
                 function(){
                   $('#emp_birthdate').blur();
                 },
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                    })
+                },
                 timepicker:false
+            });
+            $('#emp_birthdate').change(function(){
+                checkDate($('#emp_birthdate'));
             });
 
 			selectReference({
@@ -96,6 +112,50 @@
 
 			$('#emp_email').focusout(checkUserAndPass);
 		});
+
+		function checkDate(self){
+            // Skip check
+            if(self.val() == '' || isDateThaiFormat(self.val())) {
+                return;
+            }
+
+            var selfDate = new Date(self.val());
+            var nowDate = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+            if(selfDate > nowDate){
+                var titleTxt;
+                var messageTxt;
+                var descTxt;
+                if(self.attr('id') == 'emp_indate'){
+                    titleTxt   = 'วันที่เริ่มทำงานถูกต้อง';
+                    messageTxt = 'วันที่เริ่มทำงานไม่สามารถอยู่หลังวันที่ปัจจุบันได้';
+                    descTxt    = 'กรอกวันที่เริ่มทำงานใหม่';
+                }else if(self.attr('id') == 'emp_birthdate'){
+                    titleTxt   = 'วันเกิดไม่ถูกต้อง';
+                    messageTxt = 'วันเกิดไม่สามารถอยู่หลังวันที่ปัจจุบันได้';
+                    descTxt    = 'กรอกวันเกิดใหม่';
+                }
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
+        }
 		
 		function beforeSaveRecord() {
 			checkUserAndPass();
@@ -277,7 +337,7 @@
 				<td>{if $values.emp_birthdate}{$values.emp_birthdate}{else}-{/if}</td>
 			</tr>
 			<tr>
-				<td>วันที่เข้าทำงาน :</td>
+				<td>วันที่เริ่มทำงาน :</td>
 				<td>{if $values.emp_indate}{$values.emp_indate}{else}-{/if}</td>
 			</tr>
 			<tr>
@@ -342,7 +402,7 @@
 					<div id="pos_id" class="select-reference form-input half" require></div>
 				</td>
 				<td>
-					<label class="input-required">วันที่เข้าทำงาน</label>
+					<label class="input-required">วันที่เริ่มทำงาน</label>
 					<input id="emp_indate" name="emp_indate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_indate}" require>
 				</td>
 			</tr>
