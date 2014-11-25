@@ -86,6 +86,9 @@
 		    padding: 3px;
 		    vertical-align: top;
 		    text-align: center;
+		    padding-left: 5px;
+		    padding-right: 5px;
+		    white-space: nowrap;
 		}
 		table.productList td {
 		    border: none;
@@ -108,20 +111,20 @@
 		table.productList tfoot tr:last-child td {
 			border-bottom: none;
 		}
-		.signature-container {
-			page-break-after: always;
-		}
 		.spa_name, .purchaseTxt {
 			font-family: ThaiSansNeue-Bold;
 		}
 		.spa_name {
 			font-size: 30px;
 		}
+		.spa_name:not(:first-child) {
+			page-break-before: always;
+		}
 		.purchaseTxt {
 			font-size: 25px;
 		}
 		.prd_name_col {
-			width: 200px;
+			width: 100%;
 			max-width: 200px;
 		}
 		.no_col {
@@ -259,7 +262,6 @@
 			addSignatureBox();
 		} else {
 			// Multi page
-			addSignatureBox();
 			while($('#productList_' + purchaseOrdPage).height() > 486) {
 				// Add head purchase order
 				var curPage			= purchaseOrdPage+1;
@@ -293,7 +295,6 @@
 				if($('#productList_' + curPage).height() <= 486) {
 					addTotalRow('#productList_' + curPage);
 				}
-				addSignatureBox();
 				purchaseOrdPage++;
 			}
 			// add space rows
@@ -308,6 +309,8 @@
 								+ '</tr>';
 				$('#productList_' + purchaseOrdPage + ' tbody').append(spaceHtml);
 			}
+
+			addSignatureBox();
 		}
 	});
 
