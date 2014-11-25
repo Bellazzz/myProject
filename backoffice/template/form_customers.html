@@ -34,7 +34,15 @@
                 function(){
                   $('#cus_registered_date').blur();
                 },
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                    })
+                },
                 timepicker:false
+            });
+            $('#cus_registered_date').change(function(){
+                checkDate($('#cus_registered_date'));
             });
 
             $('#cus_birthdate').datetimepicker({
@@ -48,7 +56,15 @@
                 function(){
                   $('#cus_birthdate').blur();
                 },
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                    })
+                },
                 timepicker:false
+            });
+            $('#cus_birthdate').change(function(){
+                checkDate($('#cus_birthdate'));
             });
 
             selectReference({
@@ -61,11 +77,11 @@
                 beforeShow      : allowSelectSex
             });
             selectReference({
-                elem			: $('#custype_id'),
-                tableName		: 'customer_types',
-                keyFieldName	: 'custype_id',
-                textFieldName	: 'custype_name',
-                defaultValue	: '{/literal}{$values.custype_id}{literal}'
+                elem            : $('#custype_id'),
+                tableName       : 'customer_types',
+                keyFieldName    : 'custype_id',
+                textFieldName   : 'custype_name',
+                defaultValue    : '{/literal}{$values.custype_id}{literal}'
             });
             selectReference({
                 elem            : $('#title_id'),
@@ -89,7 +105,51 @@
 
             $('#cus_email').focusout(checkUserAndPass);
         });
+        
+        function checkDate(self){
+            // Skip check
+            if(self.val() == '' || isDateThaiFormat(self.val())) {
+                return;
+            }
 
+            var selfDate = new Date(self.val());
+            var nowDate = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+            if(selfDate > nowDate){
+                var titleTxt;
+                var messageTxt;
+                var descTxt;
+                if(self.attr('id') == 'cus_registered_date'){
+                    titleTxt   = 'วันที่สมัครสมาชิกไม่ถูกต้อง';
+                    messageTxt = 'วันที่สมัครสมาชิกไม่สามารถอยู่หลังวันที่ปัจจุบันได้';
+                    descTxt    = 'กรอกวันที่สมัครสมาชิกใหม่';
+                }else if(self.attr('id') == 'cus_birthdate'){
+                    titleTxt   = 'วันเกิดไม่ถูกต้อง';
+                    messageTxt = 'วันเกิดไม่สามารถอยู่หลังวันที่ปัจจุบันได้';
+                    descTxt    = 'กรอกวันเกิดใหม่';
+                }
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
+        }
+        
         function beforeSaveRecord() {
             checkUserAndPass();
             return false;
