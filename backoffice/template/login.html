@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Back Office - Spa</title>
+	<meta charset="utf-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/login.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	{/literal}
+</head>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#login-btn').click(function() {
+		$.ajax({
+			url: '../common/ajaxCheckEmployeesLogin.php',
+			type: 'POST',
+			data: {
+				'formData' : $('#form-login').serialize()
+			},
+			success:
+			function(response) {
+				if(response == 'PASS') {
+					window.location ='http://localhost/projectSpa/backoffice/manage_table.php';
+				} else if(response == 'NOT_PASS') {
+					$('#error-message-username').text("ไม่พบบัญชีผู้ใช้นี้ หรือคุณกรอกชื่อผู้ใช้ และรหัสผ่านผิดพลาด โปรดลองอีกครั้ง");
+				}  else {
+					alert(response);
+				}
+			}
+		})
+	});
+});
+</script>
+<body>
+<div style="text-align: center; margin-top: 40px;">
+	<img src="../img/backoffice/spa-logo.png">
+</div>
+<div class="login-content container">
+	<h1>Account Login</h1>
+	<form id="form-login" name="form-login" onsubmit="return false;">
+
+		<div id="error-message-username"></div>
+		<label>Username</label>
+		<br>
+			<input class="control wide-control" type="text" name="username">
+		<br>
+
+		<div id="error-message-password"></div>
+		<label>Password</label>
+		<br>
+			<input class="control wide-control" type="password" name="password">
+		<br>
+
+	<button id="login-btn" class="myButton">Login</button>
+</form>
+</div>
+<div class="loginPage-footer"></div>
+</body>
+</html>

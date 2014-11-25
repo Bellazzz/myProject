@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="bnkacc_no,bnkacc_name,bnkacc_branch,bnkacc_type">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+		    <tr>
+			    <td>
+				    <label class="input-required">เลขที่บัญชี</label>
+				    <input id="bnkacc_no" name="bnkacc_no" type="text" class="form-input full" value="{$values.bnkacc_no}" require>
+			    </td>
+		    </tr>
+		    <tr>
+                <td>
+                    <span id="err-bnkacc_no-require" class="errInputMsg err-bnkacc_no">โปรดป้อนเลขที่บัญชี</span>
+                </td>
+            </tr>
+			<tr>
+			    <td>
+				    <label class="input-required">ชื่อบัญชี</label>
+				    <input id="bnkacc_name" name="bnkacc_name" type="text" class="form-input full" value="{$values.bnkacc_name}" valuepattern="character" require>
+			    </td>
+		    </tr>
+		    <tr>
+                <td>
+                    <span id="err-bnkacc_name-require" class="errInputMsg err-bnkacc_name">โปรดป้อนชื่อบัญชี</span>
+                    <span id="err-bnkacc_name-character" class="errInputMsg err-bnkacc_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                </td>
+            </tr>
+			<tr>
+			    <td>
+				    <label class="input-required">สาขา</label>
+				    <input id="bnkacc_branch" name="bnkacc_branch" type="text" class="form-input full" value="{$values.bnkacc_branch}" valuepattern="character" require>
+			    </td>
+		    </tr>
+		    <tr>
+                <td>
+                    <span id="err-bnkacc_branch-require" class="errInputMsg err-bnkacc_branch">โปรดป้อนสาขา</span>
+                    <span id="err-bnkacc_branch-character" class="errInputMsg err-bnkacc_branch">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                </td>
+            </tr>
+			<tr>
+			    <td>
+				    <label class="input-required">ประเภทบัญชี</label>
+				    <input id="bnkacc_type" name="bnkacc_type" type="text" class="form-input full" value="{$values.bnkacc_type}" valuepattern="character" require>
+			    </td>
+		    </tr>
+		    <tr>
+                <td>
+                    <span id="err-bnkacc_type-require" class="errInputMsg err-bnkacc_type">โปรดป้อนประเภทบัญชี</span>
+                    <span id="err-bnkacc_type-character" class="errInputMsg err-bnkacc_type">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

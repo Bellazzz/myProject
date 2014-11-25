@@ -1,0 +1,35 @@
+<div class="ftb-header">
+	<div class="title-container">
+		<h1 id="ftb-title"></h1>
+	</div>
+    <div class="toolbar-container clearfix">
+	    <ul class="toolbar-menu">
+		    <li>
+		    	{if $action == 'ADD'}
+			    <a id="save-btn">
+				    <i class="fa fa-check"></i> เพิ่ม
+			    </a>
+			    {elseif $action == 'EDIT'}
+			    <a id="save-btn">
+				    <i class="fa fa-floppy-o"></i> บันทึก
+			    </a>
+			    {elseif $action == 'VIEW_DETAIL'}
+				    {if !$hideEditButton}
+				    <a id="edit-btn">
+					    <i class="fa fa-pencil"></i> แก้ไขข้อมูล
+				    </a>
+				    {/if}
+			    {/if}
+		    </li>
+		    <li>
+			    <a id="cancel-btn">
+			    	{if $action == 'VIEW_DETAIL'}
+			    	<i class="fa fa-times"></i> ปิด
+			    	{else}
+				    <i class="fa fa-times"></i> ยกเลิก
+				    {/if}
+			    </a>
+		    </li>
+	    </ul>
+    </div>
+</div>

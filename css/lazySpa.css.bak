@@ -1,0 +1,189 @@
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+html, body, p, div, h1, h2, h3, h4, h5, h6, img, pre, form, fieldset {
+	margin: 0;
+	padding: 0;
+}
+body {
+	color: #333;
+	font-family: Arial,sans-serif;
+	font-size: 14px;
+}
+#page {
+	width: 100%;
+	min-width: 1024px;
+	min-height: 100%;
+	position: absolute;
+}
+/*
+ * Page Header
+ */
+#header {
+	width: 100%;
+	background: #205081;
+	border-bottom: 1px solid #2e3d54;
+	color: #fff;
+	padding: 0 10px;
+	height: 30px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 3
+}
+#header-logo {
+	float: left;
+	width: 120px;
+	height: 30px;
+	line-height: 30px;
+	background: #100066;
+	color: white;
+	text-align: center;
+}
+.nav{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	float: left;
+}
+.nav li {
+	float: left;
+	height: 30px;
+	line-height: 35px;
+}
+.nav li a {
+	display: inline-block;
+	height: 100%;
+	color: white;
+	padding: 0 10px;
+	text-decoration: none;
+}
+.nav li:hover a {
+	background-color: #2F91D3;
+}
+#header-tool {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	height: 30px;
+	float: right;
+}
+#header-tool li {
+	float: left;
+	height: 30px;
+	line-height: 30px;
+}
+#account-box {
+	float: right;
+	height: 100%;
+	width: 200px;
+	background: #eee;
+}
+
+/**
+ * Page Sidebar
+ */
+.sidebar {
+	width: 280px;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	padding-top: 30px;
+	left: 0;
+	border-right: 1px solid #ccc;
+	background-color: #f5f5f5;
+	z-index: 2;
+}
+.sidebar[aria-expanded="false"] {
+	width: 56px;
+}
+.sidebar[aria-expanded="false"] ~ .page-panel {
+	padding-left: 56px;
+}
+/**
+ * Page Panel
+ */
+.page-panel {
+	background: #fff;
+	border: 1px solid #ccc;
+	border-left-width: 0;
+	border-right-width: 0;
+	clear: both;
+	display: block;
+	margin-top: 20px;
+	padding-left: 280px;
+	position: relative;
+	width: 100%;
+}
+.page-panel-inner {
+	border-spacing: 0;
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+}
+
+
+#page-content {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: white;
+	top: 0;
+	left: 0;
+	overflow: scroll;
+	padding: 30px 0 0 200px;
+	z-index: 1;
+}
+#page-inner {
+	width: 100%;
+	height: 100%;
+	box-shadow: 3px 0px 13px #444;
+	position: relative;
+}
+#table-control {
+	position: fixed;
+	top: 30px;
+	left: 0;
+	padding-left: 200px;
+	width: 100%;
+	height: 50px;
+	background: lavender;
+}
+#table-data {
+	list-style: none;
+	margin: 0px;
+	padding: 80px 0px 0px 200px;
+	width: 100%;
+}
+#table-data li {
+	height: 50px;
+	border-bottom: 1px solid #ddd;
+}
+
+/**
+* Tool
+*/
+.tree-view {
+	cursor: default;
+}
+.tree-view-root {
+	padding: 5px 0 5px 20px
+}
+.tree-view-child ul{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	width: 100%;
+}
+.tree-view-child li{
+	width: 100%;
+	padding: 5px 0 5px 40px;
+}
+.tree-view-child li:hover {
+	background-color: #dfedfa;
+}
+.tree-view-child li.selected {
+	font-weight: bold;
+}

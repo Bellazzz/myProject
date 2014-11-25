@@ -1,0 +1,59 @@
+<table id="receives-product-list">
+	<tr>
+		<th>ลำดับ</th>
+		<th>ผลิตภัณฑ์</th>
+		<th>จำนวนที่สั่ง</th>
+		<th>หน่วยนับ</th>
+		<th>จำนวนที่รับ</th>
+		<th>ราคาต่อหน่วย (บาท)</th>
+		<th>ราคารวม</th>
+		<th>คงเหลือ</th>
+	</tr>
+	{foreach from=$ordPrdList key=i item=ordPrd}
+	<tr>
+		<td align="center">
+			{$ordPrd.no}
+			<input type="hidden" name="prd_id[]" value="{$ordPrd.prd_id}">
+		</td>
+	    <td>
+	    	<span class="prd_name">{$ordPrd.prd_name}</span>
+	    </td>
+	    <td align="right">
+	    	<span class="ordPrd_amount">{$ordPrd.amount}</span>
+	    </td>
+	    <td align="center">
+	    	<span class="unit_name">{$ordPrd.unit_name}</span>
+	    </td>
+	    <td>
+	    	<input type="text" name="recdtl_amount[]" value="0" min="0" max="{$ordPrd.amount}">
+	    </td>
+	    <td>
+	    	<input type="text" name="recdtl_price[]" value="{$ordPrd.prd_price}">
+	    </td>
+	    <td align="right">
+	    	<span class="sum_price">0</span>
+	    </td>
+	    <td align="right">
+	    	<span class="remain">{$ordPrd.amount}</span>
+	    </td>
+	</tr>
+	{/foreach}
+	<tr>
+		<td colspan="6" align="right">
+			รวม
+		</td>
+		<td align="right">
+			<span id="total_price">0</span>
+			<input type="hidden" name="rec_total_price" value="0">
+		</td>
+		<td align="right">
+			<span id="total_amount">0</span>
+		</td>
+	</tr>
+</table>
+{literal}
+<script type="text/javascript" id="tmpGetPrdListOrd">
+setOrdDate('{/literal}{$ord_date}{literal}');
+$('#tmpGetPrdListOrd').remove();
+</script>
+{/literal}

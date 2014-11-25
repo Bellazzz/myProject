@@ -1,0 +1,73 @@
+<?php
+include('../config/config.php');
+$tplName = 'form_title.html';
+$subDir	 = WEB_ROOTDIR.'/backoffice/';
+include('../common/common_header.php');
+
+$action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
+$tableName		= $_REQUEST['tableName'];
+$code			= $_REQUEST['code'];
+$requiredField	= array('title_name');
+
+if(!$_REQUEST['ajaxCall']) {
+	//1. Display form
+	if($action == 'EDIT') {
+		$titleDetail = new Title($code);
+		$values = array();
+		/*$values = array(
+			'title_name' => $titleDetail->getFieldValue('Name')
+		);*/
+		foreach($table[$tableName]['fieldNameList'] as $field => $value) {
+			$values[$field] = $titleDetail->getFieldValue($field);
+		}
+		$smarty->assign('values', $values);
+	}
+
+	$smarty->assign('action', $action);
+	$smarty->assign('code', $code);
+	include('../common/common_footer.php');
+} else {
+	//2. Process record
+	$formData	= $_REQUEST['formData'];
+	$values		= array();
+
+	if($action == 'ADD') {
+		//2.1 Insert new record
+		$values['fieldName']  = array();
+		$values['fieldValue'] = array();
+
+		// Push values to array
+		foreach($formData as $key => $data) {
+			if(($data['value'] == null || $data['value'] == '') && in_array($requiredField, $data['name'])) {
+				echo "REQURIED_VALUE";
+			} else {
+				array_push($values['fieldName'], $data['name']);
+				array_push($values['fieldValue'], $data['value']);
+			}
+		}
+
+		// Insert
+		$titleDetail = new Title($values['fieldName'], $values['fieldValue']);
+		if($titleDetail->insertSuccess()) {
+			echo "ADD_PASS";
+		} else {
+			echo "ADD_FAIL";
+		}
+	} else if($action == 'EDIT') {
+		//2.2 Update record
+		$titleDetail = new Title($code);
+
+		// Set all field value
+		foreach($formData as $key => $data) {
+			$titleDetail->setFieldValue($data['name'], $data['value']);
+		}
+
+		// Commit
+		if($titleDetail->commit()) {
+			echo "EDIT_PASS";
+		} else {
+			echo "EDIT_FAIL";
+		}
+	}
+}
+?>

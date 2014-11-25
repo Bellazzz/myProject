@@ -1,0 +1,823 @@
+<?php
+/*
+ * Database
+ */
+define('DB_HOST', 		'localhost');
+define('DB_USERNAME', 	'root');
+define('DB_PASSWORD', 	'root');
+define('DB_NAME', 		'projectSpa');
+
+/*
+ * Global Connection
+ */
+$dbConn;
+dbConnect();
+function dbConnect() {
+	global $dbConn;
+	$dbConn = mysql_connect(DB_HOST, DB_USERNAME, DB_PASSWORD);
+	if($dbConn) {
+		if(mysql_select_db(DB_NAME, $dbConn)) {
+			// Initial
+			mysql_query("SET NAMES UTF8", $dbConn);
+		} else {
+			throw new Exception('Cannot select database');
+		}
+	} else {
+		throw new Exception('Cannot connect host');
+	}
+}
+function dbClose() {
+	global $dbConn;
+	return mysql_close($dbConn);
+}
+
+/*
+ * การใช้ฟังก์ชั่น getTableInfo
+ * 1. keyFieldName = ชื่อ primary key
+ * 2. keyFieldType = ชนิดของ primary key
+ *		(1) = Auto number
+ *		(2) = Char running เป็น pk ที่ขึ้นต้นด้วยตัวอักษรและตามด้วยตัวเลข โดยมีการ run ตัวเลขจากน้อยไปมาก เช่น T01, EMP00001 เป็นต้น
+ *		(3) = Char running with year เหมือนกับชนิดที่ 2 แต่ลงท้ายด้วย ปี พ.ศ. เช่น OR00001/57, RE00001/57 เป็นต้น
+ * 3. keyChar = ตัวอักษรที่ขึ้นต้นของ primary key เช่น ตาราง employees ขึ้นต้นด้วย EM ก็ให้ใส่ 'EM' เป็นต้น
+ * 4. keyLength = ขนาดของ primary key ทั้งหมด (รวมตัวอักษร และ ปี พ.ศ. ด้วย) เช่น P01 มีขนาด 3, OR00001/57 มีขนาด 10 เป็นต้น
+ * 5. fieldNameList = ชื่อฟิลด์ของตาราง ฝั่งซ้ายเป็นชื่อภาษาอังกฤษ ฝั่งขวาเป็นชื่อภาษาไทย
+ */
+ function getTableInfo($tableName) {
+	 switch($tableName) {
+		 case 'titles':
+			 return array(
+				'tableNameTH'	=> 'คำนำหน้าชื่อ',
+				'keyFieldName'  => 'title_id',
+				'keyFieldType'	=> 2,
+				'keyChar'		=> 'T',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+					'title_id'		=> 'รหัสคำนำหน้าชื่อ',
+					'title_name'	=> 'ชื่อคำนำหน้าชื่อ'
+				)
+			);
+			break;
+
+		case 'positions':
+			 return array(
+				'tableNameTH'	=> 'ตำแหน่ง',
+				'keyFieldName'  => 'pos_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'P',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+						'pos_id'		=> 'รหัสตำแหน่ง',
+						'pos_name'		=> 'ชื่อตำแหน่ง'
+				)
+			);
+			break;
+
+		case 'employees':
+			 return array(
+				'tableNameTH'	=> 'พนักงาน',
+				'keyFieldName'  => 'emp_id',
+				'keyFieldType'	=> 2,
+				'fieldNameList'	=> array(
+						'emp_id'		=> 'รหัสพนักงาน',
+						'title_id'	=> 'คำนำหน้า',
+						'pos_id'		=> 'ตำแหน่ง',
+						'emp_name'		=> 'ชื่อ',
+						'emp_surname'	=> 'นามสกุล',
+						'emp_addr'		=> 'ที่อยู่',
+						'emp_tel'		=> 'เบอร์โทร',
+						'emp_user'		=> 'Username',
+						'emp_pass'		=> 'Password',
+						'emp_pic'		=> 'รูปภาพ'
+				)
+			);
+			break;
+		
+		case 'units':
+			 return array(
+				'tableNameTH'	=> 'หน่วยนับ',
+				'keyFieldName'  => 'unit_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'U',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+						'unit_id'		=> 'รหัสหน่วยนับ',
+						'unit_name'		=> 'ชื่อหน่วยนับ'
+				)
+			);
+			break;
+
+		case 'beds':
+			 return array(
+				'tableNameTH'	=> 'เตียงนวด',
+				'keyFieldName'  => 'bed_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BE',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'bed_id'		=> 'รหัสเตียงนวด',
+						'room_id'		=> 'ชื่อห้องนวด',
+						'bed_name'		=> 'ชื่อเตียงนวด'
+				)
+			);
+			break;
+
+		case 'bank_accounts':
+			 return array(
+				'tableNameTH'	=> 'บัญชีธนาคาร',
+				'keyFieldName'  => 'bnkacc_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BA',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'bnkacc_id'		=> 'รหัสบัญชีธนาคาร',
+						'bnkacc_no'		=> 'เลขบัญชี',
+						'bnkacc_name'	=> 'ชื่อบัญชี',
+						'bnkacc_branch' => 'สาขา',
+						'bnkacc_type'	=> 'ประเภทบัญชี'
+				)
+			);
+			break;
+
+		case 'rooms':
+			 return array(
+				'tableNameTH'	=> 'ห้องนวด',
+				'keyFieldName'  => 'room_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'RM',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'room_id'		=> 'รหัสห้องนวด',
+						'room_name'		=> 'ชื่อห้องนวด'	
+				)
+			);
+			break;
+
+		case 'booking_status':
+			 return array(
+				'tableNameTH'	=> 'สถานะการจอง',
+				'keyFieldName'  => 'bkgstat_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'S',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+						'bkgstat_id'		=> 'รหัสสถานะการจอง',
+						'bkgstat_name'		=> 'ชื่อสถานะการจอง'
+				)
+			);
+			break;
+
+		case 'brands':
+			 return array(
+				'tableNameTH'	=> 'ยี่ห้อผลิตภัณฑ์',
+				'keyFieldName'  => 'brand_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BR',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'brand_id'		=> 'รหัสยี่ห้อ',
+						'brand_name'	=> 'ชื่อยี่ห้อ'
+				)
+			);
+			break;
+
+		case 'pay_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทการชำระเงิน',
+				'keyFieldName'  => 'paytyp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PA',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'paytyp_id'		=> 'รหัสประเภทการชำระเงิน',
+						'paytyp_name'	=> 'ชื่อประเภทการชำระเงิน'
+				)
+			);
+			break;
+
+		case 'element_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทธาตุ',
+				'keyFieldName'  => 'eletyp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'ET',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'eletyp_id'		=> 'รหัสประเภทธาตุ',
+						'eletyp_name'	=> 'ชื่อประเภทธาตุ'
+				)
+			);
+			break;
+
+		case 'product_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทผลิตภัณฑ์',
+				'keyFieldName'  => 'prdtyp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PT',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'prdtyp_id'		=> 'รหัสประเภทผลิตภัณฑ์',
+						'prdtyp_name'	=> 'ชื่อประเภทผลิตภัณฑ์'
+				)
+			);
+			break;
+
+		case 'order_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทการสั่งซื้อ',
+				'keyFieldName'  => 'ordtyp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'OT',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+						'ordtyp_id'		=> 'รหัสประเภทการสั่งซื้อผลิตภัณฑ์',
+						'ordtyp_name'	=> 'ชื่อประเภทการสั่งซื้อผลิตภัณฑ์'
+				)
+			);
+			break;
+
+		case 'service_list_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทรายการบริการ',
+				'keyFieldName'  => 'svltyp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'ST',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'svltyp_id'		=> 'รหัสประเภทรายการบริการ',
+						'svltyp_name'	=> 'ชื่อประเภทรายการบริการ'
+				)
+			);
+			break;
+
+		case 'customer_types':
+			 return array(
+				'tableNameTH'	=> 'ประเภทผู้ใช้บริการ',
+				'keyFieldName'  => 'custype_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'CT',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+						'custype_id'		=> 'รหัสประเภทผู้ใช้บริการ',
+						'custype_name'		=> 'ชื่อประเภทผู้ใช้บริการ'
+				)
+			);
+			break;
+
+		case 'spa':
+			 return array(
+				'tableNameTH'	=> 'สปา',
+				'keyFieldName'  => 'spa_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SA',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'spa_id'		=> 'รหัสสปา',
+						'sap_name'		=> 'ชื่อสปา',
+						'spa_addr'		=> 'ที่อยู่',
+						'spa_tel'		=> 'เบอร์โทรศัพท์',
+						'spa_fax'		=> 'แฟ็กซ์',
+						'spa_logo'		=> 'รูปภาพ'
+				)
+			);
+			break;
+
+		case 'customers':
+			 return array(
+				'tableNameTH'	=> 'ผู้ใช้บริการ',
+				'keyFieldName'  => 'cus_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'CM',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'cus_id'	    => 'รหัสผู้ใช้บริการ',
+						'custype_id'	=> 'ประเภทผู้ใช้บริการ',
+						'title_id'      => 'คำนำหน้าชื่อ',
+						'cus_name'      => 'ชื่อ',
+						'cus_surname'   => 'นามสกุล',
+						'cus_addr'      => 'ที่อยู่',
+						'cus_tel'       => 'เบอร์โทรศัพท์',
+						'cus_email'      => 'E-mail/ชื่อผู้ใช้',
+						'cus_pass'      => 'รหัสผ่าน',
+						'cus_birthdate' => 'วันที่เกิด',
+						'cus_registered_date'  => 'วันที่สมัคร',
+						'cus_facebook'  => 'facebook',
+						'cus_line_id'   => 'Line'  
+				)
+			);
+			break;
+
+		case 'service_lists':
+			 return array(
+				'tableNameTH'	=> 'รายการบริการ',
+				'keyFieldName'  => 'svl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SL',
+				'keyLength'		=> 5,
+				'fieldNameList'	=> array(
+						'svl_id'			=> 'รหัสผู้ใช้บริการ',
+						'svltyp_id'			=> 'ประเภทรายการใช้บริการ',
+						'svl_min'			=> 'เวลาที่ใช้(นาที)',
+						'svl_hr'			=> 'เวลาที่ใช้(ชั่วโมง)',
+						'svl_name'			=> 'ชื่อรายการบริการ',
+						'svl_price'			=> 'ราคา(บาท)',
+						'svl_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
+						'svl_desc'			=> 'คำอธิบาย',
+						'svl_picture'		=> 'รูปภาพ'	
+				)
+			);
+			break;
+
+		case 'packages':
+			 return array(
+				'tableNameTH'	=> 'แพ็คเกจ',
+				'keyFieldName'  => 'pkg_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PK',
+				'keyLength'		=> 5,
+				'fieldNameList'	=> array(
+						'pkg_id'	    => 'รหัสแพ็คเกจ',
+						'pkg_name'	    => 'ชื่อแพ็คเกจ',
+						'pkg_start'     => 'วันที่เริ่มใช้',
+						'pkg_stop'      => 'วันเวลาที่สิ้นสุด',
+						'pkg_desc'      => 'คำอธิบาย',
+						'pkg_price'     => 'ราคา(บาท)',
+						'pkg_picture'   => 'รูปภาพ'			
+				)
+			);
+			break;
+
+		case 'package_service_lists':
+			 return array(
+				'tableNameTH'	=> 'รายการบริการที่จัดแพ็คเกจ',
+				'keyFieldName'  => 'pkgsvl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PS',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'pkgsvl_id'	    => 'รหัสรายการบริการที่จัดแพ็คเกจ',
+						'svl_id'	    => 'ชื่อรายการบริการ',
+						'pkg_id'        => 'ชื่อแพ็คเกจ'
+				)
+			);
+			break;
+
+		case 'promotions':
+			 return array(
+				'tableNameTH'	=> 'โปรโมชั่น',
+				'keyFieldName'  => 'prm_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PM',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'prm_id'			=> 'รหัสโปรโมชั่น',
+						'prm_name'			=> 'ชื่อโปรโมชั่น',
+						'prm_use_amount'	=> 'จำนวนครั้งที่ใช้บริการ',
+						'prm_free_amount'	=> 'จำนวนครั้งที่ฟรี',
+						'prm_startdate'	    => 'วันที่เริ่มใช้',
+						'prm_enddate'		=> 'วันที่สิ้นสุด',
+						'prm_picture'		=> 'รูปภาพ'
+				)
+			);
+			break;
+
+		case 'promotion_service_lists':
+			 return array(
+				'tableNameTH'	=> 'รายการบริการที่จัดโปรโมชั่น',
+				'keyFieldName'  => 'prmsvl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PL',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'prmsvl_id'	      => 'รหัสรายการบริการที่จัดโปรโมชั่น',
+						'svl_id'	      => 'ชื่อรายการบริการ',
+						'prm_id'          => 'ชื่อโปรโมชั่น',
+						'prmsvl_start'	  => 'วันที่เริ่มใช้',
+						'prmsvl_end'	  => 'วันที่สิ้นสุด',
+						'prmsvl_desc'     => 'คำอธิบาย',
+						'prmsvl_price'     => 'ราคา(บาท)'
+				)
+			);
+			break;
+
+		case 'companies':
+			 return array(
+				'tableNameTH'	=> 'บริษัทจำหน่ายผลิตภัณฑ์',
+				'keyFieldName'  => 'comp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'CP',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'comp_id'	      => 'รหัสบริษัทจำหน่ายผลิตภัณฑ์',
+						'comp_name'	      => 'ชื่อบริษัท',
+						'fax'             => 'แฟ็กซ์',
+						'comp_tel'	      => 'เบอร์โทรศัพท์',
+						'comp_addr'	      => 'ที่อยู่',
+						'comp_contact'    => 'ชื่อผู้ติดต่อ'
+				)
+			);
+			break;
+
+		case 'products':
+			 return array(
+				'tableNameTH'	=> 'ผลิตภัณฑ์',
+				'keyFieldName'  => 'prd_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PD',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'prd_id'	      => 'รหัสผลิตภัณฑ์',
+						'prdtyp_id'	      => 'ชื่อประเภทผลิตภัณฑ์',
+						'unit_id'         => 'ชื่อหน่ายนับ',
+						'brand_id'	      => 'ชื่อยี่ห้อ',
+						'prd_name'	      => 'ชื่อผลิตภัณฑ์',
+						'prd_price'       => 'ราคา(บาท)',
+						'prd_amount'      => 'จำนวน'
+				)
+			);
+			break;
+
+		case 'time_attendances':
+			 return array(
+				'tableNameTH'	=> 'การเข้า-ออกงาน',
+				'keyFieldName'  => 'timeatt_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'W',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'timeatt_id'	  => 'รหัสการเข้าออกงาน',
+						'emp_id'	      => 'ชื่อ-นามสกุลพนักงาน',
+						'timeatt_in'      => 'วัน-เวลาที่เข้า',
+						'timeatt_out'	  => 'วัน-เวลาที่ออก'
+				)
+			);
+			break;
+
+		case 'payrolls':
+			 return array(
+				'tableNameTH'	=> 'การจ่ายเงินเดือน',
+				'keyFieldName'  => 'payroll_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PR',
+				'keyLength'		=> 7,
+				'fieldNameList'	=> array(
+						'payroll_id'			=> 'รหัสการจ่ายเงินเดือน',
+						'emp_id'				=> 'ชื่อ-นามสกุลพนักงาน',
+						'payroll_salary'		=> 'จำนวนเงินเดือน(บาท)',
+						'payroll_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
+						'payroll_monthly'		=> 'ประจำเดือน-ปี'
+				)
+			);
+			break;
+
+		case 'booking':
+			 return array(
+				'tableNameTH'	=> 'การจอง',
+				'keyFieldName'  => 'bkg_id',
+				'keyFieldType'	=> 3, 
+				'keyChar'		=> 'BK',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'bkg_id'	  		=> 'รหัสการจอง',
+						'cus_id'	        => 'ชื่อ-นามสกุลผู้ใช้บริการ',
+						'emp_id' 		    => 'ชื่อ-นามสกุลพนักงาน',
+						'status_id'         => 'ชื่อสถานะการจอง',
+						'bnkacc_id'	        => 'เลขบัญชีธนาคาร',
+						'bkg_transfer_time'=> 'วัน-เวลาที่โอน',
+						'bkg_transfer_evidence'  => 'หลักฐานการโอน',
+						'bkg_total_price'         => 'ราคารวมการจองทั้งหมด(บาท)',
+						'bkg_date'    			  => 'วัน-เวลาที่จอง',
+						'bkg_transfer_money'      => 'จำนวนเงินที่โอน(บาท)'
+				)
+			);
+			break;
+
+		case 'booking_service_lists':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดรายการบริการที่จอง',
+				'keyFieldName'  => 'bkgsvl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BL',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'bkgsvl_id'	  		 => 'รหัสรายละเอียดรายการบริการที่จอง',
+						'svl_id'	         => 'รหัสรายการบริการ',
+						'bkg_id' 		     => 'รหัสการจอง',
+						'bkgsvl_date'        => 'วัน-เวลาที่ใช้บริการ',
+						'bkgsvl_total_price' => 'ราคารวมการจองรายการบริการ(บาท)',
+						'bkgsvl_persons'     => 'จำนวนผู้ใช้บริการ'
+				)
+			);
+			break;
+
+		case 'booking_packages':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดแพ็คเกจที่จอง',
+				'keyFieldName'  => 'bkgpkg_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BP',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'bkgpkg_id'	  		  => 'รหัสรายละเอียดแพ็คเกจที่จอง',
+						'pkgsvl_id'	          => 'รหัสรายการบริการที่จัดแพ็คเกจ',
+						'bkg_id' 		      => 'รหัสการจอง',
+						'bkgpkg _date'        => 'วัน-เวลาที่ใช้บริการ',
+						'bkgpkg_total_price' => 'ราคารวมการจองแพ็คเกจ(บาท)',
+						'bkgpkg_persons'      => 'จำนวนผู้ใช้บริการ'
+				)
+			);
+			break;
+
+		case 'booking_promotions':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดโปรโมชั่นที่จอง',
+				'keyFieldName'  => 'bkgprm_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'BP',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'bkgprm_id'	  		  => 'รหัสรายละเอียดโปรโมชั่นที่จอง',
+						'prmsvl_id'	          => 'รหัสรายการบริการที่จัดโปรโมชั่น',
+						'bkg_id' 		      => 'รหัสการจอง',
+						'bkgprm_date'        => 'วัน-เวลาที่ใช้บริการ',
+						'bkgprm_total_price' => 'ราคารวมการจองโปรโมชั่น(บาท)',
+						'bkgprm_persons'      => 'จำนวนผู้ใช้บริการ'
+						
+				)
+			);
+			break;
+
+		case 'services':
+			 return array(
+				'tableNameTH'	=> 'การใช้บริการ',
+				'keyFieldName'  => 'ser_id',
+				'keyFieldType'	=> 3, 
+				'keyChar'		=> 'SE',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'ser_id'	  		  => 'รหัสการใช้บริการ',
+						'cus_id'	          => 'ชื่อ-นามสกุลผู้ใช้บริการ',
+						'emp_id' 		      => 'ชื่อ-นามสกุลพนักงานที่รับเงิน',
+						'svltyp_id'           => 'รหัสประเภทรายการใช้บริการ',
+						'paytyp_id'			  => 'รหัสประเภทการชำระเงิน',
+						'bed_id'      		  => 'รหัสเตียงนวด',
+						'bkg_id'	  		  => 'รหัสการจอง',
+						'ser_date'	          => 'วัน-เวลาที่ใช้บริการ',
+						'ser_total_price' 	  => 'ราคารวมทั้งหมด(บาท)'
+				)
+			);
+			break;
+
+		case 'service_service_lists':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการใช้บริการรายการบริการ',
+				'keyFieldName'  => 'sersvl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SS',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'sersvl_id'	  		  => 'รหัสรายละเอียดการใช้บริการรายการบริการ',
+						'ser_id'	          => 'รหัสการใช้บริการ',
+						'sersvl_total_price'  => 'ราคารวม(บาท)'
+				)
+			);
+			break;
+
+		case 'service_list_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดรายการบริการ',
+				'keyFieldName'  => 'svldtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'ST',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'svldtl_id'	  		  => 'รหัสรายละเอียดรายการบริการ',
+						'svl_id'	          => 'รหัสรายการบริการ',
+						'emp_id' 			  => 'ชื่อ-นามสกุลพนักงาน',
+						'sersvl_id'	  		  => 'รหัสรายละเอียดการใช้บริการรายการบริการ',
+						'svldtl_com'	      => 'ค่าคอมมิชชั่น(บาท)'
+				)
+			);
+			break;
+
+		case 'service_packages':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการใช้บริการแพ็คเกจ',
+				'keyFieldName'  => 'svlpkg_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SK',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'serpkg_id'	  		  => 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
+						'ser_id'	          => 'รหัสรายการใช้บริการ',
+						'serpkg_total_ price' => 'ราคารวม(บาท)'
+				)
+			);
+			break;
+
+		case 'package_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดแพ็คเกจ',
+				'keyFieldName'  => 'pkgdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PA',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'pkgdtl_id'	  		  => 'รหัสรายละเอียดแพ็คเกจ',
+						'serpkg_id'	  		  => 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
+						'pkgsvl_id'	          => 'รหัสรายการบริการที่จัดแพ็คเกจ',
+						'emp_id' 			  => 'ชื่อ-สกุลพนักงาน',
+						'pkgdtl_comm'		  => 'ค่าคอมมิชชั่น(บาท)'
+				)
+			);
+			break;
+
+		case 'service_promotions':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการใช้บริการโปรโมชั่น',
+				'keyFieldName'  => 'pkgdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SP',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'serprm_id'	  		  => 'รหัสรายละเอียดการใช้บริการโปรโมชั่น',
+						'ser_id'	  		  => 'รหัสการใช้บริการ',
+						'serprm_total_ price' => 'ราคารวม(บาท)'
+				)
+			);
+			break;
+
+		case 'promotion_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดโปรโมชั่น',
+				'keyFieldName'  => 'prmdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PD',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'prmdtl_id'	  		  => 'รหัสรายละเอียดโปรโมชั่น',
+						'emp_id' 			  => 'ชื่อ-นามสกุลพนักงาน',
+						'svl_id'	  		  => 'รหัสรายการบริการที่จัดโปรโมชั่น',
+						'serprm_id'	  		  => 'รหัสรายละเอียดการใช้บริการโปรโมชั่น',
+						'prmdtl_comm' 		  => 'ค่าคอมมิชชั่น(บาท)'
+				)
+			);
+			break;
+
+		case 'element_checks':
+			 return array(
+				'tableNameTH'	=> 'การตรวจธาตุ',
+				'keyFieldName'  => 'elechk_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'EC',
+				'keyLength'		=> 9,
+				'fieldNameList'	=> array(
+						'elechk_id'	  		  => 'รหัสการตรวจประเภทธาตุ',
+						'eletyp_id' 		  => 'ชื่อประเภทธาตุ',
+						'emp_id' 			  => 'ชื่อ-นามสกุลพนักงาน',
+						'cus_id'	  		  => 'ชื่อ-สกุลผู้ใช้บริการ',
+						'elechk_date'	  	  => 'วัน-เวลาที่ตรวจ'
+				)
+			);
+			break;
+
+		case 'orders':
+			 return array(
+				'tableNameTH'	=> 'การสั่งซื้อ',
+				'keyFieldName'  => 'ord_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'OR',
+				'keyLength'		=> 7,
+				'fieldNameList'	=> array(
+						'ord_id'	  		  => 'รหัสการสั่งซื้อผลิตภัณฑ์',
+						'ordtyp_id' 		  => 'รหัสประเภทการสั่งซื้อผลิตภัณฑ์',
+						'emp_id' 			  => 'รหัสพนักงาน',
+						'comp_id'	  		  => 'รหัสบริษัทจำหน่ายผลิตภัณฑ์',
+						'ord_date'	  	      => 'วันที่สั่งซื้อ',
+						'ord_snd_date'        => 'วันที่จัดส่ง'
+				)
+			);
+			break;
+
+		case 'order_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการสั่งซื้อ',
+				'keyFieldName'  => 'orddtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'OD',
+				'keyLength'		=> 9,
+				'fieldNameList'	=> array(
+						'orddtl_id'	  		  => 'รหัสรายละเอียดการสั่งซื้อผลิตภัณฑ์',
+						'ord_id' 		      => 'รหัสการสั่งซื้อผลิตภัณฑ์',
+						'prd_id' 			  => 'ชื่อผลิตภัณฑ์',
+						'orddtl_amount'	  	  => 'จำนวนที่สั่งซื้อ'
+				)
+			);
+			break;
+
+		case 'receives':
+			 return array(
+				'tableNameTH'	=> 'การรับ',
+				'keyFieldName'  => 'rec_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'RE',
+				'keyLength'		=> 7,
+				'fieldNameList'	=> array(
+						'rec_id'	  		  => 'รหัสการรับผลิตภัณฑ์',
+						'ord_id' 		      => 'รหัสการสั่งซื้อผลิตภัณฑ์',
+						'emp_id' 			  => 'ชื่อ-นามสกุลพนักงาน',
+						'rec_date'	  	      => 'วันที่รับผลิตภัณฑ์',
+						'rec_total_price'	  => 'ราคา(บาท)'
+				)
+			);
+			break;
+
+		case 'receive_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการรับ',
+				'keyFieldName'  => 'recdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'RD',
+				'keyLength'		=> 9,
+				'fieldNameList'	=> array(
+						'recdtl_id'	  		  => 'รหัสรายละเอียดการรับผลิตภัณฑ์',
+						'rec_id'	  		  => 'รหัสการรับผลิตภัณฑ์',
+						'prd_id' 		      => 'ชื่อผลิตภัณฑ์',
+						'recdtl_amount' 	  => 'จำนวนที่รับ',
+						'recdtl_price'	  	  => 'ราคาต่อหน่วย(บาท)'
+				)
+			);
+			break;
+
+		case 'withdraws':
+			 return array(
+				'tableNameTH'	=> 'การเบิก',
+				'keyFieldName'  => 'wdw_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'W',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'wdw_id'	  		  => 'รหัสการเบิกผลิตภัณฑ์',
+						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ให้เบิก',
+						'emp_give_id' 		  => 'ชื่อ-นามสกุลพนักงานที่เบิก',
+						'ser_id' 	 		  => 'รหัสการใช้บริการ',
+						'wdw_date'	  	      => 'วันที่เบิก'
+				)
+			);
+			break;
+
+		case 'withdraw_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการเบิก',
+				'keyFieldName'  => 'wdwdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'WD',
+				'keyLength'		=> 10,
+				'fieldNameList'	=> array(
+						'wdwdtl_id'	  		  => 'รหัสรายละเอียดการเบิกผลิตภัณฑ์',
+						'wdw_id'	  		  => 'รหัสการเบิกผลิตภัณฑ์',
+						'prd_id'	  		  => 'ชื่อผลิตภัณฑ์',
+						'wdwdtl_amount' 	  => 'จำนวนที่เบิก'
+						
+				)
+			);
+			break;
+
+		case 'sales':
+			 return array(
+				'tableNameTH'	=> 'การขาย',
+				'keyFieldName'  => 'sale_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'S',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'sale_id'	  		  => 'รหัสการขาย',
+						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ขาย',
+						'sale_date'	  		  => 'วันที่ขาย',
+						'sale_total_price' 	  => 'ราคารวม(บาท)'
+				)
+			);
+			break;
+
+		case 'sale_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการขาย',
+				'keyFieldName'  => 'saledtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SD',
+				'keyLength'		=> 12,
+				'fieldNameList'	=> array(
+						'saledtl_id'	  	  => 'รหัสรายละเอียดการขาย',
+						'sale_id'	  		  => 'รหัสการขาย',
+						'prd_id'	  		  => 'ชื่อผลิตภัณฑ์',
+						'saledtl_amount'	  => 'จำนวน',
+						'saledtl_price' 	  => 'ราคาต่อหน่วย(บาท)'
+				)
+			);
+			break;
+
+		
+	 }
+ }
+ /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/
+?>

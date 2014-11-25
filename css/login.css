@@ -1,0 +1,113 @@
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+body {
+	font-family: Arial, sans-serif;
+}
+html, body, p, div, h1, h2, h3, h4, h5, h6, img, pre, form, fieldset {
+	margin: 0;
+	padding: 0;
+}
+p, ul, ol, dl, h1, h2, h3, h4, h5, h6, blockquote, pre, form.aui, table.mbk {
+    margin: 10px 0 0 0;
+}
+
+.myButton {
+    background-color: #21a7d4;
+    -moz-border-radius: 28px;
+    -webkit-border-radius: 28px;
+    border-radius: 5px;
+    border: 1px solid #21a7d4;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: arial;
+    font-size: 14px;
+    padding: 12px 22px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #21a7d4;
+    outline: none;
+}
+.myButton:hover {
+    background-color:#21B3E4;
+}
+.myButton:active {
+    position:relative;
+    top:1px;
+}
+.control{
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    outline: none;
+    font-size: 16px;
+}
+#error-message-username {
+	font-size: 14px;
+	color: rgb(216, 8, 8);
+	padding: 10px 0;
+}
+.wide-control{
+    width: 100%;
+    margin-bottom: 10px;
+}
+.login-content {
+	width: 500px;
+}
+.login-content > h1 {
+	color: #444;
+}
+.login-content:after{
+    content: "";
+    clear: both;
+    display: block;
+}
+
+.login-content .left{
+    width: 48%;
+    float: left;
+}
+
+.login-content .right{
+    width: 48%;
+    float: right;
+}
+.login-content .right label{
+    font-weight: bold;
+    color:#777;
+}
+.login-content .right a{
+    float: right;
+}
+.container{
+    background: #fff;
+    margin: 0 auto;
+    border: 1px solid #dfdfdf;
+    padding: 20px;
+    border-radius: 5px;
+}
+.container:after{
+    content: "";
+    clear: both;
+    display:block;
+    height: 0px;
+}
+
+.loginPage-footer {
+	position: fixed;
+	bottom: 0;
+	left:0;
+	width:100%;
+	height: 100px;
+	background: #ccc;
+}
+#form-login label {
+	color: #666;
+}

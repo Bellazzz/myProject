@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css"> <!--include if want to use datepicker-->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+            selectReference({
+                elem			: $('#eletyp_id'),
+                tableName		: 'element_types',
+                keyFieldName	: 'eletyp_id',
+                textFieldName	: 'eletyp_name',
+				searchTool		: true,
+                defaultValue	: '{/literal}{$values.eletyp_id}{literal}',
+				
+            });
+             
+             selectReference({
+                elem            : $('#emp_id'),
+                tableName       : 'employees',
+                keyFieldName    : 'emp_id',
+                textFieldName   : 'emp_id,emp_name,emp_surname',
+                searchTool      : true,
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
+                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+            });
+               selectReference({
+                elem            : $('#cus_id'),
+                tableName       : 'customers',
+                keyFieldName    : 'cus_id',
+                textFieldName   : 'cus_id,cus_name,cus_surname',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.cus_id}{literal}',
+                pattern         : 'CONCAT("(",cus_id,") ",cus_name," ",cus_surname)'
+            });
+
+            $('#elechk_date').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#elechk_date').blur();
+                }
+            });
+             $('#elechk_time').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                minTime:'06:00',
+                step:30
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">    
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="eletyp_id,emp_id,cus_id,elechk_date,elechk_time">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">พนักงานที่ตรวจ</label>
+                    <div id="emp_id" class="select-reference form-input full" require> </div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่ตรวจ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+				    <label class="input-required">ผู้ใช้บริการ</label>
+				    <div id="cus_id" class="select-reference form-input full" require></div>
+			    </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการ</span>
+                </td>
+            </tr>
+			<tr>
+                <td>
+                    <label class="input-required">วันที่ตรวจ</label>
+				      <input id="elechk_date" name="elechk_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.elechk_date}{$values.elechk_date}{else}{$nowDate}{/if}" require>
+			    </td>
+			    <td>
+                    <label class="input-required">เวลาที่ตรวจ</label>
+                      <input id="elechk_time" name="elechk_time" type="text" class="form-input half" value="{if $values.elechk_time}{$values.elechk_time}{else}{$nowTime}{/if}" require>
+                </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-elechk_date-require" class="errInputMsg half err-elechk_date">โปรดป้อนวันที่ตรวจ</span>
+                </td>
+                <td>
+                    <span id="err-elechk_time-require" class="errInputMsg half err-elechk_time">โปรดป้อนเวลาที่ตรวจ</span>
+                </td>
+            </tr>
+            <tr>
+               <td colspan="2">
+                    <label class="input-required">ประเภทธาตุ</label>
+                    <div id="eletyp_id" class="select-reference form-input full" require></div>
+                </td> 
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-eletyp_id-require" class="errInputMsg err-eletyp_id">โปรดเลือกประเภทธาตุ</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

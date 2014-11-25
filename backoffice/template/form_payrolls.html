@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <!--<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css">-->
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script>-->
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+            selectReference({
+                elem			: $('#emp_id'),
+                tableName		: 'employees',
+                keyFieldName	: 'emp_id',
+                textFieldName	: 'emp_id,emp_name,emp_surname',
+				searchTool		: true,
+                defaultValue	: '{/literal}{$values.emp_id}{literal}',
+				pattern			: 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+            });
+
+            $('#payroll_monthly').datetimepicker({
+                lang:'th',
+                format:'Y/M',
+                closeOnDateSelect:true,
+                timepicker:false
+            });
+
+            $('#payroll_date').datetimepicker({
+                lang:'th',
+                format:'Y/m/d',
+                closeOnDateSelect:true,
+                timepicker:false
+            });
+            
+			
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+			<tr>
+			    <td colspan="2">
+				    <label class="input-required">ชื่อ-นามสกุลพนักงาน</label>
+				    <div id="emp_id" class="select-reference form-input full" require> </div>
+			    </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg half err-emp_id">โปรดเลือกชื่อ-นามสกุลพนักงาน</span>
+                </td>
+            </tr>
+			<tr>
+                <td>
+                    <label class="input-required">จำนวนเงินเดือน(บาท)</label>
+				    <input id="payroll_salary" name="payroll_salary" type="text" class="form-input half" value="{$values.payroll_salary}" valuepattern="money" require>
+			    </td>
+			    <td>
+				    <label>ค่าคอมมิชชั่น(บาท)</label>
+				    <input id="payroll_commission" name="payroll_commission" type="text" class="form-input half" value="{$values.payroll_commission}" valuepattern="money">
+			    </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-payroll_salary-require" class="errInputMsg half err-payroll_salary">โปรดป้อนราคา</span>
+                    <span id="err-payroll_salary-money" class="errInputMsg half err-payroll_salary">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+                <td>
+                    <span id="err-payroll_commission-money" class="errInputMsg half err-payroll_commission">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">ประจำเดือน-ปี</label>
+                    <input id="payroll_monthly" name="payroll_monthly" type="text" class="form-input half" value="{$values.payroll_monthly}" require>
+                </td>
+                <td>
+                    <label class="input-required">วันที่จ่ายเงินเดือน</label>
+                    <input id="payroll_date" name="payroll_date" type="text" class="form-input half" value="{$values.payroll_date}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-payroll_monthly-require" class="errInputMsg half err-payroll_monthly">โปรดป้อนประจำเดือน-ปี</span>
+                </td>
+                <td>
+                    <span id="err-payroll_date-require" class="errInputMsg half err-payroll_date">โปรดป้อนวันที่จ่ายเงินเดือน</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

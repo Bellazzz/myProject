@@ -1,0 +1,25 @@
+<div class="ftb-header">
+	<div class="title-container">
+		<h1 id="ftb-title"></h1>
+	</div>
+    <div class="toolbar-container clearfix">
+	    <ul class="toolbar-menu">
+		    <li>
+                {if $action == 'ADD'}
+			    <a id="save-btn">
+				    <i class="fa fa-check"></i> เพิ่ม
+			    </a>
+                {elseif $action == 'EDIT'}
+                <a id="save-btn">
+				    <i class="fa fa-floppy-o"></i> บันทึก
+			    </a>
+                 {/if}
+		    </li>
+		    <li>
+			    <a id="cancel-btn">
+				    <i class="fa fa-times"></i> ยกเลิก
+			    </a>
+		    </li>
+	    </ul>
+    </div>
+</div>

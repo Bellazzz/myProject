@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_employees.php';
+        var sexIdOfTitle = '';
+
+		$(document).ready(function() {
+			$('#emp_indate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#emp_indate').blur();
+                },
+                timepicker:false
+            });
+
+            $('#emp_birthdate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#emp_birthdate').blur();
+                },
+                timepicker:false
+            });
+
+			selectReference({
+                elem			: $('#title_id'),
+                tableName		: 'titles',
+                keyFieldName	: 'title_id',
+                textFieldName	: 'title_name',
+                defaultValue	: '{/literal}{$values.title_id}{literal}',
+                onOptionSelect	: changeTitleId,
+                success			:
+                function() {
+                	if(action == 'EDIT') {
+                		changeTitleId();
+                	}
+                }
+            });
+            selectReference({
+                elem            : $('#sex_id'),
+                tableName       : 'sex',
+                keyFieldName    : 'sex_id',
+                textFieldName   : 'sex_name',
+                searchTool      : false,
+                defaultValue    : '{/literal}{$values.sex_id}{literal}',
+                beforeShow 		: allowSelectSex
+            });
+            selectReference({
+                elem            : $('#pos_id'),
+                tableName       : 'positions',
+                keyFieldName    : 'pos_id',
+                textFieldName   : 'pos_name',
+                defaultValue    : '{/literal}{$values.pos_id}{literal}'
+            });
+
+			uploadImageInput({
+				area: $('#emp_pic'),
+				input: $('input[name="emp_pic"]'),
+				selector: $('#emp_pic_file'),
+				defaultValue: '{/literal}{if $values.emp_pic}../img/employees/{$values.emp_pic}?rand={$randNum}{/if}{literal}'
+			});
+
+			// Add input password
+			if(action == 'ADD') {
+				addInputPassword();
+			}
+
+			$('#emp_email').focusout(checkUserAndPass);
+		});
+		
+		function beforeSaveRecord() {
+			checkUserAndPass();
+			return false;
+		}
+
+		function addInputPassword() {
+			var inputPassHTML = '<tr>'
+							  + '	<td colspan=2>'
+							  + '		<label>รหัสผ่าน</label>'
+							  + '		<input id="emp_pass" name="emp_pass" type="password" class="form-input full">'
+							  + '	</td>'
+							  + '</tr>'
+							   + '<tr class="errMsgRow">'
+							  + '	<td colspan="2">'
+							  + '		<span id="err-emp_pass-require" class="errInputMsg err-emp_pass">'
+							  + '			กรุณาป้อนรหัสผ่าน'
+							  + '		</span>'
+							  + '	</td>'
+							  + '</tr>'
+							  + '<tr>'
+							  + '	<td colspan=2>'
+							  + '		<label>ป้อนรหัสผ่านอีกครั้ง</label>'
+							  + '		<input id="emp_re_pass" name="emp_re_pass" type="password" class="form-input full">'
+							  + '	</td>'
+							  + '</tr>'
+							  + '<tr class="errMsgRow">'
+							  + '	<td colspan="2">'
+							  + '		<span id="err-emp_re_pass-equal" class="errInputMsg err-emp_re_pass">'
+							  + '			กรุณาป้อนรหัสผ่านให้ตรงกันค่ะ'
+							  + '		</span>'
+							  + '	</td>'
+							  + '</tr>';
+
+			$('#tableforAddPass tbody').append(inputPassHTML);
+			// Add event
+			$('#emp_pass').focusout(checkUserAndPass);
+			$('#emp_re_pass').focusout(checkUserAndPass);
+		}
+
+		function resetPass() {
+			$('#trResetPass').remove();
+			addInputPassword();
+		}
+
+		function checkUserAndPass() {
+			if($('#emp_pass').length > 0) {
+				// Check username
+				if($('#emp_pass').val() != '' || $('#emp_re_pass').val() != '') {
+					if($('#emp_email').val() == '') {
+						$('#emp_email').addClass('required');
+						$('#err-emp_email-require').css('display', 'block');
+					}
+				}
+			}
+			
+			// Check password
+			if($('#emp_email').val() != '' && $('#emp_pass').val() == '') {
+				$('#emp_pass').addClass('required');
+				$('#err-emp_pass-require').css('display', 'block');
+			} else {
+				// Clear password error
+				$('#emp_pass').removeClass('required');
+				$('.err-emp_pass').css('display', 'none');
+			}
+
+			// Check re-password
+			if($('#emp_pass').val() != $('#emp_re_pass').val()) {
+				$('#emp_re_pass').addClass('required');
+				$('#err-emp_re_pass-equal').css('display', 'block');
+			} else {
+				// Clear re-password error
+				$('#emp_re_pass').removeClass('required');
+				$('.err-emp_re_pass').css('display', 'none');
+			}
+		}
+
+		function changeTitleId() {
+			var titleId = $('input[name="title_id"]').val();
+			if(titleId != '') {
+				$.ajax({
+					url: '../common/ajaxGetSexOfTitle.php',
+					data: {
+						title_id: titleId
+					},
+					success:
+					function(responseJSON) {
+						var response = $.parseJSON(responseJSON);
+						if(response.status == 'PASS') {
+							if(response.sex_id != '') {
+								sexIdOfTitle = response.sex_id;
+								$('#sex_id_' + response.sex_id).click();
+							} else {
+								sexIdOfTitle = '';
+							}
+						} else {
+							alert(response.status);
+						}
+					}
+				});
+			} else {
+				sexIdOfTitle = '';
+			}
+		}
+
+		function allowSelectSex() {
+			if(sexIdOfTitle == '') {
+				return true;
+			} else {
+				var msg = 'คำนำหน้าชื่อ ' + $('#title_id').find('.select-reference-text').text()
+						+ ' ถูกระบุให้เป็นได้เฉพาะเพศ' + $('#sex_id').find('.select-reference-text').text()
+						+ 'เท่านั้น';
+				parent.showActionDialog({
+	                title: 'ไม่สามารถเลือกเพศได้',
+	                message: msg,
+	                actionList: [
+	                    {
+	                        id: 'ok',
+	                        name: 'ตกลง',
+	                        func:
+	                        function() {
+	                            parent.hideActionDialog();
+	                        }
+	                    }
+	                ],
+	                boxWidth: 400
+	            });
+				return false;
+			}
+		}
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body"> 	 
+	{if $action == 'VIEW_DETAIL'}
+	<!-- VIEW_DETAIL -->
+	<div class="table-view-detail-image full">
+		<img src="{if $values.emp_pic != '-'}../img/employees/{$values.emp_pic}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+	</div>
+	<table class="table-view-detail">
+		<tbody>
+			<tr>
+				<td>รหัสพนักงาน :</td>
+				<td>{$code}</td>
+			</tr>
+			<tr>
+				<td>ชื่อพนักงาน :</td>
+				<td><div id="title_id" class="select-reference text"></div>{if $values.emp_name}{$values.emp_name}{else}-{/if} {if $values.emp_surname}{$values.emp_surname}{else}-{/if}</td>
+			</tr>
+			<!--<tr>
+				<td>ชื่อพนักงาน :</td>
+				<td>{if $values.emp_name}{$values.emp_name}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>นามสกุล :</td>
+				<td>{if $values.emp_surname}{$values.emp_surname}{else}-{/if}</td>
+			</tr>-->
+			<tr>
+				<td>เพศ :</td>
+				<td><div id="sex_id" class="select-reference text"></td>
+			</tr>
+			<tr>
+				<td>ตำแหน่ง :</td>
+				<td><div id="pos_id" class="select-reference text"></td>
+			</tr>
+			<tr>
+				<td>ที่อยู่ :</td>
+				<td>{if $values.emp_addr}{$values.emp_addr}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>เบอร์โทรศัพท์ :</td>
+				<td>{if $values.emp_tel}{$values.emp_tel}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>วันเกิด :</td>
+				<td>{if $values.emp_birthdate}{$values.emp_birthdate}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>วันที่เข้าทำงาน :</td>
+				<td>{if $values.emp_indate}{$values.emp_indate}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>E-mail(ชื่อผู้ใช้งาน) :</td>
+				<td>{if $values.emp_email}{$values.emp_email}{else}-{/if}</td>
+			</tr>
+		</tbody>
+	</table>
+	{else}	 	
+	<!-- ADD, EDIT -->	 	 	 	 	 	
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="pos_id,title_id,emp_name,emp_surname,emp_addr,emp_tel,emp_indate,sex_id">
+    <input type="hidden" name="uniqueFields" value="emp_email">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+			<tr>
+				<td>
+					<label class="input-required">คำนำหน้าชื่อ</label>
+					<div id="title_id" class="select-reference form-input half" require></div>
+				</td>
+				<td>
+					<label class="input-required">เพศ</label>
+					<div id="sex_id" class="select-reference form-input half" require></div>
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td>
+                    <span id="err-title_id-require" class="errInputMsg half err-title_id">โปรดเลือกคำนำหน้าชื่อ</span>
+                </td>
+                <td>
+                	<span id="err-sex_id-require" class="errInputMsg half err-sex_id">โปรดเลือกเพศ</span>
+                </td>
+            </tr>
+			<tr>
+				<td colspan="2">
+					<label class="input-required">ชื่อพนักงาน</label>
+					<input id="emp_name" name="emp_name" type="text" class="form-input full" value="{$values.emp_name}" valuepattern="character" require>
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_name-require" class="errInputMsg err-emp_name">โปรดป้อนชื่อพนักงาน</span>
+                    <span id="err-emp_name-character" class="errInputMsg err-emp_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                </td>
+            </tr>
+			<tr>
+				<td colspan="2">
+					<label class="input-required">นามสกุล</label>
+					<input id="emp_surname" name="emp_surname" type="text" class="form-input full" value="{$values.emp_surname}" valuepattern="character" require>
+	
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_surname-require" class="errInputMsg err-emp_surname">โปรดป้อนนามสกุล</span>
+                    <span id="err-emp_surname-character" class="errInputMsg err-emp_surname">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                </td>
+            </tr>
+			<tr>
+				<td>
+					<label class="input-required">ตำแหน่ง</label>
+					<div id="pos_id" class="select-reference form-input half" require></div>
+				</td>
+				<td>
+					<label class="input-required">วันที่เข้าทำงาน</label>
+					<input id="emp_indate" name="emp_indate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_indate}" require>
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td>
+                    <span id="err-pos_id-require" class="errInputMsg half err-pos_id">โปรดเลือกตำแหน่ง</span>
+                </td>
+                <td>
+                	<span id="err-emp_indate-require" class="errInputMsg half err-emp_indate">โปรดป้อนวันที่เข้าทำงาน</span>
+                </td>
+            </tr>
+			<tr>
+				<td colspan=2>
+					<label class="input-required">ที่อยู่</label>
+					<textarea id="emp_addr" name="emp_addr" class="form-input full" require>{$values.emp_addr}</textarea>
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan=2>
+                    <span id="err-emp_addr-require" class="errInputMsg err-emp_addr">โปรดป้อนที่อยู่</span>
+                </td>
+            </tr>
+			<tr>
+				<td>
+					<label class="input-required">เบอร์โทรศัพท์</label>
+					<input id="emp_tel" name="emp_tel" type="text" class="form-input half" value="{$values.emp_tel}" valuepattern="tel" maxlength="10" size="10" require>
+				</td>
+				<td>
+					<label>วันเกิด</label>
+					<input id="emp_birthdate" name="emp_birthdate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_birthdate}">
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td>
+                    <span id="err-emp_tel-require" class="errInputMsg half err-emp_tel">โปรดป้อนเบอร์โทรศัพท์</span>
+                    <span id="err-emp_tel-tel" class="errInputMsg half err-emp_tel">โปรดกรอกเบอร์โทรเป็นตัวเลข 10 หลัก</span>
+                </td>
+            </tr>
+    	</tbody>
+    </table>
+    <table id="tableforAddPass" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<td colspan=2>
+					<label>E-mail(E-mailนี้จะถูกนำไปใช้เป็นชื่อผู้ใช้งาน)</label>
+					<input id="emp_email" name="emp_email" type="text" class="form-input full" value="{$values.emp_email}" valuepattern="email">
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan="2">
+                	<span id="err-emp_email-require" class="errInputMsg err-emp_email">โปรดป้อนอีเมล</span>
+                    <span id="err-emp_email-email" class="errInputMsg err-emp_email">รูปแบบอีเมลไม่ถูกต้อง</span>
+                </td>
+            </tr>
+			{if $action == 'EDIT'}
+			<tr id="trResetPass">
+				<td colspan="2">
+					<a href="javascript:resetPass();" class="normal-link">ตั้งรหัสผ่านใหม่</a>
+				</td>
+			</tr>
+			{/if}
+	    </tbody>
+    </table>
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+	    	<tr>
+	    		<td>
+	    			<label>รูปภาพพนักงาน</label>
+					<div id="emp_pic" class="uploadImageArea full"></div>
+					<input type="hidden" name="emp_pic" value="{$values.emp_pic}">
+				</td>
+	    	</tr>
+	    </tbody>
+    </form>
+	<form method="post" enctype="multipart/form-data">
+		<input id="emp_pic_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+	</form>
+	{/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

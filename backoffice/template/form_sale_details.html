@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> <!--include if want to use datepicker-->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> <!--include if want to use datepicker-->
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+            selectReference({
+                elem			: $('#sale_id'),
+                tableName		: 'sales',
+                keyFieldName	: 'sale_id',
+                textFieldName	: 'sale_id',
+				searchTool		: true,
+                defaultValue	: '{/literal}{$values.sale_id}{literal}',
+				
+            });
+             
+             selectReference({
+                elem            : $('#prd_id'),
+                tableName       : 'products',
+                keyFieldName    : 'prd_id',
+                textFieldName   : 'prd_name',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.prd_id}{literal}',
+                
+            });
+
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">    
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="sale_id,prd_id,saledtl_amount,saledtl_price">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td>
+                    <label class="input-required">รหัสการขายผลิตภัณฑ์</label>
+                    <div id="sale_id" class="select-reference form-input half" > </div>
+                </td>
+                 <td>
+                    <label class="input-required">ชื่อผลิตภัณฑ์</label>
+                    <div id="prd_id" class="select-reference form-input half" > </div>
+                </td>
+            </tr>
+            <tr>
+               <td>
+                    <label class="input-required">จำนวน</label>
+                       <input id="saledtl_amount" name="saledtl_amount" type="text" class="form-input half" value="{$values.saledtl_amount}">
+                </td>
+                <td>
+                    <label>ราคาต่อหน่วย(บาท)</label>
+                       <input id="saledtl_price" name="saledtl_price" type="text" class="form-input half" value="{$values.saledtl_price}">
+                </td>
+		    </tr>
+			
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

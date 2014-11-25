@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+             
+             selectReference({
+                elem            : $('#emp_id'),
+                tableName       : 'employees',
+                keyFieldName    : 'emp_id',
+                textFieldName   : 'emp_id,emp_name,emp_surname',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.emp_id}{literal}',
+                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+            });
+            $('#sale_date').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#sale_date').blur();
+                },
+                timepicker:false
+            });
+             $('#sale_time').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                minTime:'06:00',
+            });
+       
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">    
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="emp_id,sale_date,sale_total_price,sale_time">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">พนักงานขาย</label>
+                    <div id="emp_id" class="select-reference form-input full" require></div>
+                </td>
+                
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานขาย</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">วันที่ขาย</label>
+                      <input id="sale_date" name="sale_date" type="text" class="mbk-dtp-th form-input half" value="{$values.sale_date}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาที่ขาย</label>
+                      <input id="sale_time" name="sale_time" type="text" class="form-input half" value="{$values.sale_time}" require>
+                </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-sale_date-require" class="errInputMsg half err-sale_date">โปรดป้อนวันที่ขาย</span>
+                </td>
+                <td>
+                    <span id="err-sale_time-require" class="errInputMsg half err-sale_time">โปรดป้อนเวลาที่ขาย</span>
+                </td>
+            </tr>
+			<tr>
+                 <td colspan="2">
+                    <label class="input-required">ราคารวม(บาท)</label>
+                   <input id="sale_total_price" name="sale_total_price" type="text" class="form-input full" 
+                   value="{$values.sale_total_price}" valuepattern="money" require>
+                </td>         
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-sale_total_price-require" class="errInputMsg err-sale_total_price">โปรดป้อนราคารวม</span>
+                    <span id="err-sale_total_price-money" class="errInputMsg err-sale_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

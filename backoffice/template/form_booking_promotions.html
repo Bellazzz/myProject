@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> <!--include if want to use datepicker-->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> <!--include if want to use datepicker-->
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+            selectReference({
+                elem			: $('#prmsvl_id'),
+                tableName		: 'promotion_service_lists',
+                keyFieldName	: 'prmsvl_id',
+                textFieldName	: 'prmsvl_id',
+				searchTool		: true,
+                defaultValue	: '{/literal}{$values.prmsvl_id}{literal}',
+				
+            });
+             
+              selectReference({
+                elem            : $('#bkg_id'),
+                tableName       : 'booking',
+                keyFieldName    : 'bkg_id',
+                textFieldName   : 'bkg_id',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.bkg_id}{literal}'
+            });
+
+			$("#bkgprm_date").datepicker();
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">    
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="prmsvl_id,bkg_id,bkgprm_date,bkgprm_total_price,bkgprm_persons">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td>
+                    <label class="input-required">รายการบริการที่จัดโปรโมชั่น</label>
+                    <div id="prmsvl_id" class="select-reference form-input half" > </div>
+                </td>
+            			    
+                <td>
+				    <label class="input-required">รหัสการจอง</label>
+				    <div id="bkg_id" class="select-reference form-input half" > </div>
+			    </td>
+		    </tr>
+			<tr>
+                <td>
+                    <label class="input-required">วัน-เวลาที่ใช้บริการ</label>
+				      <input id="bkgprm_date" name="bkgprm_date" type="text" class="form-input half" value="{$values.bkgprm_date}">
+			    </td>
+			    <td>
+				    <label class="input-required">ราคารวมการจองโปรโมชั่น(บาท)</label>
+				    <input id="bkgprm_total_price" name="bkgprm_total_price" type="text" class="form-input half" value="{$values.bkgprm_total_price}">
+			    </td>
+		    </tr>
+            <tr>
+                <td>
+                    <label class="input-required">จำนวนผู้ใช้บริการ</label>
+                    <input id="bkgprm_persons" name="bkgprm_persons" type="text" class="form-input half" value="{$values.bkgprm_persons}">
+                </td>
+                
+            </tr>
+             
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

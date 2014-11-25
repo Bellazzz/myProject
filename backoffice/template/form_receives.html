@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <!--<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css">-->
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script>-->
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript" src="../js/form_receives.js"></script>
+    <style type="text/css">
+        #receives-product-list {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #receives-product-list th {
+            color: #ffffff;
+            background-color: #555555;
+            border: 1px solid #555555;
+            padding: 5px;
+            vertical-align: top;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #receives-product-list td {
+            border:1px solid #ddd;
+            padding: 5px;
+        }
+        tr.tfootSummary {
+            background: none;
+        }
+        tr.tfootSummary td {
+            background: white;
+        }
+        #receives-product-list input[type="text"] {
+            text-align: right;
+            outline: none;
+            border: 1px solid #ccc;
+            padding: 5px;
+            width: 100%;
+        }
+        #receives-product-list input[type="text"]:hover, #receives-product-list input[type="text"]:focus {
+            border: 1px solid #666;
+        }
+        #receives-product-list input[type="text"].required, #receives-product-list input[type="text"].required:hover {
+            border-color: rgb(216, 0, 0);
+        }
+        #receives-product-list #total_price, #receives-product-list #total_amount {
+            font-weight: bold;
+        }
+    </style>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_receives.php';
+        var nowDate     = '{/literal}{$nowDate}{literal}';
+        var ordDate     = '{/literal}{$ord_date}{literal}';
+
+        $(document).ready(function () {
+            selectReference({
+                elem            : $('#ord_id'),
+                tableName       : 'orders',
+                keyFieldName    : 'ord_id',
+                textFieldName   : 'ord_id',
+                orderType       : 'DESC',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.ord_id}{literal}',
+                condition       : "ordstat_id != 'OS03'",
+                onOptionSelect  : changeOrderId,
+                allowChangeOption : allowChangeOrderId
+            });
+             
+             selectReference({
+                elem            : $('#emp_id'),
+                tableName       : 'employees',
+                keyFieldName    : 'emp_id',
+                textFieldName   : 'emp_id,emp_name,emp_surname',
+                searchTool      : true,
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
+                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+            });
+             
+
+            $('#rec_date').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#rec_date').blur();
+                },
+                 onShow:function( ct ){
+                    setMinDate(this);
+                }
+            });
+            // Check date
+            $('#rec_date').focusout(checkDate);
+
+            // Calculate auto
+            if(action == 'EDIT') {
+                calculate();
+                addEventRecPrdTable();
+            }
+       
+        });
+
+        function setMinDate(datepicker) {
+            if(ordDate != '') {
+                datepicker.setOptions({
+                    minDate: realDateToTmpDate(ordDate)
+                });
+            } else {
+                datepicker.setOptions({
+                    minDate: realDateToTmpDate(nowDate)
+                });
+            }
+        }
+
+        function setOrdDate(date) {
+            ordDate = date;
+        }
+
+        function checkDate() {
+            if(ordDate != '' && $('#rec_date').val() != '') {
+                var selfDate        = new Date($('#rec_date').val());
+                var siblingDate     = new Date(realDateToTmpDate(ordDate));
+                if(selfDate.getTime() < siblingDate.getTime()) {
+                    parent.showActionDialog({
+                        title: 'วันที่รับไม่ถูกต้อง',
+                        message: 'วันที่รับไม่สามารถอยู่ก่อนหน้าวันที่สั่งซื้อได้ค่ะ<br>'
+                               + 'วันที่สั่งซื้อของการสั่งซื้อครั้งนี้คือวันที่ ' + realDateToThaiDate(ordDate),
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: 'ป้อนวันที่รับใหม่',
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    $('#rec_date').val('');
+                                    $('#rec_date').focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 450
+                    });
+                }
+            }
+        }
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">  
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <!--Orders Data-->
+    <label class="article-title">ข้อมูลการรับ</label>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการรับ :</td>
+                <td>{$code}</td>
+            </tr>
+             <tr>
+                <td>รหัสการสั่งซื้อ :</td>
+                <td>
+                    <a class="normal-link" href="form_orders.php?action=VIEW_DETAIL&code={$values.ord_id}" title="คลิกเพื่อดูรายละเอียด">{$values.ord_id}</a>
+                </td>
+            </tr>
+            <tr>
+                <td>ชื่อ-นามสกุลพนักงาน :</td>
+                <td><div id="emp_id" class="select-reference text"></td>
+            </tr>
+             <tr>
+                <td>วันที่รับผลิตภัณฑ์ :</td>
+                <td>{$values.rec_date_th}</td>
+            </tr>
+        </tbody>
+    </table>
+    <!--Receives Details Data-->
+    <label class="article-title">รายการผลิตภัณฑ์ที่รับ</label>
+    <table class="view-detail-reference">
+        <thead>
+            <tr>
+                <th class="txtLong-col">ผลิตภัณฑ์</th>
+                <th>ราคา/หน่วย (บาท)</th>
+                <th>หน่วยนับ</th>
+                <th>จำนวนที่สั่ง</th>
+                <th>จำนวนที่รับครั้งก่อน</th>
+                <th>จำนวนที่รับครั้งนี้</th>
+                <th>ค้างรับ</th>
+                <th>ราคารวม (บาท)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$receiveDetailList key=i item=recdlt}
+            <tr>
+                <td class="txtLong-col">{$recdlt.prd_name}</td>
+                <td align="right">{$recdlt.recdtl_price}</td>
+                <td align="left">{$recdlt.unit_name}</td>
+                <td align="right">{$recdlt.orddtl_amount}</td>
+                <td align="right">{$recdlt.before_recdtl_amount}</td>
+                <td align="right">{$recdlt.recdtl_amount}</td>
+                <td align="right">{$recdlt.remain}</td>
+                <td align="right">{$recdlt.sum_price}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+        <tfoot>
+            <tr class="tfootSummary">
+                <td align="right" colspan="3">รวมทั้งหมด</td>
+                <td align="right"><b>{$sum_ordAmount}</b></td>
+                <td align="right"><b>{$sum_before_amount}</b></td>
+                <td align="right"><b>{$sum_amount}</b></td>
+                <td align="right"><b>{$sum_remain}</b></td>
+                <td align="right"><b>{$values.rec_total_price|number_format:2:".":","}</b></td>
+            </tr>
+        </tfoot>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->
+    เลือกรหัสการสั่งซื้อเพื่อกรอกข้อมูลการรับ<br><br>
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="ord_id,emp_id,rec_date,rec_total_price">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td>
+                    <label class="input-required">รหัสการสั่งซื้อ</label>
+                    <div id="ord_id" class="select-reference form-input half" require></div>
+                </td>
+                <td>
+                    <label class="input-required">พนักงานที่รับ</label>
+                    <div id="emp_id" class="select-reference form-input half" require></div>
+                </td>
+                <td class="samerow">
+                    <label class="input-required">วันที่รับผลิตภัณฑ์</label>
+                      <input id="rec_date" name="rec_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.rec_date}{$values.rec_date}{else}{$nowDate}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-ord_id-require" class="errInputMsg half err-ord_id">โปรดเลือกรหัสการสั่งซื้อ</span>
+                </td>
+                <td>
+                    <span id="err-emp_id-require" class="errInputMsg half err-emp_id">โปรดเลือกพนักงานที่รับ</span>
+                </td>
+                <td class="samerow">
+                    <span id="err-rec_date-require" class="errInputMsg half err-rec_date">โปรดป้อนวันที่รับผลิตภัณฑ์</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    <div id="receives-product-list-container">
+    {if $action == 'EDIT'}
+        <table id="receives-product-list">
+            <tr>
+                <th>ลำดับ</th>
+                <th>ผลิตภัณฑ์</th>
+                <th>จำนวนที่สั่ง</th>
+                <th>หน่วยนับ</th>
+                <th>จำนวนที่รับ</th>
+                <th>ราคาต่อหน่วย (บาท)</th>
+                <th>ราคารวม</th>
+                <th>คงเหลือ</th>
+            </tr>
+            {foreach from=$recPrdList key=i item=recPrd}
+            <tr>
+                <td align="center">
+                    {$recPrd.no}
+                    <input type="hidden" name="prd_id[]" value="{$recPrd.prd_id}">
+                    <input type="hidden" name="recdtl_id[]" value="{$recPrd.recdtl_id}">
+                </td>
+                <td>
+                    <span class="prd_name">{$recPrd.prd_name}</span>
+                </td>
+                <td align="right">
+                    <span class="ordPrd_amount">{$ordPrdList[$recPrd.prd_id].amount}</span>
+                </td>
+                <td align="center">
+                    <span class="unit_name">{$recPrd.unit_name}</span>
+                </td>
+                <td>
+                    <input type="text" name="recdtl_amount[]" value="{$recPrd.recdtl_amount}" min="0" max="{$ordPrdList[$recPrd.prd_id].amount}">
+                </td>
+                <td>
+                    <input type="text" name="recdtl_price[]" value="{$recPrd.recdtl_price}">
+                </td>
+                <td align="right">
+                    <span class="sum_price"></span>
+                </td>
+                <td align="right">
+                    <span class="remain"></span>
+                </td>
+            </tr>
+            {/foreach}
+            <tr>
+                <td colspan="6" align="right">
+                    รวม
+                </td>
+                <td align="right">
+                    <span id="total_price"></span>
+                    <input type="hidden" name="rec_total_price" value="0">
+                </td>
+                <td align="right">
+                    <span id="total_amount"></span>
+                </td>
+            </tr>
+        </table>
+    {/if}
+    </div>
+    </form>
+    {/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

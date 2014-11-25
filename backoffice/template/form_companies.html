@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <!--<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css">-->
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script>-->
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        // Set default value of textarea
+        $('#comp_addr').text('{/literal}{$values.comp_addr}{literal}');
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    <div class="ftb-body">
+
+     {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสบริษัทจำหน่ายผลิตภัณฑ์ :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>ชื่อบริษัท :</td>
+                <td>{$values.comp_name}</td>
+            </tr>
+            <tr>
+                <td>ที่อยู่ :</td>
+                <td>{$values.comp_addr}</td>
+            </tr>
+            <tr>
+                <td>เบอร์โทร :</td>
+                <td>{$values.comp_tel}</td>
+            </tr>
+            <tr>
+                <td>โทรสาร :</td>
+                <td>{$values.fax}</td>
+            </tr>
+            <tr>
+                <td>E-mail :</td>
+                <td>{$values.comp_email}</td>
+            </tr>
+            <tr>
+                <td>ชื่อผู้ติดต่อ :</td>
+                <td>{$values.comp_contact}</td>
+            </tr>
+            
+        </tbody> 
+    </table> 
+    {else}      
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="comp_name,comp_tel,comp_addr">
+    <input type="hidden" name="uniqueFields" value="comp_name">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+		    <tr>
+			    <td colspan="2">
+				    <label class="input-required">ชื่อบริษัท</label>
+				    <input id="comp_name" name="comp_name" type="text" class="form-input full" value="{$values.comp_name}" require>
+			    </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-comp_name-require" class="errInputMsg err-comp_name">โปรดป้อนชื่อบริษัท</span>
+                    <span id="err-comp_name-unique" class="errInputMsg err-comp_name">ชื่อบริษัทซ้ำ โปรดป้อนชื่อบริษัทใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ที่อยู่</label>
+                    <textarea id="comp_addr" name="comp_addr" class="form-input full" require>{$values.comp_addr}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-comp_addr-require" class="errInputMsg err-comp_addr">โปรดป้อนที่อยู่บริษัท</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">เบอร์โทร</label>
+                    <input id="comp_tel" name="comp_tel" type="text" class="form-input half" value="{$values.comp_tel}"require>
+                </td>
+                <td>
+                    <label>โทรสาร</label>
+                    <input id="fax" name="fax" type="text" class="form-input half" value="{$values.fax}">
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-comp_tel-require" class="errInputMsg half err-comp_tel">โปรดป้อนเบอร์โทร</span>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>E-mail</label>
+                    <input id="comp_email" name="comp_email" type="text" class="form-input full" value="{$values.comp_email}" valuepattern="email">
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-comp_email-email" class="errInputMsg err-comp_email">รูปแบบอีเมลไม่ถูกต้อง</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>ชื่อผู้ติดต่อ</label>
+                    <input id="comp_contact" name="comp_contact" type="text" class="form-input full" value="{$values.comp_contact}">
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+    {/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

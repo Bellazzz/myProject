@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function () {
+             selectReference({
+                elem            : $('#emp_id'),
+                tableName       : 'employees',
+                keyFieldName    : 'emp_id',
+                textFieldName   : 'emp_id,emp_name,emp_surname',
+                searchTool      : true,
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
+                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+            });
+            selectReference({
+                elem			: $('#cus_id'),
+                tableName		: 'customers',
+                keyFieldName	: 'cus_id',
+                textFieldName	: 'cus_id,cus_name,cus_surname',
+				searchTool		: true,
+                defaultValue	: '{/literal}{$values.cus_id}{literal}',
+				pattern			: 'CONCAT("(",cus_id,") ",cus_name," ",cus_surname)'
+            });
+              selectReference({
+                elem            : $('#paytyp_id'),
+                tableName       : 'pay_types',
+                keyFieldName    : 'paytyp_id',
+                textFieldName   : 'paytyp_name',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.paytyp_id}{literal}'
+            });
+               selectReference({
+                elem            : $('#bed_id'),
+                tableName       : 'beds',
+                keyFieldName    : 'bed_id',
+                textFieldName   : 'bed_name',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.bed_id}{literal}'
+            });
+               selectReference({
+                elem            : $('#bkg_id'),
+                tableName       : 'booking',
+                keyFieldName    : 'bkg_id',
+                textFieldName   : 'bkg_id',
+                orderType       : 'DESC',
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.bkg_id}{literal}',
+                showClearBtn    : true,
+                clearBtnText    : 'ไม่ระบุ'
+            });
+
+            $('#ser_date').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#ser_date').blur();
+                },
+                timepicker:false
+            });
+             $('#ser_time').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                minTime:'06:00',
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    <div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+                        
+    </div>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการใช้บริการ :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>ผู้ใช้บริการ :</td>
+                <td><div id="cus_id" class="select-reference text"></td>
+            </tr>
+            <tr>
+                <td>พนักงาน :</td>
+                <td><div id="emp_id" class="select-reference text"></td>
+            </tr>
+            <tr>
+                <td>ประเภทการชำระเงิน :</td>
+                <td><div id="paytyp_id" class="select-reference text"></td>
+            </tr>
+            <tr>
+                <td>เตียง :</td>
+                <td><div id="bed_id" class="select-reference text"></td>
+            </tr>
+            <tr>
+                <td>รหัสการจอง :</td>
+                <td>{$values.bkg_id}</td>
+            </tr>
+            <tr>
+                <td>วันที่ใช้บริการ :</td>
+                <td>{$values.ser_date }</td>
+            </tr>
+            <tr>
+                <td>เวลาที่ใช้บริการ :</td>
+                <td>{$values.ser_time} น.</td>
+            </tr>
+            <tr>
+                <td>ราคารวมทั้งหมด :</td>
+                <td>{$values.ser_total_price|number_format:2:".":","} บาท</td>
+            </tr>
+           
+        </tbody> 
+    </table> 
+    {else}      
+    <!-- ADD, EDIT -->             
+    <form id="form-table" name="form-table" onsubmit="return false;">
+    <input type="hidden" name="requiredFields" value="emp_id,cus_id,paytyp_id,bed_id,ser_date,ser_total_price,ser_time">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">พนักงานที่รับเงิน</label>
+                    <div id="emp_id" class="select-reference form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่รับเงิน</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ผู้ใช้บริการ</label>
+                    <div id="cus_id" class="select-reference form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รหัสการจอง</label>
+                    <div id="bkg_id" class="select-reference form-input full"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">เตียงนวด</label>
+                    <div id="bed_id" class="select-reference form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-bed_id-require" class="errInputMsg err-bed_id">โปรดเลือกเตียงนวด</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">วันที่ใช้บริการ</label>
+                      <input id="ser_date" name="ser_date" type="text" class="mbk-dtp-th form-input half" value="{$values.ser_date}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาที่ใช้บริการ</label>
+                      <input id="ser_time" name="ser_time" type="text" class="form-input half" value="{$values.ser_time}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-ser_date-require" class="errInputMsg half err-ser_date">โปรดป้อนวันที่ใช้บริการ</span>
+                </td>
+                <td>
+                    <span id="err-ser_time-require" class="errInputMsg half err-ser_time">โปรดป้อนเวลาที่ใช้บริการ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ราคารวมทั้งหมด(บาท)</label>
+                    <input id="ser_total_price" name="ser_total_price" type="text" class="form-input full" value="{$values.ser_total_price}" valuepattern="money" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-ser_total_price-require" class="errInputMsg err-ser_total_price">โปรดป้อนราคารวมทั้งหมด</span>
+                    <span id="err-ser_total_price-money" class="errInputMsg err-ser_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+			<tr>          
+                <td colspan="2">
+                    <label class="input-required">ประเภทการชำระเงิน</label>
+                    <div id="paytyp_id" class="select-reference form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-paytyp_id-require" class="errInputMsg err-paytyp_id">โปรดเลือกประเภทการชำระเงิน</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+    {/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->
