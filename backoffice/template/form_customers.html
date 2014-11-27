@@ -67,27 +67,21 @@
                 checkDate($('#cus_birthdate'));
             });
 
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#sex_id'),
-                tableName       : 'sex',
-                keyFieldName    : 'sex_id',
-                textFieldName   : 'sex_name',
+                data            : {/literal}{$referenceData["sex"]|@json_encode}{literal},
                 searchTool      : false,
                 defaultValue    : '{/literal}{$values.sex_id}{literal}',
                 beforeShow      : allowSelectSex
             });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#custype_id'),
-                tableName       : 'customer_types',
-                keyFieldName    : 'custype_id',
-                textFieldName   : 'custype_name',
+                data            : {/literal}{$referenceData["customer_types"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.custype_id}{literal}'
             });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#title_id'),
-                tableName       : 'titles',
-                keyFieldName    : 'title_id',
-                textFieldName   : 'title_name',
+                data            : {/literal}{$referenceData["titles"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.title_id}{literal}',
                 onOptionSelect  : changeTitleId,
                 success         :
@@ -258,8 +252,8 @@
             if(sexIdOfTitle == '') {
                 return true;
             } else {
-                var msg = 'คำนำหน้าชื่อ ' + $('#title_id').find('.select-reference-text').text()
-                        + ' ถูกระบุให้เป็นได้เฉพาะเพศ' + $('#sex_id').find('.select-reference-text').text()
+                var msg = 'คำนำหน้าชื่อ ' + $('#title_id').find('.selectReferenceJS-text').text()
+                        + ' ถูกระบุให้เป็นได้เฉพาะเพศ' + $('#sex_id').find('.selectReferenceJS-text').text()
                         + 'เท่านั้น';
                 parent.showActionDialog({
                     title: 'ไม่สามารถเลือกเพศได้',

@@ -66,6 +66,15 @@ if(!$_REQUEST['ajaxCall']) {
 												sex_name refText 
 									FROM 		sex 
 									ORDER BY 	sex_name ASC";
+					$refField 	= 'sex_id';
+					break;
+
+				case 'titles':
+					$sqlRefData = "	SELECT 		title_id refValue,
+												title_name refText 
+									FROM 		titles 
+									ORDER BY 	title_name ASC";
+					$refField 	= 'title_id';
 					break;
 
 				case 'rooms':
@@ -73,6 +82,23 @@ if(!$_REQUEST['ajaxCall']) {
 												room_name refText 
 									FROM 		rooms 
 									ORDER BY 	room_name ASC";
+					$refField 	= 'room_id';
+					break;
+
+				case 'positions':
+					$sqlRefData = "	SELECT 		pos_id refValue,
+												pos_name refText 
+									FROM 		positions 
+									ORDER BY 	pos_name ASC";
+					$refField 	= 'pos_id';
+					break;
+
+				case 'customer_types':
+					$sqlRefData = "	SELECT 		custype_id refValue,
+												custype_name refText 
+									FROM 		customer_types 
+									ORDER BY 	custype_name ASC";
+					$refField 	= 'custype_id';
 					break;
 			}
 
@@ -88,7 +114,7 @@ if(!$_REQUEST['ajaxCall']) {
 						array_push($referenceData[$table], array(
 							'refText'	=> $refDataRow['refText'],
 							'refValue'	=> $refDataRow['refValue'],
-							'refField'	=> $tableInfo['keyFieldName']
+							'refField'	=> $refField
 						));
 					}
 					

@@ -141,7 +141,8 @@ function dbClose() {
 				'searchFields'	=> array('sex_id','title_id','emp_name','emp_surname','pos_id'),
 				'deleteTxtField'	 	=> array('title_id','emp_name','emp_surname'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบข้อมูลพนักงานของ %f1%f2 %f3 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> '%f1%f2 %f3'
+				'deleteTxtPatternMin' 	=> '%f1%f2 %f3',
+				'referenceData'			=> array('titles','sex','positions')
 			);
 			break;
 		
@@ -394,7 +395,8 @@ function dbClose() {
 				'searchFields'	=> array('cus_name','cus_surname','sex_id','custype_id'),
 				'deleteTxtField' 		=> array('title_id','cus_name','cus_surname'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบข้อมูลผู้ใช้บริการของ %f1%f2 %f3 ใช่หรือไม่',
-				'deleteTxtPatternMin' 	=> '%f1%f2 %f3'
+				'deleteTxtPatternMin' 	=> '%f1%f2 %f3',
+				'referenceData'			=> array('titles','sex','customer_types')
 			);
 			break;
 

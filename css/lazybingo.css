@@ -141,6 +141,9 @@ body {
 	border-right: 1px solid #ccc;
 	background-color: #2F3D2F;
 	z-index: 2;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .sidebar[aria-expanded="false"] {
 	width: 56px;
@@ -282,6 +285,9 @@ body {
     list-style: none;
     margin: 0;
     padding: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .toolbar-menu>li {
     float: left;
@@ -1061,6 +1067,9 @@ table.mbk .icon {
     line-height: 20px;
     cursor: pointer;
     font-size: 14px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .action-dialog .action-btn:hover{
     background: #ddd;

@@ -490,24 +490,26 @@ function selectReferenceJS(select) {
             }
         });
 
-        
-        // Add Event Display option when click
-        $(select.elem).click(function (e) {
-            e.stopPropagation();
-            if(typeof(select.beforeShow) == 'function') {
-                if(!select.beforeShow()) {
-                    hideAllPopup();
-                    return;
+        // Skip this if has class text
+        if(!select.elem.hasClass('text')) {
+            // Add Event Display option when click
+            $(select.elem).click(function (e) {
+                e.stopPropagation();
+                if(typeof(select.beforeShow) == 'function') {
+                    if(!select.beforeShow()) {
+                        hideAllPopup();
+                        return;
+                    }
                 }
-            }
 
-            if (selectRefCon.css('display') == 'none') {
-                hideAllPopup();
-                showSelectReferenceJS($(this));
-            } else {
-                hideAllPopup();
-            }
-        });
+                if (selectRefCon.css('display') == 'none') {
+                    hideAllPopup();
+                    showSelectReferenceJS($(this));
+                } else {
+                    hideAllPopup();
+                }
+            });
+        }
 
         // Prepare variable
         inputHidden     = select.elem.find('.selectReferenceJS-input');
@@ -539,7 +541,7 @@ function selectReferenceJS(select) {
 
         if(options.length > 0) {
             for(i in options) {
-                resultHtml  += '<li id="' + options[i].refValue + '_'+ options[i].refField + '">'
+                resultHtml  += '<li id="' + options[i].refField + '_'+ options[i].refValue + '">'
                             + '     <span class="text">' + options[i].refText + '</span>'
                             + '     <span class="value">' + options[i].refValue + '</span>'
                             + '</li>';
