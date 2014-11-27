@@ -1318,6 +1318,90 @@ label.article-title {
 }
 
 /*
+ * SelectReference
+ */
+.selectReferenceJS{
+    padding: 5px;
+    margin-top: 2px;
+    border: 1px solid #ccc;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+}
+.selectReferenceJS:hover > span.mbk-icon-16{
+    background-position: -16px -16px;
+}
+
+.selectReferenceJS-container{
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 3px 3px 3px #ddd;
+    display: none;
+    border: 1px solid #ccc;
+    z-index: 2; /*Add by Bell*/
+}
+.selectReferenceJS .clear-value-btn {
+    padding: 5px 15px;
+    width: 100%;
+}
+.selectReferenceJS:not(.text) .selectReferenceJS-text, .selectReferenceJS .option-container li .text {
+    width: 100%;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-right: 20px;
+}
+.selectReferenceJS .option-container{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 405px;
+    overflow: auto;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.selectReferenceJS .option-container li{
+    cursor: pointer;
+    padding: 5px 5px 5px 15px;
+}
+.selectReferenceJS .option-container li:hover, .selectReferenceJS .clear-value-btn:hover{
+    background: #8AC007;
+    color: white;
+}
+.selectReferenceJS .option-container li .value, .selectReferenceJS .selectReferenceJS-value{
+    width: 0;
+    height: 0;
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+}
+.selectReferenceJS .option-container li.more-loader{
+    background: url('../img/loading.gif') no-repeat center;
+    background-size: 20px;
+    height: 30px;
+}
+.selectReferenceJS .option-container .no-result {
+    padding: 10px;
+    text-align: center;
+}
+.selectReferenceJS .search-container {
+    width: 100%;
+    padding: 5px;
+}
+.selectReferenceJS .search-container span {
+    margin-top: 6px;
+    margin-left: 8px;
+}
+.selectReferenceJS .search-container .search-input {
+    width: 100%;
+    padding-left: 32px;
+}
+
+/*
  * select option
  */
 .select-option{

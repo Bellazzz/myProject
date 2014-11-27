@@ -88,6 +88,7 @@ function hideActionDialog() {
 
 function hideAllPopup() {
     $('.select-reference-container').css('display', 'none'); // select reference
+    $('.selectReferenceJS-container').css('display', 'none'); // select reference js
 }
 
 function showIframeDialog(dialog) {
@@ -409,6 +410,212 @@ function selectReference(select) {
             }
         }
     });
+}
+
+/*
+ * select reference JS
+ */
+ function showSelectReferenceJS(selectRef) {
+    $(selectRef).children('.selectReferenceJS-container').css('display', 'block');
+}
+
+function selectReferenceJS(select) {
+    // Create select reference object
+    var data            = select.data;
+    var searchTool      = true;
+    var defaultValue    = '';
+    var showClearBtn    = false;
+    var clearBtnText    = 'ไม่เลือก';
+    var pleaseSelectText= 'กรุณาเลือก';
+    var limit           = 15; //Option item limit
+    var selectRefCon;
+    var optionCon;
+    var searchCon;
+    var searchInput;
+    var li;
+    var inputHidden;
+    var textShow;
+
+    if(typeof(select.showClearBtn) != 'undefined') {
+        showClearBtn = select.showClearBtn;
+    }
+    if(typeof(select.clearBtnText) != 'undefined') {
+        pleaseSelectText = select.clearBtnText;
+    }
+    if(typeof(select.orderType) != 'undefined') {
+        orderType = select.orderType;
+    }
+    
+    function init() {
+        var initTag = '<span class="mbk-icon-16 mbk-icon-16-dropdown" style="right: 5px;"></span>'
+                    + '<span class="selectReferenceJS-text">' + pleaseSelectText + '</span>'
+                    + '<input class="selectReferenceJS-input" type="hidden" name="' + select.elem.attr('id') + '">'
+                    + '<div class="selectReferenceJS-container">';
+        if (searchTool) {
+            initTag += '     <div class="search-container">'
+                     + '         <span class="mbk-icon-16 mbk-icon-16-search"></span>'
+                     + '         <input class="search-input" type="text">'
+                     + '     </div>';
+        }
+        if(showClearBtn) {
+            if(typeof(select.clearBtnText) != 'undefined') {
+                clearBtnText = select.clearBtnText;
+            }
+            initTag += '     <div class="clear-value-btn">'
+                     + '         <span>' + clearBtnText + '</span>'
+                     + '     </div>';
+        }
+        initTag += '     <ul id="' + select.elem.attr('id') + '-option-container" class="option-container"></ul>'
+                 + '</div>';
+
+        select.elem.html(initTag);
+
+        // Add event clear value
+        var clearValBtn = select.elem.find('.clear-value-btn');
+        clearValBtn.click(function(e){
+            e.stopPropagation();
+            if(typeof(select.allowChangeOption) == 'function') {
+                if(!select.allowChangeOption('')) {
+                    hideAllPopup();
+                    return;
+                }
+            }
+            $(this).parent().parent().parent().removeClass('required');
+            $('.err-' + select.elem.attr('id')).css('display', 'none');
+            selectRefCon.siblings('.selectReferenceJS-text').text(clearBtnText);
+            selectRefCon.siblings('.selectReferenceJS-input').val('');
+            hideAllPopup();
+            if(typeof(select.onOptionSelect) == 'function') {
+                select.onOptionSelect();
+            }
+        });
+
+        
+        // Add Event Display option when click
+        $(select.elem).click(function (e) {
+            e.stopPropagation();
+            if(typeof(select.beforeShow) == 'function') {
+                if(!select.beforeShow()) {
+                    hideAllPopup();
+                    return;
+                }
+            }
+
+            if (selectRefCon.css('display') == 'none') {
+                hideAllPopup();
+                showSelectReferenceJS($(this));
+            } else {
+                hideAllPopup();
+            }
+        });
+
+        // Prepare variable
+        inputHidden     = select.elem.find('.selectReferenceJS-input');
+        textShow        = select.elem.find('.selectReferenceJS-text');
+    }
+
+    function pullRefData() {
+        var options;
+        var resultHtml = '';
+        var searchText = '';
+
+        selectRefCon = $(select.elem).children('.selectReferenceJS-container');
+        optionCon = $(selectRefCon).children('.option-container');
+        if (searchTool) {
+            searchCon   = $(selectRefCon).children('.search-container');
+            searchInput = $(searchCon).children('.search-input');
+            searchText  = $(searchInput).val();
+        }
+
+        if(searchTool && searchInput.val() != '') {
+            // Search
+            options = $.grep(data, function(el) {
+                return el.refText.indexOf(searchText) > -1;
+            });
+        } else {
+            // Get all data
+            options = data;
+        }
+
+        if(options.length > 0) {
+            for(i in options) {
+                resultHtml  += '<li id="' + options[i].refValue + '_'+ options[i].refField + '">'
+                            + '     <span class="text">' + options[i].refText + '</span>'
+                            + '     <span class="value">' + options[i].refValue + '</span>'
+                            + '</li>';
+            }
+        } else {
+            resultHtml = '<div class="no-result">ไม่พบข้อมูลที่ค้นหา</div>';
+        }
+
+        optionCon.html(resultHtml);
+        li = $(optionCon).children('li');
+        addEvent();
+    }
+    
+    function addEvent() {
+        $(li).off();
+        $(li).on('click', function (e) {
+            e.stopPropagation();
+            if(typeof(select.allowChangeOption) == 'function') {
+                if(!select.allowChangeOption($(this).children('.value').text())) {
+                    hideAllPopup();
+                    return;
+                }
+            }
+            $(this).parent().parent().parent().removeClass('required');
+            $('.err-' + select.elem.attr('id')).css('display', 'none');
+            selectRefCon.siblings('.selectReferenceJS-text').text($(this).children('.text').text());
+            selectRefCon.siblings('.selectReferenceJS-input').val($(this).children('.value').text());
+            hideAllPopup();
+            if(typeof(select.onOptionSelect) == 'function') {
+                select.onOptionSelect();
+            }
+        });
+
+        $(searchCon).off();
+        $(searchCon).on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        if (searchTool) {
+            $(searchInput).off();
+            $(searchInput).on('click', function (e) {
+                e.stopPropagation();
+            });
+            $(searchInput).on('keyup', function () {
+                optionCon.html('');
+                pullRefData();
+            });
+        }                                                                                                            
+    }
+
+    // Prepare variable
+    if (typeof (select.searchTool) != 'undefined' && select.searchTool != null) {
+        searchTool = select.searchTool;
+    }
+    if (typeof (select.defaultValue) != 'undefined' && select.defaultValue != null) {
+        defaultValue = select.defaultValue;
+    }
+    if (typeof (select.pattern) != 'undefined' && select.pattern != null) {
+        pattern = select.pattern;
+    }
+    
+    // Create select reference input
+    $(select.elem).html('กำลังโหลด...');
+    init();
+    pullRefData();
+
+    // Set default value
+    if(typeof(select.defaultValue) != 'undefined' && select.defaultValue != '') {
+        for(i in data) {
+            if(select.defaultValue == data[i].refValue) {
+                inputHidden.val(data[i].refValue);
+                textShow.text(data[i].refText);
+                break;
+            }
+        }
+    }
 }
 
 /*

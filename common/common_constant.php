@@ -61,7 +61,8 @@ function dbClose() {
 				),
 				'defaultNull' 	=> array('sex_id'),
 				'searchFields'	=> array('title_name'),
-				'deleteTxtField'	=> array('title_name')
+				'deleteTxtField'	=> array('title_name'),
+				'referenceData'	=> array('sex')
 			);
 			break;
 
@@ -173,7 +174,8 @@ function dbClose() {
 						'bed_name'		=> 'เตียงนวด'
 				),
 				'searchFields'	=> array('bed_name','room_id'),
-				'deleteTxtField'=> array('bed_name')
+				'deleteTxtField'=> array('bed_name'),
+				'referenceData'	=> array('rooms')
 			);
 			break;
 

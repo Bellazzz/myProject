@@ -54,6 +54,50 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('values', $values);
 	}
 
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'sex':
+					$sqlRefData = "	SELECT 		sex_id refValue,
+												sex_name refText 
+									FROM 		sex 
+									ORDER BY 	sex_name ASC";
+					break;
+
+				case 'rooms':
+					$sqlRefData = "	SELECT 		room_id refValue,
+												room_name refText 
+									FROM 		rooms 
+									ORDER BY 	room_name ASC";
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$refDataRow = mysql_fetch_assoc($resultRefData);
+						array_push($referenceData[$table], array(
+							'refText'	=> $refDataRow['refText'],
+							'refValue'	=> $refDataRow['refValue'],
+							'refField'	=> $tableInfo['keyFieldName']
+						));
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);

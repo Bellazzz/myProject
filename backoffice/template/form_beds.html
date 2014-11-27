@@ -19,13 +19,11 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-            selectReference({
-                elem			: $('#room_id'),
-                tableName		: 'rooms',
-                keyFieldName	: 'room_id',
-                textFieldName	: 'room_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.room_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#room_id'),
+                data            : {/literal}{$referenceData["rooms"]|@json_encode}{literal},
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.room_id}{literal}'
             });
         });
     </script>
@@ -54,7 +52,7 @@
             <tr>
 			    <td>
 				    <label class="input-required">ชื่อห้องนวด</label>
-				    <div id="room_id" class="select-reference form-input full" require></div>
+				    <div id="room_id" class="selectReferenceJS form-input full" require></div>
 			    </td>
 		    </tr>
             <tr>

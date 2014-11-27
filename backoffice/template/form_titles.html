@@ -23,18 +23,9 @@
         $(document).ready(function () {
             $("#bk_date").datepicker();
 
-            selectReference({
-                elem: $('#ref_pos_id'),
-                tableName: 'titles',
-                keyFieldName: 'title_id',
-                textFieldName: 'title_name',
-                defaultValue: 'T01'
-            });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#sex_id'),
-                tableName       : 'sex',
-                keyFieldName    : 'sex_id',
-                textFieldName   : 'sex_name',
+                data            : {/literal}{$referenceData["sex"]|@json_encode}{literal},
                 searchTool      : false,
                 defaultValue    : '{/literal}{$values.sex_id}{literal}',
                 showClearBtn    : true,
