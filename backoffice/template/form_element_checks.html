@@ -22,33 +22,20 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-            selectReference({
-                elem			: $('#eletyp_id'),
-                tableName		: 'element_types',
-                keyFieldName	: 'eletyp_id',
-                textFieldName	: 'eletyp_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.eletyp_id}{literal}',
-				
+            selectReferenceJS({
+                elem            : $('#eletyp_id'),
+                data            : {/literal}{$referenceData["element_types"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.eletyp_id}{literal}'
             });
-             
-             selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
-               selectReference({
+            selectReferenceJS({
                 elem            : $('#cus_id'),
-                tableName       : 'customers',
-                keyFieldName    : 'cus_id',
-                textFieldName   : 'cus_id,cus_name,cus_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.cus_id}{literal}',
-                pattern         : 'CONCAT("(",cus_id,") ",cus_name," ",cus_surname)'
+                data            : {/literal}{$referenceData["customers"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.cus_id}{literal}'
             });
 
             $('#elechk_date').datetimepicker({
@@ -84,7 +71,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่ตรวจ</label>
-                    <div id="emp_id" class="select-reference form-input full" require> </div>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require> </div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -95,7 +82,7 @@
             <tr>
                 <td colspan="2">
 				    <label class="input-required">ผู้ใช้บริการ</label>
-				    <div id="cus_id" class="select-reference form-input full" require></div>
+				    <div id="cus_id" class="selectReferenceJS form-input full" require></div>
 			    </td>
 		    </tr>
             <tr class="errMsgRow">
@@ -124,7 +111,7 @@
             <tr>
                <td colspan="2">
                     <label class="input-required">ประเภทธาตุ</label>
-                    <div id="eletyp_id" class="select-reference form-input full" require></div>
+                    <div id="eletyp_id" class="selectReferenceJS form-input full" require></div>
                 </td> 
             </tr>
             <tr class="errMsgRow">

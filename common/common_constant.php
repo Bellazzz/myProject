@@ -723,7 +723,8 @@ function dbClose() {
 				'searchFields'	=> array('ser_id','cus_id','ser_date','ser_time'),
 				'deleteTxtField'		=> array('cus_id','ser_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการใช้บริการของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> '%f1 ใช้บริการวันที่ %f2'
+				'deleteTxtPatternMin' 	=> '%f1 ใช้บริการวันที่ %f2',
+				'referenceData'			=> array('employees','customers','booking','beds','pay_types')
 
 			);
 			break;
@@ -848,7 +849,8 @@ function dbClose() {
 				'searchFields'	=> array('cus_id','emp_id','elechk_date'),
 				'deleteTxtField'		=> array('cus_id','elechk_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการตรวจธาตุของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> '%f1 ตรวจธาตุวันที่ %f2'
+				'deleteTxtPatternMin' 	=> '%f1 ตรวจธาตุวันที่ %f2',
+				'referenceData'			=> array('employees','customers','element_types')
 			);
 			break;
 
@@ -967,7 +969,8 @@ function dbClose() {
 				'searchFields'	=> array('emp_id','emp_give_id','wdw_date'),
 				'deleteTxtField'	=> array('wdw_date','ser_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ของรหัสการใช้บริการ %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2'
+				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2',
+				'referenceData'			=> array('employees','services')
 			);
 			break;
 
@@ -1004,9 +1007,10 @@ function dbClose() {
 						'sale_total_price' 	  => 'ราคารวม(บาท)'
 				),
 				'searchFields'	=> array('emp_id','sale_date'),
-				'deleteTxtField'	=> array('sale_date','sale_id','sale_time'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายในวันที่ %f1 เวลา %f3 ของรหัสการขาย %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2'
+				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายรหัส %f1 ที่ขายในวันที่ %f2 เวลา %f3 ใช่หรือไม่?',
+				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2',
+				'referenceData'			=> array('employees')
 			);
 			break;
 

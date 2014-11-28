@@ -22,52 +22,33 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-             selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
-            selectReference({
-                elem			: $('#cus_id'),
-                tableName		: 'customers',
-                keyFieldName	: 'cus_id',
-                textFieldName	: 'cus_id,cus_name,cus_surname',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.cus_id}{literal}',
-				pattern			: 'CONCAT("(",cus_id,") ",cus_name," ",cus_surname)'
+            selectReferenceJS({
+                elem            : $('#cus_id'),
+                data            : {/literal}{$referenceData["customers"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.cus_id}{literal}'
             });
-              selectReference({
+            selectReferenceJS({
                 elem            : $('#paytyp_id'),
-                tableName       : 'pay_types',
-                keyFieldName    : 'paytyp_id',
-                textFieldName   : 'paytyp_name',
-                searchTool      : true,
+                data            : {/literal}{$referenceData["pay_types"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.paytyp_id}{literal}'
             });
-               selectReference({
+            selectReferenceJS({
                 elem            : $('#bed_id'),
-                tableName       : 'beds',
-                keyFieldName    : 'bed_id',
-                textFieldName   : 'bed_name',
-                searchTool      : true,
+                data            : {/literal}{$referenceData["beds"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.bed_id}{literal}'
             });
-               selectReference({
+            selectReferenceJS({
                 elem            : $('#bkg_id'),
-                tableName       : 'booking',
-                keyFieldName    : 'bkg_id',
-                textFieldName   : 'bkg_id',
-                orderType       : 'DESC',
-                searchTool      : true,
+                data            : {/literal}{$referenceData["booking"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.bkg_id}{literal}',
                 showClearBtn    : true,
                 clearBtnText    : 'ไม่ระบุ'
             });
-
             $('#ser_date').datetimepicker({
                 lang                : 'th',
                 format              : 'Y/m/d',
@@ -108,19 +89,19 @@
             </tr>
             <tr>
                 <td>ผู้ใช้บริการ :</td>
-                <td><div id="cus_id" class="select-reference text"></td>
+                <td><div id="cus_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>พนักงาน :</td>
-                <td><div id="emp_id" class="select-reference text"></td>
+                <td><div id="emp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>ประเภทการชำระเงิน :</td>
-                <td><div id="paytyp_id" class="select-reference text"></td>
+                <td><div id="paytyp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>เตียง :</td>
-                <td><div id="bed_id" class="select-reference text"></td>
+                <td><div id="bed_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>รหัสการจอง :</td>
@@ -150,7 +131,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่รับเงิน</label>
-                    <div id="emp_id" class="select-reference form-input full" require></div>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -161,7 +142,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">ผู้ใช้บริการ</label>
-                    <div id="cus_id" class="select-reference form-input full" require></div>
+                    <div id="cus_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -172,13 +153,13 @@
             <tr>
                 <td colspan="2">
                     <label>รหัสการจอง</label>
-                    <div id="bkg_id" class="select-reference form-input full"></div>
+                    <div id="bkg_id" class="selectReferenceJS form-input full"></div>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <label class="input-required">เตียงนวด</label>
-                    <div id="bed_id" class="select-reference form-input full" require></div>
+                    <div id="bed_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -219,7 +200,7 @@
 			<tr>          
                 <td colspan="2">
                     <label class="input-required">ประเภทการชำระเงิน</label>
-                    <div id="paytyp_id" class="select-reference form-input full" require></div>
+                    <div id="paytyp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">

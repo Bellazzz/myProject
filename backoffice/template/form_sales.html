@@ -22,15 +22,10 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-             
-             selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.emp_id}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
             $('#sale_date').datetimepicker({
                 lang                : 'th',
@@ -66,7 +61,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานขาย</label>
-                    <div id="emp_id" class="select-reference form-input full" require></div>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
                 
             </tr>

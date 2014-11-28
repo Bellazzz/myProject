@@ -181,6 +181,46 @@ if(!$_REQUEST['ajaxCall']) {
 					$refField 	= 'bnkacc_id';
 					break;
 
+				case 'booking':
+					$sqlRefData = "	SELECT 		bkg_id refValue,
+												bkg_id refText 
+									FROM 		booking 
+									ORDER BY 	refText DESC";
+					$refField 	= 'bkg_id';
+					break;
+
+				case 'beds':
+					$sqlRefData = "	SELECT 		bed_id refValue,
+												bed_name refText 
+									FROM 		beds 
+									ORDER BY 	refText ASC";
+					$refField 	= 'bed_id';
+					break;
+
+				case 'pay_types':
+					$sqlRefData = "	SELECT 		paytyp_id refValue,
+												paytyp_name refText 
+									FROM 		pay_types 
+									ORDER BY 	refText ASC";
+					$refField 	= 'paytyp_id';
+					break;
+
+				case 'element_types':
+					$sqlRefData = "	SELECT 		eletyp_id refValue,
+												eletyp_name refText 
+									FROM 		element_types 
+									ORDER BY 	refText ASC";
+					$refField 	= 'eletyp_id';
+					break;
+
+				case 'services':
+					$sqlRefData = "	SELECT 		ser_id refValue,
+												ser_id refText 
+									FROM 		services 
+									ORDER BY 	refText DESC";
+					$refField 	= 'ser_id';
+					break;
+
 			}
 
 			if(hasValue($sqlRefData)) {

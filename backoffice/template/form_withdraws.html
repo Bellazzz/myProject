@@ -22,32 +22,20 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-              selectReference({
+            selectReferenceJS({
                 elem            : $('#ser_id'),
-                tableName       : 'services',
-                keyFieldName    : 'ser_id',
-                textFieldName   : 'ser_id',
-                orderType       : 'DESC',
+                data            : {/literal}{$referenceData["services"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.ser_id}{literal}'
             });
-             
-             selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.emp_id}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
-              selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_give_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_give_id}{$values.emp_give_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_give_id}{literal}'
             });
             $('#wdw_date').datetimepicker({
                 lang                : 'th',
@@ -80,7 +68,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่ให้เบิก</label>
-                    <div id="emp_give_id" class="select-reference form-input full" require></div>
+                    <div id="emp_give_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -91,7 +79,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่เบิก</label>
-                    <div id="emp_id" class="select-reference form-input full" require></div>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -113,7 +101,7 @@
             <tr>
                <td colspan="2">
                     <label class="input-required">รหัสการใช้บริการ</label>
-                    <div id="ser_id" class="select-reference form-input full" require></div>
+                    <div id="ser_id" class="selectReferenceJS form-input full" require></div>
                 </td>
 		    </tr>
 			<tr class="errMsgRow">
