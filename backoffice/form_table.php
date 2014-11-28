@@ -101,12 +101,52 @@ if(!$_REQUEST['ajaxCall']) {
 					$refField 	= 'custype_id';
 					break;
 
+				case 'service_lists':
+					$sqlRefData = "	SELECT 		svl_id refValue,
+												svl_name refText 
+									FROM 		service_lists 
+									ORDER BY 	svl_name ASC";
+					$refField 	= 'svl_id';
+					break;
+
 				case 'service_list_types':
 					$sqlRefData = "	SELECT 		svltyp_id refValue,
 												svltyp_name refText 
 									FROM 		service_list_types 
 									ORDER BY 	svltyp_name ASC";
 					$refField 	= 'svltyp_id';
+					break;
+
+				case 'promotions':
+					$sqlRefData = "	SELECT 		prm_id refValue,
+												prm_name refText 
+									FROM 		promotions 
+									ORDER BY 	prm_name ASC";
+					$refField 	= 'prm_id';
+					break;
+
+				case 'product_types':
+					$sqlRefData = "	SELECT 		prdtyp_id refValue,
+												prdtyp_name refText 
+									FROM 		product_types 
+									ORDER BY 	prdtyp_name ASC";
+					$refField 	= 'prdtyp_id';
+					break;
+
+				case 'brands':
+					$sqlRefData = "	SELECT 		brand_id refValue,
+												brand_name refText 
+									FROM 		brands 
+									ORDER BY 	brand_name ASC";
+					$refField 	= 'brand_id';
+					break;
+
+				case 'units':
+					$sqlRefData = "	SELECT 		unit_id refValue,
+												unit_name refText 
+									FROM 		units 
+									ORDER BY 	unit_name ASC";
+					$refField 	= 'unit_id';
 					break;
 
 			}

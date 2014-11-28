@@ -22,20 +22,16 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function () {
-            selectReference({
-                elem			: $('#svl_id'),
-                tableName		: 'service_lists',
-                keyFieldName	: 'svl_id',
-                textFieldName	: 'svl_name',
-                defaultValue	: '{/literal}{$values.svl_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#svl_id'),
+                data            : {/literal}{$referenceData["service_lists"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.svl_id}{literal}'
             });
 
-			selectReference({
-                elem			: $('#prm_id'),
-                tableName		: 'promotions',
-                keyFieldName	: 'prm_id',
-                textFieldName	: 'prm_name',
-                defaultValue	: '{/literal}{$values.prm_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#prm_id'),
+                data            : {/literal}{$referenceData["promotions"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.prm_id}{literal}'
             });
 
 			$('#prmsvl_start').datetimepicker({

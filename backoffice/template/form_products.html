@@ -19,31 +19,22 @@
         var ajaxUrl     = 'form_products.php';
 
         $(document).ready(function () {
-            selectReference({
-                elem			: $('#prdtyp_id'),
-                tableName		: 'product_types',
-                keyFieldName	: 'prdtyp_id',
-                textFieldName	: 'prdtyp_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.prdtyp_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#prdtyp_id'),
+                data            : {/literal}{$referenceData["product_types"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.prdtyp_id}{literal}'
             });
 
-			selectReference({
-                elem			: $('#brand_id'),
-                tableName		: 'brands',
-                keyFieldName	: 'brand_id',
-                textFieldName	: 'brand_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.brand_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#brand_id'),
+                data            : {/literal}{$referenceData["brands"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.brand_id}{literal}'
             });
 
-			selectReference({
-                elem			: $('#unit_id'),
-                tableName		: 'units',
-                keyFieldName	: 'unit_id',
-                textFieldName	: 'unit_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.unit_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#unit_id'),
+                data            : {/literal}{$referenceData["units"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.unit_id}{literal}'
             });
 
             uploadImageInput({

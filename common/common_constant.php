@@ -510,9 +510,9 @@ function dbClose() {
 				'hiddenFields'	=> array('prmsvl_desc'),
 				'defaultNull' 	=> array('prmsvl_start','prmsvl_end'),
 				'deleteTxtField' 		=> array('prm_id','svl_id'),
-				'deleteTxtPatternMain' 	=>('คุณต้องการลบรายการบริการ%f2 ออกจาก%f1 ใช่หรือไม่'),
-				'deleteTxtPatternMin' 	=>('รายการบริการ%f2 ของโ%f1')
-
+				'deleteTxtPatternMain' 	=>('คุณต้องการลบรายการบริการ %f2 ออกจากโปรโมชั่น %f1 ใช่หรือไม่'),
+				'deleteTxtPatternMin' 	=>('รายการบริการ%f2 ของโ%f1'),
+				'referenceData'			=> array('service_lists','promotions')
 			);
 			break;
 
@@ -559,7 +559,8 @@ function dbClose() {
 				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id'),
 				'defaultNull' 	=> array('prd_amount'),
 				'searchFields'	=> array('prd_name','prd_price'),
-				'deleteTxtField' 		=> array('prd_name')
+				'deleteTxtField' 		=> array('prd_name'),
+				'referenceData'			=> array('product_types', 'brands', 'units')
 			);
 			break;
 
