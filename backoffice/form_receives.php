@@ -219,6 +219,47 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('receiveDetailList', $receiveDetailList);
 	}
 
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'employees':
+					$sqlRefData = "	SELECT 		emp_id refValue,
+												CONCAT(emp_name, ' ', emp_surname) refText 
+									FROM 		employees 
+									ORDER BY 	refText ASC";
+					$refField 	= 'emp_id';
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);

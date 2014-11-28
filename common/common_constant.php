@@ -931,7 +931,8 @@ function dbClose() {
 				'searchFields'	=> array('rec_id','ord_id','rec_date','rec_total_price'),
 				'deleteTxtField'	=> array('ord_id','rec_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการรับในวันที่ %f2 ของรหัสการสั่งซื้อ %f1 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> 'การรับวันที่ %f2 ของรหัสการสั่งซื้อ %f1 '
+				'deleteTxtPatternMin' 	=> 'การรับวันที่ %f2 ของรหัสการสั่งซื้อ %f1 ',
+				'referenceData'			=> array('employees')
 			);
 			break;
 

@@ -1267,12 +1267,15 @@ label.article-title {
     text-overflow: ellipsis;
     overflow: hidden;
     padding-right: 20px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .select-reference .option-container{
     margin: 0;
     padding: 0;
     list-style: none;
-    max-height: 405px;
+    max-height: 295px;
     overflow: auto;
 }
 .select-reference .option-container li{
@@ -1362,12 +1365,15 @@ label.article-title {
     text-overflow: ellipsis;
     overflow: hidden;
     padding-right: 20px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 .selectReferenceJS .option-container{
     margin: 0;
     padding: 0;
     list-style: none;
-    max-height: 405px;
+    max-height: 295px;
     overflow: auto;
     -moz-user-select: none;
     -webkit-user-select: none;

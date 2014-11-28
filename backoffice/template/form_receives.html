@@ -81,14 +81,10 @@
                 allowChangeOption : allowChangeOrderId
             });
              
-             selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
              
 
@@ -186,7 +182,7 @@
             </tr>
             <tr>
                 <td>ชื่อ-นามสกุลพนักงาน :</td>
-                <td><div id="emp_id" class="select-reference text"></td>
+                <td><div id="emp_id" class="selectReferenceJS text"></td>
             </tr>
              <tr>
                 <td>วันที่รับผลิตภัณฑ์ :</td>
@@ -248,7 +244,7 @@
                 </td>
                 <td>
                     <label class="input-required">พนักงานที่รับ</label>
-                    <div id="emp_id" class="select-reference form-input half" require></div>
+                    <div id="emp_id" class="selectReferenceJS form-input half" require></div>
                 </td>
                 <td class="samerow">
                     <label class="input-required">วันที่รับผลิตภัณฑ์</label>
