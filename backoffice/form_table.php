@@ -154,7 +154,31 @@ if(!$_REQUEST['ajaxCall']) {
 												CONCAT(emp_name, ' ', emp_surname) refText 
 									FROM 		employees 
 									ORDER BY 	refText ASC";
-					$refField 	= 'unit_id';
+					$refField 	= 'emp_id';
+					break;
+
+				case 'customers':
+					$sqlRefData = "	SELECT 		cus_id refValue,
+												CONCAT(cus_name, ' ', cus_surname) refText 
+									FROM 		customers 
+									ORDER BY 	refText ASC";
+					$refField 	= 'cus_id';
+					break;
+
+				case 'booking_status':
+					$sqlRefData = "	SELECT 		bkgstat_id refValue,
+												bkgstat_name refText 
+									FROM 		booking_status 
+									ORDER BY 	refText ASC";
+					$refField 	= 'bkgstat_id';
+					break;
+
+				case 'bank_accounts':
+					$sqlRefData = "	SELECT 		bnkacc_id refValue,
+												bnkacc_name refText 
+									FROM 		bank_accounts 
+									ORDER BY 	refText ASC";
+					$refField 	= 'bnkacc_id';
 					break;
 
 			}

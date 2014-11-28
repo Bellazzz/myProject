@@ -22,43 +22,27 @@
         var ajaxUrl     = 'form_booking.php';
 
 		$(document).ready(function() {
-			 selectReference({
+			selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
-			  selectReference({
+            selectReferenceJS({
                 elem            : $('#cus_id'),
-                tableName       : 'customers',
-                keyFieldName    : 'cus_id',
-                textFieldName   : 'cus_id,cus_name,cus_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.cus_id}{literal}',
-                pattern         : 'CONCAT("(",cus_id,") ",cus_name," ",cus_surname)'
+                data            : {/literal}{$referenceData["customers"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.cus_id}{literal}'
             });
-			  selectReference({
+            selectReferenceJS({
                 elem            : $('#status_id'),
-                tableName       : 'booking_status',
-                keyFieldName    : 'bkgstat_id',
-                textFieldName   : 'bkgstat_name',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.status_id}{literal}',
-             
+                data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.status_id}{literal}'
             });
-			   selectReference({
+			selectReferenceJS({
                 elem            : $('#bnkacc_id'),
-                tableName       : 'bank_accounts',
-                keyFieldName    : 'bnkacc_id',
-                textFieldName   : 'bnkacc_name',
-                searchTool      : true,
+                data            : {/literal}{$referenceData["bank_accounts"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.bnkacc_id}{literal}',
                 showClearBtn	: true,
                 clearBtnText    : 'ไม่ระบุ'
-             
             });
 			
 			uploadImageInput({
@@ -122,11 +106,11 @@
 			</tr>
 			<tr>
 				<td>พนักงานที่บันทึก :</td>
-				<td><div id="emp_id" class="select-reference text"></td>
+				<td><div id="emp_id" class="selectReferenceJS text"></td>
 			</tr>
 			<tr>
 				<td>ผู้ใช้บริการที่ทำการจอง :</td>
-				<td><div id="cus_id" class="select-reference text"></td>
+				<td><div id="cus_id" class="selectReferenceJS text"></td>
 			</tr>
 			<tr>
 				<td>วันที่จอง :</td>
@@ -148,11 +132,11 @@
 			</tr>
 			<tr>
 				<td>สถานะการจอง :</td>
-				<td><div id="status_id" class="select-reference text"></td>
+				<td><div id="status_id" class="selectReferenceJS text"></td>
 			</tr>
 			<tr>
 				<td>บัญชีธนาคาร :</td>
-				<td><div id="bnkacc_id" class="select-reference text"></td>
+				<td><div id="bnkacc_id" class="selectReferenceJS text"></td>
 			</tr>
 			<tr>
 				<td>วันที่โอน :</td>
@@ -193,7 +177,7 @@
 			<tr>
 				<td colspan="2">
 					<label class="input-required">พนักงานที่บันทึก</label>
-					 <div id="emp_id" class="select-reference form-input full" require></div>
+					 <div id="emp_id" class="selectReferenceJS form-input full" require></div>
 				</td>
 			</tr>
 			<tr class="errMsgRow">
@@ -204,7 +188,7 @@
 			<tr>
 				<td colspan="2">
 					<label class="input-required">ผู้ใช้บริการที่ทำการจอง</label>
-					 <div id="cus_id" class="select-reference form-input full" require></div>
+					 <div id="cus_id" class="selectReferenceJS form-input full" require></div>
 				</td>
 			</tr>
 			<tr class="errMsgRow">
@@ -237,7 +221,7 @@
 				</td>
 				<td>
 					<label class="input-required">สถานะการจอง</label>
-					 <div id="status_id" class="select-reference form-input half" require></div>
+					 <div id="status_id" class="selectReferenceJS form-input half" require></div>
 				</td>
 			</tr>
 			<tr class="errMsgRow">
@@ -257,7 +241,7 @@
 			<tr>
 				<td colspan="2">
 					<label>บัญชีธนาคาร</label>
-					 <div id="bnkacc_id" class="select-reference form-input full"></div>
+					 <div id="bnkacc_id" class="selectReferenceJS form-input full"></div>
 				</td>
 			</tr>
 			<tr>
@@ -273,12 +257,11 @@
 			<tr>
 				<td colspan="2">
 					<label>จำนวนเงินที่โอน(บาท)</label>
-					<input id="bkg_transfer_money" name="bkg_transfer_money" type="text" class="form-input full" value="{$values.bkg_transfer_money}" valuepattern="money" require>
+					<input id="bkg_transfer_money" name="bkg_transfer_money" type="text" class="form-input full" value="{$values.bkg_transfer_money}" valuepattern="money">
 				</td>
 			</tr>
 			<tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-bkg_transfer_money-require" class="errInputMsg err-bkg_transfer_money">โปรดป้อนจำนวนเงินที่โอน</span>
                     <span id="err-bkg_transfer_money-money" class="errInputMsg err-bkg_transfer_money">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>

@@ -606,7 +606,8 @@ function dbClose() {
 				'searchFields'	=> array('emp_id','payroll_salary','payroll_monthly'),
 				'deleteTxtField'	=> array('emp_id','payroll_monthly'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการจ่ายเงินเดือนของ %f1 ประจำเดือน %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> '%f1 ประจำเดือน %f2'
+				'deleteTxtPatternMin' 	=> '%f1 ประจำเดือน %f2',
+				'referenceData'			=> array('employees')
 			);
 			break;
 
@@ -636,7 +637,8 @@ function dbClose() {
 				'searchFields'	=> array('bkg_id','cus_id','emp_id','status_id','bkg_total_price','bkg_date','bkg_time'),
 				'deleteTxtField'	=> array('cus_id','bkg_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการจองของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> '%f1 จองวันที่ %f2'
+				'deleteTxtPatternMin' 	=> '%f1 จองวันที่ %f2',
+				'referenceData'			=> array('employees','customers','booking_status','bank_accounts')
 			);
 			break;
 
