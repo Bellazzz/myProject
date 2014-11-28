@@ -225,7 +225,7 @@
             // Create HTML and append
             var svlRowHTML  = '<tr class="svl-row">'
                             + '     <td>'
-                            + '         <div id="' + inputKeyId + '" class="select-reference form-input full" require></div>';
+                            + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input full" require></div>';
 
             // add pkgsvl id for update
             if(action == 'EDIT' && typeof(data.pkgsvl_id) != 'undefined') {
@@ -235,7 +235,7 @@
                 svlRowHTML += '         <a title="ลบรายการนี้"><button class="removeSvlBtn button button-icon button-icon-delete" onclick="removeServiceLists(\'' + randNum + '\')"></button></a>'
                             + '     </td>'
                             + '</tr>'
-                            + '<tr>'
+                            + '<tr id="' + inputKeyId + '_errRow">'
                             + '		<td>'
                             + '			<span id="err-' + inputKeyId + '-require" class="errInputMsg err-' + inputKeyId + '">'
                             + '				โปรดเลือกรายการบริการ'
@@ -244,12 +244,9 @@
                             + '</tr>';
             $('#service-lists-table tbody').append(svlRowHTML);
 
-            // Create select reference
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#' + inputKeyId),
-                tableName       : 'service_lists',
-                keyFieldName    : 'svl_id',
-                textFieldName   : 'svl_name',
+                data            : {/literal}{$referenceData["service_lists"]|@json_encode}{literal},
                 searchTool      : true,
                 defaultValue    : selectRefDefault,
                 allowChangeOption : allowSelectSvlId,
@@ -264,8 +261,8 @@
         function removeServiceLists(randNum) {
         	var selectRef 	= $('#svl_id_' + randNum);
         	var tr 			= selectRef.parent().parent();
-        	var txt 		= selectRef.find('.select-reference-text').text();
-        	var val 		= selectRef.find('.select-reference-input').val();
+        	var txt 		= selectRef.find('.selectReferenceJS-text').text();
+        	var val 		= selectRef.find('.selectReferenceJS-input').val();
         	var msg 		= '';
         	if(val != '') {
         		msg = 'คุณต้องการลบรายการบริการ ' + txt + ' ออกจากแพ็คเกจนี้ใช่หรือไม่?';
@@ -284,6 +281,7 @@
                         function() {
                             parent.hideActionDialog();
                             tr.remove();
+                            $('#svl_id_' + randNum + '_errRow').remove();
                             refreshSvlTable();
                         }
                     },

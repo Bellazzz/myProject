@@ -130,6 +130,8 @@ function validateInput() {
 	var value = '';
 	if($(this).hasClass('select-reference')) {
 		value = $(this).find('.select-reference-input').val();
+	} else if($(this).hasClass('selectReferenceJS')) {
+		value = $(this).find('.selectReferenceJS-input').val();
 	} else {
 		value = $(this).val();
 	}
@@ -195,6 +197,7 @@ function checkRequiredInput() {
 	$('#form-table input').filter('[require],[valuepattern]').focusout();
 	$('#form-table textarea').filter('[require],[valuepattern]').focusout();
 	$('#form-table .select-reference').filter('[require]').each(validateInput);
+	$('#form-table .selectReferenceJS').filter('[require]').each(validateInput);
 
 	// Do someting before save
 	if(typeof beforeSaveRecord == 'function') {
@@ -206,7 +209,8 @@ function checkRequiredInput() {
 	var inputErr 		= $('#form-table input.required').length;
 	var txtAreaErr 		= $('#form-table textarea.required').length;
 	var selectRefErr 	= $('#form-table .select-reference.required').length;
-	var allErr 			= inputErr + txtAreaErr + selectRefErr;
+	var selectRefJSErr 	= $('#form-table .selectReferenceJS.required').length;
+	var allErr 			= inputErr + txtAreaErr + selectRefErr + selectRefJSErr;
 	if(allErr > 0) {
 		pass = false;
 	}

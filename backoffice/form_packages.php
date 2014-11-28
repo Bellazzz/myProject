@@ -65,6 +65,44 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('pkgsvlDetailList', $pkgsvlDetailList);
 	}
 
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'service_lists':
+					$sqlRefData = "	SELECT 		svl_id refValue,
+												svl_name refText 
+									FROM 		service_lists 
+									ORDER BY 	svl_name ASC";
+					$refField 	= 'svl_id';
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$refDataRow = mysql_fetch_assoc($resultRefData);
+						array_push($referenceData[$table], array(
+							'refText'	=> $refDataRow['refText'],
+							'refValue'	=> $refDataRow['refValue'],
+							'refField'	=> $refField
+						));
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);

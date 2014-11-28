@@ -100,6 +100,15 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	custype_name ASC";
 					$refField 	= 'custype_id';
 					break;
+
+				case 'service_list_types':
+					$sqlRefData = "	SELECT 		svltyp_id refValue,
+												svltyp_name refText 
+									FROM 		service_list_types 
+									ORDER BY 	svltyp_name ASC";
+					$refField 	= 'svltyp_id';
+					break;
+
 			}
 
 			if(hasValue($sqlRefData)) {

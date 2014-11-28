@@ -21,17 +21,13 @@
         var ajaxUrl     = 'form_service_lists.php';
 
 		$(document).ready(function() {
-			//svl_id	svltyp_id	svl_min	svl_hr	svl_name	svl_price	svl_commission	
-			//svl_desc	svl_picture
 			$("#emp_birthdate").datepicker();
 
-			selectReference({
-                elem			: $('#svltyp_id'),
-                tableName		: 'service_list_types',
-                keyFieldName	: 'svltyp_id',
-                textFieldName	: 'svltyp_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.svltyp_id}{literal}'
+            selectReferenceJS({
+                elem            : $('#svltyp_id'),
+                data            : {/literal}{$referenceData["service_list_types"]|@json_encode}{literal},
+                searchTool		: true,
+                defaultValue    : '{/literal}{$values.svltyp_id}{literal}'
             });
 
 			uploadImageInput({

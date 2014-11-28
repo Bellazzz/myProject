@@ -618,6 +618,11 @@ function selectReferenceJS(select) {
             }
         }
     }
+
+    // Call back function success
+    if(typeof(select.success) == 'function') {
+        select.success();
+    }
 }
 
 /*

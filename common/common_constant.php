@@ -421,7 +421,8 @@ function dbClose() {
 				'hiddenFields'	=> array('svl_desc','svl_picture','svl_commission','svl_price'),
 				'defaultNull' 	=> array('svl_min','svl_hr','svl_desc','svl_picture'),
 				'searchFields'	=> array('svl_name','svl_price'),
-				'deleteTxtField' 	=> array('svl_name')
+				'deleteTxtField' 	=> array('svl_name'),
+				'referenceData'		=> array('service_list_types')
 			
 			);
 			break;
@@ -445,7 +446,8 @@ function dbClose() {
 				'hiddenFields'	=> array('pkg_desc','pkg_picture'),
 				'defaultNull' 	=> array('pkg_stop','pkg_desc','pkg_picture'),
 				'searchFields'	=> array('pkg_name','pkg_price'),
-				'deleteTxtField' 	=> array('pkg_name')
+				'deleteTxtField' 	=> array('pkg_name'),
+				'referenceData'		=> array('service_lists')
 			);
 			break;
 
