@@ -891,7 +891,8 @@ function dbClose() {
 				'searchFields'	=> array('ord_id','ordtyp_id','comp_id','ord_date','ordstat_id'),
 				'deleteTxtField'		=> array('comp_id','ord_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการสั่งซื้อวันที่ %f2 จาก%f1 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> 'การสั่งซื้อวันที่ %f2 จาก%f1'
+				'deleteTxtPatternMin' 	=> 'การสั่งซื้อวันที่ %f2 จาก%f1',
+				'referenceData'			=> array('employees','companies','order_types','order_status','products')
 			);
 			break;
 

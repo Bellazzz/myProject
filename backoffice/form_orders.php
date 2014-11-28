@@ -67,6 +67,81 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('orderDetailList', $orderDetailList);
 	}
 
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'employees':
+					$sqlRefData = "	SELECT 		emp_id refValue,
+												CONCAT(emp_name, ' ', emp_surname) refText 
+									FROM 		employees 
+									ORDER BY 	refText ASC";
+					$refField 	= 'emp_id';
+					break;
+
+				case 'companies':
+					$sqlRefData = "	SELECT 		comp_id refValue,
+												comp_name refText 
+									FROM 		companies 
+									ORDER BY 	refText ASC";
+					$refField 	= 'comp_id';
+					break;
+
+				case 'order_types':
+					$sqlRefData = "	SELECT 		ordtyp_id refValue,
+												ordtyp_name refText 
+									FROM 		order_types 
+									ORDER BY 	refText ASC";
+					$refField 	= 'ordtyp_id';
+					break;
+
+				case 'order_status':
+					$sqlRefData = "	SELECT 		ordstat_id refValue,
+												ordstat_name refText 
+									FROM 		order_status 
+									ORDER BY 	refText ASC";
+					$refField 	= 'ordstat_id';
+					break;
+
+				case 'products':
+					$sqlRefData = "	SELECT 		prd_id refValue,
+												prd_name refText,
+												unit_name  
+									FROM 		products p, units u 
+									WHERE 		p.unit_id = u.unit_id  
+									ORDER BY 	refText ASC";
+					$refField 	= 'prd_id';
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
 	// Hide edit button
 	if($values['ordstat_id'] != 'OS01') {
 		$smarty->assign('hideEditButton', true);

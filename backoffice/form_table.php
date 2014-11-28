@@ -70,10 +70,12 @@ if(!$_REQUEST['ajaxCall']) {
 					break;
 
 				case 'titles':
-					$sqlRefData = "	SELECT 		title_id refValue,
-												title_name refText 
-									FROM 		titles 
-									ORDER BY 	title_name ASC";
+					$sqlRefData = "	SELECT 		t.title_id refValue,
+												t.title_name refText,
+												s.sex_name 
+									FROM 		titles t left join sex s 
+									ON          t.sex_id = s.sex_id 
+									ORDER BY 	t.title_name ASC";
 					$refField 	= 'title_id';
 					break;
 
@@ -231,12 +233,15 @@ if(!$_REQUEST['ajaxCall']) {
 					$referenceData[$table] = array();
 					// push to referenc data
 					for($i=0; $i<$rowsRefData; $i++) {
-						$refDataRow = mysql_fetch_assoc($resultRefData);
-						array_push($referenceData[$table], array(
-							'refText'	=> $refDataRow['refText'],
-							'refValue'	=> $refDataRow['refValue'],
-							'refField'	=> $refField
-						));
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
 					}
 					
 				}

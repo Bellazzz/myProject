@@ -32,6 +32,7 @@
         var code            = '{/literal}{$code}{literal}';
         var ajaxUrl         = 'form_orders.php';
         var valuesDetail    = '';
+        var refPrdData      = {/literal}{$referenceData["products"]|@json_encode}{literal};
 
         // Set valuesDetail
         {/literal}
@@ -45,41 +46,25 @@
         $(document).ready(function () {
             $('#addProjectBtn').click(addProduct);
 
-            selectReference({
-                elem			: $('#ordtyp_id'),
-                tableName		: 'order_types',
-                keyFieldName	: 'ordtyp_id',
-                textFieldName	: 'ordtyp_name',
-				searchTool		: true,
-                defaultValue	: '{/literal}{$values.ordtyp_id}{literal}',
-				
+            selectReferenceJS({
+                elem            : $('#ordtyp_id'),
+                data            : {/literal}{$referenceData["order_types"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.ordtyp_id}{literal}'
             });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#emp_id'),
-                tableName       : 'employees',
-                keyFieldName    : 'emp_id',
-                textFieldName   : 'emp_id,emp_name,emp_surname',
-                searchTool      : true,
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
-                pattern         : 'CONCAT("(",emp_id,") ",emp_name," ",emp_surname)'
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#comp_id'),
-                tableName       : 'companies',
-                keyFieldName    : 'comp_id',
-                textFieldName   : 'comp_name',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.comp_id}{literal}',
-                
+                data            : {/literal}{$referenceData["companies"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.comp_id}{literal}'
             });
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#ordstat_id'),
-                tableName       : 'order_status',
-                keyFieldName    : 'ordstat_id',
-                textFieldName   : 'ordstat_name',
-                searchTool      : true,
-                defaultValue    : '{/literal}{$values.ordstat_id}{literal}',
-                
+                data            : {/literal}{$referenceData["order_status"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.ordstat_id}{literal}'
             });
 
 			$('#ord_date').datetimepicker({
@@ -236,7 +221,7 @@
             var unitName = '';
             do {
                 randNum     = parseInt(Math.random()*1000);
-            } while($('prd_id_' + randNum).length > 0);
+            } while($('#prd_id_' + randNum).length > 0);
             var inputKeyId  = 'prd_id_' + randNum;
             var inputQtyId  = 'prd_qty_' + randNum;
             if(typeof(data.unit_name) != 'undefined' && data.unit_name != '') {
@@ -246,7 +231,7 @@
             // Create HTML and append
             var prdRowHTML  = '<tr class="product-row">'
                             + '     <td width="350px">'
-                            + '         <div id="' + inputKeyId + '" class="select-reference form-input half" require style="width:350px;"></div>'
+                            + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                             + '     </td>'
                             + '     <td>';
 
@@ -284,14 +269,10 @@
             $('#order-detail-table tbody').append(prdRowHTML);
 
             // Create select reference
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#' + inputKeyId),
-                tableName       : 'products',
-                keyFieldName    : 'prd_id',
-                textFieldName   : 'prd_name',
-                searchTool      : true,
+                data            : refPrdData,
                 defaultValue    : selectRefDefault,
-                allowChangeOption : allowSelectPrdId,
                 onOptionSelect  :
                 function() {
                     pullUnitName(inputKeyId);
@@ -309,8 +290,8 @@
         function removeProduct(randNum) {
             var selectRef   = $('#prd_id_' + randNum);
             var tr          = selectRef.parent().parent();
-            var txt         = selectRef.find('.select-reference-text').text();
-            var val         = selectRef.find('.select-reference-input').val();
+            var txt         = selectRef.find('.selectReferenceJS-text').text();
+            var val         = selectRef.find('.selectReferenceJS-input').val();
             var msg         = '';
             if(val != '') {
                 msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
@@ -373,35 +354,25 @@
         }
 
         function pullUnitName(inputKeyId) {
-            var prdID = $('#' + inputKeyId).find('.select-reference-input').val();
+            var prdID       = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+            
             if(typeof(prdID) != 'undefined' && prdID != '') {
-                $.ajax({
-                    url: '../common/ajaxGetUnitName.php',
-                    type: 'POST',
-                    data: {
-                        prd_id: $('#' + inputKeyId).find('.select-reference-input').val()
-                    },
-                    success:
-                    function(responseJSON) {
-                        var response = $.parseJSON(responseJSON);
-                        var prdUnitName = $('#' + inputKeyId).parent().parent().find('.prd_unit_name');
-                        if(response.status == 'PASS') {
-                            if(response.unit_name != '') {
-                                prdUnitName.text(response.unit_name);
-                            } else {
-                                prdUnitName.text('');
-                            }
-                        } else {
-                            prdUnitName.text('');
-                            alert(response.status);
-                        }
+                var prdUnitName = $('#' + inputKeyId).parent().parent().find('.prd_unit_name');
+                var unitName    = '';
+
+                for(i in refPrdData) {
+                    if(refPrdData[i].refValue == prdID) {
+                        unitName = refPrdData[i].unit_name;
+                        break;
                     }
-                });
+                }
+
+                prdUnitName.text(unitName);
             }
         }
 
         function setAllOrdPrd() {
-            $('#allOrdPrd').text($('input[name="prd_id[]"').length);
+            $('#allOrdPrd').text($('input[name="prd_id[]"]').length);
         }
     </script>
     {/literal}
@@ -422,15 +393,15 @@
             </tr>
             <tr>
                 <td>ชื่อ-นามสกุลพนักงาน :</td>
-                <td><div id="emp_id" class="select-reference text"></td>
+                <td><div id="emp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>บริษัทจำหน่ายผลิตภัณฑ์ :</td>
-                <td><div id="comp_id" class="select-reference text"></td>
+                <td><div id="comp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>ประเภทการสั่งซื้อ :</td>
-                <td><div id="ordtyp_id" class="select-reference text"></td>
+                <td><div id="ordtyp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>วันที่สั่งซื้อ :</td>
@@ -442,7 +413,7 @@
             </tr>
             <tr>
                 <td>สถานะการสั่งซื้อ :</td>
-                <td><div id="ordstat_id" class="select-reference text"></td>
+                <td><div id="ordstat_id" class="selectReferenceJS text"></td>
             </tr>
         </tbody>
     </table>
@@ -481,7 +452,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่สั่งซื้อ</label>
-                    <div id="emp_id" class="select-reference form-input full" require></div>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -492,7 +463,7 @@
             <tr>
                 <td colspan="2">
 				    <label class="input-required">บริษัทจำหน่ายผลิตภัณฑ์</label>
-				    <div id="comp_id" class="select-reference form-input full" require></div>
+				    <div id="comp_id" class="selectReferenceJS form-input full" require></div>
 			    </td>
             </tr>
             <tr class="errMsgRow">
@@ -503,7 +474,7 @@
             <tr>
                 <td colspan="2">
                     <label class="input-required">ประเภทการสั่งซื้อ</label>
-                    <div id="ordtyp_id" class="select-reference form-input full" require></div>
+                    <div id="ordtyp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
 		    </tr>
             <tr class="errMsgRow">
