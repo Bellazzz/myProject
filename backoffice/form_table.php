@@ -149,6 +149,14 @@ if(!$_REQUEST['ajaxCall']) {
 					$refField 	= 'unit_id';
 					break;
 
+				case 'employees':
+					$sqlRefData = "	SELECT 		emp_id refValue,
+												CONCAT(emp_name, ' ', emp_surname) refText 
+									FROM 		employees 
+									ORDER BY 	refText ASC";
+					$refField 	= 'unit_id';
+					break;
+
 			}
 
 			if(hasValue($sqlRefData)) {

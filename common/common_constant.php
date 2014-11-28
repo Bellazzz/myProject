@@ -583,7 +583,8 @@ function dbClose() {
 				'searchFields'	=> array('emp_id','dateatt_in','dateatt_out'),
 				'deleteTxtField'	=> array('dateatt_in','emp_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเข้า-ออกงานวันที่ %f1 ของ %f2 ใช่หรือไม่?',
-				'deleteTxtPatternMin' 	=> 'วันที่ %f1 ของ %f2'
+				'deleteTxtPatternMin' 	=> 'วันที่ %f1 ของ %f2',
+				'referenceData'			=> array('employees')
 			);
 			break;
 

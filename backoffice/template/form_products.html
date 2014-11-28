@@ -65,11 +65,11 @@
             </tr>
             <tr>
                 <td>ประเภทผลิตภัณฑ์ :</td>
-                <td><div id="prdtyp_id" class="select-reference text"></td>
+                <td><div id="prdtyp_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>ยี่ห้อ :</td>
-                <td><div id="brand_id" class="select-reference text"></td>
+                <td><div id="brand_id" class="selectReferenceJS text"></td>
             </tr>
             <tr>
                 <td>ชื่อผลิตภัณฑ์ :</td>
@@ -81,7 +81,7 @@
             </tr>
             <tr>
                 <td>จำนวน :</td>
-                <td>{$values.prd_amount}   <div id="unit_id" class="select-reference text"></td>
+                <td>{$values.prd_amount}   <div id="unit_id" class="selectReferenceJS text"></td>
             </tr>
         </tbody>
     </table>
@@ -107,7 +107,7 @@
 			<tr>
 			    <td colspan="2">
 				    <label class="input-required">ประเภทผลิตภัณฑ์</label>
-				    <div id="prdtyp_id" class="select-reference form-input full" require></div>
+				    <div id="prdtyp_id" class="selectReferenceJS form-input full" require></div>
 			    </td>
 		    </tr>
             <tr class="errMsgRow">
@@ -118,7 +118,7 @@
 			<tr>
 			    <td colspan="2">
 				    <label class="input-required">ยี่ห้อ</label>
-				    <div id="brand_id" class="select-reference form-input full" require></div>
+				    <div id="brand_id" class="selectReferenceJS form-input full" require></div>
 			    </td>
 		    </tr>
             <tr class="errMsgRow">
@@ -136,7 +136,7 @@
 					<label class="twoInput twoInput-large input-required">หน่วยนับ</label>
                     <br>
 					<input id="prd_amount" name="prd_amount" type="text" class="form-input twoInput twoInput-small" value="{$values.prd_amount}" maxlength="6" size="6" valuepattern="number" style="text-align:right;">
-					<div id="unit_id" class="select-reference form-input twoInput twoInput-large" require>
+					<div id="unit_id" class="selectReferenceJS form-input twoInput twoInput-large" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
