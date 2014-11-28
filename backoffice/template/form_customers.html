@@ -21,6 +21,7 @@
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_customers.php';
         var sexIdOfTitle = '';
+        var refTitleData = {/literal}{$referenceData["titles"]|@json_encode}{literal};
 
         $(document).ready(function () {
             $('#cus_registered_date').datetimepicker({
@@ -223,26 +224,21 @@
         function changeTitleId() {
             var titleId = $('input[name="title_id"]').val();
             if(titleId != '') {
-                $.ajax({
-                    url: '../common/ajaxGetSexOfTitle.php',
-                    data: {
-                        title_id: titleId
-                    },
-                    success:
-                    function(responseJSON) {
-                        var response = $.parseJSON(responseJSON);
-                        if(response.status == 'PASS') {
-                            if(response.sex_id != '') {
-                                sexIdOfTitle = response.sex_id;
-                                $('#sex_id_' + response.sex_id).click();
-                            } else {
-                                sexIdOfTitle = '';
-                            }
-                        } else {
-                            alert(response.status);
-                        }
+                var sexId = '';
+
+                for(i in refTitleData) {
+                    if(refTitleData[i].refValue == titleId) {
+                        sexId = refTitleData[i].sex_id;
+                        break;
                     }
-                });
+                }
+
+                if(sexId != '') {
+                    sexIdOfTitle = sexId;
+                    $('#sex_id_' + sexId).click();
+                } else {
+                    sexIdOfTitle = '';
+                }
             } else {
                 sexIdOfTitle = '';
             }

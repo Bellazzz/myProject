@@ -72,7 +72,7 @@ if(!$_REQUEST['ajaxCall']) {
 				case 'titles':
 					$sqlRefData = "	SELECT 		t.title_id refValue,
 												t.title_name refText,
-												s.sex_name 
+												IFNULL(s.sex_id,'') sex_id 
 									FROM 		titles t left join sex s 
 									ON          t.sex_id = s.sex_id 
 									ORDER BY 	t.title_name ASC";
