@@ -416,7 +416,33 @@ function selectReference(select) {
  * select reference JS
  */
  function showSelectReferenceJS(selectRef) {
+    hideOptionSelectedJS(selectRef);
+
     $(selectRef).children('.selectReferenceJS-container').css('display', 'block');
+}
+
+function hideOptionSelectedJS(selectRef) {
+    var hideOptions = Array();
+
+    // find self selected option
+    var selfOption = $(selectRef).children('.selectReferenceJS-input').val();
+    if(selfOption != '') {
+        hideOptions.push(selfOption);
+        $(selectRef).children('.selectReferenceJS-container')
+    }
+
+    // Clear hide options
+    $(selectRef).find('.selectReferenceJS-container li').css('display','list-item');
+
+    // Hide options
+    if(hideOptions.length > 0) {
+        $(selectRef).find('.selectReferenceJS-container li').each(function(){
+            var thisVal = $(this).find('.value').text();
+            if($.inArray(thisVal, hideOptions) > -1) {
+                $(this).css('display','none');
+            }
+        });
+    }
 }
 
 function selectReferenceJS(select) {
@@ -551,6 +577,7 @@ function selectReferenceJS(select) {
         }
 
         optionCon.html(resultHtml);
+        hideOptionSelectedJS(select.elem);
         li = $(optionCon).children('li');
         addEvent();
     }
