@@ -554,11 +554,12 @@ function dbClose() {
 						'prd_name'	      => 'ผลิตภัณฑ์',
 						'prd_price'       => 'ราคา(บาท)',
 						'prd_amount'      => 'จำนวน',
-						'prd_pic'      	  => 'รูปภาพ'
+						'prd_pic'      	  => 'รูปภาพ',
+						'prd_desc'		  => 'คำอธิบาย'
 				),
-				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id'),
-				'defaultNull' 	=> array('prd_amount'),
-				'searchFields'	=> array('prd_name','prd_price'),
+				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc'),
+				'defaultNull' 	=> array('prd_amount','prd_desc'),
+				'searchFields'	=> array('prd_name','prdtyp_id','brand_id'),
 				'deleteTxtField' 		=> array('prd_name'),
 				'referenceData'			=> array('product_types', 'brands', 'units')
 			);

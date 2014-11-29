@@ -76,6 +76,10 @@
                 <td>{$values.prd_name}</td>
             </tr>
             <tr>
+                <td>คำอธิบาย :</td>
+                <td>{if $values.prd_desc}{$values.prd_desc}{else}-{/if}</td>
+            </tr>
+            <tr>
                 <td>ราคา :</td>
                 <td>{$values.prd_price|number_format:2:".":","} บาท</td>
             </tr>
@@ -147,6 +151,12 @@
                 <td>
                     <span id="err-prd_amount-number" class="errInputMsg half err-prd_amount">โปรดกรอกจำนวนเป็นเลขจำนวนเต็ม</span>
                     <span id="err-unit_id-require" class="errInputMsg half err-unit_id">โปรดเลือกหน่วยนับ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=2>
+                    <label>คำอธิบาย</label>
+                    <textarea id="prd_desc" name="prd_desc" class="form-input full" rows="6">{$values.prd_desc}</textarea>
                 </td>
             </tr>
             <tr>
