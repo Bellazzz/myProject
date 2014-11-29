@@ -428,7 +428,18 @@ function hideOptionSelectedJS(selectRef) {
     var selfOption = $(selectRef).children('.selectReferenceJS-input').val();
     if(selfOption != '') {
         hideOptions.push(selfOption);
-        $(selectRef).children('.selectReferenceJS-container')
+    }
+
+    // find group selected option
+    if(selectRef.is('[group]')) {
+        var refGroup = selectRef.attr('group');
+        $('.selectReferenceJS[group="' + refGroup + '"]').each(function(){
+            var groupOption = $(this).find('.selectReferenceJS-input').val();
+            if(groupOption != '') {
+                hideOptions.push(groupOption);
+            }
+        });
+        
     }
 
     // Clear hide options
@@ -495,6 +506,11 @@ function selectReferenceJS(select) {
                  + '</div>';
 
         select.elem.html(initTag);
+
+        // Add group attribute
+        if(typeof(select.group) != 'undefined') {
+            select.elem.attr('group', select.group);
+        }
 
         // Add event clear value
         var clearValBtn = select.elem.find('.clear-value-btn');

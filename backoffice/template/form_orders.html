@@ -281,7 +281,8 @@
                 function() {
                     $('input[name="' + inputKeyId + '"]').attr('name', 'prd_id[]');
                     setAllOrdPrd();
-                }
+                },
+                group           : 'products'
             });
             // Check Input required and pattern
             $('#' + inputQtyId).focusout(validateInput);
