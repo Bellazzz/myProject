@@ -932,7 +932,7 @@ function dbClose() {
 				'deleteTxtField'	=> array('ord_id','rec_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการรับในวันที่ %f2 ของรหัสการสั่งซื้อ %f1 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การรับวันที่ %f2 ของรหัสการสั่งซื้อ %f1 ',
-				'referenceData'			=> array('employees')
+				'referenceData'			=> array('orders','employees')
 			);
 			break;
 

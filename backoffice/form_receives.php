@@ -233,6 +233,15 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText ASC";
 					$refField 	= 'emp_id';
 					break;
+
+				case 'orders':
+					$sqlRefData = "	SELECT 		ord_id refValue,
+												ord_id refText 
+									FROM 		orders 
+									WHERE 		ordstat_id != 'OS03' 
+									ORDER BY 	refText DESC";
+					$refField 	= 'ord_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {

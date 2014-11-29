@@ -35,7 +35,7 @@
             selectReferenceJS({
                 elem            : $('#emp_give_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.emp_give_id}{literal}'
+                defaultValue    : '{/literal}{if $values.emp_give_id}{$values.emp_give_id}{else}{$session_emp_id}{/if}{literal}'
             });
             $('#wdw_date').datetimepicker({
                 lang                : 'th',

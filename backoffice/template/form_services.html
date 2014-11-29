@@ -25,7 +25,7 @@
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.emp_id}{literal}'
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
             selectReferenceJS({
                 elem            : $('#cus_id'),

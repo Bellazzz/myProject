@@ -6,10 +6,8 @@
     {literal}
 	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
-    <!--<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css">-->
     <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
     <script type="text/javascript" src="../js/jquery.min.js"></script>
-    <!--<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script>-->
     <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
@@ -68,23 +66,19 @@
         var ordDate     = '{/literal}{$ord_date}{literal}';
 
         $(document).ready(function () {
-            selectReference({
+            selectReferenceJS({
                 elem            : $('#ord_id'),
-                tableName       : 'orders',
-                keyFieldName    : 'ord_id',
-                textFieldName   : 'ord_id',
-                orderType       : 'DESC',
-                searchTool      : true,
+                data            : {/literal}{$referenceData["orders"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.ord_id}{literal}',
-                condition       : "ordstat_id != 'OS03'",
-                onOptionSelect  : changeOrderId,
-                allowChangeOption : allowChangeOrderId
+                allowChangeOption: saveOldOrderId,
+                onOptionSelect   : changeOrderId,
+                beforeShow       : allowChangeOrderId
             });
              
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.emp_id}{literal}'
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
              
 
@@ -240,7 +234,7 @@
             <tr>
                 <td>
                     <label class="input-required">รหัสการสั่งซื้อ</label>
-                    <div id="ord_id" class="select-reference form-input half" require></div>
+                    <div id="ord_id" class="selectReferenceJS form-input half" require></div>
                 </td>
                 <td>
                     <label class="input-required">พนักงานที่รับ</label>

@@ -1,5 +1,6 @@
 var orderPrdList = Array();
 var recPrdItem 	= Array();
+var oldOrderId 	= '';
 
 $(document).ready(function(){
 	// Check date
@@ -65,6 +66,11 @@ function allowChangeOrderId() {
 	}
 }
 
+function saveOldOrderId() {
+	oldOrderId = $('input[name="ord_id"]').val();
+	return true;
+}
+
 function changeOrderId() {
 	var orderId = $('input[name="ord_id"]').val();
 
@@ -106,6 +112,8 @@ function changeOrderId() {
 	                func:
 	                function() {
 	                    parent.hideActionDialog();
+	                    $('#ord_id').find('.selectReferenceJS-input').val(oldOrderId);
+	                    $('#ord_id').find('.selectReferenceJS-text').text(oldOrderId);
 	                }
 	            }
 	        ],
@@ -129,7 +137,6 @@ function changeOrderId() {
 			}
 		});
 	}
-	//$('#rec_date').val('');
 }
 
 function addEventRecPrdTable() {
@@ -238,7 +245,7 @@ function beforeSaveRecord() {
     var notInputUnitPrice 		= false;
     var notReceivePrdList 		= Array();
     var notInputUnitPriceList 	= Array();
-    var ord_id 				= $('#ord_id').find('.select-reference-input').val();
+    var ord_id 				= $('#ord_id').find('.selectReferenceJS-input').val();
 
     $('input[name="recdtl_amount[]"]').each(function() {
         if($(this).val() != '' && $(this).val() != '0') {
