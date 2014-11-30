@@ -3,11 +3,17 @@
 <head>
 	<title>Spa - Point of sale</title>
 	<meta charset="UTF-8"/>
+	{literal}
 	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="../css/point_of_sale.css">
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	<script type="text/javascript" src="../js/mbk_common_function.js"></script>
 	<script type="text/javascript" src="../js/point_of_sale.js"></script>
+	<script type="text/javascript">
+		var productList 	= {/literal}{$productList|@json_encode}{literal};
+		var productTypeList = {/literal}{$productTypeList|@json_encode}{literal};
+	</script>
+	{/literal}
 </head>
 <body>
 <div id="header"></div>
@@ -45,17 +51,13 @@
 				<div class="icon-barcode">
 					<i class="fa fa-barcode"></i>
 				</div>
-				<input type="text" id="barcode-input" placeholder="Scan barcode">
+				<input type="text" id="barcode-input" placeholder="แสกนบาร์โค้ด หรือ พิมพ์รหัสบาร์โค้ด">
 			</div>
 			<table id="summary-sale-tranaction">
 				<tbody>
 					<tr>
-						<td>รายการสินค้าทั้งหมด:</td>
-						<td id="total-product">0</td>
-					</tr>
-					<tr>
-						<td>จำนวนสินค้าทั้งหมด</td>
-						<td id="total-qty">0</td>
+						<td>รายการสินค้าทั้งหมด: <span id="total-product">0</span></td>
+						<td>จำนวนสินค้าทั้งหมด: <span id="total-qty">0</span></td>
 					</tr>
 				</tbody>
 			</table>
