@@ -25,6 +25,38 @@ $(document).ready(function() {
 });
 
 function pullProductList() {
+	var pinHTML = '';
+	for(i in productList) {
+		pinHTML += '<div class="pin-container">'
+				 + '		<div class="pin" prd-id="' + productList[i].prd_id + '" prd-price="' + productList[i].prd_price + '">'
+				 + '			<div class="prd-image-container">'
+				 + ' 				<div class="prd-image" style="background-image:url(\'../img/products/' + productList[i].prd_pic + '\');"></div>'
+				 + ' 			</div>'
+				 + ' 			<div class="prd-name-container">'
+				 + '				<p>' + productList[i].prd_name + '</p>'
+				 + ' 			</div>'
+				 + ' 		</div>'
+				 + '</div>';
+	}
+
+	if(pinHTML != '') {
+		$('#columns').html(pinHTML);
+
+		// Add event
+		$('.pin').click(function() {
+			var prdId 		= $(this).attr('prd-id');
+			var prdPrice 	= $(this).attr('prd-price');
+			var prdName 	= $(this).find('p').text();
+			addSaleDetail({
+				prd_id: prdId,
+				prd_name: prdName,
+				unit_price: prdPrice,
+				qty: 1
+			})
+		});
+	}
+	
+	/*   
 	$.ajax({
 		url: '../common/ajaxGetProductListPOS.php',
 		type: 'POST',
@@ -49,7 +81,7 @@ function pullProductList() {
 				})
 			});
 		}
-	})
+	});*/
 }
 
 function addSaleDetail(data) {
@@ -78,12 +110,12 @@ function addSaleDetail(data) {
 		html 	= '<tr id="' + data.prd_id + '">'
 				+ '		<td class="prdName-col">' + prdName + '</td>'
 				+ '		<td class="qty-col">'
-				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;left: 0;top: 2px;" '
+				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;left: 0;top: 1px;" '
 				+ '			onclick="plusOrMinusQty(\'' + data.prd_id + '\',1,\'minus\')">'
 				+ '				<i class="fa fa-minus"></i>'
 				+ '			</button>'
 				+ '			<span class="prd_qty">' + prdQty + '</span>'
-				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;right: 0;top: 2px;" '
+				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;right: 0;top: 1px;" '
 				+ '			onclick="plusOrMinusQty(\'' + data.prd_id + '\',1,\'plus\')">'
 				+ '				<i class="fa fa-plus"></i>'
 				+ '			</button>'
@@ -196,12 +228,9 @@ function plusOrMinusQty(prd_id, qty, action) {
 }
 
 function openEditQtyBox(prd_id, qty) {
-	if($('#edit-quantity-product').length > 0) {
-		$('#edit-quantity-product-inner').prepend('<div id="edit-quantity-loader"></div>');
-	} else {
+	if($('#edit-quantity-product').length <= 0) {
 		var editQtyBoxHtml 	= '<div id="edit-quantity-product">'
 							+ '		<div id="edit-quantity-product-inner">'
-							+ '			<div id="edit-quantity-loader"></div>'
 							+ '			<div id="edit-quantity-product-header">'
 							+ '				<button id="closeEqpBoxBtn" type="button" class="pos-btn arrowBtn green">ปิด</button>'
 							+ '			</div>'
@@ -212,53 +241,95 @@ function openEditQtyBox(prd_id, qty) {
 		// add event
 		$('#closeEqpBoxBtn').click(closeEditQtyBox);
 	}
-	
-	$.ajax({
-		url: '../common/ajaxOpenEditQtyBoxPOS.php',
-		type: 'POST',
-		data: {
-			prd_id: prd_id,
-			qty: qty
-		},
-		success:
-		function(response) {
-			if(response != '') {
-				$('#edit-quantity-product-body').html(response);
-				$('#edit-quantity-product-body').css('visibility', 'hidden');
 
-				// add event
-				$('#eqp-qty-minus-btn').click(function(){
-					plusOrMinusQty(prd_id, 1, 'minus');
-				});
-				$('#eqp-qty-plus-btn').click(function(){
-					plusOrMinusQty(prd_id, 1, 'plus');
-				});
-				$('#removeSlvDtlBtn').click(function(){
-					removeSaleDetail(prd_id);
-				});
-				$('#eqp-qty').change(function(){
-					var qty;
-					if($(this).val() == '' || parseInt($(this).val()) < 1) {
-						qty = parseInt(1);
-						
-					} else {
-						qty = parseInt($(this).val());
-					}
-					$(this).val(qty);
-					$('#' + prd_id).find('.prd_qty').text(qty.formatMoney(0, '.', ','));
-					calSummary();
-				});
-
-				// show when load image success
-				var prdImg = $('#edit-quantity-product .prd_image');
-				$(prdImg).load(function(){
-					$('#edit-quantity-loader').remove();
-					$('#edit-quantity-product-body').css('visibility', 'visible');
-				});
-			} else {
-				alert('no return data');
-			}
+	// Get product data
+	var prdData = Array();
+	for(i in productList) {
+		if(productList[i].prd_id == prd_id) {
+			prdData = productList[i];
+			break;
 		}
+	}
+
+	var eqpBoxHTML  = '<table class="produt-data">'
+					+ '		<tbody>'
+					+ ' 		<tr>'
+					+ '				<td>'
+					+ '					<img src="../img/products/' + prdData.prd_pic + '" class="prd_image">'
+					+ ' 			</td>'
+					+ ' 			<td style="width: 100%;padding-left: 20px;">'
+					+ ' 				<h1>' + prdData.prd_name + '</h1>'
+					+ ' 				<table>'
+					+ '						<tr>'
+					+ ' 						<td>ประเภท:</td>'
+					+ ' 						<td>' + prdData.prdtyp_name + '</td>'
+					+ '						</tr>'
+					+ '						<tr>'
+					+ ' 						<td>ยี่ห้อ:</td>'
+					+ ' 						<td>' + prdData.brand_name + '</td>'
+					+ '						</tr>'
+					+ '						<tr>'
+					+ ' 						<td colspan="2">' + prdData.prd_desc + '</td>'
+					+ '						</tr>'
+					+ '					</table>'
+					+ ' 				<span>ราคา <span id="eqp-unitPrice">' + prdData.prd_price + '</span> บาท</span>'
+					+ ' 			</td>'
+					+ '			</tr>'
+					+ ' 		<tr>'
+					+ ' 			<td colspan="2" style="text-align:center;padding-top:20px;">จำนวน</td>'
+					+ ' 		</tr>'
+					+ '			<tr>'
+					+ '				<td colspan="2">'
+					+ ' 				<div id="eqp-qty-container">'
+					+ '						<button id="eqp-qty-minus-btn" type="button" class="qty-circle-btn minus">'
+					+ '							<i class="fa fa-minus"></i>'
+					+ ' 					</button>'
+					+ ' 					<input id="eqp-qty" type="text" value="' + qty + '" onkeypress="return event.charCode >= 48 && event.charCode <= 57">'
+					+ ' 					<button id="eqp-qty-plus-btn" type="button" class="qty-circle-btn plus">'
+					+ ' 						<i class="fa fa-plus"></i>'
+					+ ' 					</button>'
+					+ '					</div>'
+					+ ' 			</td>'
+					+ '			</tr>'
+					+ ' 	</tbody>'
+					+ '</table>'
+					+ '<div id="eqp-control">'
+					+ '		<button id="removeSlvDtlBtn" type="button" class="pos-btn white">เอาสินค้านี้ออก</button>'
+					+ '</div>';
+
+	$('#edit-quantity-product-body').html(eqpBoxHTML);
+	$('#edit-quantity-product-body').css('visibility', 'hidden');
+
+	// add event
+	$('#eqp-qty-minus-btn').click(function(){
+		plusOrMinusQty(prd_id, 1, 'minus');
+	});
+	$('#eqp-qty-plus-btn').click(function(){
+		plusOrMinusQty(prd_id, 1, 'plus');
+	});
+	$('#removeSlvDtlBtn').click(function(){
+		removeSaleDetail(prd_id);
+	});
+	$('#eqp-qty').change(function(){
+		var qty;
+		if($(this).val() == '' || parseInt($(this).val()) < 1) {
+			qty = parseInt(1);
+			
+		} else {
+			qty = parseInt($(this).val());
+		}
+		$(this).val(qty);
+		$('#' + prd_id).find('.prd_qty').text(qty.formatMoney(0, '.', ','));
+		calSummary();
+	});
+
+	// show when load image success
+	var prdImg = $('#edit-quantity-product .prd_image');
+	$(prdImg).load(function(){
+		if(prdImg.height() > 250) {
+			prdImg.css('height', '250px');
+		}
+		$('#edit-quantity-product-body').css('visibility', 'visible');
 	});
 }
 function closeEditQtyBox() {
