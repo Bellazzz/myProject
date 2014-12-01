@@ -17,8 +17,9 @@ $sql = "SELECT 		p.prd_id,
 					p.prd_name,
 					p.prd_price,
 					p.prd_amount,
-					p.prd_pic,
-					IFNULL(p.prd_desc, '') prd_desc 
+					IFNULL(p.prd_pic, '') prd_pic,
+					IFNULL(p.prd_desc, '') prd_desc,
+					IFNULL(p.prd_barcode, '') prd_barcode 
 		FROM 		products p, product_types pt, brands b, units u 
 		WHERE 		p.brand_id = b.brand_id AND 
 					p.prdtyp_id = pt.prdtyp_id AND 

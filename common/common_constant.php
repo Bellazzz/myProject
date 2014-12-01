@@ -555,11 +555,12 @@ function dbClose() {
 						'prd_price'       => 'ราคา(บาท)',
 						'prd_amount'      => 'จำนวน',
 						'prd_pic'      	  => 'รูปภาพ',
-						'prd_desc'		  => 'คำอธิบาย'
+						'prd_desc'		  => 'คำอธิบาย',
+						'prd_barcode'	  => 'รหัสบาร์โค้ด'
 				),
-				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc'),
-				'defaultNull' 	=> array('prd_amount','prd_desc'),
-				'searchFields'	=> array('prd_name','prdtyp_id','brand_id'),
+				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode'),
+				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode'),
+				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode'),
 				'deleteTxtField' 		=> array('prd_name'),
 				'referenceData'			=> array('product_types', 'brands', 'units')
 			);

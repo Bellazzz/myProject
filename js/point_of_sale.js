@@ -2,27 +2,78 @@ $(document).ready(function() {
 	pullProductList();
 
 	$(document).keyup(function(e) {
-		if (e.keyCode == 13) { // ENTER
+		var code = (e.keyCode ? e.keyCode : e.which);
+		var stat = getWindowStatus();
 
-	  	} else if (e.keyCode == 27) { // ESC
-	  		if($('#edit-quantity-product').length > 0) {
-	  			closeEditQtyBox();
-	  		}
-	  	} else if(e.keyCode == 37) { // Arrow left
-
-	  	} else if(e.keyCode == 38) { // Arrow up
-	  		if($('#sale-product-list tr.selected').prev().length > 0) {
-	  			$('#sale-product-list tr.selected').prev().click();
-	  		}
-	  	} else if(e.keyCode == 39) { // Arrow right
-	  		
-	  	} else if(e.keyCode == 40) { // Arrow down
-	  		if($('#sale-product-list tr.selected').next().length > 0) {
-	  			$('#sale-product-list tr.selected').next().click();
-	  		}
-	  	}
+		if(stat == 'pay') {
+			if(code == 27) {
+				closePayBox();
+			}
+		} else if(stat == 'editQty') {
+			if (code == 27) { // ESC
+				if($('#edit-quantity-product').length > 0) {
+		  			closeEditQtyBox();
+		  		}
+			} else if(code == 38) { // Arrow up
+		  		if($('#sale-product-list tr.selected').prev().length > 0) {
+		  			$('#sale-product-list tr.selected').prev().click();
+		  		}
+		  	} else if(code == 40) { // Arrow down
+		  		if($('#sale-product-list tr.selected').next().length > 0) {
+		  			$('#sale-product-list tr.selected').next().click();
+		  		}
+		  	}
+		} else {
+			if (code == 13) { // ENTER
+				if($('#sale-product-list tr').length > 0) {
+					openPayBox();
+				}
+			}
+		}
 	});
+
+	// barcode input 
+	$('#barcode-input').keyup(function(e){
+		e.stopPropagation();
+		var code = (e.keyCode ? e.keyCode : e.which);
+		if(code == 13 || code == 9) { // Enter or Tab
+			if($(this).val() != '') {
+				var barcode = $(this).val();
+				var found 	= false;
+
+				// Get product data
+				for(i in productList) {
+				 	if(productList[i].prd_barcode == barcode) {
+				 		addSaleDetail({
+							prd_id 		: productList[i].prd_id,
+							prd_name 	: productList[i].prd_name,
+							unit_price 	: productList[i].prd_price,
+							qty: 1
+						});
+						found = true;
+						$(this).val('');
+						break;
+				 	}
+				 }
+
+				if(!found) {
+				 	alert('ไม่พบสินค้ารหัสนี้!!');
+				 	$(this).val('');
+				 }
+			}
+        }
+	})
 });
+
+function getWindowStatus() {
+	if($('#payBox').length > 0) {
+		return "pay";
+	} else if($('#edit-quantity-product').length > 0) {
+		return "editQty";
+	} else {
+		return "addProduct";
+	}
+}
 
 function pullProductList() {
 	var pinHTML = '';
@@ -52,36 +103,9 @@ function pullProductList() {
 				prd_name: prdName,
 				unit_price: prdPrice,
 				qty: 1
-			})
+			});
 		});
 	}
-	
-	/*   
-	$.ajax({
-		url: '../common/ajaxGetProductListPOS.php',
-		type: 'POST',
-		data: {
-			prdtyp_id : 'PT12',
-			searchText: ''
-		},
-		success:
-		function(response) {
-			$('#columns').html(response);
-			
-			// Add event
-			$('.pin').click(function() {
-				var prdId 		= $(this).attr('prd-id');
-				var prdPrice 	= $(this).attr('prd-price');
-				var prdName 	= $(this).find('p').text();
-				addSaleDetail({
-					prd_id: prdId,
-					prd_name: prdName,
-					unit_price: prdPrice,
-					qty: 1
-				})
-			});
-		}
-	});*/
 }
 
 function addSaleDetail(data) {
@@ -232,7 +256,7 @@ function openEditQtyBox(prd_id, qty) {
 		var editQtyBoxHtml 	= '<div id="edit-quantity-product">'
 							+ '		<div id="edit-quantity-product-inner">'
 							+ '			<div id="edit-quantity-product-header">'
-							+ '				<button id="closeEqpBoxBtn" type="button" class="pos-btn arrowBtn green">ปิด</button>'
+							+ '				<button id="closeEqpBoxBtn" type="button" class="pos-btn arrowBtn white">ปิด</button>'
 							+ '			</div>'
 							+ ' 		<div id="edit-quantity-product-body"></div>'
 							+ '		</div>'
@@ -335,4 +359,28 @@ function openEditQtyBox(prd_id, qty) {
 function closeEditQtyBox() {
 	$('#sale-product-list tr').removeClass('selected');
 	$('#edit-quantity-product').remove();
+}
+
+function openPayBox() {
+	var  payBoxHTML = '<div id="payBox">'
+					+ ' 	<div id="payBox-inner">'
+					+ '			<div id="payBox-inner-header">'
+					+ '				<h1>ชำระเงิน</h1>'
+					+ '			</div>'
+					+ ' 		<div id="payBox-inner-body">'
+					+ '				<div id="payBox-leftCont"></div>'
+					+ '				<div id="payBox-rightCont"></div>'
+					+ '			</div>'
+					+ ' 	</div>'
+					+ '</div>';
+	$('body').prepend(payBoxHTML);
+	$('#payBox').css('visibility', 'hidden');
+
+	// Set position
+    $('#payBox-inner').css('margin-top', -Math.abs($('#payBox-inner').outerHeight() / 2));
+    $('#payBox-inner').css('margin-left', -Math.abs($('#payBox-inner').outerWidth() / 2));
+    $('#payBox').css('visibility', 'visible');
+}
+function closePayBox() {
+	$('#payBox').remove();
 }

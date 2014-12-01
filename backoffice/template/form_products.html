@@ -87,6 +87,10 @@
                 <td>จำนวน :</td>
                 <td>{$values.prd_amount}   <div id="unit_id" class="selectReferenceJS text"></td>
             </tr>
+            <tr>
+                <td>รหัสบาร์โค้ด :</td>
+                <td>{if $values.prd_barcode}{$values.prd_barcode}{else}-{/if}</td>
+            </tr>
         </tbody>
     </table>
     {else}      
@@ -157,6 +161,12 @@
                 <td colspan=2>
                     <label>คำอธิบาย</label>
                     <textarea id="prd_desc" name="prd_desc" class="form-input full" rows="6">{$values.prd_desc}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รหัสบาร์โค้ด</label>
+                    <input id="prd_barcode" name="prd_barcode" type="text" class="form-input full" value="{$values.prd_barcode}">
                 </td>
             </tr>
             <tr>
