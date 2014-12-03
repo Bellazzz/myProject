@@ -37,6 +37,14 @@
                 defaultValue    : '{/literal}{$values.unit_id}{literal}'
             });
 
+            selectReferenceJS({
+                elem            : $('#shop_id'),
+                data            : {/literal}{$referenceData["shops"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.shop_id}{literal}',
+                showClearBtn    : true,
+                clearBtnText    : 'ไม่ระบุ'
+            });
+
             uploadImageInput({
                 area: $('#prd_pic'),
                 input: $('input[name="prd_pic"]'),
@@ -90,6 +98,10 @@
             <tr>
                 <td>รหัสบาร์โค้ด :</td>
                 <td>{if $values.prd_barcode}{$values.prd_barcode}{else}-{/if}</td>
+            </tr>
+            <tr>
+                <td>ร้านค้าที่จำหน่าย :</td>
+                <td><div id="shop_id" class="selectReferenceJS text"></td>
             </tr>
         </tbody>
     </table>
@@ -167,6 +179,12 @@
                 <td colspan="2">
                     <label>รหัสบาร์โค้ด</label>
                     <input id="prd_barcode" name="prd_barcode" type="text" class="form-input full" value="{$values.prd_barcode}">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>ร้านค้าที่จำหน่าย</label>
+                    <div id="shop_id" class="selectReferenceJS form-input full"></div>
                 </td>
             </tr>
             <tr>

@@ -556,13 +556,14 @@ function dbClose() {
 						'prd_amount'      => 'จำนวน',
 						'prd_pic'      	  => 'รูปภาพ',
 						'prd_desc'		  => 'คำอธิบาย',
-						'prd_barcode'	  => 'รหัสบาร์โค้ด'
+						'prd_barcode'	  => 'รหัสบาร์โค้ด',
+						'shop_id'		  => 'ร้านค้า'
 				),
-				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode'),
-				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode'),
-				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode'),
+				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode','shop_id'),
+				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode','shop_id'),
+				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode','shop_id'),
 				'deleteTxtField' 		=> array('prd_name'),
-				'referenceData'			=> array('product_types', 'brands', 'units')
+				'referenceData'			=> array('product_types', 'brands', 'units', 'shops')
 			);
 			break;
 
@@ -1051,6 +1052,21 @@ function dbClose() {
 						'prtord_time' 	  => 'เวลาที่พิมพ์'
 				),
 				'searchFields'	=> array('ord_id','emp_id','prtord_date')
+			);
+			break;
+
+		case 'shops':
+			 return array(
+				'tableNameTH'	=> 'ร้านค้า',
+				'keyFieldName'  => 'shop_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SH',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'shop_id'	  	  => 'รหัสร้านค้า',
+						'shop_name'	  	  => 'ชื่อร้านค้า'
+				),
+				'searchFields'	=> array('shop_name')
 			);
 			break;
 

@@ -65,7 +65,7 @@ switch ($tableName) {
 		break;
 }
 
-// Query table data
+// Query table data (table need join)
 switch ($tableName) {
 	case 'beds':
 		$where = 'WHERE b.room_id = r.room_id ';
@@ -245,6 +245,9 @@ switch ($tableName) {
 			$like	= str_replace('prdtyp_id', 'pt.prdtyp_name', $like);
 			$like	= str_replace('unit_id', 'u.unit_name', $like);
 			$like	= str_replace('brand_id', 'b.brand_name', $like);
+			$like	= str_replace('prd_barcode', 'p.prd_barcode', $like);
+			$like	= str_replace('shop_id', 'p.shop_name', $like);
+
 			$where .= " AND $like";
 		}
 		$sql = "SELECT p.prd_id,
@@ -253,8 +256,24 @@ switch ($tableName) {
 				b.brand_name brand_id,
 				p.prd_price,
 				p.prd_amount,
+				p.shop_name shop_id,
 				u.unit_name unit_id 
-				FROM products p, product_types pt, units u, brands b  
+				FROM 	(SELECT 	pd.prd_id,
+									pd.prd_name,
+									pd.prdtyp_id,
+									pd.brand_id,
+									pd.prd_price,
+									pd.prd_amount,
+									pd.unit_id,
+									pd.prd_barcode,
+									s.shop_name 
+						FROM 		products pd 
+						LEFT JOIN 	shops s 
+						ON 			pd.shop_id = s.shop_id
+						) p,
+						product_types pt,
+						units u,
+						brands b  
 				$where 
 				$order";
 		break;

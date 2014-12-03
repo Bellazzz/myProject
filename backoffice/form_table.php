@@ -223,6 +223,14 @@ if(!$_REQUEST['ajaxCall']) {
 					$refField 	= 'ser_id';
 					break;
 
+				case 'shops':
+					$sqlRefData = "	SELECT 		shop_id refValue,
+												shop_name refText 
+									FROM 		shops 
+									ORDER BY 	refText DESC";
+					$refField 	= 'shop_id';
+					break;
+
 			}
 
 			if(hasValue($sqlRefData)) {
