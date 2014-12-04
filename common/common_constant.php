@@ -556,14 +556,13 @@ function dbClose() {
 						'prd_amount'      => 'จำนวน',
 						'prd_pic'      	  => 'รูปภาพ',
 						'prd_desc'		  => 'คำอธิบาย',
-						'prd_barcode'	  => 'รหัสบาร์โค้ด',
-						'shop_id'		  => 'ร้านค้า'
+						'prd_barcode'	  => 'รหัสบาร์โค้ด'
 				),
-				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode','shop_id'),
-				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode','shop_id'),
-				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode','shop_id'),
+				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode'),
+				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode'),
+				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode'),
 				'deleteTxtField' 		=> array('prd_name'),
-				'referenceData'			=> array('product_types', 'brands', 'units', 'shops')
+				'referenceData'			=> array('product_types', 'brands', 'units')
 			);
 			break;
 
@@ -1064,9 +1063,32 @@ function dbClose() {
 				'keyLength'		=> 4,
 				'fieldNameList'	=> array(
 						'shop_id'	  	  => 'รหัสร้านค้า',
-						'shop_name'	  	  => 'ชื่อร้านค้า'
+						'shop_name'	  	  => 'ชื่อร้านค้า',
+						'shop_picture' 	  => 'รูปภาพร้านค้า',
+						'shop_desc' 	  => 'คำอธิบาย'
 				),
-				'searchFields'	=> array('shop_name')
+				'hiddenFields' 	=> array('shop_picture','shop_desc'),
+				'defaultNull' 	=> array('shop_picture','shop_desc'),
+				'searchFields'	=> array('shop_name'),
+				'deleteTxtField'		=> array('shop_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบร้านค้า %f1 ใช่หรือไม่?',
+				'referenceData'			=> array('products')
+			);
+			break;
+
+		case 'shop_display_products':
+			 return array(
+				'tableNameTH'	=> 'ผลิตภัณฑ์ที่ขายในร้านค้า',
+				'keyFieldName'  => 'shpdpprd_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SP',
+				'keyLength'		=> 8,
+				'fieldNameList'	=> array(
+						'shpdpprd_id'	=> 'รหัสผลิตภัณฑ์ที่ขายในร้านค้า',
+						'shop_id'	  	=> 'ร้านค้า',
+						'prd_id' 		=> 'ผลิตภัณฑ์'
+				),
+				'searchFields'	=> array('shop_id','prd_id')
 			);
 			break;
 

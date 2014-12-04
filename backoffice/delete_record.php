@@ -22,6 +22,16 @@ if($tableName == 'packages') {
 			exit();
 		}
 	}
+} else if($tableName == 'shops') {
+	foreach($keySelected as $index => $shop_id) {
+		$sql = "DELETE FROM shop_display_products WHERE shop_id = '$shop_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SHOP_DISPLAY_PRODUCTS_FAIL : $err";
+			exit();
+		}
+	}
 } else if($tableName == 'orders') {
 	foreach($keySelected as $index => $ord_id) {
 		$sql = "SELECT orddtl_id FROM order_details WHERE ord_id = '$ord_id'";

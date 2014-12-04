@@ -16,7 +16,139 @@
         var tableName   = '{/literal}{$tableName}{literal}';
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_table.php';
+        var ajaxUrl     = 'form_shops.php';
+        var valuesDetail    = '';
+        var vdtlAllDpPrd      = 0;
+
+         // Set valuesDetail
+        {/literal}
+        {if $valuesDetail}
+        {literal}
+            valuesDetail= {/literal}{$valuesDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {literal}
+
+        $(document).ready(function() {
+            $('#addDpPrdBtn').click(addDisplayProduct);
+
+            uploadImageInput({
+                area: $('#shop_picture'),
+                input: $('input[name="shop_picture"]'),
+                selector: $('#shop_picture_file'),
+                defaultValue: '{/literal}{if $values.shop_picture}../img/shops/{$values.shop_picture}?rand={$randNum}{/if}{literal}'
+            });
+
+            // Create display product input
+            if(action == 'ADD') {
+                addDisplayProduct({
+                    defaultValue : false
+                });
+            } else if(action == 'EDIT') {
+                for(i in valuesDetail) {
+                     addDisplayProduct({
+                        defaultValue    : true,
+                        shpdpprd_id     : valuesDetail[i].shpdpprd_id,
+                        prd_id          : valuesDetail[i].prd_id
+                    });
+                }
+            } else if(action == 'VIEW_DETAIL') {
+                $('#allPrd').text('{/literal}{$shopDisplayPrdList|@count}{literal}');
+            }
+        });
+
+        function addDisplayProduct(data) {
+            var randNum;
+            var selectRefDefault = '';
+            if(data.defaultValue) {
+                selectRefDefault = data.prd_id;
+            }
+            do {
+                randNum     = parseInt(Math.random()*1000);
+            } while($('#prd_id_' + randNum).length > 0);
+            var inputKeyId  = 'prd_id_' + randNum;
+
+            // Create HTML and append
+            var prdRowHTML  = '<tr class="prd-row">'
+                            + '     <td>'
+                            + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input full" require></div>';
+
+            // add shpdbprd id for update
+            if(action == 'EDIT' && typeof(data.shpdpprd_id) != 'undefined') {
+                prdRowHTML += '         <input name="shpdpprd_id[]" type="hidden" value="' + data.shpdpprd_id + '">';
+            }
+
+                prdRowHTML += '         <a title="ลบรายการนี้"><button class="removePrdBtn button button-icon button-icon-delete" onclick="removeDisplayProduct(\'' + randNum + '\')"></button></a>'
+                            + '     </td>'
+                            + '</tr>'
+                            + '<tr id="' + inputKeyId + '_errRow">'
+                            + '     <td>'
+                            + '         <span id="err-' + inputKeyId + '-require" class="errInputMsg err-' + inputKeyId + '">'
+                            + '             โปรดเลือกผลิตภัณฑ์'
+                            + '         </span>'
+                            + '     </td>'
+                            + '</tr>';
+            $('#products-table tbody').append(prdRowHTML);
+
+            selectReferenceJS({
+                elem            : $('#' + inputKeyId),
+                data            : {/literal}{$referenceData["products"]|@json_encode}{literal},
+                searchTool      : true,
+                defaultValue    : selectRefDefault,
+                success         : 
+                function() {
+                    $('input[name="' + inputKeyId + '"]').attr('name', 'prd_id[]');
+                    refreshPrdTable();
+                },
+                group           : 'products'
+            });
+        }
+
+        function removeDisplayProduct(randNum) {
+            var selectRef   = $('#prd_id_' + randNum);
+            var tr          = selectRef.parent().parent();
+            var txt         = selectRef.find('.selectReferenceJS-text').text();
+            var val         = selectRef.find('.selectReferenceJS-input').val();
+            var msg         = '';
+            if(val != '') {
+                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากร้านค้านี้ใช่หรือไม่?';
+            } else {
+                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากร้านค้านี้ใช่หรือไม่?';
+            }
+            parent.showActionDialog({
+                title: 'ลบผลิตภัณฑ์ที่ขาย',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: 'ลบผลิตภัณฑ์นี้ออกจากร้านค้า',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            tr.remove();
+                            $('#prd_id_' + randNum + '_errRow').remove();
+                            refreshSvlTable();
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'ยกเลิกการลบ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+
+        function refreshPrdTable() {
+            var allPrd = $('input[name="prd_id[]"]').length;
+            $('#allPrd').text(allPrd);
+        }
     </script>
     {/literal}
 </head>
@@ -24,6 +156,53 @@
 
 {include file="form_table_header.html"}
 <div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+        <img src="{if $values.shop_picture}../img/shops/{$values.shop_picture}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+    </div>
+    <table class="table-view-detail">
+        <tbody>                     
+            <tr>
+                <td>รหัสร้านค้า :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>ชื่อร้านค้า :</td>
+                <td>{$values.shop_name}</td>
+            </tr>
+                <td>คำอธิบาย :</td>
+                <td>{if $values.shop_desc}{$values.shop_desc}{else}-{/if}</td>
+            </tr>        
+        </tbody>
+    </table>
+    <!--Service list Data-->
+    <label class="article-title">รายการผลิตภัณฑ์ที่ขาย</label>
+    ทั้งหมด <span id="allPrd"></span> รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th>รหัสผลิตภัณฑ์</th>
+                <th class="txtLong-col">ชื่อผลิตภัณฑ์</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$shopDisplayPrdList key=i item=shpdpprd}
+            <tr>
+                <td align="center">{$shpdpprd.no}</td>
+                <td align="left">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=products&code={$shpdpprd.prd_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$shpdpprd.prd_id}
+                    </a>
+                </td>
+                <td align="left" class="txtLong-col">{$shpdpprd.prd_name}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->
     <form id="form-table" name="form-table" onsubmit="return false;">
 	<input type="hidden" name="requiredFields" value="shop_name">
     <input type="hidden" name="uniqueFields" value="shop_name">
@@ -41,9 +220,37 @@
                     <span id="err-shop_name-unique" class="errInputMsg err-shop_name">ชื่อร้านค้าซ้ำ โปรดป้อนชื่อร้านค้าใหม่</span>
                 </td>
             </tr>
+            <tr>
+                <td colspan=2>
+                    <label>คำอธิบาย</label>
+                    <textarea id="shop_desc" name="shop_desc" class="form-input full" rows="6">{$values.shop_desc}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รูปภาพร้านค้า</label>
+                    <div id="shop_picture" class="uploadImageArea full"></div>
+                    <input type="hidden" name="shop_picture" value="{$values.shop_picture}">
+                </td>
+            </tr>
 	    </tbody>
     </table>
+
+    <label class="article-title">รายการผลิตภัณฑ์ที่ขาย</label>
+    <table id="products-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td><label class="input-required">ผลิตภัณฑ์ (<span id="allPrd"></span> รายการ)</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addDpPrdBtn" class="button button-icon button-icon-add">เพิ่มผลิตภัณฑ์ที่ขาย</button>
     </form>
+
+    <form method="post" enctype="multipart/form-data">
+        <input id="shop_picture_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+    </form>
+    {/if}
 </div>
 </body>
 </html>

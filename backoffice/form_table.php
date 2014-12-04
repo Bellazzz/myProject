@@ -17,6 +17,10 @@ switch ($tableName) {
 	case 'packages':
 		header("location:form_packages.php?action=$action&code=$code");
 		break;
+
+	case 'shops':
+		header("location:form_shops.php?action=$action&code=$code");
+		break;
 }
 
 include('../config/config.php');
@@ -222,15 +226,6 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText DESC";
 					$refField 	= 'ser_id';
 					break;
-
-				case 'shops':
-					$sqlRefData = "	SELECT 		shop_id refValue,
-												shop_name refText 
-									FROM 		shops 
-									ORDER BY 	refText DESC";
-					$refField 	= 'shop_id';
-					break;
-
 			}
 
 			if(hasValue($sqlRefData)) {
