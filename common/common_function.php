@@ -27,4 +27,8 @@ function dateThaiFormatShort($date) {
 	return "$day $month $year";
 }
 
+function redirect($location) {
+	echo "<script>location='$location'</script>";
+}
+
 ?>

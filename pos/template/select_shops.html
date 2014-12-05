@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Point of sale</title>
+	<meta charset="UTF-8"/>
+	{literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/select_shops.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/mbk_common_function.js"></script>
+	<script type="text/javascript">
+		var productList 	= {/literal}{$productList|@json_encode}{literal};
+		var productTypeList = {/literal}{$productTypeList|@json_encode}{literal};
+
+		$(document).ready(function(){
+			$('.shop-list li').click(function() {
+				openPOS($(this).attr('id'));
+			});
+		});
+
+		function openPOS(shop_id) {
+			post('point_of_sale.php', {shop_id: shop_id});
+		}
+
+		function post(path, params, method) {
+		    method = method || "post"; // Set method to post by default if not specified.
+
+		    // The rest of this code assumes you are not using a library.
+		    // It can be made less wordy if you use one.
+		    var form = document.createElement("form");
+		    form.setAttribute("method", method);
+		    form.setAttribute("action", path);
+
+		    for(var key in params) {
+		        if(params.hasOwnProperty(key)) {
+		            var hiddenField = document.createElement("input");
+		            hiddenField.setAttribute("type", "hidden");
+		            hiddenField.setAttribute("name", key);
+		            hiddenField.setAttribute("value", params[key]);
+
+		            form.appendChild(hiddenField);
+		         }
+		    }
+
+		    document.body.appendChild(form);
+		    form.submit();
+		}
+	</script>
+	{/literal}
+</head>
+<body>
+<div id="header"></div>
+<div id="title-container">
+	<h1>ระบบขายหน้าร้าน</h1>
+	<p>เลือกร้านค้าที่ต้องการ</p>
+</div>
+<div class="container">
+	<ul class="shop-list">
+		{foreach from=$shopList key=i item=shop}
+		<li id="{$shop.shop_id}">
+			<a class="shop-picture"  
+			{if $shop.shop_picture}
+			style="background-image: url('../img/shops/{$shop.shop_picture}')"
+			{else}
+			style="background-image: url('../img/pos/shop-default.png')"
+			{/if}
+			></a>
+			<div class="shop-info">
+				<h2>
+					<a>{$shop.shop_name}</a>
+				</h2>
+				{if $shop.shop_desc}
+				<p>{$shop.shop_desc}</p>
+				{else}
+				<p></p>
+				{/if}
+				
+			</div>
+		</li>
+		{/foreach}
+	</ul>
+</div>
+</body>
+</html>

@@ -1,11 +1,18 @@
 <?php
 session_start();
 //require('check_session.php');
+
 include('../config/config.php');
 $tplName = 'point_of_sale.html';
 $subDir	 = WEB_ROOTDIR.'/pos/';
 
 include('../common/common_header.php');
+
+// check shop
+if(!hasValue($_POST['shop_id'])) {
+	redirect('select_shops.php');
+}
+$shop_id = $_POST['shop_id'];
 
 // Get products data
 $productList = array();
@@ -20,10 +27,12 @@ $sql = "SELECT 		p.prd_id,
 					IFNULL(p.prd_pic, '') prd_pic,
 					IFNULL(p.prd_desc, '') prd_desc,
 					IFNULL(p.prd_barcode, '') prd_barcode 
-		FROM 		products p, product_types pt, brands b, units u 
+		FROM 		products p, product_types pt, brands b, units u, shop_display_products s 
 		WHERE 		p.brand_id = b.brand_id AND 
 					p.prdtyp_id = pt.prdtyp_id AND 
-					p.unit_id = u.unit_id 
+					p.unit_id = u.unit_id AND 
+					p.prd_id = s.prd_id AND 
+					s.shop_id = '$shop_id' 
 		ORDER BY 	p.prd_name ASC";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
