@@ -47,6 +47,11 @@ $(document).ready(function () {
 		var tableName = $(this).attr('id').replace('tn-', '');
 		changeTable(tableName);
 	});
+    // find all tree view child
+    $('.allTreeViewChild').each(function(){
+        var allChild = $(this).parent().parent().parent().parent().find('.tree-view-child li').length;
+        $(this).text(allChild);
+    });
 
     /*
      * Table toolbar

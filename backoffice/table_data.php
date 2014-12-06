@@ -569,6 +569,24 @@ switch ($tableName) {
 				$where 
 				$order";
 		break;
+
+	case 'product_promotions':
+		$where = 'WHERE p.prdprmgrp_id = g.prdprmgrp_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('prdprmgrp_id', 'g.prdprmgrp_name', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT p.prdprm_id,
+				p.prdprm_name,
+				p.prdprm_startdate,
+				p.prdprm_enddate,
+				p.prdprm_type,
+				g.prdprmgrp_name prdprmgrp_id 
+				FROM product_promotions p, product_promotion_groups g 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
 		
 	default:
 		if(hasValue($like)) {

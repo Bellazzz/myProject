@@ -226,6 +226,14 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText DESC";
 					$refField 	= 'ser_id';
 					break;
+
+				case 'product_promotion_groups':
+					$sqlRefData = "	SELECT 		prdprmgrp_id refValue,
+												prdprmgrp_name refText 
+									FROM 		product_promotion_groups 
+									ORDER BY 	refText ASC";
+					$refField 	= 'prdprmgrp_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {

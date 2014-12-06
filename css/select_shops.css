@@ -61,6 +61,8 @@ body {
 
 .container {
 	margin: 0px auto;
+	width: 800px;
+	min-width: 800px;
 	max-width: 800px;
 	width: 90%;
 }

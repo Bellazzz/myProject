@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_product_promotions.php';
+
+		$(document).ready(function() {
+            // Default value of radio input
+            {/literal}
+            {if $values.prdprm_type == 'ลดราคา'}
+            $('#prdprm_type_sale').prop('checked', true);
+            {else if $values.prdprm_type == 'ฟรี'}
+            $('#prdprm_type_free').prop('checked', true);
+            {/if}
+            {literal}
+
+            selectReferenceJS({
+                elem            : $('#prdprmgrp_id'),
+                data            : {/literal}{$referenceData["product_promotion_groups"]|@json_encode}{literal},
+                searchTool      : true,
+                defaultValue    : '{/literal}{$values.prdprmgrp_id}{literal}'
+            });
+			 
+			uploadImageInput({
+				area: $('#prdprm_picture'),
+				input: $('input[name="prdprm_picture"]'),
+				selector: $('#prdprm_picture_file'),
+				defaultValue: '{/literal}{if $values.prdprm_picture}../img/product_promotions/{$values.prdprm_picture}?rand={$randNum}{/if}{literal}'
+			});
+
+			$('#prdprm_startdate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#prdprm_startdate').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                    	this.setOptions({
+	                        minDate: realDateToTmpDate('{/literal}{$nowDate}{literal}'),
+	                        maxDate:$('#prdprm_enddate').val()?unconvertThaiDate($('#prdprm_enddate').val()):false
+	                    });
+                    } else if(action == 'EDIT') {
+                    	this.setOptions({
+	                        maxDate:$('#prdprm_enddate').val()?unconvertThaiDate($('#prdprm_enddate').val()):false
+	                    });
+                    }
+                },
+                timepicker:false
+            });
+
+			$('#prdprm_enddate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#prdprm_enddate').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                    	this.setOptions({
+	                        minDate:$('#prdprm_startdate').val()?unconvertThaiDate($('#prdprm_startdate').val()):realDateToTmpDate('{/literal}{$nowDate}{literal}')
+	                    });
+                    } else if(action="EDIT") {
+                    	this.setOptions({
+	                        minDate:$('#prdprm_startdate').val()?unconvertThaiDate($('#prdprm_startdate').val()):false
+	                    });
+                    }
+                },
+                timepicker:false
+            });
+
+            // Check date
+            $('#prdprm_startdate').change(function(){
+                checkDate($(this), $('#prdprm_enddate'));
+            });
+            $('#prdprm_enddate').change(function() {
+                checkDate($(this), $('#prdprm_startdate'));
+            });
+		});
+
+		function checkDate(self, sibling) {
+            // Skip check
+            if(self.val() == '' || isDateThaiFormat(self.val())) {
+                return;
+            }
+
+            var selfDate        = new Date(self.val());
+            var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+            var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+            var selfId          = self.attr('id');
+
+            // Check sibling
+            if(sibling.val() != '') {
+                if(selfId == 'prdprm_startdate') {
+                    if(selfDate.getTime() > siblingDate.getTime()) {
+                        showAlertInvalidDate(self, 'overSibling');
+                        return;
+                    }
+                } else if(selfId == 'prdprm_enddate') {
+                    if(selfDate.getTime() < siblingDate.getTime()) {
+                        showAlertInvalidDate(self, 'overSibling');
+                        return;
+                    }
+                }
+            }
+
+            if(action == 'ADD') {
+            	// Check now date
+                if(selfId == 'prdprm_startdate') {
+                    if(selfDate.getTime() < nowDate.getTime()) {
+                        showAlertInvalidDate(self, 'lessThanNow')
+                    }
+                } else if(selfId == 'prdprm_enddate') {
+                    if(selfDate.getTime() < nowDate.getTime()) {
+                        showAlertInvalidDate(self, 'lessThanNow')
+                    }
+                }
+            }
+        }
+        function showAlertInvalidDate(self, errType) {
+            var titleTxt    = '';
+            var messageTxt  = '';
+            var descTxt     = '';
+            var selfId      = self.attr('id');
+
+            if(selfId == 'prdprm_startdate') {
+                titleTxt    = 'วันที่เริ่มใช้ไม่ถูกต้อง';
+                descTxt     = 'ป้อนวันที่เริ่มใช้ใหม่';
+                if(errType == 'overSibling') {
+                    messageTxt  = 'วันที่เริ่มใช้ไม่สามารถอยู่หลังวันที่สิ้นสุดได้ค่ะ';
+                } else if(errType == 'lessThanNow') {
+                    messageTxt  = 'ไม่สามารถป้อนวันที่เริ่มใช้ย้อนหลังได้ค่ะ';
+                }
+            } else if(selfId == 'prdprm_enddate') {
+                titleTxt    = 'วันที่สิ้นสุดไม่ถูกต้อง';
+                descTxt     = 'ป้อนวันที่สิ้นสุดใหม่';
+                if(errType == 'overSibling') {
+                    messageTxt  = 'วันที่สิ้นสุดไม่สามารถอยู่ก่อนหน้าวันที่เริ่มใช้ได้ค่ะ';
+                } else if(errType == 'lessThanNow') {
+                    messageTxt  = 'ไม่สามารถป้อนวันที่สิ้นสุดย้อนหลังได้ค่ะ';
+                }
+            }
+
+            if(parent.$('.action-dialog-container').length <= 0) {
+                parent.showActionDialog({
+                    title: titleTxt,
+                    message: messageTxt,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: descTxt,
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                self.val('');
+                                self.focus();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        }
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body"> 
+<div class="ftb-body">
+	{if $action == 'VIEW_DETAIL'}
+	<!-- VIEW_DETAIL -->
+	<div class="table-view-detail-image full">
+        <img src="{if $values.prdprm_picture != '-'}../img/product_promotions/{$values.prdprm_picture}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+	</div>
+	<table class="table-view-detail">
+		<tbody> 			
+			<tr>
+				<td>รหัสโปรโมชั่นผลิตภัณฑ์ :</td>
+				<td>{$code}</td>
+			</tr>
+			<tr>
+				<td>ชื่อโปรโมชั่นผลิตภัณฑ์ :</td>
+				<td>{$values.prdprm_name}</td>
+			</tr>
+            <tr>
+                <td>กลุ่มโปรโมชั่นผลิตภัณฑ์ :</td>
+                <td><div id="prdprmgrp_id" class="selectReferenceJS text"></td>
+            </tr>
+            <tr>
+                <td>ประเภทโปรโมชั่น :</td>
+                <td>{$values.prdprm_type}</td>
+            </tr>
+			<tr>
+				<td>วันที่เริ่มใช้ :</td>
+				<td>{$values.prdprm_startdate}</td>
+			</tr>
+			<tr>
+				<td>วันที่สิ้นสุด :</td>
+				<td>{$values.prdprm_enddate}</td>
+			</tr>
+            <tr>
+                <td>คำอธิบาย :</td>
+                <td>{if $values.prdprm_desc}{$values.prdprm_desc}{else}-{/if}</td>
+            </tr>
+		</tbody>
+	</table>
+	{else}	 	
+	<!-- ADD, EDIT -->	 	 	 	 	 	 	 	 	
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="prdprm_name,prdprmgrp_id,prdprm_startdate,prdprm_type">
+	<table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<td colspan=2>
+					<label class="input-required">ชื่อโปรโมชั่นผลิตภัณฑ์</label>
+					<input id="prdprm_name" name="prdprm_name" type="text" class="form-input full" value="{$values.prdprm_name}" require>
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan=2>
+                    <span id="err-prdprm_name-require" class="errInputMsg half err-prdprm_name">โปรดป้อนชื่อโปรโมชั่นผลิตภัณฑ์</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=2>
+                    <label class="input-required">ชื่อกลุ่มโปรโมชั่นผลิตภัณฑ์</label>
+                    <div id="prdprmgrp_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=2>
+                    <span id="err-prdprmgrp_id-require" class="errInputMsg err-prdprmgrp_id">โปรดเลือกกลุ่มโปรโมชั่นผลิตภัณฑ์</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=2>
+                    <label class="input-required">ประเภทโปรโมชั่น</label>
+                    <label><input id="prdprm_type_sale" type="radio" name="prdprm_type" value="ลดราคา" checked> ลดราคา</label>
+                    <label><input id="prdprm_type_free" type="radio" name="prdprm_type" value="ฟรี"> ฟรี</label>
+                    <br>
+                </td>
+            </tr>
+			<tr>
+				<td>
+					<label class="input-required">วันที่เริ่มใช้</label>
+                	<input id="prdprm_startdate" name="prdprm_startdate" type="text" class="mbk-dtp-th form-input half" value="{$values.prdprm_startdate}" require>
+                </td>
+                <td>
+					<label>วันที่สิ้นสุด</label>
+                	<input id="prdprm_enddate" name="prdprm_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.prdprm_enddate}">
+                </td>
+			</tr>
+			<tr class="errMsgRow">
+                <td>
+                    <span id="err-prdprm_startdate-require" class="errInputMsg half err-prdprm_startdate">โปรดป้อนวันที่เริ่มใช้</span>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan=2>
+                    <label>คำอธิบาย</label>
+                    <textarea id="prdprm_desc" name="prdprm_desc" class="form-input full" rows="6">{$values.prdprm_desc}</textarea>
+                </td>
+            </tr>
+			<tr>
+				<td colspan=2>
+                    <label>รูปภาพโปรโมชั่น</label>
+					<div id="prdprm_picture" class="uploadImageArea full"></div>
+					<input type="hidden" name="prdprm_picture" value="{$values.prm_picture}">
+				</td>
+			</tr>
+		</tbody>
+    </table>
+    </form>
+	<form method="post" enctype="multipart/form-data">
+		<input id="prdprm_picture_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+	</form>
+	{/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

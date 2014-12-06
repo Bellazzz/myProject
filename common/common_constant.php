@@ -1008,7 +1008,7 @@ function dbClose() {
 						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ขาย',
 						'sale_date'	  		  => 'วันที่ขาย',
 						'sale_time'	  		  => 'เวลาที่ขาย',
-						'sale_total_price' 	  => 'ราคารวม(บาท)'
+						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)'
 				),
 				'searchFields'	=> array('emp_id','sale_date'),
 				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
@@ -1030,9 +1030,27 @@ function dbClose() {
 						'sale_id'	  		  => 'รหัสการขาย',
 						'prd_id'	  		  => 'ผลิตภัณฑ์',
 						'saledtl_amount'	  => 'จำนวน',
-						'saledtl_price' 	  => 'ราคาต่อหน่วย(บาท)'
+						'saledtl_price' 	  => 'ราคารวม(บาท)'
 				),
 				'searchFields'	=> array('sale_id','prd_id')
+			);
+			break;
+
+		case 'sale_promotion_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่น',
+				'keyFieldName'  => 'saleprmdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SP',
+				'keyLength'		=> 13,
+				'fieldNameList'	=> array(
+						'saleprmdtl_id'	  	  => 'รหัสรายละเอียดการเกิดโปรโมชั่น',
+						'saledtl_id'	  	  => 'รหัสรายละเอียดการขาย',
+						'prmprd_id'	  		  => 'ผลิตภัณฑ์ที่จัดโปรโมชั่น',
+						'saleprmdtl_amount'	  => 'จำนวน',
+						'saleprmdtl_discout'  => 'ส่วนลดรวม(บาท)'
+				),
+				'searchFields'	=> array('saleprmdtl_id','saledtl_id','prmprd_id')
 			);
 			break;
 
@@ -1081,7 +1099,7 @@ function dbClose() {
 				'tableNameTH'	=> 'ผลิตภัณฑ์ที่ขายในร้านค้า',
 				'keyFieldName'  => 'shpdpprd_id',
 				'keyFieldType'	=> 2, 
-				'keyChar'		=> 'SP',
+				'keyChar'		=> 'DP',
 				'keyLength'		=> 8,
 				'fieldNameList'	=> array(
 						'shpdpprd_id'	=> 'รหัสผลิตภัณฑ์ที่ขายในร้านค้า',
@@ -1089,6 +1107,49 @@ function dbClose() {
 						'prd_id' 		=> 'ผลิตภัณฑ์'
 				),
 				'searchFields'	=> array('shop_id','prd_id')
+			);
+			break;
+
+		case 'product_promotion_groups':
+			 return array(
+				'tableNameTH'	=> 'กลุ่มโปรโมชั่นผลิตภัณฑ์',
+				'keyFieldName'  => 'prdprmgrp_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'DG',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'prdprmgrp_id'	  	  => 'รหัสกลุ่มโปรโมชั่นผลิตภัณฑ์',
+						'prdprmgrp_name'	  => 'ชื่อกลุ่มโปรโมชั่นผลิตภัณฑ์'
+				),
+				'searchFields'	=> array('prdprmgrp_name'),
+				'deleteTxtField'	=> array('prdprmgrp_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบกลุ่มโปรโมชั่นผลิตภัณฑ์ %f1 ใช่หรือไม่?'
+			);
+			break;
+
+		case 'product_promotions':
+			 return array(
+				'tableNameTH'	=> 'โปรโมชั่นผลิตภัณฑ์',
+				'keyFieldName'  => 'prdprm_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PP',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'prdprm_id'	  	  		=> 'รหัสโปรโมชั่นผลิตภัณฑ์',
+						'prdprm_name'	  		=> 'ชื่อโปรโมชั่นผลิตภัณฑ์',
+						'prdprm_startdate'	  	=> 'วันที่เริ่มใช้',
+						'prdprm_enddate'	  	=> 'วันที่สิ้นสุด',
+						'prdprm_picture'	  	=> 'รูปภาพ',
+						'prdprm_desc'	  		=> 'คำอธิบาย',
+						'prdprm_type'	  		=> 'ประเภท',
+						'prdprmgrp_id'	  		=> 'กลุ่มโปรโมชั่น'
+				),
+				'hiddenFields' 	=> array('prdprm_picture','prdprm_desc'),
+				'defaultNull' 	=> array('prdprm_enddate','prdprm_picture','prdprm_desc'),
+				'searchFields'	=> array('prdprm_name','prdprm_startdate','prdprm_enddate','prdprm_type','prdprmgrp_id'),
+				'deleteTxtField'	=> array('prdprm_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบโปรโมชั่นผลิตภัณฑ์ %f1 ใช่หรือไม่?',
+				'referenceData'			=> array('product_promotion_groups')
 			);
 			break;
 
