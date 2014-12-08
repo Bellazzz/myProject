@@ -265,9 +265,8 @@
             <tr>
                 <td colspan=2>
                     <label class="input-required">ประเภทโปรโมชั่น</label>
-                    <label><input id="prdprm_type_sale" type="radio" name="prdprm_type" value="ลดราคา" checked> ลดราคา</label>
-                    <label><input id="prdprm_type_free" type="radio" name="prdprm_type" value="ฟรี"> ฟรี</label>
-                    <br>
+                    <label style="display:inline-block;"><input id="prdprm_type_sale" type="radio" name="prdprm_type" value="ลดราคา" checked> ลดราคา</label><br>
+                    <label style="display:inline-block;"><input id="prdprm_type_free" type="radio" name="prdprm_type" value="ฟรี"> ฟรี</label><br><br>
                 </td>
             </tr>
 			<tr>
@@ -296,7 +295,7 @@
 				<td colspan=2>
                     <label>รูปภาพโปรโมชั่น</label>
 					<div id="prdprm_picture" class="uploadImageArea full"></div>
-					<input type="hidden" name="prdprm_picture" value="{$values.prm_picture}">
+					<input type="hidden" name="prdprm_picture" value="{$values.prdprm_picture}">
 				</td>
 			</tr>
 		</tbody>

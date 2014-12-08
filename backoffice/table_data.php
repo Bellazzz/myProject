@@ -587,6 +587,27 @@ switch ($tableName) {
 				$orderSpecial";
 		$sortBy = $sortBySpecial;
 		break;
+
+	case 'promotion_products':
+		$where = 'WHERE prmprd.prdprm_id = prdprm.prdprm_id AND prmprd.prd_id = p.prd_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('prdprm_id', 'prdprm.prdprm_name', $like);
+			$like	= str_replace('prd_id', 'p.prd_id', $like);
+			$like	= str_replace('prmprd_discout_type', "COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี')", $like);
+			$like	= str_replace('%%%','%\%%', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT prmprd.prmprd_id,
+				p.prd_name prd_id,
+				prdprm.prdprm_name prdprm_id,
+				prmprd.prmprd_startdate,
+				prmprd.prmprd_enddate,
+				COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี') prmprd_discout_type 
+				FROM promotion_products prmprd, product_promotions prdprm, products p 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
 		
 	default:
 		if(hasValue($like)) {

@@ -54,8 +54,8 @@ $(document).ready(function () {
     });
 
     // Check Input required and pattern
-    $('#form-table input').filter('[require],[valuepattern]').focusout(validateInput);
-    $('#form-table textarea').filter('[require],[valuepattern]').focusout(validateInput);
+    $('#form-table input:enabled').filter('[require],[valuepattern]').focusout(validateInput);
+    $('#form-table textarea:enabled').filter('[require],[valuepattern]').focusout(validateInput);
 
     // Fixed image in view detail
     $('.table-view-detail-image img').load(function() {
@@ -194,8 +194,8 @@ function validateInput() {
 function checkRequiredInput() {
 	var pass = true;
 
-	$('#form-table input').filter('[require],[valuepattern]').focusout();
-	$('#form-table textarea').filter('[require],[valuepattern]').focusout();
+	$('#form-table input:enabled').filter('[require],[valuepattern]').focusout();
+	$('#form-table textarea:enabled').filter('[require],[valuepattern]').focusout();
 	$('#form-table .select-reference').filter('[require]').each(validateInput);
 	$('#form-table .selectReferenceJS').filter('[require]').each(validateInput);
 
@@ -206,8 +206,8 @@ function checkRequiredInput() {
 		}
 	}
 
-	var inputErr 		= $('#form-table input.required').length;
-	var txtAreaErr 		= $('#form-table textarea.required').length;
+	var inputErr 		= $('#form-table input:enabled.required').length;
+	var txtAreaErr 		= $('#form-table textarea:enabled.required').length;
 	var selectRefErr 	= $('#form-table .select-reference.required').length;
 	var selectRefJSErr 	= $('#form-table .selectReferenceJS.required').length;
 	var allErr 			= inputErr + txtAreaErr + selectRefErr + selectRefJSErr;

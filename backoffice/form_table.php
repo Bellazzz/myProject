@@ -234,6 +234,28 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText ASC";
 					$refField 	= 'prdprmgrp_id';
 					break;
+
+				case 'todayOnward_product_promotions':
+					$sqlRefData = "	SELECT 		prdprm_id refValue,
+												prdprm_name refText,
+												prdprm_startdate,
+												IFNULL(prdprm_enddate,'') prdprm_enddate,
+												prdprm_type  
+									FROM 		product_promotions 
+									WHERE 		prdprm_enddate IS NULL OR 
+												prdprm_enddate >= CURDATE() 
+									ORDER BY 	refValue DESC";
+					$refField 	= 'prdprm_id';
+					break;
+
+				case 'products':
+					$sqlRefData = "	SELECT 		prd_id refValue,
+												prd_name refText,
+												prd_price 
+									FROM 		products p 
+									ORDER BY 	refText ASC";
+					$refField 	= 'prd_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {

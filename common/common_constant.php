@@ -1153,6 +1153,31 @@ function dbClose() {
 			);
 			break;
 
+		case 'promotion_products':
+			 return array(
+				'tableNameTH'	=> 'ผลิตภัณฑ์ที่จัดโปรโมชั่น',
+				'keyFieldName'  => 'prmprd_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'RP',
+				'keyLength'		=> 10,
+				'fieldNameList'	=> array(
+						'prmprd_id'	  	  		=> 'รหัสผลิตภัณฑ์ที่จัดโปรโมชั่น',
+						'prd_id'	  			=> 'ผลิตภัณฑ์',
+						'prdprm_id'	  			=> 'โปรโมชั่นผลิตภัณฑ์',
+						'prmprd_startdate'	  	=> 'วันที่เริ่มใช้',
+						'prmprd_enddate'	  	=> 'วันที่สิ้นสุด',
+						'prmprd_discout'	  	=> 'ส่วนลด',
+						'prmprd_discout_type'	=> 'ส่วนลด' 
+				),
+				'hiddenFields' 	=> array('prmprd_discout'),
+				'defaultNull' 	=> array('prmprd_enddate','prmprd_discout','prdprm_discout_type'),
+				'searchFields'	=> array('prd_id','prdprm_id','prmprd_startdate','prmprd_enddate','prmprd_discout_type'),
+				'deleteTxtField'	=> array('prd_id','prdprm_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบผลิตภัณฑ์ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
+				'referenceData'			=> array('products','todayOnward_product_promotions')
+			);
+			break;
+
 		
 	 }
  }
