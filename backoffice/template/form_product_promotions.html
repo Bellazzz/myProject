@@ -213,12 +213,16 @@
 				<td>{$values.prdprm_name}</td>
 			</tr>
             <tr>
-                <td>กลุ่มโปรโมชั่นผลิตภัณฑ์ :</td>
-                <td><div id="prdprmgrp_id" class="selectReferenceJS text"></td>
-            </tr>
-            <tr>
                 <td>ประเภทโปรโมชั่น :</td>
                 <td>{$values.prdprm_type}</td>
+            </tr>
+            <tr>
+                <td>กลุ่มโปรโมชั่นผลิตภัณฑ์ :</td>
+                <td><div id="prdprmgrp_id" class="selectReferenceJS text"></div></td>
+            </tr>
+            <tr>
+                <td>คำอธิบาย :</td>
+                <td>{if $values.prdprm_desc}{$values.prdprm_desc}{else}-{/if}</td>
             </tr>
 			<tr>
 				<td>วันที่เริ่มใช้ :</td>
@@ -226,12 +230,8 @@
 			</tr>
 			<tr>
 				<td>วันที่สิ้นสุด :</td>
-				<td>{$values.prdprm_enddate}</td>
+				<td>{if $values.prdprm_enddate != '-'}{$values.prdprm_enddate}{else}ไม่มีกำหนด{/if}</td>
 			</tr>
-            <tr>
-                <td>คำอธิบาย :</td>
-                <td>{if $values.prdprm_desc}{$values.prdprm_desc}{else}-{/if}</td>
-            </tr>
 		</tbody>
 	</table>
 	{else}	 	

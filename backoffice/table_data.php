@@ -578,10 +578,10 @@ switch ($tableName) {
 		}
 		$sql = "SELECT p.prdprm_id,
 				p.prdprm_name,
-				p.prdprm_startdate,
-				p.prdprm_enddate,
 				p.prdprm_type,
-				g.prdprmgrp_name prdprmgrp_id 
+				g.prdprmgrp_name prdprmgrp_id,
+				p.prdprm_startdate,
+				p.prdprm_enddate 
 				FROM product_promotions p, product_promotion_groups g 
 				$where 
 				$orderSpecial";
@@ -600,9 +600,9 @@ switch ($tableName) {
 		$sql = "SELECT prmprd.prmprd_id,
 				p.prd_name prd_id,
 				prdprm.prdprm_name prdprm_id,
+				COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี') prmprd_discout_type,
 				prmprd.prmprd_startdate,
-				prmprd.prmprd_enddate,
-				COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี') prmprd_discout_type 
+				prmprd.prmprd_enddate 
 				FROM promotion_products prmprd, product_promotions prdprm, products p 
 				$where 
 				$orderSpecial";

@@ -127,11 +127,11 @@
                             // Show for sale type
                             if(curPrmPrdType == 'ลดราคา') {
                                 $('.showForSale').css('visibility', 'visible');
-                                $('input[name="prmprd_prmprd_discout_type"]').prop('disabled', false);
+                                $('input[name="prmprd_discout_type"]').prop('disabled', false);
                                 $('#prmprd_discout').prop('disabled', false);
                             } else if(curPrmPrdType == 'ฟรี'){
                                 $('.showForSale').css('visibility', 'hidden');
-                                $('input[name="prmprd_prmprd_discout_type"]').prop('disabled', true);
+                                $('input[name="prmprd_discout_type"]').prop('disabled', true);
                                 $('#prmprd_discout').prop('disabled', true);
                                 $('#prmprd_discout').removeClass('required');
                                 $('.err-prmprd_discout').css('display', 'none');
@@ -447,28 +447,34 @@
 	<table class="table-view-detail">
 		<tbody> 			
 			<tr>
-				<td>รหัสรายการบริการที่จัดโปรโมชั่น :</td>
+				<td>รหัสผลิตภัณฑ์ที่จัดโปรโมชั่น :</td>
 				<td>{$code}</td>
 			</tr>
 			<tr>
-				<td>รหัสรายการบริการ :</td>
+				<td>ผลิตภัณฑ์ :</td>
 				<td>
-					<a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$values.prd_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                		{$values.prd_id}
+					<a href="form_table.php?action=VIEW_DETAIL&tableName=products&code={$values.prd_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        <div id="prd_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                 	</a>
 				</td>
 			</tr>
 			<tr>
-				<td>รหัสโปรโมชั่น :</td>
+				<td>โปรโมชั่นที่จัด :</td>
 				<td>
-					<a href="form_table.php?action=VIEW_DETAIL&tableName=promotions&code={$values.prdprm_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                		{$values.prdprm_id}
+					<a href="form_table.php?action=VIEW_DETAIL&tableName=product_promotions&code={$values.prdprm_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                		<div id="prdprm_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                 	</a>
 				</td>
 			</tr>
 			<tr>
-				<td>ราคา :</td>
-				<td>{$values.prmsvl_price|number_format:2:".":","} บาท</td>
+				<td>ส่วนลด :</td>
+				<td>
+                    {if $values.prmprd_discout != '-'}
+                        {$values.prmprd_discout} {$values.prmprd_discout_type}
+                    {else}
+                        ฟรี
+                    {/if}
+                </td>
 			</tr>
 			<tr>
 				<td>วันที่เริ่มใช้ :</td>
@@ -476,13 +482,8 @@
 			</tr>
 			<tr>
 				<td>วันที่สิ้นสุด :</td>
-				<td>{if $values.prmprd_enddate}{$values.prmprd_enddate}{else}-{/if}</td>
+				<td>{if $values.prmprd_enddate != '-'}{$values.prmprd_enddate}{else}ไม่มีกำหนด{/if}</td>
 			</tr>
-			<tr>
-				<td>คำอธิบาย :</td>
-				<td>{if $values.prmsvl_desc}{$values.prmsvl_desc}{else}-{/if}</td>
-			</tr>
-		
 		</tbody>
 	</table>
 	{else}	 	

@@ -52,6 +52,9 @@ $(document).ready(function () {
     $('#edit-btn').click(function () {
         parent.openFormTable('EDIT', code);
     });
+    $('#back-btn').click(function() {
+    	history.back();
+    });
 
     // Check Input required and pattern
     $('#form-table input:enabled').filter('[require],[valuepattern]').focusout(validateInput);
