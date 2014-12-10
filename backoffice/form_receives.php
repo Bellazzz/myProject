@@ -135,6 +135,7 @@ if(!$_REQUEST['ajaxCall']) {
 		//Get order product data
 		$sql = "SELECT 	od.prd_id,
 						od.orddtl_amount,
+						p.prd_id,
 						p.prd_name,
 						u.unit_name 
 				FROM 	orders o, order_details od, products p, units u 
@@ -148,6 +149,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$ord_id = $tmpRow['ord_id'];
 			}
 			$receiveDetailList[$tmpRow['prd_id']]['orddtl_amount'] 	= $tmpRow['orddtl_amount'];
+			$receiveDetailList[$tmpRow['prd_id']]['prd_id'] 		= $tmpRow['prd_id'];
 			$receiveDetailList[$tmpRow['prd_id']]['prd_name'] 		= $tmpRow['prd_name'];
 			$receiveDetailList[$tmpRow['prd_id']]['unit_name'] 		= $tmpRow['unit_name'];
 			if(!isset($receiveDetailList[$tmpRow['prd_id']]['sum_price'])) {

@@ -52,6 +52,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Get detail of orders
 		$orderDetailList = array();
 		$sql 	= "	SELECT o.orddtl_amount,
+					p.prd_id,
 					p.prd_name,
 					p.prd_price,
 					u.unit_name 

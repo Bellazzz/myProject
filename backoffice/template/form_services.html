@@ -89,11 +89,19 @@
             </tr>
             <tr>
                 <td>ผู้ใช้บริการ :</td>
-                <td><div id="cus_id" class="selectReferenceJS text"></div></td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=customers&code={$values.cus_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="cus_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
             </tr>
             <tr>
-                <td>พนักงาน :</td>
-                <td><div id="emp_id" class="selectReferenceJS text"></div></td>
+                <td>พนักงานที่บันทึก :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
             </tr>
             <tr>
                 <td>ประเภทการชำระเงิน :</td>
