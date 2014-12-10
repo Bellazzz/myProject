@@ -3,6 +3,8 @@ session_start();
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= 'receives';
 $code			= $_REQUEST['code'];
+$hideEditButton = $_REQUEST['hideEditButton'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 
 include('../config/config.php');
 $tplName = "form_$tableName.html";
@@ -124,13 +126,15 @@ if(!$_REQUEST['ajaxCall']) {
 			$sum_amount += $tmpRow['recdtl_amount'];
 		}
 
-		// Get order id
-		$sql = "SELECT o.ord_id 
+		// Get order id, order status id
+		$sql = "SELECT 	o.ord_id,
+						o.ordstat_id 
 				FROM 	orders o, receives r 
 				WHERE 	o.ord_id = r.ord_id AND r.rec_id = '$code' LIMIT 1";
 		$result = mysql_query($sql, $dbConn);
 		$tmpRow = mysql_fetch_assoc($result);
-		$ord_id = $tmpRow['ord_id'];
+		$ord_id 	= $tmpRow['ord_id'];
+		$ordstat_id = $tmpRow['ordstat_id'];
 		
 		//Get order product data
 		$sql = "SELECT 	od.prd_id,
@@ -271,10 +275,21 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('referenceData', $referenceData);
 	}
 
+	// Hide edit button
+	if(isset($ordstat_id) && $ordstat_id == 'OS03') {
+		$smarty->assign('hideEditButton', true);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
+	if(isset($_REQUEST['hideEditButton']) && $hideEditButton == 'true') {
+		$smarty->assign('hideEditButton', true);
+	}
+	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
 	include('../common/common_footer.php');
 } else {
 	//2. Process record

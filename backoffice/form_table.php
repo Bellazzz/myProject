@@ -3,15 +3,17 @@ session_start();
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= $_REQUEST['tableName'];
 $code			= $_REQUEST['code'];
+$hideEditButton = $_REQUEST['hideEditButton'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 
 // Check table
 switch ($tableName) {
 	case 'orders':
-		header("location:form_orders.php?action=$action&code=$code");
+		header("location:form_orders.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 
 	case 'receives':
-		header("location:form_receives.php?action=$action&code=$code");
+		header("location:form_receives.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 
 	case 'packages':
@@ -289,8 +291,11 @@ if(!$_REQUEST['ajaxCall']) {
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
 	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
-	if(isset($_REQUEST['hideEditButton'])) {
+	if(isset($_REQUEST['hideEditButton']) && $hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
+	}
+	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
 	}
 	include('../common/common_footer.php');
 } else {

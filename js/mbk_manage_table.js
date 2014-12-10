@@ -644,7 +644,8 @@ function closeManageBox() {
 }
 
 function openFormTable(action, code) {
-    var src = 'form_table.php' + '?action=' + action + '&tableName=' + this.table.name;
+    var src = 'form_table.php' + '?action=' + action + '&tableName=' + this.table.name
+            + '&hideBackButton=true';
     if (typeof(code) != 'undefinded' && code != null) {
         src += '&code=' + code;
     }

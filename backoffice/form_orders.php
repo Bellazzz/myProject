@@ -3,6 +3,8 @@ session_start();
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= 'orders';
 $code			= $_REQUEST['code'];
+$hideEditButton = $_REQUEST['hideEditButton'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 
 include('../config/config.php');
 $tplName = "form_$tableName.html";
@@ -152,6 +154,12 @@ if(!$_REQUEST['ajaxCall']) {
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
+	if(isset($_REQUEST['hideEditButton']) && $hideEditButton == 'true') {
+		$smarty->assign('hideEditButton', true);
+	}
+	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
 	include('../common/common_footer.php');
 } else {
 	//2. Process record
