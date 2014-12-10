@@ -240,7 +240,8 @@ if(!$_REQUEST['ajaxCall']) {
 												prdprm_name refText,
 												prdprm_startdate,
 												IFNULL(prdprm_enddate,'') prdprm_enddate,
-												prdprm_type  
+												prdprm_type,
+												prdprmgrp_id 
 									FROM 		product_promotions 
 									WHERE 		prdprm_enddate IS NULL OR 
 												prdprm_enddate >= CURDATE() 

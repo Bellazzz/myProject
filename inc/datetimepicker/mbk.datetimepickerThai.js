@@ -264,3 +264,27 @@ function getRealDate(input) {
 	  	}
 	}
 }
+
+function tmpDateToRealDate(tmpDate) {
+	if(tmpDate == '') {
+		return '';
+	}
+	if(isDateThaiFormat(tmpDate)) {
+		tmpDate = unconvertThaiDate(tmpDate);
+	}
+
+	var tmpDateTime = new Date(tmpDate);
+	var date 		= tmpDateTime.getDate();
+	var month 		= tmpDateTime.getMonth()+1;
+	var year 		= tmpDateTime.getFullYear()-543;
+	// Add zero
+	if(date.toString().length < 2) {
+		date = '0' + date;
+	}
+	if(month.toString().length < 2) {
+		month = '0' + month;
+	}
+	// Concat
+	var realDate = year + '/' + month + '/' + date;
+	return(realDate);
+}

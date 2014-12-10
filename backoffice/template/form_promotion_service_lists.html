@@ -194,18 +194,18 @@
 				<td>{$code}</td>
 			</tr>
 			<tr>
-				<td>รหัสรายการบริการ :</td>
+				<td>รายการบริการ :</td>
 				<td>
 					<a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$values.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                		{$values.svl_id}
+                        <div id="svl_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                 	</a>
 				</td>
 			</tr>
 			<tr>
-				<td>รหัสโปรโมชั่น :</td>
+				<td>โปรโมชั่นที่จัด :</td>
 				<td>
 					<a href="form_table.php?action=VIEW_DETAIL&tableName=promotions&code={$values.prm_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                		{$values.prm_id}
+                        <div id="prm_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                 	</a>
 				</td>
 			</tr>

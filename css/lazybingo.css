@@ -1053,7 +1053,7 @@ table.mbk .icon {
 .action-dialog > h2, .action-dialog .message {
     color: #205081;
     display: block;
-    max-height: 180px;
+    max-height: 280px;
     width: 100%;
     overflow-y: auto;
     margin-top: 10px;

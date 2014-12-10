@@ -1170,7 +1170,7 @@ function dbClose() {
 						'prmprd_discout_type'	=> 'ส่วนลด' 
 				),
 				'hiddenFields' 	=> array('prmprd_discout'),
-				'defaultNull' 	=> array('prmprd_enddate','prmprd_discout','prdprm_discout_type'),
+				'defaultNull' 	=> array('prmprd_enddate','prmprd_discout','prmprd_discout_type'),
 				'searchFields'	=> array('prd_id','prdprm_id','prmprd_startdate','prmprd_enddate','prmprd_discout_type'),
 				'deleteTxtField'	=> array('prd_id','prdprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบผลิตภัณฑ์ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',

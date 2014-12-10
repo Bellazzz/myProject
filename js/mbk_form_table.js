@@ -14,32 +14,7 @@ $(document).ready(function () {
     $('#save-btn').click(function () {
     	if(checkRequiredInput()) {
 	    	if(action == 'EDIT'){
-		        parent.showActionDialog({
-		            title: 'บันทึกการแก้ไข',
-		            message: 'คุณต้องการแก้ไขข้อมูลใช่หรือไม่?',
-		            actionList: [
-		                {
-		                    id: 'ok',
-		                    name: 'ตกลง',
-		                    desc: 'บันทึกการเปลี่ยนแปลงข้อมูล',
-		                    func:
-		                    function() { 
-		                    	saveRecord();
-		                        parent.hideActionDialog();
-		                    }
-		                },
-		                {
-		                    id: 'cancel',
-		                    name: 'ยกเลิก',
-		                    desc: 'ยกเลิกการเปลี่ยนแปลงข้อมูล',
-		                    func:
-		                    function() {
-		                        parent.hideActionDialog();
-		                    }
-		                }
-		            ],
-		            boxWidth: 400
-		        });
+		        confirmSaveRecord();
 	    	} else if (action == 'ADD'){
 	    		saveRecord();
 	    	}
@@ -69,8 +44,37 @@ $(document).ready(function () {
     	} else if(width > 470) {
     		$(this).width(470);
     	}
-    })
+    });
 });
+
+function confirmSaveRecord() {
+	parent.showActionDialog({
+        title: 'บันทึกการแก้ไข',
+        message: 'คุณต้องการแก้ไขข้อมูลใช่หรือไม่?',
+        actionList: [
+            {
+                id: 'ok',
+                name: 'ตกลง',
+                desc: 'บันทึกการเปลี่ยนแปลงข้อมูล',
+                func:
+                function() { 
+                	saveRecord();
+                    parent.hideActionDialog();
+                }
+            },
+            {
+                id: 'cancel',
+                name: 'ยกเลิก',
+                desc: 'ยกเลิกการเปลี่ยนแปลงข้อมูล',
+                func:
+                function() {
+                    parent.hideActionDialog();
+                }
+            }
+        ],
+        boxWidth: 400
+    });
+}
 
 function saveRecord() {
 	// Convert thai date to real date

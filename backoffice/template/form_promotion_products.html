@@ -28,6 +28,9 @@
             margin: 0;
             text-align: center;
         }
+        #previewPrmPrice.viewDetail {
+            width: 100%;
+        }
         #previewPrmPrice li {
             width: 170px;
             height: 100px;
@@ -35,6 +38,10 @@
             float: left;
             border: 1px solid #ddd;
             margin-right: 5px;
+        }
+        #previewPrmPrice.viewDetail li {
+            width: 32.5%;
+            margin-right: 1.25%;
         }
         #previewPrmPrice li:last-child {
             margin-right: 0;
@@ -57,7 +64,8 @@
         var refPrdData      = {/literal}{$referenceData["products"]|@json_encode}{literal};
         var refPrdprmData   = {/literal}{$referenceData["todayOnward_product_promotions"]|@json_encode}{literal};
         var curPrdPrice     = null;
-        var curPrmPrdType   = '';
+        var curPrdPrmType   = '';
+        var curPrdPrmGrpId     = '';
 
         // Check if not have product promotion now
         {/literal}
@@ -89,7 +97,11 @@
                 elem            : $('#prd_id'),
                 data            : refPrdData,
                 defaultValue    : '{/literal}{$values.prd_id}{literal}',
-                success         : setCurPrdPrice,
+                success         : 
+                function () {
+                    setCurPrdPrice();
+                    calPreviewPrmPrice();
+                },
                 onOptionSelect  : 
                 function() {
                     setCurPrdPrice();
@@ -106,42 +118,10 @@
                 function() {
                     $('#prmprd_startdate').val('');
                     $('#prmprd_enddate').val('');
-
-                    
-                    for(i in refPrdprmData) {
-                        if(refPrdprmData[i].refValue == $('#prdprm_id').find('.selectReferenceJS-input').val()) {
-                            curPrmPrdType = refPrdprmData[i].prdprm_type;
-                            // Gen promotion time text
-                            var timeTxt = '(ประเภทโปรโมชั่น: ' + curPrmPrdType + ', ระยะเวลาโปรโมชั่น: ';
-                            if(refPrdprmData[i].prdprm_enddate == '') {
-                                timeTxt += realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ' - ไม่มีกำหนด)';
-                            } else if(refPrdprmData[i].prdprm_startdate == refPrdprmData[i].prdprm_enddate) {
-                                timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ')';
-                            } else {
-                                timeTxt += realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ' - '
-                                         + realDateToThaiDate(refPrdprmData[i].prdprm_enddate) + ')';
-                            }
-                            $('#prdprmTime').text(timeTxt);
-                            $('#prdprmTime').css('display','block');
-
-                            // Show for sale type
-                            if(curPrmPrdType == 'ลดราคา') {
-                                $('.showForSale').css('visibility', 'visible');
-                                $('input[name="prmprd_discout_type"]').prop('disabled', false);
-                                $('#prmprd_discout').prop('disabled', false);
-                            } else if(curPrmPrdType == 'ฟรี'){
-                                $('.showForSale').css('visibility', 'hidden');
-                                $('input[name="prmprd_discout_type"]').prop('disabled', true);
-                                $('#prmprd_discout').prop('disabled', true);
-                                $('#prmprd_discout').removeClass('required');
-                                $('.err-prmprd_discout').css('display', 'none');
-                            }
-                            break;
-                        }
-                    }
-
+                    prdprmIdChange();
                     validateDiscout();
-                }
+                },
+                success         : prdprmIdChange
             });
 
 			$('#prmprd_startdate').datetimepicker({
@@ -215,6 +195,11 @@
 
             // Check discout
             $('#prmprd_discout').change(validateDiscout);
+
+            // Set default radio input
+            if(action == 'EDIT') {
+                $('input[name="prmprd_discout_type"][value="{/literal}{$values.prmprd_discout_type}{literal}"]').click();
+            }
         });
 
         function setCurPrdPrice() {
@@ -351,7 +336,7 @@
         }
 
         function validateDiscout() {
-            if($('#prmprd_discout').val() == '' || curPrmPrdType == 'ฟรี') {
+            if($('#prmprd_discout').val() == '' || curPrdPrmType == 'ฟรี') {
                 return;
             }
 
@@ -435,6 +420,103 @@
                 $('#preview-prm_price').text(parseFloat(curPrdPrice - discout).formatMoney(2, '.', ','));
             }
         }
+
+        function beforeSaveRecord() {
+            var returnVal = true; // false = no err, true = have err
+
+            $.ajax({
+                url: '../common/ajaxCheckPromotionProductTimeOverlap.php',
+                type: 'POST',
+                data: {
+                    prmprd_id       : code,
+                    prd_id          : $('input[name="prd_id"]').val(),
+                    startdate       : tmpDateToRealDate($('#prmprd_startdate').val()),
+                    enddate         : tmpDateToRealDate($('#prmprd_enddate').val()),
+                    prdprm_type     : curPrdPrmType,
+                    prdprmgrp_id    : curPrdPrmGrpId
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'OVERLAP') {
+                        var overlapListHTML = '<ul>';
+                        for(i in response.overlapList) {
+                            overlapListHTML += '<li>' + response.overlapList[i] + '</li>';
+                        }
+                        overlapListHTML += '</ul>';
+
+                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ของผลิตภัณฑ์ ' 
+                                + $('#prd_id').find('.selectReferenceJS-text').text()
+                                + ' ซ้อนทับกับช่วงเวลาดังต่อไปนี้' + overlapListHTML 
+                                + '<br>โปรดเปลี่ยนระยะเวลาโปรโมชั่นไม่ให้อยู่ในช่วงเวลาดังกล่าว';
+                        parent.showActionDialog({
+                            title: 'ระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ซ้อนทับกัน',
+                            message: msg,
+                            actionList: [
+                                {
+                                    id: 'ok',
+                                    name: 'ตกลง',
+                                    func:
+                                    function() {
+                                        parent.hideActionDialog();
+                                    }
+                                }
+                            ],
+                            boxWidth: 500
+                        });
+                    } else if(response.status == 'NOT_OVERLAP') {
+                        if(action == 'ADD') {
+                            saveRecord();
+                        } else if(action == 'EDIT') {
+                            confirmSaveRecord();
+                        }
+                    } else {
+                        alert(response.status);
+                    }
+                }
+            });
+
+            return returnVal;
+        }
+
+        function prdprmIdChange() {
+            for(i in refPrdprmData) {
+                if(refPrdprmData[i].refValue == $('#prdprm_id').find('.selectReferenceJS-input').val()) {
+                    curPrdPrmType  = refPrdprmData[i].prdprm_type;
+                    curPrdPrmGrpId = refPrdprmData[i].prdprmgrp_id;
+                    // Gen promotion time text
+                    var timeTxt = '(ประเภทโปรโมชั่น: ' + curPrdPrmType + ', ระยะเวลาโปรโมชั่น: ';
+                    if(refPrdprmData[i].prdprm_enddate == '') {
+                        timeTxt += realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ' - ไม่มีกำหนด)';
+                    } else if(refPrdprmData[i].prdprm_startdate == refPrdprmData[i].prdprm_enddate) {
+                        timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ')';
+                    } else {
+                        timeTxt += realDateToThaiDate(refPrdprmData[i].prdprm_startdate) + ' - '
+                                 + realDateToThaiDate(refPrdprmData[i].prdprm_enddate) + ')';
+                    }
+                    $('#prdprmTime').text(timeTxt);
+                    $('#prdprmTime').css('display','block');
+
+                    // Show for sale type
+                    if(curPrdPrmType == 'ลดราคา') {
+                        $('.showForSale').css('visibility', 'visible');
+                        $('.discout_type_hidden').prop('disabled', true);
+                        $('.discout_hidden').prop('disabled', true);
+                        $('.discout_type_radio').prop('disabled', false);
+                        $('#prmprd_discout').prop('disabled', false);
+                    } else if(curPrdPrmType == 'ฟรี'){
+                        $('.showForSale').css('visibility', 'hidden');
+                        $('.discout_type_radio').prop('disabled', true);
+                        $('#prmprd_discout').prop('disabled', true);
+                        $('.discout_type_hidden').prop('disabled', false);
+                        $('.discout_hidden').prop('disabled', false);
+                        $('#prmprd_discout').removeClass('required');
+                        $('.err-prmprd_discout').css('display', 'none');
+                    }
+                    break;
+                }
+            }
+        }
     </script>
     {/literal}
 </head>
@@ -486,6 +568,9 @@
 			</tr>
 		</tbody>
 	</table>
+    <!--For calculate PreviewPrmPrice-->
+    <input name="prmprd_discout_type" type="radio" value="{$values.prmprd_discout_type}" style="display:none;" checked>
+    <input id="prmprd_discout" type="hidden" value="{$values.prmprd_discout}"> 
 	{else}	 	
 	<!-- ADD, EDIT -->	 
     <form id="form-table" name="form-table" onsubmit="return false;">
@@ -534,14 +619,16 @@
             <tr class="showForSale">
                 <td colspan="2">
                     <label class="input-required">รูปแบบส่วนลด</label>
-                    <label style="display:inline-block;"><input type="radio" name="prmprd_discout_type" value="บาท" checked> ราคาสุทธิ</label><br>
-                    <label style="display:inline-block;"><input type="radio" name="prmprd_discout_type" value="%"> เปอร์เซ็น</label><br><br>
+                    <input type="hidden" name="prmprd_discout_type" value="" class="discout_type_hidden">
+                    <label style="display:inline-block;"><input type="radio" name="prmprd_discout_type" value="บาท" class="discout_type_radio" checked> ราคาสุทธิ</label><br>
+                    <label style="display:inline-block;"><input type="radio" name="prmprd_discout_type" value="%" class="discout_type_radio"> เปอร์เซ็น</label><br><br>
                 </td>
             </tr>
 		    <tr class="showForSale">
 			    <td colspan="2">
 				    <label class="input-required">ส่วนลด (<span id="prmprd_discout_type_text">บาท</span>)</label>
 				    <input id="prmprd_discout" name="prmprd_discout" type="text" class="form-input full" value="{$values.prmprd_discout}" valuepattern="money" require>
+                    <input name="prmprd_discout" type="hidden" value="" class="discout_hidden">
 			    </td>
 		    </tr>
 		    <tr class="errMsgRow showForSale">
@@ -553,7 +640,8 @@
 	    </tbody>
     </table>
     </form>
-    <ul id="previewPrmPrice" class="showForSale">
+    {/if}
+    <ul id="previewPrmPrice" class="showForSale{if $action == 'VIEW_DETAIL'} viewDetail{/if}">
         <li>
             <h2>ราคาปกติ</h2>
             <p>฿<span id="preview-prd_price">0.00</span></p>
@@ -571,7 +659,6 @@
             </p>
         </li>
     </ul>
-    {/if}
 </div>
 </body>
 </html>
