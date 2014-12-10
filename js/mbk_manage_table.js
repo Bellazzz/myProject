@@ -726,19 +726,19 @@ function closeFormTable() {
 }
 
 function openPrintEmpCard(empId) {
-	var src = 'printEmployeeCard.php?empId=' + empId;
+	var src = 'printEmployeeCard.php?empId=' + empId + '&hideBackButton=true';
 	openManageBox({
         formSrc: src
     });
 }
 
 function openPrintPurchaseOrder(ordId) {
-    var src = 'printPurchaseOrder.php?ordId=' + ordId;
+    var src = 'printPurchaseOrder.php?ordId=' + ordId + '&hideBackButton=true';
     openManageBox({
-        formSrc     : src,
-        widthSize   : 'large'
+        formSrc     : src
+        //widthSize   : 'large'
     });
-    $('#manage-box').addClass('large');
+    //$('#manage-box').addClass('large');
 }
 
 function showTableTooltip(top, left, text) {

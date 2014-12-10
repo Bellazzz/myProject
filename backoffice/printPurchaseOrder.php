@@ -55,7 +55,8 @@ return $convert;
 ###### End initial ######
 
 
-$ordId = $_REQUEST['ordId'];
+$ordId 			= $_REQUEST['ordId'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 
 if(hasValue($ordId)) {
 	// Get spa data
@@ -166,6 +167,9 @@ if(hasValue($ordId)) {
 	$prtordRow 	= mysql_fetch_assoc($result);
 	$printNum 	= $prtordRow['printNum'];
 	$smarty->assign('printNum', $printNum);
+	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
 }
 
 include('../common/common_footer.php');

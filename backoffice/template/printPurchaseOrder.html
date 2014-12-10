@@ -140,10 +140,23 @@
 		<h1 id="ftb-title">ใบสั่งซื้อ (เลขที่ {$ordData.ord_id})</h1>
 	</div>
     <div class="toolbar-container clearfix">
-    	{if $ordData.ordstat_id == 'OS01'}
-		<button id="print-btn" class="button button-icon button-icon-print">พิมพ์</button>
-		{/if}
-		<button id="cancel-btn" class="button button-icon button-icon-delete">ปิด</button>
+    	<ul class="toolbar-menu">
+			<li>
+				{if !$hideBackButton}
+				<a id="back-btn">
+				    <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+			    </a>
+			    {/if}
+			    {if $ordData.ordstat_id == 'OS01'}
+			    <a id="print-btn">
+				    <i class="fa fa-print"></i> พิมพ์
+			    </a>
+			    {/if}
+			    <a id="cancel-btn">
+				    <i class="fa fa-times"></i> ปิด
+			    </a>
+			</li>
+		</ul>
     </div>
 </div>
 <div id="printArea" class="ftb-body">
@@ -243,6 +256,9 @@
 		});
 		$('#cancel-btn').click(function() {
 			parent.closeManageBox();
+		});
+		$('#back-btn').click(function() {
+			history.back();
 		});
 
 		if($('#productList_1').height() <= 486) {

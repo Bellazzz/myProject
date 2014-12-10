@@ -14,16 +14,26 @@
 				    <i class="fa fa-floppy-o"></i> บันทึก
 			    </a>
 			    {elseif $action == 'VIEW_DETAIL'}
+			    	{if !$hideBackButton}
+				    <a id="back-btn">
+					    <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+				    </a>
+				    {/if}
+
+			    	{if $tableName == 'employees'}
+				    <a href="printEmployeeCard.php?empId={$code}">
+					    <i class="fa fa-credit-card"></i> บัตรพนักงาน
+				    </a>
+				    {elseif $tableName == 'orders'}
+				    <a id="printPurchaseOrd-btn" href="printPurchaseOrder.php?ordId={$code}">
+					    <i class="fa fa-file-text-o"></i> ใบสั่งซื้อ
+				    </a>
+				    {/if}
+				    
 				    {if !$hideEditButton}
 				    <a id="edit-btn">
 					    <i class="fa fa-pencil"></i> แก้ไขข้อมูล
 				    </a>
-				    {else}
-				    	{if !$hideBackButton}
-					    <a id="back-btn">
-						    <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
-					    </a>
-					    {/if}
 				    {/if}
 			    {/if}
 		    </li>

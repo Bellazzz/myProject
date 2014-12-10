@@ -6,7 +6,8 @@ $subDir	 = WEB_ROOTDIR.'/backoffice/';
 include('../inc/Barcode39.php'); 
 include('../common/common_header.php');
 
-$empId = $_REQUEST['empId'];
+$empId 			= $_REQUEST['empId'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 if(hasValue($empId)) {
 	$monthTH	= array(
 		'01'	=> 'มกราคม',
@@ -37,6 +38,9 @@ if(hasValue($empId)) {
 	$smarty->assign('dateExpire', date('d')."  ".$monthTH[date('m')]."  ".(date('Y')+544));
 	$smarty->assign('empInfo', $empInfo);
 	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
+	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
 }
 
 include('../common/common_footer.php');

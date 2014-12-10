@@ -104,6 +104,9 @@
 			$('#cancel-btn').click(function() {
 				parent.closeManageBox();
 			});
+			$('#back-btn').click(function() {
+				history.back();
+			});
 		});
 
 		function printEmployeeCard()
@@ -141,8 +144,21 @@
 		<h1 id="ftb-title">พิมพ์บัตรพนักงาน</h1>
 	</div>
     <div class="toolbar-container clearfix">
-		<button id="print-btn" class="button button-icon button-icon-print">พิมพ์</button>
-		<button id="cancel-btn" class="button button-icon button-icon-delete">ยกเลิก</button>
+	    <ul class="toolbar-menu">
+			<li>
+				{if !$hideBackButton}
+				<a id="back-btn">
+				    <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+			    </a>
+			    {/if}
+			    <a id="print-btn">
+				    <i class="fa fa-print"></i> พิมพ์
+			    </a>
+			    <a id="cancel-btn">
+				    <i class="fa fa-times"></i> ปิด
+			    </a>
+			</li>
+		</ul>
     </div>
 </div>
 <div id="printArea" class="ftb-body">

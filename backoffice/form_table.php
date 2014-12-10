@@ -17,7 +17,7 @@ switch ($tableName) {
 		break;
 
 	case 'packages':
-		header("location:form_packages.php?action=$action&code=$code");
+		header("location:form_packages.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 
 	case 'shops':
