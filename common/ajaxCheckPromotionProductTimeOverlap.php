@@ -63,7 +63,7 @@ if($enddate == '') {
 if($prmprd_id != '') {
 	$sql .= " AND prmprd.prmprd_id != '$prmprd_id' ";
 }
-$sql .= " ORDER BY prmprd.prmprd_id ASC";
+$sql .= " ORDER BY prmprd.prmprd_startdate ASC";
 
 $result 	= mysql_query($sql, $dbConn);
 $rows 		= mysql_num_rows($result);

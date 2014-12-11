@@ -189,6 +189,66 @@
                 });
             }
         }
+
+        function beforeSaveRecord() {
+            // Not check cover when add record
+            if(action == 'ADD') {
+                return false;
+            }
+
+            var returnVal = true; // false = no err, true = have err
+
+            $.ajax({
+                url: '../common/ajaxCheckProductPromotionTimeCover.php',
+                type: 'POST',
+                data: {
+                    prdprm_id       : code,
+                    startdate       : tmpDateToRealDate($('#prdprm_startdate').val()),
+                    enddate         : tmpDateToRealDate($('#prdprm_enddate').val())
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'NOT_COVER') {
+                        var notCoverListHTML = '<ul>';
+                        for(i in response.notCoverList) {
+                            notCoverListHTML += '<li>' + response.notCoverList[i] + '</li>';
+                        }
+                        notCoverListHTML += '</ul>';
+
+                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น '
+                                + $('#prdprm_name').val()
+                                + ' ไม่ครอบคลุมผลิตภัณฑ์ที่จัดโปรโมชั่นในช่วงเวลาดังต่อไปนี้' + notCoverListHTML 
+                                + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นให้ครอบคลุมช่วงเวลาดังกล่าว';
+                        parent.showActionDialog({
+                            title: 'ระยะเวลาโปรโมชั่นไม่ครอบคลุม',
+                            message: msg,
+                            actionList: [
+                                {
+                                    id: 'ok',
+                                    name: 'ตกลง',
+                                    func:
+                                    function() {
+                                        parent.hideActionDialog();
+                                    }
+                                }
+                            ],
+                            boxWidth: 500
+                        });
+                    } else if(response.status == 'COVER') {
+                        if(action == 'ADD') {
+                            saveRecord();
+                        } else if(action == 'EDIT') {
+                            confirmSaveRecord();
+                        }
+                    } else {
+                        alert(response.status);
+                    }
+                }
+            });
+
+            return returnVal;
+        }
     </script>
     {/literal}
 </head>
