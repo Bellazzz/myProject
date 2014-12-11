@@ -478,6 +478,13 @@ function refreshFilterQuery() {
                                 + '     <option value="REMAIN">ค้างรับ</option>'
                                 + '     <option value="COMPLETED">เรียบร้อยแล้ว</option>'
                                 + '</select>';
+    } else if(this.table.name == 'promotion_products') {
+        filterRecordQueryHTML   = 'ดูโปรโมชั่นที่ '
+                                + '<select id="query-record-filter" class="mbk-select">'
+                                + '     <option value="ONLINE">กำลังใช้งานอยู่</option>'
+                                + '     <option value="FORWARD">จัดล่วงหน้า</option>'
+                                + '     <option value="EXPIRED">หมดอายุ</option>'
+                                + '</select>';
     }
 
     if(allowFilterRetroact.indexOf(this.table.name) != -1) {

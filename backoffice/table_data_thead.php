@@ -1,17 +1,8 @@
 <thead>
 	<tr>
+		<th class="icon-col"></th>
+        <th class="action-col"></th>
 		<?
-		if(!hasValue($hideIconCol)) {
-			?>
-			<th class="icon-col"></th>
-			<?
-		}
-		if(!hasValue($hideActionCol)) {
-			?>
-        	<th class="action-col"></th>
-			<?
-		}
-
 		// Create table head
 		foreach($tableData[0] as $fieldEn => $value) {
 			//skip hidden fileds

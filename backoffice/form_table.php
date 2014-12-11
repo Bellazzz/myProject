@@ -21,7 +21,11 @@ switch ($tableName) {
 		break;
 
 	case 'shops':
-		header("location:form_shops.php?action=$action&code=$code");
+		header("location:form_shops.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		break;
+
+	case 'promotion_products':
+		header("location:form_promotion_products.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 }
 
@@ -237,20 +241,6 @@ if(!$_REQUEST['ajaxCall']) {
 					$refField 	= 'prdprmgrp_id';
 					break;
 
-				case 'todayOnward_product_promotions':
-					$sqlRefData = "	SELECT 		prdprm_id refValue,
-												prdprm_name refText,
-												prdprm_startdate,
-												IFNULL(prdprm_enddate,'') prdprm_enddate,
-												prdprm_type,
-												prdprmgrp_id 
-									FROM 		product_promotions 
-									WHERE 		prdprm_enddate IS NULL OR 
-												prdprm_enddate >= CURDATE() 
-									ORDER BY 	refValue DESC";
-					$refField 	= 'prdprm_id';
-					break;
-
 				case 'products':
 					$sqlRefData = "	SELECT 		prd_id refValue,
 												prd_name refText,
@@ -286,17 +276,19 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('referenceData', $referenceData);
 	}
 
+	// Check for hide edit, back button
+	if($hideEditButton == 'true') {
+		$smarty->assign('hideEditButton', true);
+	}
+	if($hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
 	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
-	if(isset($_REQUEST['hideEditButton']) && $hideEditButton == 'true') {
-		$smarty->assign('hideEditButton', true);
-	}
-	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
-		$smarty->assign('hideBackButton', true);
-	}
 	include('../common/common_footer.php');
 } else {
 	//2. Process record

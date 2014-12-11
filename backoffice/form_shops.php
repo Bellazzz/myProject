@@ -2,6 +2,8 @@
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= 'shops';
 $code			= $_REQUEST['code'];
+$hideEditButton = $_REQUEST['hideEditButton'];
+$hideBackButton = $_REQUEST['hideBackButton'];
 
 include('../config/config.php');
 $tplName = "form_$tableName.html";
@@ -98,6 +100,14 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 		$smarty->assign('referenceData', $referenceData);
+	}
+
+	// Check for hide edit, back button
+	if($hideEditButton == 'true') {
+		$smarty->assign('hideEditButton', true);
+	}
+	if($hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
 	}
 
 	$smarty->assign('action', $action);

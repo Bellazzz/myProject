@@ -1,6 +1,6 @@
 <?php
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
-$tableName		= 'product_promotions';
+$tableName		= 'promotion_products';
 $code			= $_REQUEST['code'];
 $hideEditButton = $_REQUEST['hideEditButton'];
 $hideBackButton = $_REQUEST['hideBackButton'];
@@ -13,13 +13,100 @@ $tableInfo = getTableInfo($tableName);
 
 if(!$_REQUEST['ajaxCall']) {
 	//1. Display form
-	if($action == 'EDIT') {
+	if($action == 'EDIT' || $action == 'VIEW_DETAIL') {
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
-			$values[$field] = $tableRecord->getFieldValue($field);
+			$colFieldType = $tableRecord->getFieldType($field);
+			if($colFieldType == 'time'){
+				$tmpTime = $tableRecord->getFieldValue($field);//get time from database
+				$newTmpTime = substr($tmpTime, 0, 5);
+				$values[$field] = $newTmpTime;
+			}else{
+				$values[$field] = $tableRecord->getFieldValue($field);
+			}
+
+			if($action == 'VIEW_DETAIL') {
+				if(hasValue($values[$field])) {
+					
+					if($colFieldType == 'date' || $colFieldType == 'datetime') {
+						// get real enddate to find expired
+						if($field == 'prmprd_enddate') {
+							$end_time = strtotime($values[$field]);
+						}
+						
+						$values[$field] = dateThaiFormat($values[$field]);
+					}
+				} else {
+					$values[$field] = '-';
+				}
+			}
 		}
 		$smarty->assign('values', $values);
+	}
+
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'todayOnward_product_promotions':
+					$sqlRefData = "	SELECT 		prdprm_id refValue,
+												prdprm_name refText,
+												prdprm_startdate,
+												IFNULL(prdprm_enddate,'') prdprm_enddate,
+												prdprm_type,
+												prdprmgrp_id 
+									FROM 		product_promotions 
+									WHERE 		prdprm_enddate IS NULL OR 
+												prdprm_enddate >= CURDATE() 
+									ORDER BY 	refValue DESC";
+					$refField 	= 'prdprm_id';
+					break;
+
+				case 'products':
+					$sqlRefData = "	SELECT 		prd_id refValue,
+												prd_name refText,
+												prd_price 
+									FROM 		products p 
+									ORDER BY 	refText ASC";
+					$refField 	= 'prd_id';
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
+	// Hide edit button
+	if($values['prmprd_enddate'] != '-') {
+		$cur_time = strtotime($nowDate);
+		if($end_time < $cur_time) { // Expired
+			$hideEditButton = 'true';
+		}
 	}
 
 	// Check for hide edit, back button
@@ -34,6 +121,7 @@ if(!$_REQUEST['ajaxCall']) {
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
+	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
 	include('../common/common_footer.php');
 } else {
 	//2. Process record
@@ -92,39 +180,14 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['fieldName']  = array();
 		$values['fieldValue'] = array();
 
-		// Rename Image
-		if(strpos($formData['prdprm_picture'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['prdprm_picture'],"."));
-			$tmpRecord	= new TableSpa('product_promotions', null);
-			$prdprm_picture	= $tmpRecord->genKeyCharRunning().".$type";
-			$prdprm_picture_path = '../img/product_promotions/'.$prdprm_picture;
-
-			// Delete Old Image
-			if(file_exists($prdprm_picture_path)) {
-				if(!unlink($prdprm_picture_path)) {
-					$response['status'] = 'DELETE_OLD_IMG_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-
-			if(rename('../img/temp/'.$formData['prdprm_picture'], $prdprm_picture_path)) {
-				$formData['prdprm_picture'] = $prdprm_picture;
-			} else {
-				$response['status'] = 'RENAME_FAIL';
-				echo json_encode($response);
-				exit();
-			}
-		}
-
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
-			if($fieldName != 'requiredFields' && $fieldName != 'uniqueFields') {
+			if(in_array($fieldName, $fieldListEn)) {
 				// Skip if value is empty and default this field is null
-				if($value == '' && in_array($fieldName, $tableInfo['defaultNull'])) {
+				if($value == '' && is_array($tableInfo['defaultNull']) && in_array($fieldName, $tableInfo['defaultNull'])) {
 					continue;
 				}
-
+				
 				$value = str_replace("\\\'", "'", $value);
 				$value = str_replace('\\\"', '"', $value);
 				$value = str_replace('\\\\"', '\\', $value);
@@ -133,7 +196,7 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
-		// Insert
+		// Insert แบบระบุ Field
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if($tableRecord->insertSuccess()) {
 			$response['status'] = 'ADD_PASS';
@@ -146,38 +209,11 @@ if(!$_REQUEST['ajaxCall']) {
 		//2.2 Update record
 		$tableRecord = new TableSpa($tableName, $code);
 
-		// Rename Image
-		if(strpos($formData['prdprm_picture'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['prdprm_picture'],"."));
-			$prdprm_picture	= $code.".$type";
-			$imgTmpPath = '../img/temp/'.$formData['prdprm_picture'];
-			$imgNewPath = '../img/product_promotions/'.$prdprm_picture;
-
-			// Delete Old Image
-			if(file_exists($imgNewPath)) {
-				if(!unlink($imgNewPath)) {
-					$response['status'] = 'DELETE_OLD_IMG_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-			// Rename temp to new image
-			if(file_exists($imgTmpPath)) {
-				if(rename($imgTmpPath, $imgNewPath)) {
-					$formData['prdprm_picture'] = $prdprm_picture;
-				} else {
-					$response['status'] = 'RENAME_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-		}
-
 		// Set all field value
 		foreach($formData as $fieldName => $value) {
 			if(in_array($fieldName, $fieldListEn)) {
 				// value is empty will set default is null
-				if($value == '' && in_array($fieldName, $tableInfo['defaultNull'])) {
+				if($value == '' && is_array($tableInfo['defaultNull']) && in_array($fieldName, $tableInfo['defaultNull'])) {
 					$value = 'NULL';
 				}
 				

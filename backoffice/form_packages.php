@@ -105,17 +105,19 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('referenceData', $referenceData);
 	}
 
+	// Check for hide edit, back button
+	if($hideEditButton == 'true') {
+		$smarty->assign('hideEditButton', true);
+	}
+	if($hideBackButton == 'true') {
+		$smarty->assign('hideBackButton', true);
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
 	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
-	if(isset($_REQUEST['hideEditButton']) && $hideEditButton == 'true') {
-		$smarty->assign('hideEditButton', true);
-	}
-	if(isset($_REQUEST['hideBackButton']) && $hideBackButton == 'true') {
-		$smarty->assign('hideBackButton', true);
-	}
 	include('../common/common_footer.php');
 } else {
 	//2. Process record

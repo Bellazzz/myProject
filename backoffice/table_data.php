@@ -63,6 +63,9 @@ switch ($tableName) {
 	case 'receives':
 		header("location:table_data_receives.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
 		break;
+	case 'promotion_products':
+		header("location:table_data_promotion_products.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
+		break;
 }
 
 // Query table data (table need join)

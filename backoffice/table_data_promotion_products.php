@@ -6,13 +6,15 @@ include('../common/common_constant.php');
 include('../common/common_function.php');
 
 // Pre Valiable
-$tableName		= 'receives';
+$tableName		= 'promotion_products';
 $sortCol		= $_REQUEST['sortCol'];
 $sortBy			= 'desc';
 $filter 		= $_REQUEST['filter'];
 $filterRetroact = $_REQUEST['filterRetroact'];
-$where 			= 'WHERE r.ord_id = o.ord_id AND r.emp_id = e.emp_id ';
+$where 			= 'WHERE prmprd.prdprm_id = prdprm.prdprm_id AND prmprd.prd_id = p.prd_id';
+$order 			= $_REQUEST['order'];
 $tableInfo		= getTableInfo($tableName);
+$nowDate 		= date('Y/m/d');
 
 if(hasValue($_REQUEST['sortBy'])) {
 	$sortBy	= $_REQUEST['sortBy'];
@@ -21,46 +23,53 @@ if(hasValue($_REQUEST['sortBy'])) {
 // Generate search
 if(hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) {
 	$searchCol		= $_REQUEST['searchCol'];
-	$searchCol		= str_replace('ord_id', 'o.ord_id', $searchCol);
 	$searchInput	= $_REQUEST['searchInput'];
 	$like			= "$searchCol like '%$searchInput%'";
 
-	if($searchCol == 'emp_id') {
-		$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
-	}
+	$like	= str_replace('prdprm_id', 'prdprm.prdprm_name', $like);
+	$like	= str_replace('prd_id', 'p.prd_id', $like);
+	$like	= str_replace('prmprd_discout_type', "COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี')", $like);
+	$like	= str_replace('%%%','%\%%', $like);
 	$where .= " AND $like";
 }
 
 // Generate filter
 if(hasValue($_REQUEST['filter'])) {
 	$filter = $_REQUEST['filter'];
-	if($filter == 'REMAIN') {
-		$where .= " AND o.ordstat_id = 'OS02' ";
-		$whereAllRecord = " AND ordstat_id = 'OS02' ";
-	} else if($filter == 'COMPLETED') {
-		$where 			.= " AND o.ordstat_id = 'OS03' ";
-		$hideIconCol 	= true; // hide column icon in thead
-		$hideActionCol 	= true; // hide column action in thead
-		$whereAllRecord = " AND o.ordstat_id = 'OS03' ";
-	}
-}
-
-// Generate filter retroact
-if(hasValue($_REQUEST['filterRetroact'])) {
-	if($filterRetroact == 'true') {
-		$retroactDate = date('Y-m-d', strtotime('-1 years'));
-		$where .= " AND r.rec_date >= '$retroactDate' ";
-		$whereAllRecord .= " AND r.rec_date >= '$retroactDate' ";
+	if($filter == 'ONLINE') {
+		$where .= " AND prmprd.prmprd_startdate <= '$nowDate' 
+					AND (
+						prmprd.prmprd_enddate IS NULL 
+						OR prmprd.prmprd_enddate >= '$nowDate'
+					) ";
+		$whereAllRecord = " WHERE 	prmprd_startdate <= '$nowDate' 
+									AND (
+										prmprd_enddate IS NULL 
+										OR prmprd_enddate >= '$nowDate'
+									) ";
+	} else if($filter == 'FORWARD') {
+		$where .= " AND prmprd.prmprd_startdate > '$nowDate' ";
+		$whereAllRecord = " WHERE prmprd_startdate > '$nowDate' ";
+	} else if($filter == 'EXPIRED') {
+		$where .= " AND (
+						prmprd.prmprd_enddate IS NOT NULL 
+						AND prmprd.prmprd_enddate < '$nowDate' 
+					) ";
+		$whereAllRecord = " WHERE (
+								prmprd_enddate IS NOT NULL 
+								AND prmprd_enddate < '$nowDate' 
+							) ";
 	}
 }
  	 	 	 	 	 	 	 	 	
 // Query table data
-$sql = "SELECT 	r.rec_id,
-				r.ord_id,
-				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
-				r.rec_date,
-				r.rec_total_price 
-		FROM 	receives r, orders o, employees e 
+$sql = "SELECT 	prmprd.prmprd_id,
+				p.prd_name prd_id,
+				prdprm.prdprm_name prdprm_id,
+				COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี') prmprd_discout_type,
+				prmprd.prmprd_startdate,
+				prmprd.prmprd_enddate 
+		FROM promotion_products prmprd, product_promotions prdprm, products p 
 		$where 
 		$order";
 $result		= mysql_query($sql, $dbConn);
@@ -75,10 +84,7 @@ if(hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) {
 	$sqlAllRecord = str_replace($txtSelect, $newSelect, $sql);
 	$sqlAllRecord = str_replace($txtLimit, '', $sqlAllRecord);
 } else {
-	$sqlAllRecord 		= "SELECT COUNT(*) allRecords 
-							FROM receives r, orders o, employees e 
-							WHERE r.ord_id = o.ord_id AND r.emp_id = e.emp_id 
-							$whereAllRecord";
+	$sqlAllRecord 		= "SELECT COUNT(*) allRecords FROM $tableName $whereAllRecord";
 }
 $resultAllRecord 	= mysql_query($sqlAllRecord, $dbConn);
 $allRecordsRows 	= mysql_fetch_assoc($resultAllRecord);
@@ -107,22 +113,21 @@ if($rows > 0){
 			$code = $row[$tableInfo['keyFieldName']];
 			?>
 			<tr id="<?=$code?>">
-					<td field="<?=$field?>" class="icon-col">
-						<input type="checkbox" value="<?=$code?>" name="table-record[]" class="mbk-checkbox" onclick="checkRecord(this)">
-					</td>
-					<td field="<?=$field?>" class="action-col">
-					<?
-					if($filter == 'REMAIN') {
-					?>
+					<td class="icon-col"></td>
+					<td class="action-col">
+						<?
+						if($filter != 'EXPIRED') {
+						?>
 						<a title="แก้ไข">
 							<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 						</a>
+						
 						<a title="ลบ">
 							<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
 						</a>
-					<?
-					}
-					?>
+						<?
+						}
+						?>
 					</td>
 			<?
 			$offset = 0;
@@ -137,11 +142,11 @@ if($rows > 0){
 					if(isset($tableInfo['hiddenFields'])) {
 						// ถ้าตารางนี้มี hiddenFields แสดงว่าต้องมีหน้าแสดงรายละเอียด
 						?>
-						<td><a href="javascript:openFormTable('VIEW_DETAIL', '<?=$value?>');" class="normal-link" title="คลิกเพื่อดูรายละเอียด"><?=$value?></a></td>
+						<td field="<?=$field?>"><a href="javascript:openFormTable('VIEW_DETAIL', '<?=$value?>');" class="normal-link" title="คลิกเพื่อดูรายละเอียด"><?=$value?></a></td>
 						<?
 					} else {
 						?>
-						<td><?=$value?></td>
+						<td field="<?=$field?>"><?=$value?></td>
 						<?
 					}
 				}
@@ -152,7 +157,7 @@ if($rows > 0){
 				} 
 				else if (mysql_field_type($result, $offset) == 'int'){
 					?>
-					<td field="<?=$field?>" class="real-col"><?=$value?></td>
+					<td  field="<?=$field?>" class="real-col"><?=$value?></td>
 					<?
 				}
 				else if (mysql_field_type($result, $offset) == 'date' || mysql_field_type($result, $offset) == 'datetime'){
