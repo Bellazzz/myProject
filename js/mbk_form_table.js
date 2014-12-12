@@ -213,16 +213,24 @@ function checkRequiredInput() {
 		}
 	}
 
+	if(hasInputError()) {
+		pass = false;
+	}
+
+	return pass;
+}
+
+function hasInputError() {
 	var inputErr 		= $('#form-table input:enabled.required').length;
 	var txtAreaErr 		= $('#form-table textarea:enabled.required').length;
 	var selectRefErr 	= $('#form-table .select-reference.required').length;
 	var selectRefJSErr 	= $('#form-table .selectReferenceJS.required').length;
 	var allErr 			= inputErr + txtAreaErr + selectRefErr + selectRefJSErr;
 	if(allErr > 0) {
-		pass = false;
+		return true;
+	} else {
+		return false;
 	}
-
-	return pass;
 }
 
 function validateEmail(email) { 

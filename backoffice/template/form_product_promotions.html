@@ -191,8 +191,8 @@
         }
 
         function beforeSaveRecord() {
-            // Not check cover when add record
-            if(action == 'ADD') {
+            // Not check time cover
+            if(action == 'ADD' || $('#prdprm_startdate').val() == '') {
                 return false;
             }
 
@@ -236,10 +236,10 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'COVER') {
-                        if(action == 'ADD') {
-                            saveRecord();
-                        } else if(action == 'EDIT') {
-                            confirmSaveRecord();
+                        if(action == 'EDIT') {
+                            if(!hasInputError()) {
+                                confirmSaveRecord();
+                            }
                         }
                     } else {
                         alert(response.status);

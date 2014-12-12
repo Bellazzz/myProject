@@ -422,6 +422,11 @@
         }
 
         function beforeSaveRecord() {
+            // Not check time overlap
+            if($('#prmprd_startdate').val() == '') {
+                return false;
+            }
+
             var returnVal = true; // false = no err, true = have err
 
             $.ajax({
@@ -465,10 +470,10 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'NOT_OVERLAP') {
-                        if(action == 'ADD') {
-                            saveRecord();
-                        } else if(action == 'EDIT') {
-                            confirmSaveRecord();
+                        if(action == 'EDIT') {
+                            if(!hasInputError()) {
+                                confirmSaveRecord();
+                            }
                         }
                     } else {
                         alert(response.status);
@@ -512,6 +517,18 @@
                         $('.discout_hidden').prop('disabled', false);
                         $('#prmprd_discout').removeClass('required');
                         $('.err-prmprd_discout').css('display', 'none');
+                    }
+
+                    // Add or remove require of enddate
+                    if(refPrdprmData[i].prdprm_enddate == '') {
+                        $('#prmprd_enddate').removeClass('required');
+                        $('.err-prmprd_enddate').css('display', 'none');
+                        $('#prmprd_enddate').removeAttr('require');
+                        $('#prmprd_enddate_label').removeClass('input-required');
+                    } else {
+                        $('#prmprd_enddate').attr('require', '');
+                        $('#prmprd_enddate_label').addClass('input-required');
+                        $('#prmprd_enddate').focusout(validateInput);
                     }
                     break;
                 }
@@ -606,7 +623,7 @@
                     <input id="prmprd_startdate" name="prmprd_startdate" type="text" class="mbk-dtp-th form-input half" value="{$values.prmprd_startdate}" require>
                 </td>
                 <td>
-                    <label>วันที่สิ้นสุด</label>
+                    <label id="prmprd_enddate_label">วันที่สิ้นสุด</label>
                     <input id="prmprd_enddate" name="prmprd_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.prmprd_enddate}">
                 </td>
             </tr>
@@ -614,7 +631,9 @@
                 <td>
                     <span id="err-prmprd_startdate-require" class="errInputMsg half err-prmprd_startdate">โปรดป้อนวันที่เริ่มใช้</span>
                 </td>
-                <td></td>
+                <td>
+                    <span id="err-prmprd_enddate-require" class="errInputMsg half err-prmprd_enddate">โปรดป้อนวันที่สิ้นสุด</span>
+                </td>
             </tr>
             <tr class="showForSale">
                 <td colspan="2">
