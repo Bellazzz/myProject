@@ -27,6 +27,10 @@ switch ($tableName) {
 	case 'promotion_products':
 		header("location:form_promotion_products.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
+
+	case 'withdraws':
+		header("location:form_withdraws.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		break;
 }
 
 include('../config/config.php');

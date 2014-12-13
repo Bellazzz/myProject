@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-	<title>Spa - Backoffice</title>
-	<meta charset="UTF-8"/>
+    <title>Spa - Backoffice</title>
+    <meta charset="UTF-8"/>
     {literal}
-	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
     <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
     <script type="text/javascript" src="../js/jquery.min.js"></script>
@@ -13,15 +13,39 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <style type="text/css">
+        #withdraw-detail-table tr:nth-child(2) .removeProductBtn {
+            display: none;
+        }
+        .prd_unit_name {
+            width: 60px;
+            display: inline-block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    </style>
     <script type="text/javascript">
         // Global variables
-        var action      = '{/literal}{$action}{literal}';
-        var tableName   = '{/literal}{$tableName}{literal}';
-		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
-        var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_table.php';
+        var action          = '{/literal}{$action}{literal}';
+        var tableName       = '{/literal}{$tableName}{literal}';
+        var tableNameTH     = '{/literal}{$tableNameTH}{literal}';
+        var code            = '{/literal}{$code}{literal}';
+        var ajaxUrl         = 'form_withdraws.php';
+        var valuesDetail    = '';
+        var refPrdData      = {/literal}{$referenceData["products"]|@json_encode}{literal};
+
+        // Set valuesDetail
+        {/literal}
+        {if $valuesDetail}
+        {literal}
+            valuesDetail= {/literal}{$valuesDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {literal}
 
         $(document).ready(function () {
+            $('#addProjectBtn').click(addProduct);
+
             selectReferenceJS({
                 elem            : $('#ser_id'),
                 data            : {/literal}{$referenceData["services"]|@json_encode}{literal},
@@ -30,13 +54,14 @@
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.emp_id}{literal}'
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
-            selectReferenceJS({
+             selectReferenceJS({
                 elem            : $('#emp_give_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_give_id}{$values.emp_give_id}{else}{$session_emp_id}{/if}{literal}'
             });
+            
             $('#wdw_date').datetimepicker({
                 lang                : 'th',
                 format              : 'Y/m/d',
@@ -47,24 +72,297 @@
                 onSelectDate: 
                 function(){
                   $('#wdw_date').blur();
-                },
-                timepicker:false
+                }
             });
 
-			
-       
+            // Create product input
+            if(action == 'ADD') {
+                addProduct({
+                    defaultValue : false
+                });
+            } else if(action == 'EDIT') {
+                for(i in valuesDetail) {
+                     addProduct({
+                        defaultValue : true,
+                        wdwdtl_id   : valuesDetail[i].wdwdtl_id,
+                        prd_id      : valuesDetail[i].prd_id,
+                        prd_qty     : valuesDetail[i].wdwdtl_amount,
+                        unit_name   : valuesDetail[i].unit_name
+                    });
+                }
+            }
+
+            function checkDate(self, sibling) {
+                // Skip check
+                if(self.val() == '' || isDateThaiFormat(self.val())) {
+                    return;
+                }
+
+                var selfDate        = new Date(self.val());
+                var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+                var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+                var selfId          = self.attr('id');
+
+                // Check sibling
+                if(sibling.val() != '') {
+                    if(selfId == 'ord_date') {
+                        if(selfDate.getTime() > siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    } else if(selfId == 'wdw_snd_date') {
+                        if(selfDate.getTime() < siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    }
+                }
+            }
         });
+        
+        function addProduct(data) {
+            var randNum;
+            var selectRefDefault = '';
+            var unitName = '';
+            do {
+                randNum     = parseInt(Math.random()*1000);
+            } while($('#prd_id_' + randNum).length > 0);
+            var inputKeyId  = 'prd_id_' + randNum;
+            var inputQtyId  = 'prd_qty_' + randNum;
+            if(typeof(data.unit_name) != 'undefined' && data.unit_name != '') {
+                unitName = data.unit_name;
+            }
+
+            // Create HTML and append
+            var prdRowHTML  = '<tr class="product-row">'
+                            + '     <td width="350px">'
+                            + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                            + '     </td>'
+                            + '     <td>';
+
+            // add input product amount
+            if(data.defaultValue) {
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" value="' + data.prd_qty + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+                selectRefDefault = data.prd_id;
+            } else {
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+            }
+
+            // add withdraw detail id for update
+            if(action == 'EDIT' && typeof(data.orddtl_id) != 'undefined') {
+                prdRowHTML += '         <input name="orddtl_id[]" type="hidden" value="' + data.orddtl_id + '">';
+            }
+                prdRowHTML += '         <span class="prd_unit_name">' + unitName + '</span>'
+                            + '         <button class="removeProductBtn button button-icon button-icon-delete" onclick="removeProduct(\'' + randNum + '\')"></button>'
+                            + '     </td>'
+                            + '</tr>'
+                            + '<tr id="errMsgRow_' + randNum + '" class="errMsgRow">'
+                            + '     <td>'
+                            + '         <span id="err-' + inputKeyId + '-require" class="errInputMsg half err-' + inputKeyId + '">'
+                            + '             โปรดเลือกผลิตภัณฑ์'
+                            + '         </span>'
+                            + '     </td>'
+                            + '     <td>'
+                            + '         <span id="err-' + inputQtyId + '-require" class="errInputMsg half err-' + inputQtyId + '">'
+                            + '             โปรดกรอกจำนวนที่สั่งซื้อ'
+                            + '         </span>'
+                            + '         <span id="err-' + inputQtyId + '-numberMoreThanZero" class="errInputMsg half err-' + inputQtyId + '">'
+                            + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็มตั้งแต่ 1 ขึ้นไป'
+                            + '         </span>'
+                            + '     </td>'
+                            + '</tr>';
+            $('#withdraw-detail-table tbody').append(prdRowHTML);
+
+            // Create select reference
+            selectReferenceJS({
+                elem            : $('#' + inputKeyId),
+                data            : refPrdData,
+                defaultValue    : selectRefDefault,
+                onOptionSelect  :
+                function() {
+                    pullUnitName(inputKeyId);
+                },
+                success         : 
+                function() {
+                    $('input[name="' + inputKeyId + '"]').attr('name', 'prd_id[]');
+                    setAllOrdPrd();
+                },
+                group           : 'products'
+            });
+            // Check Input required and pattern
+            $('#' + inputQtyId).focusout(validateInput);
+        }
+
+        function removeProduct(randNum) {
+            var selectRef   = $('#prd_id_' + randNum);
+            var tr          = selectRef.parent().parent();
+            var txt         = selectRef.find('.selectReferenceJS-text').text();
+            var val         = selectRef.find('.selectReferenceJS-input').val();
+            var msg         = '';
+            if(val != '') {
+                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+            } else {
+                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+            }
+            parent.showActionDialog({
+                title: 'ลบผลิตภัณฑ์',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: 'ลบผลิตภัณฑ์นี้ออกจากออกจากการสั่งซื้อ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            tr.remove();
+                            $('#errMsgRow_' + randNum).remove();
+                            setAllOrdPrd();
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'ยกเลิกการลบ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+
+        function allowSelectPrdId(selected) {
+            var notDuplicate = true;
+            $('input[name="prd_id[]"]').each(function() {
+                if($(this).val() == selected) {
+                     parent.showActionDialog({
+                        title: 'คุณเลือกผลิตภัณฑ์นี้แล้ว',
+                        message: 'รายการผลิตภัณฑ์ไม่สามารถซ้ำกันได้ค่ะ',
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                    notDuplicate = false;
+                }
+            });
+            return notDuplicate;
+        }
+
+        function pullUnitName(inputKeyId) {
+            var prdID       = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+            
+            if(typeof(prdID) != 'undefined' && prdID != '') {
+                var prdUnitName = $('#' + inputKeyId).parent().parent().find('.prd_unit_name');
+                var unitName    = '';
+
+                for(i in refPrdData) {
+                    if(refPrdData[i].refValue == prdID) {
+                        unitName = refPrdData[i].unit_name;
+                        break;
+                    }
+                }
+
+                prdUnitName.text(unitName);
+            }
+        }
+
+        function setAllOrdPrd() {
+            $('#allOrdPrd').text($('input[name="prd_id[]"]').length);
+        }
     </script>
     {/literal}
 </head>
 <body>
 
 {include file="form_table_header.html"}
-<div class="ftb-body">    
+<div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <!--Orders Data-->
+    <label class="article-title">ข้อมูลการเบิกผลิตภัณฑ์</label>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการเบิก :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>พนักงานที่ให้เบิก :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>พนักงานที่เบิก :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>วันที่เบิก :</td>
+                <td>{if $values.wdw_date}{$values.wdw_date_th}{else}-{/if}</td>
+            </tr>
+            <tr>
+                <td>รหัสการใช้บริการ :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=services&code={$values.ser_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="ser_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!--Withdraw Details Data-->
+    <label class="article-title">รายการผลิตภัณฑ์ที่สั่งซื้อ</label>
+    ทั้งหมด {$withdrawDetailList|@count} รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th lass="txtLong-col">ผลิตภัณฑ์</th>
+                <th>ราคา/หน่วย (บาท)</th>
+                <th>จำนวน</th>
+                <th>หน่วยนับ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$withdrawDetailList key=i item=wdwdtl}
+            <tr>
+                <td align="center">{$wdwdtl.no}</td>
+                <td class="txtLong-col">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=products&code={$wdwdtl.prd_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$wdwdtl.prd_name}
+                    </a>
+                </td>
+                <td align="right">{$wdwdtl.prd_price|number_format:2:".":","}</td>
+                <td align="right">{$wdwdtl.wdwdtl_amount|number_format:0:"":","}</td>
+                <td align="left">{$wdwdtl.unit_name}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->       
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="ser_id,emp_id,emp_give_id,wdw_date">
+    <input type="hidden" name="requiredFields" value="emp_id,emp_give_id,wdw_date">
+    <label class="article-title">ข้อมูลการเบิก</label>
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
-	    <tbody>
+        <tbody>
             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่ให้เบิก</label>
@@ -76,7 +374,7 @@
                     <span id="err-emp_give_id-require" class="errInputMsg err-emp_give_id">โปรดเลือกพนักงานที่ให้เบิก</span>
                 </td>
             </tr>
-            <tr>
+             <tr>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่เบิก</label>
                     <div id="emp_id" class="selectReferenceJS form-input full" require></div>
@@ -87,31 +385,38 @@
                     <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่เบิก</span>
                 </td>
             </tr>
-            <tr>
-                <td colspan="2">
-                    <label class="input-required">วันที่เบิกผลิตภัณฑ์</label>
-                      <input id="wdw_date" name="wdw_date" type="text" class="mbk-dtp-th form-input full" value="{$values.wdw_date}" require>
+            <td>
+                    <label class="input-required">วันที่เบิก</label>
+                      <input id="wdw_date" name="wdw_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.wdw_date}{$values.wdw_date}{else}{$nowDate}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-wdw_date-require" class="errInputMsg err-wdw_date">โปรดป้อนวันที่เบิกผลิตภัณฑ์</span>
+                <td>
+                    <span id="err-ord_date-require" class="errInputMsg half err-ord_date">โปรดเลือกวันที่เบิก</span>
                 </td>
             </tr>
             <tr>
-               <td colspan="2">
-                    <label class="input-required">รหัสการใช้บริการ</label>
-                    <div id="ser_id" class="selectReferenceJS form-input full" require></div>
-                </td>
-		    </tr>
-			<tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-ser_id-require" class="errInputMsg err-ser_id">โปรดเลือกรหัสการใช้บริการ</span>
+                    <label>รหัสการใช้บริการ(ถ้ามี)</label>
+                    <div id="ser_id" class="selectReferenceJS form-input full" require> </div>
                 </td>
             </tr>
-	    </tbody>
+        </tbody>
     </table>
+
+    <label class="article-title">รายละเอียดการเบิก</label>
+    รายการผลิตภัณฑ์ทั้งหมด <span id="allOrdPrd"></span> รายการ<br><br>
+    <table id="withdraw-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:600px;">
+        <tbody>
+            <tr>
+                <td><label class="input-required">ผลิตภัณฑ์</label></td>
+                <td><label class="input-required">จำนวน</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addProjectBtn" class="button button-icon button-icon-add">เพิ่มผลิตภัณฑ์</button>
     </form>
+    {/if}
 </div>
 </body>
 </html>
@@ -119,5 +424,5 @@
     [Note]
     1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
     2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
-	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+    3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
 -->

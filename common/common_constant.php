@@ -971,6 +971,7 @@ function dbClose() {
 						'wdw_date'	  	      => 'วันที่เบิก'
 				),
 				'searchFields'	=> array('emp_id','emp_give_id','wdw_date'),
+				'defaultNull' 	=> array('ser_id'),
 				'deleteTxtField'	=> array('wdw_date','ser_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ของรหัสการใช้บริการ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2',
