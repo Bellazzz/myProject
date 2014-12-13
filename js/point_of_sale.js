@@ -377,8 +377,8 @@ function openPayBox() {
 	$('#payBox').css('visibility', 'hidden');
 
 	// Set position
-    $('#payBox-inner').css('margin-top', -Math.abs($('#payBox-inner').outerHeight() / 2));
-    $('#payBox-inner').css('margin-left', -Math.abs($('#payBox-inner').outerWidth() / 2));
+    $('#payBox-inner').css('margin-top', -Math.abs($('#payBox-inner').outerHeight(true) / 2));
+    $('#payBox-inner').css('margin-left', -Math.abs($('#payBox-inner').outerWidth(true) / 2));
     $('#payBox').css('visibility', 'visible');
 }
 function closePayBox() {

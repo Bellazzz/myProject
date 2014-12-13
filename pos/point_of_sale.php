@@ -12,7 +12,8 @@ include('../common/common_header.php');
 if(!hasValue($_POST['shop_id'])) {
 	redirect('select_shops.php');
 }
-$shop_id = $_POST['shop_id'];
+$shop_id 	= $_POST['shop_id'];
+$prdIdList 	= array();
 
 // Get products data
 $productList = array();
@@ -39,15 +40,19 @@ $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		array_push($productList, mysql_fetch_assoc($result));
+		array_push($prdIdList, "'".$productList[$i]['prd_id']."'");
 	}
 }
 
 // Get products types data
 $productTypeList = array();
-$sql = "SELECT 		prdtyp_id,
-					prdtyp_name 
-		FROM 		product_types 
-		ORDER BY 	prdtyp_name ASC";
+$sql = "SELECT DISTINCT 	pt.prdtyp_id,
+							pt.prdtyp_name 
+		FROM 				product_types pt, products p 
+		WHERE 				pt.prdtyp_id = p.prdtyp_id AND 
+							p.prd_id IN (". implode(',', $prdIdList).") 
+		ORDER BY 			pt.prdtyp_name ASC";
+		echo $sql;
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -55,6 +60,10 @@ if($rows > 0) {
 		array_push($productTypeList, mysql_fetch_assoc($result));
 	}
 }
+
+// Get promotion products data
+$sql = "";
+
 
 $smarty->assign('productList', $productList);
 $smarty->assign('productTypeList', $productTypeList);
