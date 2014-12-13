@@ -972,10 +972,11 @@ function dbClose() {
 				),
 				'searchFields'	=> array('emp_id','emp_give_id','wdw_date'),
 				'defaultNull' 	=> array('ser_id'),
+				'hiddenFields'	=> array('ser_id'),
 				'deleteTxtField'	=> array('wdw_date','ser_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ของรหัสการใช้บริการ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2',
-				'referenceData'			=> array('employees','services')
+				'referenceData'			=> array('employees','services','products')
 			);
 			break;
 
@@ -991,9 +992,9 @@ function dbClose() {
 						'wdw_id'	  		  => 'รหัสการเบิก',
 						'prd_id'	  		  => 'ผลิตภัณฑ์',
 						'wdwdtl_amount' 	  => 'จำนวนที่เบิก'
-						
 				),
-				'searchFields'	=> array('wdw_id','prd_id','wdwdtl_id')
+				'searchFields'	=> array('wdw_id','prd_id','wdwdtl_id'),
+				'referenceData'			=> array('withdraws','products')
 			);
 			break;
 

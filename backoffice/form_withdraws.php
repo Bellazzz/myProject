@@ -128,11 +128,6 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('referenceData', $referenceData);
 	}
 
-	// Hide edit button
-	if($values['ordstat_id'] != 'OS01') {
-		$hideEditButton = 'true';
-	}
-
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
@@ -219,42 +214,42 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 		// withdraw status default is wait for transport
-		array_push($values['fieldName'], 'ordstat_id');
-		array_push($values['fieldValue'], 'OS01');
+		/*array_push($values['fieldName'], 'ordstat_id');
+		array_push($values['fieldValue'], 'OS01');*/
 
 		// Insert withdraws
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if($tableRecord->insertSuccess()) {
-			$insertOrdersResult = true;
+			$insertWithdrawsResult = true;
 		} else {
-			$insertOrdersResult = false;
+			$insertWithdrawsResult = false;
 		}
 
-		if($insertOrdersResult) {
+		if($insertWithdrawsResult) {
 			// Insert withdraws detail
-			$insertOrdersDetailResult = true;
-			$insertOrdersDetailError  = '';
+			$insertWithdrawsDetailResult = true;
+			$insertWithdrawsDetailError  = '';
 			$wdw_id = $tableRecord->getKey();
 			foreach ($formData['prd_id'] as $key => $prd_id) {
-				$orddtl_amount 		= $formData['prd_qty'][$key];
-				$orddtlValues 		= array($wdw_id, $prd_id, $orddtl_amount);
-				$orderDetailRecord 	= new TableSpa('withdraw_details', $orddtlValues);
-				if(!$orderDetailRecord->insertSuccess()) {
-					$insertOrdersDetailResult = false;
-					$insertOrdersDetailError .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+				$wdwdtl_amount 		= $formData['prd_qty'][$key];
+				$wdwdtlValues 		= array($wdw_id, $prd_id, $wdwdtl_amount);
+				$withdrawsDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
+				if(!$withdrawsDetailRecord->insertSuccess()) {
+					$insertWithdrawsDetailResult = false;
+					$insertWithdrawsDetailError .= 'ADD_WITHDRAW_DETAIL['.($key+1).']_FAIL\n';
 				}
 			}
 
-			if($insertOrdersDetailResult) {
+			if($insertWithdrawsDetailResult) {
 				// Add withdraw and withdraw_details success
 				$response['status'] = 'ADD_PASS';
 				echo json_encode($response);
 			} else {
-				$response['status'] = $insertOrdersDetailError;
+				$response['status'] = $insertWithdrawsDetailError;
 				echo json_encode($response);
 			}
 		} else {
-			$response['status'] = 'ADD_ORDERS_FAIL';
+			$response['status'] = 'ADD_WITHDRAW_FAIL';
 			echo json_encode($response);
 		}
 		
@@ -277,81 +272,80 @@ if(!$_REQUEST['ajaxCall']) {
 
 		// Update withdraws
 		if($tableRecord->commit()) {
-			$updateOrdersResult = true;
+			$updateWithdrawsResult = true;
 		} else {
-			$updateOrdersResult = true;
+			$updateWithdrawsResult = true;
 		}
 
-		if($updateOrdersResult) {
+		if($updateWithdrawsResult) {
 			// Delete withdraw_details if delete old withdraw_details
-			$oldOrderDetailList = array();
-			$newOrderDetailList = array();
+			$oldWithdrawsDetailList = array();
+			$newWithdrawsDetailList = array();
 			// Find old withdraw_details
-			$sql = "SELECT orddtl_id FROM withdraw_details WHERE wdw_id = '$code'";
+			$sql = "SELECT wdwdtl_id FROM withdraw_details WHERE wdw_id = '$code'";
 			$result = mysql_query($sql, $dbConn);
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {
-				$oldOrddtlRecord = mysql_fetch_assoc($result);
-				array_push($oldOrderDetailList, $oldOrddtlRecord['orddtl_id']);
+				$oldWdwdtlRecord = mysql_fetch_assoc($result);
+				array_push($oldWithdrawsDetailList, $oldWdwdtlRecord['wdwdtl_id']);
 			}
-			// Find new order_detail
-			foreach ($formData['orddtl_id'] as $key => $newOrddtl_id) {
-				array_push($newOrderDetailList, $newOrddtl_id);
+			// Find new withdraw_details
+			foreach ($formData['wdwdtl_id'] as $key => $newWdwdtl_id) {
+				array_push($newWithdrawsDetailList, $newWdwdtl_id);
 			}
 			// Check for delete 
-			foreach ($oldOrderDetailList as $key => $oldOrddtl_id) {
-				if(!in_array($oldOrddtl_id, $newOrderDetailList)) {
+			foreach ($oldWithdrawsDetailList as $key => $oldWdwdtl_id) {
+				if(!in_array($oldWdwdtl_id, $newWithdrawsDetailList)) {
 					// Delete withdraw_details
-					$orderDetailRecord 	= new TableSpa('withdraw_details', $oldOrddtl_id);
-					if(!$orderDetailRecord->delete()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= "DELETE_ORDERS_DETAIL[$oldOrddtl_id]_FAIL\n";
+					$orderDetailRecord 	= new TableSpa('withdraw_details', $oldWdwdtl_id);
+					if(!$withdrawsDetailRecord->delete()) {
+						$updateWithdrawsResult = false;
+						$updateWithdrawsDetailError .= "DELETE_WITHDRAWS_DETAIL[$oldWdwdtl_id]_FAIL\n";
 					}
 				}
 			}
 
-			
 			// Update or Add withdraw_details
-			$updateOrdersDetailResult = true;
-			$updateOrdersDetailError  = '';
+			$updateWithdrawsResult = true;
+			$updateWithdrawsDetailError  = '';
 
 			foreach ($formData['prd_id'] as $key => $prd_id) {
 				$orddtl_amount 	= $formData['prd_qty'][$key];
 
-				if(isset($formData['orddtl_id'][$key])) {
+				if(isset($formData['wdwdtl_id'][$key])) {
 					// Update withdraw_details
-					$orddtl_id = $formData['orddtl_id'][$key];
-					$orderDetailRecord 	= new TableSpa('withdraw_details', $orddtl_id);
-					$orderDetailRecord->setFieldValue('prd_id', $prd_id);
-					$orderDetailRecord->setFieldValue('orddtl_amount', $orddtl_amount);
-					if(!$orderDetailRecord->commit()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= 'EDIT_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+					$wdwdtl_id = $formData['wdwdtl_id'][$key];
+					$withdrawDetailRecord 	= new TableSpa('withdraw_details', $wdwdtl_id);
+					$withdrawDetailRecord->setFieldValue('prd_id', $prd_id);
+					$withdrawDetailRecord->setFieldValue('wdwdtl_amount', $wdwdtl_amount);
+					if(!$withdrawDetailRecord->commit()) {
+						$updateWithdrawsDetailResult = false;
+						$updateWithdrawsDetailError .= 'EDIT_WITHDRAWS_DETAIL['.($key+1).']_FAIL\n';
 					}
 				} else {
 					// Add new withdraw_details
-					$orddtlValues 		= array($code, $prd_id, $orddtl_amount);
-					$orderDetailRecord 	= new TableSpa('withdraw_details', $orddtlValues);
+					$orddtlValues 		= array($code, $prd_id, $wdwdtl_amount);
+					$orderDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
 					if(!$orderDetailRecord->insertSuccess()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+						$updateWithdrawsDetailResult = false;
+						$updateWithdrawsDetailError .= 'ADD_WITHDRAWS_DETAIL['.($key+1).']_FAIL\n';
 					}
 				}
 			}
 
-			if($updateOrdersDetailResult) {
+			if($updateWithdrawsDetailResult) {
 				// Edit withdraws and withdraw_details success
 				$response['status'] = 'EDIT_PASS';
 				echo json_encode($response);
 			} else {
 				// Edit withdraw_details fail
-				$response['status'] = $updateOrdersDetailError;
+				$response['status'] = $updateWithdrawsDetailError;
 				echo json_encode($response);
 			}
 
 		} else {
 			// Edit withdraws fail
-			$response['status'] = 'EDIT_ORDERS_FAIL';
+			$response['status'] = 'EDIT_WITHDRAWS_FAIL';
 			echo json_encode($response);
 		}
 

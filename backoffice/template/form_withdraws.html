@@ -91,33 +91,6 @@
                     });
                 }
             }
-
-            function checkDate(self, sibling) {
-                // Skip check
-                if(self.val() == '' || isDateThaiFormat(self.val())) {
-                    return;
-                }
-
-                var selfDate        = new Date(self.val());
-                var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
-                var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
-                var selfId          = self.attr('id');
-
-                // Check sibling
-                if(sibling.val() != '') {
-                    if(selfId == 'ord_date') {
-                        if(selfDate.getTime() > siblingDate.getTime()) {
-                            showAlertInvalidDate(self, 'overSibling');
-                            return;
-                        }
-                    } else if(selfId == 'wdw_snd_date') {
-                        if(selfDate.getTime() < siblingDate.getTime()) {
-                            showAlertInvalidDate(self, 'overSibling');
-                            return;
-                        }
-                    }
-                }
-            }
         });
         
         function addProduct(data) {
@@ -149,8 +122,8 @@
             }
 
             // add withdraw detail id for update
-            if(action == 'EDIT' && typeof(data.orddtl_id) != 'undefined') {
-                prdRowHTML += '         <input name="orddtl_id[]" type="hidden" value="' + data.orddtl_id + '">';
+            if(action == 'EDIT' && typeof(data.wdwdtl_id) != 'undefined') {
+                prdRowHTML += '         <input name="wdwdtl_id[]" type="hidden" value="' + data.wdwdtl_id + '">';
             }
                 prdRowHTML += '         <span class="prd_unit_name">' + unitName + '</span>'
                             + '         <button class="removeProductBtn button button-icon button-icon-delete" onclick="removeProduct(\'' + randNum + '\')"></button>'
@@ -308,8 +281,8 @@
             <tr>
                 <td>พนักงานที่เบิก :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_give_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_give_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                         </a>
                 </td>
             </tr>
