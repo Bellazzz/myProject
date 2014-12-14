@@ -423,7 +423,7 @@
 
         function beforeSaveRecord() {
             // Not check time overlap
-            if($('#prmprd_startdate').val() == '') {
+            if(action == 'ADD' || $('#prmprd_startdate').val() == '') {
                 return false;
             }
 

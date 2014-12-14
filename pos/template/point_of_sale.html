@@ -12,6 +12,7 @@
 	<script type="text/javascript">
 		var productList 	= {/literal}{$productList|@json_encode}{literal};
 		var productTypeList = {/literal}{$productTypeList|@json_encode}{literal};
+		var promotion 		= {/literal}{$promotion|@json_encode}{literal};
 	</script>
 	{/literal}
 </head>
@@ -33,6 +34,7 @@
 							<th class="prdName-col">ชื่อสินค้า</th>
 							<th class="qty-col">จำนวน</th>
 							<th class="unitPrice-col">หน่วยละ</th>
+							<th class="sumDiscout-col">ส่วนลด</th>
 							<th class="sumPrice-col">ราคารวม</th>
 						</thead>
 					</table>
@@ -60,7 +62,7 @@
 						<td>จำนวนสินค้าทั้งหมด: <span id="total-qty">0</span></td>
 					</tr>
 					<tr>
-						<input type="text" name="prdprmgrp_id" value="DG01" readonly="">
+						<input type="text" id="prdprmgrp_id" value="DG01" readonly="">
 					</tr>
 				</tbody>
 			</table>
@@ -72,7 +74,34 @@
 <div id="quick-product-container">
 	<div id="quick-product">
 		<div id="quick-product-header">
-			
+			<div class="product-category-container">
+				<ul class="product-category-list" data-page="1">
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+					<li>
+						<div class="product-category-item"></div>
+					</li>
+				</ul>
+			</div>
 		</div>
 		<div id="quick-product-body">
 			<div id="columns">

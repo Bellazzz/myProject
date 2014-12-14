@@ -39,8 +39,9 @@ $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
-		array_push($productList, mysql_fetch_assoc($result));
-		array_push($prdIdList, "'".$productList[$i]['prd_id']."'");
+		$record = mysql_fetch_assoc($result);
+		$productList[$record['prd_id']] = $record;
+		array_push($prdIdList, "'".$record['prd_id']."'");
 	}
 }
 
@@ -52,7 +53,6 @@ $sql = "SELECT DISTINCT 	pt.prdtyp_id,
 		WHERE 				pt.prdtyp_id = p.prdtyp_id AND 
 							p.prd_id IN (". implode(',', $prdIdList).") 
 		ORDER BY 			pt.prdtyp_name ASC";
-		echo $sql;
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -62,11 +62,43 @@ if($rows > 0) {
 }
 
 // Get promotion products data
-$sql = "";
+$promotion = array();
+$sql = "SELECT 		prdprm.prdprmgrp_id,
+					prmprd.prmprd_id,
+					prmprd.prd_id,
+					prmprd.prmprd_discout,
+					prmprd.prmprd_discout_type 
+		FROM 		promotion_products prmprd,
+					product_promotions prdprm 
+		WHERE 		prmprd.prdprm_id = prdprm.prdprm_id AND 
+					prmprd.prmprd_startdate <= '$nowDate' AND 
+					prmprd.prmprd_enddate >= '$nowDate' AND 
+					prmprd.prd_id IN (". implode(',', $prdIdList).") ";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record			= mysql_fetch_assoc($result);
+		$prdprmgrp_id 	= $record['prdprmgrp_id'];
+		$prd_id 		= $record['prd_id'];
 
+		if($record['prmprd_discout'] == '' && $record['prmprd_discout_type'] == '') {
+			// Free promotion
+			$promotion[$prdprmgrp_id][$prd_id]['free'] = $record['prmprd.prmprd_id'];
+		} else {
+			// Sale promotion
+			$promotion[$prdprmgrp_id][$prd_id]['sale'] = array(
+				'prmprd_id' 			=> $record['prmprd_id'],
+				'prmprd_discout' 		=> $record['prmprd_discout'],
+				'prmprd_discout_type' 	=> $record['prmprd_discout_type']
+			);
+		}
+	}
+}
 
 $smarty->assign('productList', $productList);
 $smarty->assign('productTypeList', $productTypeList);
+$smarty->assign('promotion', $promotion);
 
 include('../common/common_footer.php');
 ?>
