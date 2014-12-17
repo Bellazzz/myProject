@@ -1010,6 +1010,8 @@ function dbClose() {
 						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ขาย',
 						'sale_date'	  		  => 'วันที่ขาย',
 						'sale_time'	  		  => 'เวลาที่ขาย',
+						'sale_discout'		  => 'ส่วนลดการขาย',
+						'sale_prm_discout' 	  => 'ส่วนลดโปรโมชั่น',
 						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)'
 				),
 				'searchFields'	=> array('emp_id','sale_date'),
@@ -1052,6 +1054,7 @@ function dbClose() {
 						'saleprmdtl_amount'	  => 'จำนวน',
 						'saleprmdtl_discout'  => 'ส่วนลดรวม(บาท)'
 				),
+				'defaultNull' 	=> array('prmprd_id'),
 				'searchFields'	=> array('saleprmdtl_id','saledtl_id','prmprd_id')
 			);
 			break;
