@@ -82,6 +82,22 @@ function dbClose() {
 			);
 			break;
 
+		case 'withdraw_types':
+			return array(
+				'tableNameTH'	=> 'รหัสประเภทการเบืก',
+				'keyFieldName'  => 'wdwtyp_id',
+				'keyFieldType'	=> 2,
+				'keyChar'		=> 'X',
+				'keyLength'		=> 3,
+				'fieldNameList'	=> array(
+					'wdwtyp_id'	=> 'รหัสเพศ',
+					'wdwtyp_name'	=> 'ชื่อเพศ'
+				),
+				'searchFields'	=> array('wdwtyp_name'),
+				'deleteTxtField'	=> array('wdwtyp_name')
+			);
+			break;
+
 		case 'order_status':
 			return array(
 				'tableNameTH'	=> 'สถานะการสั่งซื้อ',
@@ -968,15 +984,16 @@ function dbClose() {
 						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ให้เบิก',
 						'emp_give_id' 		  => 'ชื่อ-นามสกุลพนักงานที่เบิก',
 						'ser_id' 	 		  => 'รหัสการใช้บริการ',
-						'wdw_date'	  	      => 'วันที่เบิก'
+						'wdw_date'	  	      => 'วันที่เบิก',
+						'wdwtyp_id' 	      => 'รหัสประเภทการเบืก'
 				),
-				'searchFields'	=> array('emp_id','emp_give_id','wdw_date'),
+				'searchFields'	=> array('emp_id','emp_give_id','wdw_date','wdwtyp_id'),
 				'defaultNull' 	=> array('ser_id'),
 				'hiddenFields'	=> array('ser_id'),
 				'deleteTxtField'	=> array('wdw_date','ser_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ของรหัสการใช้บริการ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2',
-				'referenceData'			=> array('employees','services','products')
+				'referenceData'			=> array('employees','services','products','withdraw_types')
 			);
 			break;
 
@@ -993,7 +1010,7 @@ function dbClose() {
 						'prd_id'	  		  => 'ผลิตภัณฑ์',
 						'wdwdtl_amount' 	  => 'จำนวนที่เบิก'
 				),
-				'searchFields'	=> array('wdw_id','prd_id','wdwdtl_id'),
+				'searchFields'	=> array('wdw_id','prd_id','wdwdtl_id','wdwtyp_id'),
 				'referenceData'			=> array('withdraws','products')
 			);
 			break;

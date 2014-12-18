@@ -49,7 +49,9 @@
             selectReferenceJS({
                 elem            : $('#ser_id'),
                 data            : {/literal}{$referenceData["services"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.ser_id}{literal}'
+                defaultValue    : '{/literal}{$values.ser_id}{literal}',
+                showClearBtn    : true,
+                clearBtnText    : 'ไม่ระบุ'
             });
             selectReferenceJS({
                 elem            : $('#emp_id'),
@@ -60,6 +62,11 @@
                 elem            : $('#emp_give_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_give_id}{$values.emp_give_id}{else}{$session_emp_id}{/if}{literal}'
+            });
+             selectReferenceJS({
+                elem            : $('#wdwtyp_id'),
+                data            : {/literal}{$referenceData["withdraw_types"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.wdwtyp_id}{literal}'
             });
             
             $('#wdw_date').datetimepicker({
@@ -83,11 +90,11 @@
             } else if(action == 'EDIT') {
                 for(i in valuesDetail) {
                      addProduct({
-                        defaultValue : true,
-                        wdwdtl_id   : valuesDetail[i].wdwdtl_id,
-                        prd_id      : valuesDetail[i].prd_id,
-                        prd_qty     : valuesDetail[i].wdwdtl_amount,
-                        unit_name   : valuesDetail[i].unit_name
+                        defaultValue    : true,
+                        wdwdtl_id       : valuesDetail[i].wdwdtl_id,
+                        prd_id          : valuesDetail[i].prd_id,
+                        wdwdtl_amount   : valuesDetail[i].wdwdtl_amount,
+                        unit_name       : valuesDetail[i].unit_name
                     });
                 }
             }
@@ -101,7 +108,7 @@
                 randNum     = parseInt(Math.random()*1000);
             } while($('#prd_id_' + randNum).length > 0);
             var inputKeyId  = 'prd_id_' + randNum;
-            var inputQtyId  = 'prd_qty_' + randNum;
+            var inputQtyId  = 'wdwdtl_amount_' + randNum;
             if(typeof(data.unit_name) != 'undefined' && data.unit_name != '') {
                 unitName = data.unit_name;
             }
@@ -115,10 +122,10 @@
 
             // add input product amount
             if(data.defaultValue) {
-                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" value="' + data.prd_qty + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="wdwdtl_amount[]" type="text" class="form-input half" value="' + data.wdwdtl_amount + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
                 selectRefDefault = data.prd_id;
             } else {
-                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="wdwdtl_amount[]" type="text" class="form-input half" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
             }
 
             // add withdraw detail id for update
@@ -271,6 +278,10 @@
                 <td>{$code}</td>
             </tr>
             <tr>
+                <td>ประเภทการเบิก :</td>
+                <td><div id="wdwtyp_id" class="selectReferenceJS text"></div></td>
+            </tr>
+            <tr>
                 <td>พนักงานที่ให้เบิก :</td>
                 <td>
                     <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
@@ -291,17 +302,21 @@
                 <td>{if $values.wdw_date}{$values.wdw_date_th}{else}-{/if}</td>
             </tr>
             <tr>
-                <td>รหัสการใช้บริการ :</td>
+                <td>อ้างอิงรหัสการใช้บริการ :</td>
                 <td>
+                    {if $values.ser_id}
                     <a href="form_table.php?action=VIEW_DETAIL&tableName=services&code={$values.ser_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
                             <div id="ser_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                         </a>
+                    {else}
+                    <div id="ser_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                    {/if}
                 </td>
             </tr>
         </tbody>
     </table>
     <!--Withdraw Details Data-->
-    <label class="article-title">รายการผลิตภัณฑ์ที่สั่งซื้อ</label>
+    <label class="article-title">รายการผลิตภัณฑ์ที่เบิก</label>
     ทั้งหมด {$withdrawDetailList|@count} รายการ
     <table class="view-detail-reference" style="margin-top:5px;">
         <thead>
@@ -332,7 +347,7 @@
     {else}      
     <!-- ADD, EDIT -->       
     <form id="form-table" name="form-table" onsubmit="return false;">
-    <input type="hidden" name="requiredFields" value="emp_id,emp_give_id,wdw_date">
+    <input type="hidden" name="requiredFields" value="emp_id,emp_give_id,wdw_date,wdwtyp_id">
     <label class="article-title">ข้อมูลการเบิก</label>
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
@@ -360,18 +375,29 @@
             </tr>
             <td>
                     <label class="input-required">วันที่เบิก</label>
-                      <input id="wdw_date" name="wdw_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.wdw_date}{$values.wdw_date}{else}{$nowDate}{/if}" require>
+                    <input id="wdw_date" name="wdw_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.wdw_date}{$values.wdw_date}{else}{$nowDate}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-ord_date-require" class="errInputMsg half err-ord_date">โปรดเลือกวันที่เบิก</span>
+                    <span id="err-ord_date-require" class="errInputMsg full err-ord_date">โปรดเลือกวันที่เบิก</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ประเภทการเบิก</label>
+                    <div id="wdwtyp_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-wdwtyp_id-require" class="errInputMsg err-wdwtyp_id">โปรดเลือกประเภทการเบิก</span>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <label>รหัสการใช้บริการ(ถ้ามี)</label>
-                    <div id="ser_id" class="selectReferenceJS form-input full" require> </div>
+                    <div id="ser_id" class="selectReferenceJS form-input full"> </div>
                 </td>
             </tr>
         </tbody>

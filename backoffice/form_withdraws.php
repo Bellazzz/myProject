@@ -101,6 +101,14 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText ASC";
 					$refField 	= 'prd_id';
 					break;
+
+				case 'withdraw_types':
+					$sqlRefData = "	SELECT 		wdwtyp_id refValue,
+												wdwtyp_name refText   
+									FROM 		withdraw_types 
+									ORDER BY 	refText ASC";
+					$refField 	= 'wdwtyp_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {
@@ -231,10 +239,10 @@ if(!$_REQUEST['ajaxCall']) {
 			$insertWithdrawsDetailError  = '';
 			$wdw_id = $tableRecord->getKey();
 			foreach ($formData['prd_id'] as $key => $prd_id) {
-				$wdwdtl_amount 		= $formData['prd_qty'][$key];
+				$wdwdtl_amount 		= $formData['wdwdtl_amount'][$key];
 				$wdwdtlValues 		= array($wdw_id, $prd_id, $wdwdtl_amount);
-				$withdrawsDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
-				if(!$withdrawsDetailRecord->insertSuccess()) {
+				$withdrawDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
+				if(!$withdrawDetailRecord->insertSuccess()) {
 					$insertWithdrawsDetailResult = false;
 					$insertWithdrawsDetailError .= 'ADD_WITHDRAW_DETAIL['.($key+1).']_FAIL\n';
 				}
@@ -297,20 +305,20 @@ if(!$_REQUEST['ajaxCall']) {
 			foreach ($oldWithdrawsDetailList as $key => $oldWdwdtl_id) {
 				if(!in_array($oldWdwdtl_id, $newWithdrawsDetailList)) {
 					// Delete withdraw_details
-					$orderDetailRecord 	= new TableSpa('withdraw_details', $oldWdwdtl_id);
-					if(!$withdrawsDetailRecord->delete()) {
-						$updateWithdrawsResult = false;
+					$withdrawDetailRecord 	= new TableSpa('withdraw_details', $oldWdwdtl_id);
+					if(!$withdrawDetailRecord->delete()) {
+						$updateWithdrawsDetailResult = false;
 						$updateWithdrawsDetailError .= "DELETE_WITHDRAWS_DETAIL[$oldWdwdtl_id]_FAIL\n";
 					}
 				}
 			}
 
 			// Update or Add withdraw_details
-			$updateWithdrawsResult = true;
+			$updateWithdrawsDetailResult = true;
 			$updateWithdrawsDetailError  = '';
 
 			foreach ($formData['prd_id'] as $key => $prd_id) {
-				$orddtl_amount 	= $formData['prd_qty'][$key];
+				$wdwdtl_amount 	= $formData['wdwdtl_amount'][$key];
 
 				if(isset($formData['wdwdtl_id'][$key])) {
 					// Update withdraw_details
@@ -324,9 +332,9 @@ if(!$_REQUEST['ajaxCall']) {
 					}
 				} else {
 					// Add new withdraw_details
-					$orddtlValues 		= array($code, $prd_id, $wdwdtl_amount);
-					$orderDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
-					if(!$orderDetailRecord->insertSuccess()) {
+					$wdwdtlValues 		= array($code, $prd_id, $wdwdtl_amount);
+					$withdrawDetailRecord 	= new TableSpa('withdraw_details', $wdwdtlValues);
+					if(!$withdrawDetailRecord->insertSuccess()) {
 						$updateWithdrawsDetailResult = false;
 						$updateWithdrawsDetailError .= 'ADD_WITHDRAWS_DETAIL['.($key+1).']_FAIL\n';
 					}
