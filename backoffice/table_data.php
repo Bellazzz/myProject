@@ -611,6 +611,18 @@ switch ($tableName) {
 				$orderSpecial";
 		$sortBy = $sortBySpecial;
 		break;
+
+	case 'withdraw_types':
+		if(hasValue($like)) {
+			$where = " WHERE $like";
+		}
+		$sql = "SELECT wdwtyp_id,
+				wdwtyp_name,
+				IF(wdwtyp_decrease,'ใช่','ไม่ใช่') wdwtyp_decrease 
+				FROM withdraw_types 
+				$where 
+				$order";
+		break;
 		
 	default:
 		if(hasValue($like)) {

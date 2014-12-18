@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function() {
+            // Set default radio input
+            if(action == 'EDIT') {
+                $('input[name="wdwtyp_decrease"][value="{/literal}{$values.wdwtyp_decrease}{literal}"]').click();
+            }
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="wdwtyp_name">
+	<input type="hidden" name="uniqueFields" value="wdwtyp_name">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+		    <tr>
+			    <td>
+				    <label class="input-required">ชื่อประเภทการเบิก</label>
+				    <input id="wdwtyp_name" name="wdwtyp_name" type="text" class="form-input full" value="{$values.wdwtyp_name}" valuepattern="character" require>
+			    </td>
+            </tr>
+            <tr>
+                <td>
+                    <span id="err-wdwtyp_name-require" class="errInputMsg err-wdwtyp_name">โปรดป้อนชื่อประเภทการเบิก</span>
+                    <span id="err-wdwtyp_name-character" class="errInputMsg err-wdwtyp_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                    <span id="err-wdwtyp_name-unique" class="errInputMsg err-wdwtyp_name">ประเภทการเบิกซ้ำ โปรดป้อนชื่อประเภทการเบิกใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">หักจำนวนผลิตภัณฑ์ทันทีที่เบิก</label>
+                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_decrease" value="1" class="decrease_radio" checked> ใช่</label><br>
+                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_decrease" value="0" class="decrease_radio"> ไม่ใช่</label>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

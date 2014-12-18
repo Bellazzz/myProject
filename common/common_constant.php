@@ -84,17 +84,19 @@ function dbClose() {
 
 		case 'withdraw_types':
 			return array(
-				'tableNameTH'	=> 'รหัสประเภทการเบืก',
+				'tableNameTH'	=> 'ประเภทการเบิก',
 				'keyFieldName'  => 'wdwtyp_id',
 				'keyFieldType'	=> 2,
-				'keyChar'		=> 'X',
+				'keyChar'		=> 'WT',
 				'keyLength'		=> 3,
 				'fieldNameList'	=> array(
-					'wdwtyp_id'	=> 'รหัสเพศ',
-					'wdwtyp_name'	=> 'ชื่อเพศ'
+					'wdwtyp_id'			=> 'รหัสประเภทการเบิก',
+					'wdwtyp_name'		=> 'ชื่อประเภทการเบิก',
+					'wdwtyp_decrease' 	=> 'หักจำนวนผลิตภัณฑ์ทันทีที่เบิก'
 				),
 				'searchFields'	=> array('wdwtyp_name'),
-				'deleteTxtField'	=> array('wdwtyp_name')
+				'deleteTxtField'	=> array('wdwtyp_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบประเภทการเบิก %f1 ใช่หรือไม่?'
 			);
 			break;
 
