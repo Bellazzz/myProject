@@ -260,7 +260,7 @@ function addPrmSale(prd_id) {
 	var prdprmgrp_id = $('#prdprmgrp_id').val();
 	for(prdID in promotion[prdprmgrp_id]) {
 		for(prmType in promotion[prdprmgrp_id][prdID]) {
-			if(prmType == 'sale') {
+			if(prdID == prd_id && prmType == 'sale') {
 				var prm 		= promotion[prdprmgrp_id][prdID][prmType];
 
 				if($('input[name="prmSale_' + prd_id + '_prmprd_id"]').length > 0) {
@@ -411,6 +411,14 @@ function openEditQtyBox(prd_id, qty) {
 
 	// Get product data
 	var prdData 	= productList[prd_id];
+
+	// Get promotion data
+	if($('input[name="prmSale_' + prd_id + '_prmprd_id').length >0 
+	|| $('input[name="prmSale_' + prd_id + '_prmprd_id').length >0) {
+		alert('have promotion!');
+	}
+
+
 	var eqpBoxHTML  = '<table class="produt-data">'
 					+ '		<tbody>'
 					+ ' 		<tr>'
