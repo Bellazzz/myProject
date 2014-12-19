@@ -1143,6 +1143,9 @@ table.mbk .icon {
     color: #888;
     margin-bottom: 20px;
 }
+.mbk-form-input-normal td {
+    vertical-align: top;
+}
 .mbk-form-input-normal tr td:nth-child(2), .mbk-form-input-normal tr td.samerow {
     padding-left: 20px;
 }
@@ -1165,6 +1168,10 @@ table.mbk .icon {
 }
 .mbk-form-input-normal .form-input.required, .mbk-form-input-normal .form-input.required:hover {
     border-color: rgb(216, 0, 0);
+} 
+.mbk-form-input-normal .form-input.readonly, .mbk-form-input-normal .form-input.readonly:hover {
+    border-color: #ccc;
+    background: #ECECEC;
 } 
 .mbk-form-input-normal label.twoInput-large, .mbk-form-input-normal .form-input.twoInput-large {
 	width: 150px;

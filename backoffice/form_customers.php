@@ -67,8 +67,9 @@ if($_REQUEST['ajaxCall']) {
 		$values['fieldValue'] = array();
 
 		// Encryption password
-		$formData['cus_pass'] = md5($formData['cus_pass']);
-		
+		if(hasValue($formData['cus_pass'])) {
+			$formData['cus_pass'] = md5($formData['cus_pass']);
+		}
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {

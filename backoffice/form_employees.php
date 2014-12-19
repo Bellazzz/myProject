@@ -92,8 +92,9 @@ if($_REQUEST['ajaxCall']) {
 		}
 
 		// Encryption password
-		$formData['emp_pass'] = md5($formData['emp_pass']);
-		
+		if(hasValue($formData['emp_pass'])) {
+			$formData['emp_pass'] = md5($formData['emp_pass']);
+		}
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {

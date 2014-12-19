@@ -43,6 +43,33 @@
                 selector: $('#prd_pic_file'),
                 defaultValue: '{/literal}{if $values.prd_pic}../img/products/{$values.prd_pic}?rand={$randNum}{/if}{literal}'
             });
+
+            $('#toggleAmountBtn').change(function() {
+                if($(this).prop('checked')) {
+                    $('#prd_amount').val('');
+                    $('#prd_amount').removeClass('required');
+                    $('.err-prd_amount').css('display', 'none');
+                    $('#prd_amount').removeAttr('require');
+                    $('#prd_amount').attr('readonly', '');
+                    $('#prd_amount_label').removeClass('input-required');
+                    $('#prd_amount').addClass('readonly');
+                } else {
+                    $('#prd_amount').attr('require', '');
+                    $('#prd_amount').removeAttr('readonly');
+                    $('#prd_amount_label').addClass('input-required');
+                    $('#prd_amount').removeClass('readonly');
+                    $('#prd_amount').focusout(validateInput);
+                }
+            });
+
+            if($('#prd_amount').val() == '') {
+                if(action == 'ADD') {
+                    $('#prd_amount').val('0');
+                } else if(action == 'EDIT') {
+                    $('#toggleAmountBtn').prop('checked', true);
+                    $('#toggleAmountBtn').change();
+                }
+            }
         });
     </script>
     {/literal}
@@ -85,7 +112,13 @@
             </tr>
             <tr>
                 <td>จำนวน :</td>
-                <td>{$values.prd_amount}   <div id="unit_id" class="selectReferenceJS text"></div></td>
+                <td>
+                    {if $values.prd_amount != '-'}
+                    {$values.prd_amount}   <div id="unit_id" class="selectReferenceJS text"></div>
+                    {else}
+                    ไม่มีจำนวนในสต็อค
+                    {/if}
+                </td>
             </tr>
             <tr>
                 <td>รหัสบาร์โค้ด :</td>
@@ -135,22 +168,34 @@
                 </td>
             </tr>
 		    <tr>
-                <td>
+                <td colspan="2">
                     <label class="input-required">ราคา (บาท)</label>
-					 <input id="prd_price" name="prd_price" type="text" class="form-input half" value="{$values.prd_price}" valuepattern="money" require style="text-align:right;">
+					 <input id="prd_price" name="prd_price" type="text" class="form-input full" value="{$values.prd_price}" valuepattern="money" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-prd_price-require" class="errInputMsg half err-prd_price">โปรดป้อนราคา</span>
+                    <span id="err-prd_price-money" class="errInputMsg half err-prd_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+					<label id="prd_amount_label" class="input-required">จำนวน</label>
+					<input id="prd_amount" name="prd_amount" type="text" class="form-input half" value="{$values.prd_amount}" maxlength="6" size="6" valuepattern="number" require>
+                    <label style="margin-top: -10px;margin-bottom: 15px;">
+                        <input id="toggleAmountBtn" type="checkbox"> ไม่มีจำนวนในสต็อค
+                    </label>
                 </td>
                 <td>
-					<label class="twoInput twoInput-small input-required">จำนวน</label>
-					<label class="twoInput twoInput-large input-required">หน่วยนับ</label>
-                    <br>
-					<input id="prd_amount" name="prd_amount" type="text" class="form-input twoInput twoInput-small" value="{$values.prd_amount}" maxlength="6" size="6" valuepattern="number" style="text-align:right;">
-					<div id="unit_id" class="selectReferenceJS form-input twoInput twoInput-large" require>
+                    <label class="input-required">หน่วยนับ</label>
+                    <div id="unit_id" class="selectReferenceJS form-input half" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-prd_price-require" class="errInputMsg half err-prd_price">โปรดป้อนราคา</span>
-                    <span id="err-prd_price-money" class="errInputMsg half err-prd_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                    <span id="err-prd_amount-require" class="errInputMsg half err-prd_amount">โปรดป้อนจำนวน</span>
+                    <span id="err-prd_amount-number" class="errInputMsg half err-prd_amount">โปรดกรอกจำนวนเป็นตัวเลขเท่านั้น</span>
                 </td>
                 <td>
                     <span id="err-prd_amount-number" class="errInputMsg half err-prd_amount">โปรดกรอกจำนวนเป็นเลขจำนวนเต็ม</span>
