@@ -260,6 +260,77 @@
         function setAllOrdPrd() {
             $('#allOrdPrd').text($('input[name="prd_id[]"]').length);
         }
+
+        function beforeSaveRecord() {
+            var returnVal       = true; // false = no err, true = have err
+            var prdIdList       = Array();
+            var wdwdtlAmountList = Array();
+
+            if(!hasInputError()) {
+                // Get product id
+                $('input[name="prd_id[]"]').each(function() {
+                    prdIdList.push($(this).val());
+                });
+
+                // Get withdraw amount
+                $('input[name="wdwdtl_amount[]"]').each(function() {
+                    wdwdtlAmountList.push($(this).val());
+                });
+
+                $.ajax({
+                    url: '../common/ajaxCheckWithdrawAmoutCover.php',
+                    type: 'POST',
+                    data: {
+                        wdwId              : code,
+                        prdIdList           : prdIdList,
+                        wdwdtlAmountList    : wdwdtlAmountList
+                    },
+                    success:
+                    function(responseJSON) {
+                        var response = $.parseJSON(responseJSON);
+                        if(response.status == 'PASS') {
+                            if(action == 'ADD') {
+                                saveRecord();
+                            } else if(action == 'EDIT') {
+                                confirmSaveRecord();
+                            }
+                        } else if(response.status == 'OVER') {
+                            var msg = 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก โปรดป้อนจำนวนการเบิกใหม่ ได้แก่<ul>';
+                            for(i in response.prdName) {
+                                msg += '<li>' 
+                                     + response.prdName[i] 
+                                     + ' เหลือ ' + response.stockAmount[i] 
+                                     + ' ' +  response.unitName[i] 
+                                     + ' <span style="color:red;">(ต้องการอีก ' + response.overAmount[i] 
+                                     + ' ' +  response.unitName[i] + ')</span>'
+                                     + '</li>';
+                            }
+                            msg += '</ul>';
+
+                            parent.showActionDialog({
+                                title: 'จำนวนผลิตภัณฑ์ไม่เพียงพอ',
+                                message: msg,
+                                actionList: [
+                                    {
+                                        id: 'ok',
+                                        name: 'ตกลง',
+                                        func:
+                                        function() {
+                                            parent.hideActionDialog();
+                                        }
+                                    }
+                                ],
+                                boxWidth: 650
+                            });
+                        } else {
+                            alert(response.status);
+                        }
+                    }
+                });
+            }
+
+            return returnVal;
+        }
     </script>
     {/literal}
 </head>

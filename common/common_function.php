@@ -1,6 +1,13 @@
 <?php
 function wrapSingleQuote($value) {
-	return "'$value'";
+	if(is_array($value)) {
+		foreach ($value as $key => $val) {
+			$value[$key] = "'$val'";
+		}
+		return $value;
+	} else {
+		return "'$value'";
+	}
 }//เอาไว้ครอบ Single Qute เมื่อรับค้าตอน Insert
 
 function hasValue($variable) {
