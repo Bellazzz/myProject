@@ -20,14 +20,20 @@ $response 				= array(
 if(hasValue($_POST['wdwId'])) {
 	$wdwId = $_POST['wdwId'];
 }
-if(hasValue($_POST['wdwtyp_id'])) {
-	$wdwtyp_id = $_POST['wdwtyp_id'];
-}
 if(hasValue($_POST['prdIdList'])) {
 	$prdIdList = $_POST['prdIdList'];
 }
 if(hasValue($_POST['wdwdtlAmountList'])) {
 	$wdwdtlAmountList = $_POST['wdwdtlAmountList'];
+}
+if(hasValue($_POST['wdwtyp_id'])) {
+	$wdwtyp_id = $_POST['wdwtyp_id'];
+} else {
+	// Get withdraws type id
+	$wdwtypRecord = new TableSpa('withdraws', $wdwId);
+	if($wdwtypRecord != null) {
+		$wdwtyp_id = $wdwtypRecord->getFieldValue('wdwtyp_id');
+	}
 }
 
 // Get increase shelf amount
@@ -120,7 +126,20 @@ foreach ($prdIdList as $key => $prdId) {
 
 // Check from delete
 foreach ($OldPrdIdList as $key => $prdId) {
-
+	if($productData[$prdId]['amount'] != '' && $increaseShelfAmount) {
+		if(!in_array($prdId, $prdIdList)) {
+			// Check product shelf amount
+			if($OldWdwdtlAmountList[$prdId] > $productData[$prdId]['shelf_amount']) {
+				$response['status'] = 'OVER';
+				array_push($response['overShelfAmountList'], array(
+					'prdName' 		=> $productData[$prdId]['name'],
+					'stockAmount' 	=> number_format($productData[$prdId]['shelf_amount']),
+					'overAmount' 	=> number_format($OldWdwdtlAmountList[$prdId] - $productData[$prdId]['shelf_amount']),
+					'unitName' 		=> $productData[$prdId]['unitName']
+				));
+			}
+		}
+	}
 }
 
 echo json_encode($response);

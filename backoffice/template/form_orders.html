@@ -14,9 +14,6 @@
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
     <style type="text/css">
-        #order-detail-table tr:nth-child(2) .removeProductBtn {
-            display: none;
-        }
         .prd_unit_name {
             width: 60px;
             display: inline-block;
@@ -289,44 +286,63 @@
         }
 
         function removeProduct(randNum) {
-            var selectRef   = $('#prd_id_' + randNum);
-            var tr          = selectRef.parent().parent();
-            var txt         = selectRef.find('.selectReferenceJS-text').text();
-            var val         = selectRef.find('.selectReferenceJS-input').val();
-            var msg         = '';
-            if(val != '') {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+            if($('.removeProductBtn').length > 1) {
+                var selectRef   = $('#prd_id_' + randNum);
+                var tr          = selectRef.parent().parent();
+                var txt         = selectRef.find('.selectReferenceJS-text').text();
+                var val         = selectRef.find('.selectReferenceJS-input').val();
+                var msg         = '';
+                if(val != '') {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+                } else {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+                }
+                parent.showActionDialog({
+                    title: 'ลบผลิตภัณฑ์',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'ลบผลิตภัณฑ์นี้ออกจากการสั่งซื้อ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                tr.remove();
+                                $('#errMsgRow_' + randNum).remove();
+                                setAllOrdPrd();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'ยกเลิกการลบ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             } else {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+                parent.showActionDialog({
+                    title: 'ไม่สามารถลบผลิตภัณฑ์ได้',
+                    message: 'รายการผลิตภัณฑ์ที่สั่งซื้อต้องมีอย่างน้อย 1 รายการค่ะ',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             }
-            parent.showActionDialog({
-                title: 'ลบผลิตภัณฑ์',
-                message: msg,
-                actionList: [
-                    {
-                        id: 'ok',
-                        name: 'ตกลง',
-                        desc: 'ลบผลิตภัณฑ์นี้ออกจากการสั่งซื้อ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                            tr.remove();
-                            $('#errMsgRow_' + randNum).remove();
-                            setAllOrdPrd();
-                        }
-                    },
-                    {
-                        id: 'cancel',
-                        name: 'ยกเลิก',
-                        desc: 'ยกเลิกการลบ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                        }
-                    }
-                ],
-                boxWidth: 400
-            });
+            
         }
 
         function allowSelectPrdId(selected) {

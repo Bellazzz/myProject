@@ -497,13 +497,14 @@ switch ($tableName) {
 		break;
 
 	case 'withdraws':
-		$where = 'WHERE w.emp_give_id = eg.emp_id AND w.emp_id = e.emp_id ';
+		$where = 'WHERE w.emp_give_id = eg.emp_id AND w.emp_id = e.emp_id AND w.wdwtyp_id = wt.wdwtyp_id ';
 		if(hasValue($like)) {
 			if($searchCol == 'emp_id') {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			} else if($searchCol == 'emp_give_id') {
 				$like = "(eg.emp_name like '%$searchInput%' OR eg.emp_surname like '%$searchInput%') ";
 			}
+			$like	= str_replace('wdwtyp_id', 'wt.wdwtyp_name', $like);
 			$where .= " AND $like";
 		}
 		if($filterRetroact == 'true') {
@@ -513,8 +514,8 @@ switch ($tableName) {
 				CONCAT(eg.emp_name, '  ', eg.emp_surname) emp_give_id,
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
 				w.wdw_date,
-				w.ser_id 
-				FROM withdraws w, employees eg, employees e 
+				wt.wdwtyp_name wdwtyp_id 
+				FROM withdraws w, employees eg, employees e, withdraw_types wt 
 				$where 
 				$orderSpecial ";
 		$sortBy = $sortBySpecial;
@@ -697,7 +698,17 @@ if($rows > 0){
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 					</a>
 					<a title="ลบ">
-						<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
+						<?
+							if($tableName == 'withdraws') {
+								?>
+								<i class="fa fa-times" onclick="deleteWithdrawsRecord('<?=$code?>')"></i>
+								<?
+							} else {
+								?>
+								<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
+								<?
+							}
+						?>
 					</a>
 				</td>
 			<?

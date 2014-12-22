@@ -984,17 +984,17 @@ function dbClose() {
 				'keyLength'		=> 8,
 				'fieldNameList'	=> array(
 						'wdw_id'	  		  => 'รหัสการเบิก',
-						'emp_id'	  		  => 'ชื่อ-นามสกุลพนักงานที่ให้เบิก',
-						'emp_give_id' 		  => 'ชื่อ-นามสกุลพนักงานที่เบิก',
+						'emp_give_id' 		  => 'พนักงานที่ให้เบิก',
+						'emp_id'	  		  => 'พนักงานที่เบิก',
 						'ser_id' 	 		  => 'รหัสการใช้บริการ',
 						'wdw_date'	  	      => 'วันที่เบิก',
-						'wdwtyp_id' 	      => 'รหัสประเภทการเบืก'
+						'wdwtyp_id' 	      => 'ประเภทการเบิก'
 				),
-				'searchFields'	=> array('emp_id','emp_give_id','wdw_date','wdwtyp_id'),
+				'searchFields'	=> array('emp_give_id','emp_id','wdw_date','wdwtyp_id'),
 				'defaultNull' 	=> array('ser_id'),
 				'hiddenFields'	=> array('ser_id'),
-				'deleteTxtField'	=> array('wdw_date','ser_id'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ของรหัสการใช้บริการ %f2 ใช่หรือไม่?',
+				'deleteTxtField'	=> array('wdw_date','emp_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการเบิกในวันที่ %f1 ที่เบิกโดย %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การเบิกวันที่ %f1 ของรหัสการใช้บริการ %f2',
 				'referenceData'			=> array('employees','services','products','withdraw_types')
 			);

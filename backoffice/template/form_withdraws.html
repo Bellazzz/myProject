@@ -14,9 +14,6 @@
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
     <style type="text/css">
-        #withdraw-detail-table tr:nth-child(2) .removeProductBtn {
-            display: none;
-        }
         .prd_unit_name {
             width: 60px;
             display: inline-block;
@@ -144,7 +141,7 @@
                             + '     </td>'
                             + '     <td>'
                             + '         <span id="err-' + inputQtyId + '-require" class="errInputMsg half err-' + inputQtyId + '">'
-                            + '             โปรดกรอกจำนวนที่สั่งซื้อ'
+                            + '             โปรดกรอกจำนวนที่เบิก'
                             + '         </span>'
                             + '         <span id="err-' + inputQtyId + '-numberMoreThanZero" class="errInputMsg half err-' + inputQtyId + '">'
                             + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็มตั้งแต่ 1 ขึ้นไป'
@@ -174,44 +171,62 @@
         }
 
         function removeProduct(randNum) {
-            var selectRef   = $('#prd_id_' + randNum);
-            var tr          = selectRef.parent().parent();
-            var txt         = selectRef.find('.selectReferenceJS-text').text();
-            var val         = selectRef.find('.selectReferenceJS-input').val();
-            var msg         = '';
-            if(val != '') {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการเบิกครั้งนี้ใช่หรือไม่?';
+            if($('.removeProductBtn').length > 1) {
+                var selectRef   = $('#prd_id_' + randNum);
+                var tr          = selectRef.parent().parent();
+                var txt         = selectRef.find('.selectReferenceJS-text').text();
+                var val         = selectRef.find('.selectReferenceJS-input').val();
+                var msg         = '';
+                if(val != '') {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการเบิกครั้งนี้ใช่หรือไม่?';
+                } else {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการเบิกครั้งนี้ใช่หรือไม่?';
+                }
+                parent.showActionDialog({
+                    title: 'ลบผลิตภัณฑ์',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'ลบผลิตภัณฑ์นี้ออกจากการเบิก',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                tr.remove();
+                                $('#errMsgRow_' + randNum).remove();
+                                setAllOrdPrd();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'ยกเลิกการลบ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             } else {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการเบิกครั้งนี้ใช่หรือไม่?';
+                parent.showActionDialog({
+                    title: 'ไม่สามารถลบผลิตภัณฑ์ได้',
+                    message: 'รายการผลิตภัณฑ์ที่เบิกต้องมีอย่างน้อย 1 รายการค่ะ',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             }
-            parent.showActionDialog({
-                title: 'ลบผลิตภัณฑ์',
-                message: msg,
-                actionList: [
-                    {
-                        id: 'ok',
-                        name: 'ตกลง',
-                        desc: 'ลบผลิตภัณฑ์นี้ออกจากการเบิก',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                            tr.remove();
-                            $('#errMsgRow_' + randNum).remove();
-                            setAllOrdPrd();
-                        }
-                    },
-                    {
-                        id: 'cancel',
-                        name: 'ยกเลิก',
-                        desc: 'ยกเลิกการลบ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                        }
-                    }
-                ],
-                boxWidth: 400
-            });
         }
 
         function allowSelectPrdId(selected) {
@@ -376,16 +391,16 @@
             <tr>
                 <td>พนักงานที่ให้เบิก :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_give_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_give_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                         </a>
                 </td>
             </tr>
             <tr>
                 <td>พนักงานที่เบิก :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_give_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="emp_give_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                         </a>
                 </td>
             </tr>
@@ -496,7 +511,7 @@
     </table>
 
     <label class="article-title">รายละเอียดการเบิก</label>
-    รายการผลิตภัณฑ์ทั้งหมด <span id="allOrdPrd"></span> รายการ<br><br>
+    รายการผลิตภัณฑ์ที่เบิกทั้งหมด <span id="allOrdPrd"></span> รายการ<br><br>
     <table id="withdraw-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:600px;">
         <tbody>
             <tr>

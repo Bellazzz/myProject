@@ -105,44 +105,62 @@
         }
 
         function removeDisplayProduct(randNum) {
-            var selectRef   = $('#prd_id_' + randNum);
-            var tr          = selectRef.parent().parent();
-            var txt         = selectRef.find('.selectReferenceJS-text').text();
-            var val         = selectRef.find('.selectReferenceJS-input').val();
-            var msg         = '';
-            if(val != '') {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากร้านค้านี้ใช่หรือไม่?';
+            if($('.removePrdBtn').length > 1) {
+                var selectRef   = $('#prd_id_' + randNum);
+                var tr          = selectRef.parent().parent();
+                var txt         = selectRef.find('.selectReferenceJS-text').text();
+                var val         = selectRef.find('.selectReferenceJS-input').val();
+                var msg         = '';
+                if(val != '') {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากร้านค้านี้ใช่หรือไม่?';
+                } else {
+                    msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากร้านค้านี้ใช่หรือไม่?';
+                }
+                parent.showActionDialog({
+                    title: 'ลบผลิตภัณฑ์ที่ขาย',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'ลบผลิตภัณฑ์นี้ออกจากร้านค้า',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                tr.remove();
+                                $('#prd_id_' + randNum + '_errRow').remove();
+                                refreshSvlTable();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'ยกเลิกการลบ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             } else {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากร้านค้านี้ใช่หรือไม่?';
+                parent.showActionDialog({
+                    title: 'ไม่สามารถลบผลิตภัณฑ์ได้',
+                    message: 'รายการผลิตภัณฑ์ที่ขายต้องมีอย่างน้อย 1 รายการค่ะ',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             }
-            parent.showActionDialog({
-                title: 'ลบผลิตภัณฑ์ที่ขาย',
-                message: msg,
-                actionList: [
-                    {
-                        id: 'ok',
-                        name: 'ตกลง',
-                        desc: 'ลบผลิตภัณฑ์นี้ออกจากร้านค้า',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                            tr.remove();
-                            $('#prd_id_' + randNum + '_errRow').remove();
-                            refreshSvlTable();
-                        }
-                    },
-                    {
-                        id: 'cancel',
-                        name: 'ยกเลิก',
-                        desc: 'ยกเลิกการลบ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                        }
-                    }
-                ],
-                boxWidth: 400
-            });
         }
 
         function refreshPrdTable() {
@@ -240,7 +258,7 @@
     <table id="products-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <td><label class="input-required">ผลิตภัณฑ์ (<span id="allPrd"></span> รายการ)</label></td>
+                <td><label class="input-required">ผลิตภัณฑ์ทั้งหมด <span id="allPrd"></span> รายการ</label></td>
             </tr>
         </tbody>
     </table>

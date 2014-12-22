@@ -13,11 +13,6 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
-    <style type="text/css">
-        #service-lists-table tr:nth-child(2) .removeSvlBtn {
-            display: none;
-        }
-    </style>
     <script type="text/javascript">
         // Global variables
         var action      = '{/literal}{$action}{literal}';
@@ -260,44 +255,63 @@
         }
 
         function removeServiceLists(randNum) {
-        	var selectRef 	= $('#svl_id_' + randNum);
-        	var tr 			= selectRef.parent().parent();
-        	var txt 		= selectRef.find('.selectReferenceJS-text').text();
-        	var val 		= selectRef.find('.selectReferenceJS-input').val();
-        	var msg 		= '';
-        	if(val != '') {
-        		msg = 'คุณต้องการลบรายการบริการ ' + txt + ' ออกจากแพ็คเกจนี้ใช่หรือไม่?';
-        	} else {
-        		msg = 'คุณต้องการลบรายการบริการที่เลือกออกจากแพ็คเกจนี้ใช่หรือไม่?';
-        	}
-        	parent.showActionDialog({
-                title: 'ลบรายการบริการ',
-                message: msg,
-                actionList: [
-                    {
-                        id: 'ok',
-                        name: 'ตกลง',
-                        desc: 'ลบรายการบริการนี้ออกจากแพ็คเกจ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
-                            tr.remove();
-                            $('#svl_id_' + randNum + '_errRow').remove();
-                            refreshSvlTable();
+            if($('.removeSvlBtn').length > 1) {
+                var selectRef   = $('#svl_id_' + randNum);
+                var tr          = selectRef.parent().parent();
+                var txt         = selectRef.find('.selectReferenceJS-text').text();
+                var val         = selectRef.find('.selectReferenceJS-input').val();
+                var msg         = '';
+                if(val != '') {
+                    msg = 'คุณต้องการลบรายการบริการ ' + txt + ' ออกจากแพ็คเกจนี้ใช่หรือไม่?';
+                } else {
+                    msg = 'คุณต้องการลบรายการบริการที่เลือกออกจากแพ็คเกจนี้ใช่หรือไม่?';
+                }
+                parent.showActionDialog({
+                    title: 'ลบรายการบริการ',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'ลบรายการบริการนี้ออกจากแพ็คเกจ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                tr.remove();
+                                $('#svl_id_' + randNum + '_errRow').remove();
+                                refreshSvlTable();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'ยกเลิกการลบ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
                         }
-                    },
-                    {
-                        id: 'cancel',
-                        name: 'ยกเลิก',
-                        desc: 'ยกเลิกการลบ',
-                        func:
-                        function() {
-                            parent.hideActionDialog();
+                    ],
+                    boxWidth: 400
+                });
+            } else {
+                parent.showActionDialog({
+                    title: 'ไม่สามารถลบรายการบริการได้',
+                    message: 'รายการบริการที่จัดแพ็คเกจต้องมีอย่างน้อย 1 รายการค่ะ',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
                         }
-                    }
-                ],
-                boxWidth: 400
-            });
+                    ],
+                    boxWidth: 400
+                });
+            }
+        	
         }
 
         function allowSelectSvlId(selected) {
@@ -462,7 +476,7 @@
 	<table id="service-lists-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <td><label class="input-required">รายการบริการ (<span id="allSvl"></span> รายการ)</label></td>
+                <td><label class="input-required">รายการบริการทั้งหมด <span id="allSvl"></span> รายการ</label></td>
             </tr>
         </tbody>
     </table>
