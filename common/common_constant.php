@@ -90,9 +90,9 @@ function dbClose() {
 				'keyChar'		=> 'WT',
 				'keyLength'		=> 3,
 				'fieldNameList'	=> array(
-					'wdwtyp_id'			=> 'รหัสประเภทการเบิก',
-					'wdwtyp_name'		=> 'ชื่อประเภทการเบิก',
-					'wdwtyp_decrease' 	=> 'หักจำนวนผลิตภัณฑ์ทันทีที่เบิก'
+					'wdwtyp_id'						=> 'รหัสประเภทการเบิก',
+					'wdwtyp_name'					=> 'ชื่อประเภทการเบิก',
+					'wdwtyp_increase_shelf_amount' 	=> 'ลักษณะการเบิก'
 				),
 				'searchFields'	=> array('wdwtyp_name'),
 				'deleteTxtField'	=> array('wdwtyp_name'),
@@ -571,7 +571,8 @@ function dbClose() {
 						'brand_id'	      => 'ยี่ห้อ',
 						'prd_name'	      => 'ผลิตภัณฑ์',
 						'prd_price'       => 'ราคา(บาท)',
-						'prd_amount'      => 'จำนวน',
+						'prd_amount'      => 'จำนวนคงเหลือ',
+						'prd_shelf_amount'=> 'จำนวนที่วางขาย',
 						'prd_pic'      	  => 'รูปภาพ',
 						'prd_desc'		  => 'คำอธิบาย',
 						'prd_barcode'	  => 'รหัสบาร์โค้ด'

@@ -10,13 +10,24 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <style type="text/css">
+        #no_amount_checkbox {
+            margin-top: -10px;
+            margin-bottom: 15px;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
     <script type="text/javascript">
         // Global variables
-        var action      = '{/literal}{$action}{literal}';
-        var tableName   = '{/literal}{$tableName}{literal}';
-		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
-        var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_products.php';
+        var action              = '{/literal}{$action}{literal}';
+        var tableName           = '{/literal}{$tableName}{literal}';
+		var tableNameTH         = '{/literal}{$tableNameTH}{literal}';
+        var code                = '{/literal}{$code}{literal}';
+        var ajaxUrl             = 'form_products.php';
+        var tmpPrdAmount        = '';
+        var tmpPrdShelfAmount   = '';
 
         $(document).ready(function () {
             selectReferenceJS({
@@ -46,6 +57,11 @@
 
             $('#toggleAmountBtn').change(function() {
                 if($(this).prop('checked')) {
+                    if($('#prd_amount').val() == '') {
+                        tmpPrdAmount = 0;
+                    } else {
+                        tmpPrdAmount = $('#prd_amount').val();
+                    }
                     $('#prd_amount').val('');
                     $('#prd_amount').removeClass('required');
                     $('.err-prd_amount').css('display', 'none');
@@ -53,22 +69,50 @@
                     $('#prd_amount').attr('readonly', '');
                     $('#prd_amount_label').removeClass('input-required');
                     $('#prd_amount').addClass('readonly');
+
+                    if($('#prd_shelf_amount').val() == '') {
+                        tmpPrdShelfAmount = 0;
+                    } else {
+                        tmpPrdShelfAmount = $('#prd_shelf_amount').val();
+                    }
+                    $('#prd_shelf_amount').val('');
+                    $('#prd_shelf_amount').removeClass('required');
+                    $('.err-prd_shelf_amount').css('display', 'none');
+                    $('#prd_shelf_amount').removeAttr('require');
+                    $('#prd_shelf_amount').attr('readonly', '');
+                    $('#prd_shelf_amount_label').removeClass('input-required');
+                    $('#prd_shelf_amount').addClass('readonly');
                 } else {
+                    $('#prd_amount').val(tmpPrdAmount);
                     $('#prd_amount').attr('require', '');
                     $('#prd_amount').removeAttr('readonly');
                     $('#prd_amount_label').addClass('input-required');
                     $('#prd_amount').removeClass('readonly');
                     $('#prd_amount').focusout(validateInput);
+
+                    $('#prd_shelf_amount').val(tmpPrdShelfAmount);
+                    $('#prd_shelf_amount').attr('require', '');
+                    $('#prd_shelf_amount').removeAttr('readonly');
+                    $('#prd_shelf_amount_label').addClass('input-required');
+                    $('#prd_shelf_amount').removeClass('readonly');
+                    $('#prd_shelf_amount').focusout(validateInput);
                 }
             });
 
             if($('#prd_amount').val() == '') {
                 if(action == 'ADD') {
                     $('#prd_amount').val('0');
+                    $('#prd_shelf_amount').val('0');
                 } else if(action == 'EDIT') {
                     $('#toggleAmountBtn').prop('checked', true);
                     $('#toggleAmountBtn').change();
                 }
+            }
+
+            // Set shelf amount unit name
+            if(action == 'VIEW_DETAIL') {
+                var unitName = $('#unit_id').find('.selectReferenceJS-text').text();
+                $('#shelf_amount_unit').text(unitName);
             }
         });
     </script>
@@ -111,10 +155,20 @@
                 <td>{$values.prd_price|number_format:2:".":","} บาท</td>
             </tr>
             <tr>
-                <td>จำนวน :</td>
+                <td>จำนวนคงเหลือ :</td>
                 <td>
                     {if $values.prd_amount != '-'}
                     {$values.prd_amount}   <div id="unit_id" class="selectReferenceJS text"></div>
+                    {else}
+                    ไม่มีจำนวนในสต็อค
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>จำนวนที่วางขาย :</td>
+                <td>
+                    {if $values.prd_shelf_amount != '-'}
+                    {$values.prd_shelf_amount}   <span id="shelf_amount_unit"></span>
                     {else}
                     ไม่มีจำนวนในสต็อค
                     {/if}
@@ -181,24 +235,39 @@
             </tr>
             <tr>
                 <td>
-					<label id="prd_amount_label" class="input-required">จำนวน</label>
+					<label id="prd_amount_label" class="input-required">จำนวนคงเหลือ</label>
 					<input id="prd_amount" name="prd_amount" type="text" class="form-input half" value="{$values.prd_amount}" maxlength="6" size="6" valuepattern="number" require>
-                    <label style="margin-top: -10px;margin-bottom: 15px;">
-                        <input id="toggleAmountBtn" type="checkbox"> ไม่มีจำนวนในสต็อค
-                    </label>
                 </td>
                 <td>
-                    <label class="input-required">หน่วยนับ</label>
-                    <div id="unit_id" class="selectReferenceJS form-input half" require>
+                    <label id="prd_shelf_amount_label" class="input-required">จำนวนที่วางขาย</label>
+                    <input id="prd_shelf_amount" name="prd_shelf_amount" type="text" class="form-input half" value="{$values.prd_shelf_amount}" maxlength="6" size="6" valuepattern="number" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-prd_amount-require" class="errInputMsg half err-prd_amount">โปรดป้อนจำนวน</span>
+                    <span id="err-prd_amount-require" class="errInputMsg half err-prd_amount">โปรดป้อนจำนวนคงเหลือ</span>
                     <span id="err-prd_amount-number" class="errInputMsg half err-prd_amount">โปรดกรอกจำนวนเป็นตัวเลขเท่านั้น</span>
                 </td>
                 <td>
-                    <span id="err-prd_amount-number" class="errInputMsg half err-prd_amount">โปรดกรอกจำนวนเป็นเลขจำนวนเต็ม</span>
+                    <span id="err-prd_shelf_amount-require" class="errInputMsg half err-prd_shelf_amount">โปรดป้อนจำนวนที่วางขาย</span>
+                    <span id="err-prd_shelf_amount-number" class="errInputMsg half err-prd_shelf_amount">โปรดกรอกจำนวนเป็นตัวเลขเท่านั้น</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label id="no_amount_checkbox">
+                        <input id="toggleAmountBtn" type="checkbox"> ไม่มีจำนวนในสต็อค
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">หน่วยนับ</label>
+                    <div id="unit_id" class="selectReferenceJS form-input full" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
                     <span id="err-unit_id-require" class="errInputMsg half err-unit_id">โปรดเลือกหน่วยนับ</span>
                 </td>
             </tr>

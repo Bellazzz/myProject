@@ -21,7 +21,7 @@
         $(document).ready(function() {
             // Set default radio input
             if(action == 'EDIT') {
-                $('input[name="wdwtyp_decrease"][value="{/literal}{$values.wdwtyp_decrease}{literal}"]').click();
+                $('input[name="wdwtyp_increase_shelf_amount"][value="{/literal}{$values.wdwtyp_increase_shelf_amount}{literal}"]').click();
             }
         });
     </script>
@@ -51,9 +51,9 @@
             </tr>
             <tr>
                 <td>
-                    <label class="input-required">หักจำนวนผลิตภัณฑ์ทันทีที่เบิก</label>
-                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_decrease" value="1" class="decrease_radio" checked> ใช่</label><br>
-                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_decrease" value="0" class="decrease_radio"> ไม่ใช่</label>
+                    <label class="input-required">ลักษณะการเบิก</label>
+                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_increase_shelf_amount" value="0" class="decrease_radio" checked> เบิกผลิตภัณฑ์ไปใช้ทันที</label><br>
+                    <label style="display:inline-block;"><input type="radio" name="wdwtyp_increase_shelf_amount" value="1" class="decrease_radio"> เบิกผลิตภัณฑ์ไปวางขายหน้าร้าน</label>
                 </td>
             </tr>
 	    </tbody>

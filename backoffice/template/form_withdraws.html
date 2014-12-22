@@ -180,9 +180,9 @@
             var val         = selectRef.find('.selectReferenceJS-input').val();
             var msg         = '';
             if(val != '') {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+                msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการเบิกครั้งนี้ใช่หรือไม่?';
             } else {
-                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+                msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการเบิกครั้งนี้ใช่หรือไม่?';
             }
             parent.showActionDialog({
                 title: 'ลบผลิตภัณฑ์',
@@ -191,7 +191,7 @@
                     {
                         id: 'ok',
                         name: 'ตกลง',
-                        desc: 'ลบผลิตภัณฑ์นี้ออกจากออกจากการสั่งซื้อ',
+                        desc: 'ลบผลิตภัณฑ์นี้ออกจากการเบิก',
                         func:
                         function() {
                             parent.hideActionDialog();
@@ -281,7 +281,8 @@
                     url: '../common/ajaxCheckWithdrawAmoutCover.php',
                     type: 'POST',
                     data: {
-                        wdwId              : code,
+                        wdwId               : code,
+                        wdwtyp_id           : $('input[name="wdwtyp_id"]').val(),
                         prdIdList           : prdIdList,
                         wdwdtlAmountList    : wdwdtlAmountList
                     },
@@ -295,18 +296,38 @@
                                 confirmSaveRecord();
                             }
                         } else if(response.status == 'OVER') {
-                            var msg = 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก โปรดป้อนจำนวนการเบิกใหม่ ได้แก่<ul>';
-                            for(i in response.prdName) {
-                                msg += '<li>' 
-                                     + response.prdName[i] 
-                                     + ' เหลือ ' + response.stockAmount[i] 
-                                     + ' ' +  response.unitName[i] 
-                                     + ' <span style="color:red;">(ต้องการอีก ' + response.overAmount[i] 
-                                     + ' ' +  response.unitName[i] + ')</span>'
-                                     + '</li>';
-                            }
-                            msg += '</ul>';
+                            var msg = '';
 
+                            // Gen over product amount error
+                            if(response.overAmountList != '') {
+                                msg += 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก ได้แก่<ul>';
+                                for(i in response.overAmountList) {
+                                    msg += '<li>' 
+                                         + response.overAmountList[i].prdName 
+                                         + ' เหลือ ' + response.overAmountList[i].stockAmount 
+                                         + ' ' +  response.overAmountList[i].unitName 
+                                         + ' <span style="color:red;">(ต้องการอีก ' + response.overAmountList[i].overAmount 
+                                         + ' ' +  response.overAmountList[i].unitName + ')</span>'
+                                         + '</li>';
+                                }
+                                 msg += '</ul>';
+                            }
+
+                            // Gen over product amount error
+                            if(response.overShelfAmountList != '') {
+                                msg += 'จำนวนผลิตภัณฑ์ที่วางขายไม่เพียงพอต่อการคืน ได้แก่<ul>';
+                                for(i in response.overShelfAmountList) {
+                                    msg += '<li>' 
+                                         + response.overShelfAmountList[i].prdName 
+                                         + ' จำนวนที่วางขาย ' + response.overShelfAmountList[i].stockAmount 
+                                         + ' ' +  response.overShelfAmountList[i].unitName 
+                                         + ' <span style="color:red;">(ต้องการคืนอีก ' + response.overShelfAmountList[i].overAmount 
+                                         + ' ' +  response.overShelfAmountList[i].unitName + ')</span>'
+                                         + '</li>';
+                                }
+                                 msg += '</ul>';
+                            }
+    
                             parent.showActionDialog({
                                 title: 'จำนวนผลิตภัณฑ์ไม่เพียงพอ',
                                 message: msg,

@@ -3,28 +3,42 @@ include('../config/config.php');
 include('../common/common_header.php');
 
 $wdwId 					= '';
+$wdwtyp_id 				= '';
 $prdIdList 				= array();
 $wdwdtlAmountList 		= array();
 $OldPrdIdList 			= array();
 $OldWdwdtlAmountList 	= array();
 $allPrdIdList 			= array();
 $productData 			= array();
+$increaseShelfAmount 	= 0;
 $response 				= array(
 	'status' 		=> 'PASS',
-	'prdName' 		=> array(),
-	'stockAmount' 	=> array(),
-	'overAmount' 	=> array(),
-	'unitName' 		=> array()
+	'overAmountList' 		=> array(),
+	'overShelfAmountList' 	=> array()
 );
 
 if(hasValue($_POST['wdwId'])) {
 	$wdwId = $_POST['wdwId'];
+}
+if(hasValue($_POST['wdwtyp_id'])) {
+	$wdwtyp_id = $_POST['wdwtyp_id'];
 }
 if(hasValue($_POST['prdIdList'])) {
 	$prdIdList = $_POST['prdIdList'];
 }
 if(hasValue($_POST['wdwdtlAmountList'])) {
 	$wdwdtlAmountList = $_POST['wdwdtlAmountList'];
+}
+
+// Get increase shelf amount
+$sql = "SELECT 		wdwtyp_increase_shelf_amount 
+		FROM 		withdraw_types 
+		WHERE 		wdwtyp_id = '$wdwtyp_id' LIMIT 1";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	$record = mysql_fetch_assoc($result);
+	$increaseShelfAmount = $record['wdwtyp_increase_shelf_amount'];
 }
 
 // Get old withdraw detail 
@@ -48,6 +62,7 @@ $allPrdIdList = wrapSingleQuote($allPrdIdList);
 $sql = "SELECT 	p.prd_id,
 				p.prd_name,
 				p.prd_amount,
+				p.prd_shelf_amount,
 				u.unit_name 
 		FROM 	products p, units u 
 		WHERE 	p.unit_id = u.unit_id AND 
@@ -58,14 +73,15 @@ if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$productData[$record['prd_id']] = array(
-			'name' 		=> $record['prd_name'],
-			'amount' 	=> $record['prd_amount'],
-			'unitName' 	=> $record['unit_name']
+			'name' 			=> $record['prd_name'],
+			'amount' 		=> $record['prd_amount'],
+			'shelf_amount' 	=> $record['prd_shelf_amount'],
+			'unitName' 		=> $record['unit_name']
 		);
 	}
 }
 
-// Check from decrease
+// Check from add or update
 foreach ($prdIdList as $key => $prdId) {
 	if($productData[$prdId]['amount'] != '') {
 		if(in_array($prdId, $OldPrdIdList)) {
@@ -74,15 +90,37 @@ foreach ($prdIdList as $key => $prdId) {
 			$oldAmount = 0;
 		}
 
-		$decreaseAmount = abs($oldAmount - $wdwdtlAmountList[$key]);
-		if($decreaseAmount > $productData[$prdId]['amount']) {
-			$response['status'] = 'OVER';
-			array_push($response['prdName'], 		$productData[$prdId]['name']);
-			array_push($response['stockAmount'], 	number_format($productData[$prdId]['amount']));
-			array_push($response['overAmount'], 	number_format($decreaseAmount - $productData[$prdId]['amount']));
-			array_push($response['unitName'], 		$productData[$prdId]['unitName']);
+		$resultAmount = abs($oldAmount - $wdwdtlAmountList[$key]);
+
+		if($wdwdtlAmountList[$key] >= $oldAmount) {
+			// Check product amount
+			if($resultAmount > $productData[$prdId]['amount']) {
+				$response['status'] = 'OVER';
+				array_push($response['overAmountList'], array(
+					'prdName' 		=> $productData[$prdId]['name'],
+					'stockAmount' 	=> number_format($productData[$prdId]['amount']),
+					'overAmount' 	=> number_format($resultAmount - $productData[$prdId]['amount']),
+					'unitName' 		=> $productData[$prdId]['unitName']
+				));
+			}
+		} else {
+			// Check product shelf amount
+			if($increaseShelfAmount && $resultAmount > $productData[$prdId]['shelf_amount']) {
+				$response['status'] = 'OVER';
+				array_push($response['overShelfAmountList'], array(
+					'prdName' 		=> $productData[$prdId]['name'],
+					'stockAmount' 	=> number_format($productData[$prdId]['shelf_amount']),
+					'overAmount' 	=> number_format($resultAmount - $productData[$prdId]['shelf_amount']),
+					'unitName' 		=> $productData[$prdId]['unitName']
+				));
+			}
 		}
 	}
+}
+
+// Check from delete
+foreach ($OldPrdIdList as $key => $prdId) {
+
 }
 
 echo json_encode($response);

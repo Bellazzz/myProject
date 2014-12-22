@@ -618,7 +618,7 @@ switch ($tableName) {
 		}
 		$sql = "SELECT wdwtyp_id,
 				wdwtyp_name,
-				IF(wdwtyp_decrease,'ใช่','ไม่ใช่') wdwtyp_decrease 
+				IF(wdwtyp_increase_shelf_amount,'เบิกผลิตภัณฑ์ไปวางขายหน้าร้าน','เบิกผลิตภัณฑ์ไปใช้ทันที') wdwtyp_increase_shelf_amount 
 				FROM withdraw_types 
 				$where 
 				$order";

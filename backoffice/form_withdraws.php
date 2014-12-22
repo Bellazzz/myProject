@@ -154,6 +154,11 @@ if(!$_REQUEST['ajaxCall']) {
 	$formData		= array();
 	$values			= array();
 	$fieldListEn	= array();
+	$OldPrdIdList 			= array();
+	$OldWdwdtlAmountList 	= array();
+	$allPrdIdList 			= array();
+	$productData 			= array();
+	$increaseShelfAmount 	= 0;
 	parse_str($_REQUEST['formData'], $formData);
 	
 	// Check input required
@@ -194,8 +199,18 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 	}
-	
 
+	// Find increase shelf amount
+	$sql = "SELECT 		wdwtyp_increase_shelf_amount 
+			FROM 		withdraw_types 
+			WHERE 		wdwtyp_id = '".$formData['wdwtyp_id']."' LIMIT 1";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		$record = mysql_fetch_assoc($result);
+		$increaseShelfAmount = $record['wdwtyp_increase_shelf_amount'];
+	}
+	
 	// Prepare variable
 	foreach($tableInfo['fieldNameList'] as $field => $value) {
 		array_push($fieldListEn, $field);
@@ -221,9 +236,6 @@ if(!$_REQUEST['ajaxCall']) {
 				array_push($values['fieldValue'], $value);
 			}
 		}
-		// withdraw status default is wait for transport
-		/*array_push($values['fieldName'], 'ordstat_id');
-		array_push($values['fieldValue'], 'OS01');*/
 
 		// Insert withdraws
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
@@ -234,7 +246,10 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 
 		if($insertWithdrawsResult) {
-			// Insert withdraws detail
+			/* Insert withdraws detail */
+			// Get product data
+			getProductData(); 
+
 			$insertWithdrawsDetailResult = true;
 			$insertWithdrawsDetailError  = '';
 			$wdw_id = $tableRecord->getKey();
@@ -246,6 +261,9 @@ if(!$_REQUEST['ajaxCall']) {
 					$insertWithdrawsDetailResult = false;
 					$insertWithdrawsDetailError .= 'ADD_WITHDRAW_DETAIL['.($key+1).']_FAIL\n';
 				}
+
+				// Update product amount
+				updateProductAmount($prd_id, $wdwdtl_amount, $insertWithdrawsDetailResult, $insertWithdrawsDetailError);
 			}
 
 			if($insertWithdrawsDetailResult) {
@@ -290,13 +308,19 @@ if(!$_REQUEST['ajaxCall']) {
 			$oldWithdrawsDetailList = array();
 			$newWithdrawsDetailList = array();
 			// Find old withdraw_details
-			$sql = "SELECT wdwdtl_id FROM withdraw_details WHERE wdw_id = '$code'";
+			$sql = "SELECT wdwdtl_id, prd_id, wdwdtl_amount FROM withdraw_details WHERE wdw_id = '$code'";
 			$result = mysql_query($sql, $dbConn);
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {
 				$oldWdwdtlRecord = mysql_fetch_assoc($result);
 				array_push($oldWithdrawsDetailList, $oldWdwdtlRecord['wdwdtl_id']);
+				array_push($OldPrdIdList, $oldWdwdtlRecord['prd_id']);
+				$OldWdwdtlAmountList[$oldWdwdtlRecord['prd_id']] = $oldWdwdtlRecord['wdwdtl_amount'];
 			}
+
+			// Get product data
+			getProductData(); 
+
 			// Find new withdraw_details
 			foreach ($formData['wdwdtl_id'] as $key => $newWdwdtl_id) {
 				array_push($newWithdrawsDetailList, $newWdwdtl_id);
@@ -306,10 +330,14 @@ if(!$_REQUEST['ajaxCall']) {
 				if(!in_array($oldWdwdtl_id, $newWithdrawsDetailList)) {
 					// Delete withdraw_details
 					$withdrawDetailRecord 	= new TableSpa('withdraw_details', $oldWdwdtl_id);
+					$prd_id 				= $withdrawDetailRecord->getFieldValue('prd_id');
 					if(!$withdrawDetailRecord->delete()) {
 						$updateWithdrawsDetailResult = false;
 						$updateWithdrawsDetailError .= "DELETE_WITHDRAWS_DETAIL[$oldWdwdtl_id]_FAIL\n";
 					}
+
+					// Remove product amount
+					removeProductAmount($prd_id, $updateWithdrawsDetailResult, $updateWithdrawsDetailError);
 				}
 			}
 
@@ -339,6 +367,9 @@ if(!$_REQUEST['ajaxCall']) {
 						$updateWithdrawsDetailError .= 'ADD_WITHDRAWS_DETAIL['.($key+1).']_FAIL\n';
 					}
 				}
+
+				// Update product amount
+				updateProductAmount($prd_id, $wdwdtl_amount, $updateWithdrawsDetailResult, $updateWithdrawsDetailError);
 			}
 
 			if($updateWithdrawsDetailResult) {
@@ -358,6 +389,112 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 
 
+	}
+
+	
+}
+
+function getProductData() {
+	global $allPrdIdList, $OldPrdIdList, $formData, $productData, $dbConn;
+
+	$allPrdIdList = array_unique(array_merge($OldPrdIdList, $formData['prd_id']));
+	$allPrdIdList = wrapSingleQuote($allPrdIdList);
+	$sql = "SELECT 	prd_id,
+					prd_amount,
+					prd_shelf_amount 
+			FROM 	products p 
+			WHERE 	prd_id IN (".implode(',', $allPrdIdList).")";
+	$result = mysql_query($sql, $dbConn);
+	$rows	= mysql_num_rows($result);
+	if($rows > 0) {
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$productData[$record['prd_id']] = array(
+				'amount' 			=> $record['prd_amount'],
+				'shelf_amount' 		=> $record['prd_shelf_amount']
+			);
+		}
+	}
+}
+
+function updateProductAmount($prd_id, $wdwdtl_amount, &$pass, &$errTxt) {
+	global 	$productData, $OldPrdIdList, $OldWdwdtlAmountList, 
+			$increaseShelfAmount, $dbConn;
+
+	if($productData[$prd_id]['amount'] != '' && $productData[$prd_id]['shelf_amount'] != '') {
+		if(in_array($prd_id, $OldPrdIdList)) {
+			$oldAmount = $OldWdwdtlAmountList[$prd_id];
+		} else {
+			$oldAmount = 0;
+		}
+
+		$resultAmount = abs($oldAmount - $wdwdtl_amount);
+		if($wdwdtl_amount >= $oldAmount) {
+			$newPrdAmount 		= $productData[$prd_id]['amount'] - $resultAmount;
+			$newPrdShelfAmount 	= $productData[$prd_id]['shelf_amount'] + $resultAmount;
+		} else {
+			$newPrdAmount 		= $productData[$prd_id]['amount'] + $resultAmount;
+			$newPrdShelfAmount 	= $productData[$prd_id]['shelf_amount'] - $resultAmount;
+		}
+
+		// Update product amount
+		$sql = "UPDATE 	products 
+				SET 	prd_amount = '$newPrdAmount' 
+				WHERE 	prd_id = '$prd_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$errTxt .= "DECREASE_PRODUCT_AMOUNT[$prd_id]_FAIL\n";
+			$pass = false;
+			return;
+		}
+
+		if($increaseShelfAmount) {
+			// Update product shelf amount
+			$sql = "UPDATE 	products 
+					SET 	prd_shelf_amount = '$newPrdShelfAmount' 
+					WHERE 	prd_id = '$prd_id'";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$errTxt .= "INCREASE_PRODUCT_SHELF_AMOUNT[$prd_id]_FAIL\n";
+				$pass = false;
+				return;
+			}
+		}
+	}
+}
+
+function removeProductAmount($prd_id, &$pass, &$errTxt) {
+	global 	$productData, $OldPrdIdList, $OldWdwdtlAmountList, 
+			$increaseShelfAmount, $dbConn;
+
+	if($productData[$prd_id]['amount'] != '' && $productData[$prd_id]['shelf_amount'] != '') {
+		$newPrdAmount = $productData[$prd_id]['amount'] + $OldWdwdtlAmountList[$prd_id];
+
+		// Remove product amount
+		$sql = "UPDATE 	products 
+				SET 	prd_amount = '$newPrdAmount' 
+				WHERE 	prd_id = '$prd_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$errTxt .= "REMOVE_PRODUCT_AMOUNT[$prd_id]_FAIL\n";
+			$pass = false;
+			return;
+		}
+
+		if($increaseShelfAmount) {
+			$newPrdShelfAmount = $productData[$prd_id]['shelf_amount'] - $OldWdwdtlAmountList[$prd_id];
+
+			// Update product shelf amount
+			$sql = "UPDATE 	products 
+					SET 	prd_shelf_amount = '$newPrdShelfAmount' 
+					WHERE 	prd_id = '$prd_id'";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$errTxt .= "REMOVE_PRODUCT_SHELF_AMOUNT[$prd_id]_FAIL\n";
+				$pass = false;
+				return;
+			}
+		}
 	}
 }
 ?>
