@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Time Attendance</title>
+	<meta charset="UTF-8"/>
+	{literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/timeAttendance.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/mbk_common_function.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+	<script type="text/javascript">
+		var nowDate = '{/literal}{$nowDate}{literal}';
+
+		$(document).ready(function () {
+			$('#nowDate').text(realDateToThaiDate(nowDate));
+			StartClock24();
+		});
+
+		function showFilled(Value) {
+			return (Value > 9) ? "" + Value : "0" + Value;
+		}
+		function StartClock24() {
+			TheTime = new Date;
+			var curTime = showFilled(TheTime.getHours()) + ":" +
+			showFilled(TheTime.getMinutes()) + ":" + showFilled(TheTime.getSeconds());
+			$('#clock').text(curTime);
+			setTimeout("StartClock24()",1000);
+		}
+	</script>
+	{/literal}
+</head>
+<body>
+<div></div>
+<div id="title-container">
+	<h1><span id="nowDate"></span></h1> 
+	<h2><span id="clock"></span></h2>
+</div>
+</body>
+</html>
