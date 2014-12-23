@@ -309,41 +309,9 @@ function deleteWithdrawsRecord(code) {
                 // send to delete
                 delteCurrentRecord(code);
             } else if(response.status == 'OVER') {
-                var msg = '';
-
-                // Gen over product amount error
-                if(response.overAmountList != '') {
-                    msg += 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก ได้แก่<ul>';
-                    for(i in response.overAmountList) {
-                        msg += '<li>' 
-                             + response.overAmountList[i].prdName 
-                             + ' เหลือ ' + response.overAmountList[i].stockAmount 
-                             + ' ' +  response.overAmountList[i].unitName 
-                             + ' <span style="color:red;">(ต้องการอีก ' + response.overAmountList[i].overAmount 
-                             + ' ' +  response.overAmountList[i].unitName + ')</span>'
-                             + '</li>';
-                    }
-                     msg += '</ul>';
-                }
-
-                // Gen over product amount error
-                if(response.overShelfAmountList != '') {
-                    msg += 'จำนวนผลิตภัณฑ์ที่วางขายไม่เพียงพอต่อการคืน ได้แก่<ul>';
-                    for(i in response.overShelfAmountList) {
-                        msg += '<li>' 
-                             + response.overShelfAmountList[i].prdName 
-                             + ' จำนวนที่วางขาย ' + response.overShelfAmountList[i].stockAmount 
-                             + ' ' +  response.overShelfAmountList[i].unitName 
-                             + ' <span style="color:red;">(ต้องการคืนอีก ' + response.overShelfAmountList[i].overAmount 
-                             + ' ' +  response.overShelfAmountList[i].unitName + ')</span>'
-                             + '</li>';
-                    }
-                     msg += '</ul>';
-                }
-
                 parent.showActionDialog({
-                    title: 'จำนวนผลิตภัณฑ์ไม่เพียงพอ',
-                    message: msg,
+                    title: 'ไม่สามารถลบการเบิกได้',
+                    message: 'ผลิตภัณฑ์จากการเบิกครั้งนี้ได้ถูกขายไปแล้ว ไม่สามารถคืนผลิตภัณฑ์ได้',
                     actionList: [
                         {
                             id: 'ok',
@@ -354,8 +322,56 @@ function deleteWithdrawsRecord(code) {
                             }
                         }
                     ],
-                    boxWidth: 650
+                    boxWidth: 400
                 });
+
+                // var msg = '';
+
+                // // Gen over product amount error
+                // if(response.overAmountList != '') {
+                //     msg += 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก ได้แก่<ul>';
+                //     for(i in response.overAmountList) {
+                //         msg += '<li>' 
+                //              + response.overAmountList[i].prdName 
+                //              + ' เหลือ ' + response.overAmountList[i].stockAmount 
+                //              + ' ' +  response.overAmountList[i].unitName 
+                //              + ' <span style="color:red;">(ต้องการอีก ' + response.overAmountList[i].overAmount 
+                //              + ' ' +  response.overAmountList[i].unitName + ')</span>'
+                //              + '</li>';
+                //     }
+                //      msg += '</ul>';
+                // }
+
+                // // Gen over product amount error
+                // if(response.overShelfAmountList != '') {
+                //     msg += 'จำนวนผลิตภัณฑ์ที่วางขายไม่เพียงพอต่อการคืน ได้แก่<ul>';
+                //     for(i in response.overShelfAmountList) {
+                //         msg += '<li>' 
+                //              + response.overShelfAmountList[i].prdName 
+                //              + ' จำนวนที่วางขาย ' + response.overShelfAmountList[i].stockAmount 
+                //              + ' ' +  response.overShelfAmountList[i].unitName 
+                //              + ' <span style="color:red;">(ต้องการคืนอีก ' + response.overShelfAmountList[i].overAmount 
+                //              + ' ' +  response.overShelfAmountList[i].unitName + ')</span>'
+                //              + '</li>';
+                //     }
+                //      msg += '</ul>';
+                // }
+
+                // parent.showActionDialog({
+                //     title: 'จำนวนผลิตภัณฑ์ไม่เพียงพอ',
+                //     message: msg,
+                //     actionList: [
+                //         {
+                //             id: 'ok',
+                //             name: 'ตกลง',
+                //             func:
+                //             function() {
+                //                 parent.hideActionDialog();
+                //             }
+                //         }
+                //     ],
+                //     boxWidth: 650
+                // });
             } else {
                 alert(response.status);
             }
