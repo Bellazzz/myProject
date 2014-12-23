@@ -9,8 +9,8 @@ html, body, p, div, h1, h2, h3, h4, h5, h6, img, pre, form, fieldset {
 }
 body {
 	font-family: Arial sans-serif;
-	background: #8AC007;
-	padding-top: 60px;
+	background: #F5F5F5;
+	/*padding-top: 60px;*/
 }
 @font-face {
     font-family: ThaiSansNeue-Regular;
@@ -30,6 +30,19 @@ body {
     font-weight: bold;
     font-style: normal;
 }
+@media (min-width: 780px) {
+    .container {
+        max-width: 780px;
+    }
+}
+.clearfix:after {
+    clear: both;
+    content: '';
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
 #header {
     width: 100%;
     background: #8AC007;
@@ -48,9 +61,14 @@ body {
 #title-container {
     font-family: ThaiSansNeue-Bold;
     text-align: center;
-    background-color: white;
-    color: #A1A1A1;
+    background-color: #2EB494;
+    color: white;
     height: 230px;
     font-size: 50px;
     background-image: url('../img/time_attendances/title_background.png');
+}
+
+.container {
+    margin: 0 auto;
+    padding-top: 50px;
 }
