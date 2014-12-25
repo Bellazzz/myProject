@@ -202,7 +202,9 @@ body {
 .pin {
 	display: block;
 	background: #FFFFFF;
-	border: 1px solid #DBDBDB;
+	background: white;
+	border: 1px solid #e7e7e7;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
 	margin: 0 2px 20px;
 	background: -moz-linear-gradient(90deg, #FFFFFF 70%, #FFFFFF);
 	background: -webkit-linear-gradient(90deg, #FFFFFF 70%, #FFFFFF);
@@ -211,10 +213,10 @@ body {
 	-moz-transition: all .2s ease;
 	-o-transition: all .2s ease;
 	transition: all .2s ease;
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	-o-border-radius: 8px;
-	border-radius: 8px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-o-border-radius: 6px;
+	border-radius: 6px;
 	cursor: pointer;
 }
 
@@ -253,7 +255,7 @@ body {
 	font: 16px/18px Arial, sans-serif;
 	font-weight: bold;
 	text-align: center;
-	color: #838383;
+	color: #444;
 	-moz-line-clamp: 2;
   	-moz-box-orient: vertical;
   	-webkit-line-clamp: 2;
@@ -467,9 +469,12 @@ body {
 	border: 2px solid #ddd;
 	background: -moz-linear-gradient(90deg, #eee, #FFF);
 	background: -webkit-linear-gradient(90deg, #eee, #FFF);
-	color: rgb(71, 71, 158);
+	color: #666;
 	outline: none;
 	cursor: pointer;
+}
+.qty-circle-btn:active {
+	background: #E9E9E9;
 }
 #sale-transaction .qty-circle-btn {
 	display: none;
@@ -491,14 +496,37 @@ body {
 #edit-quantity-product-inner {
 	width: 100%;
 	height: 100%;
-	padding: 20px;
-	background: #F4F4F4;
+	padding: 0px 0px 0px 20px;
+	background: rgba(227, 224, 226, 0.95);
 	border-left: 1px solid #D7D7D7;
 	position: relative;
 }
 #edit-quantity-product-header {
 	width: 100%;
-	padding-bottom: 20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	text-align: right;
+	padding-right: 20px;
+}
+#closeEqpBoxBtn {
+	border: none;
+	-webkit-border-radius:  0 0 6px 6px;
+	-moz-border-radius:  0 0 6px 6px;
+	border-radius: 0 0 6px 6px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.34);
+}
+#closeEqpBoxBtn:active {
+	background: -webkit-linear-gradient(90deg, #79A01B, #4E690D);
+	background: -moz-linear-gradient(90deg, #79A01B, #4E690D);
+	color: white;
+}
+#edit-quantity-product-body {
+	overflow-y: auto;
+	width: 100%;
+	height: 100%;
+	padding-right: 20px;
+	padding-top: 60px;
 }
 #edit-quantity-loader {
 	width: 100%;
@@ -510,13 +538,18 @@ body {
 }
 #edit-quantity-product table.produt-data {
 	width: 100%;
-	padding-bottom: 10px;
-	border-bottom: 1px solid #CDCDCD;
+	padding: 10px;
+	background: white;
+	border: 1px solid #e7e7e7;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
 }
 #edit-quantity-product .prd_image {
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-o-border-radius: 5px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-o-border-radius: 6px;
 	max-width: 250px;
 }
 #edit-quantity-product td {
@@ -556,7 +589,7 @@ body {
 	font-size: 28px;
 	width: 100%;
 	padding: 3px 0;
-	background: rgb(255, 255, 255);
+	background: #F0F0F0;
 	border: 1px solid rgb(205, 205, 205);
 	color: #666;
 	text-align: center;
@@ -565,6 +598,9 @@ body {
 	-moz-border-radius: 20px;
 	-o-border-radius: 20px;
 	border-radius: 20px;
+}
+#eqp-qty:focus {
+	background: white;
 }
 #eqp-control {
 	text-align: center;
@@ -604,6 +640,74 @@ body {
 	background: -moz-linear-gradient(90deg, #EEEEEE, #FFFFFF);
 	box-shadow: 0 2px 1px rgba(255,255,255,0.5);
 	border: 2px solid #ddd;
+}
+.eqp-prm > h1 {
+	font-family: ThaiSansNeue-Bold;
+	font-size: 30px !important;
+	color: #666;
+}
+.eqp-prm-list-container {
+	width: 100%;
+	background: white;
+	border: 1px solid #e7e7e7;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
+	margin-bottom: 40px;
+}
+.eqp-prm-list {
+	width: 100%;
+	padding: 10px;
+	height: 80px;
+	border-bottom: 1px solid #ddd;
+	position: relative;
+	padding-left: 80px;
+}
+.eqp-prm-list .prm-thumb {
+	width: 60px;
+	height: 60px;
+	border:1px solid #ddd;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	background-repeat: no-repeat;
+	background-position: center top;
+	background-size: cover;
+	background-color: #F0F0F0;
+	position: absolute;
+	left:10px;
+}
+.eqp-prm-list-container .eqp-prm-list:last-child {
+	border-bottom: none;
+}
+.eqp-prm-list table {
+	width: 100%;
+	height: 100%;
+}
+.eqp-prm-list table td {
+	vertical-align: middle !important;
+	word-break: break-word;
+}
+.eqp-prm-list table td.prm-name-col {
+	width: 30%;
+}
+.eqp-prm-list table td.amount-col, .eqp-prm-list table td.discount-col {
+	width: 20%;
+	text-align: center !important;
+	font-size: 18px;
+}
+.eqp-prm-list table td.button-col {
+	width: 50%;
+}
+
+.eqp-prm-list table .prm-name {
+	color: #595959;
+	font-weight: bold;
+}
+.eqp-prm-list table .discount-rate {
+	color: #b7b7b7;
+	font-weight: bold;
 }
 
 /*

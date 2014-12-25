@@ -64,6 +64,8 @@ if($rows > 0) {
 // Get promotion products data
 $promotion = array();
 $sql = "SELECT 		prdprm.prdprmgrp_id,
+					prdprm.prdprm_name,
+					prdprm.prdprm_picture,
 					prmprd.prmprd_id,
 					prmprd.prd_id,
 					prmprd.prmprd_discout,
@@ -72,7 +74,10 @@ $sql = "SELECT 		prdprm.prdprmgrp_id,
 					product_promotions prdprm 
 		WHERE 		prmprd.prdprm_id = prdprm.prdprm_id AND 
 					prmprd.prmprd_startdate <= '$nowDate' AND 
-					prmprd.prmprd_enddate >= '$nowDate' AND 
+					(
+						prmprd.prmprd_enddate IS NULL OR
+						prmprd.prmprd_enddate >= '$nowDate'
+					) AND 
 					prmprd.prd_id IN (". implode(',', $prdIdList).") ";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
@@ -89,6 +94,8 @@ if($rows > 0) {
 			// Sale promotion
 			$promotion[$prdprmgrp_id][$prd_id]['sale'] = array(
 				'prmprd_id' 			=> $record['prmprd_id'],
+				'prdprm_name' 			=> $record['prdprm_name'],
+				'prdprm_picture' 		=> $record['prdprm_picture'],
 				'prmprd_discout' 		=> $record['prmprd_discout'],
 				'prmprd_discout_type' 	=> $record['prmprd_discout_type']
 			);

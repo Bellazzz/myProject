@@ -270,6 +270,7 @@ function addPrmSale(prd_id) {
 					// add first amount
 					var unitPrice 	= productList[prd_id].prd_price;
 					var prmHTML 	= '<input type="hidden" name="prmSale_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
+									+ '<input type="hidden" name="prmSale_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
 									+ '<input type="hidden" name="prmSale_' + prd_id + '_saleprmdtl_amount" value="1">'
 									+ '<input type="hidden" name="prmSale_' + prd_id + '_saleprmdtl_discout" value="">'
 									+ '<input type="hidden" name="prmSale_' + prd_id + '_discout" value="' + prm.prmprd_discout + '">'
@@ -318,6 +319,8 @@ function calSummaryPrm(prd_id) {
 	totalDiscout = sumDiscoutSale + sumDiscoutFree;
 	$('#' + prd_id).find('input[name="sumDiscout[]"]').val(totalDiscout);
 	$('#' + prd_id).find('.sumDiscout-col').text(totalDiscout.formatMoney(2, '.', ','));
+
+	updateEqpPrm(prd_id);
 }
 
 function calSummary() {
@@ -389,7 +392,7 @@ function plusOrMinusQty(prd_id, qty, action) {
 	} else {
 		minusPrmSaleAmount(prd_id);
 	}
-
+	
 	// cal total price
 	calSummary();
 }
@@ -399,7 +402,7 @@ function openEditQtyBox(prd_id, qty) {
 		var editQtyBoxHtml 	= '<div id="edit-quantity-product">'
 							+ '		<div id="edit-quantity-product-inner">'
 							+ '			<div id="edit-quantity-product-header">'
-							+ '				<button id="closeEqpBoxBtn" type="button" class="pos-btn arrowBtn white">ปิด</button>'
+							+ '				<button id="closeEqpBoxBtn" type="button" class="pos-btn arrowBtn white"><i class="fa fa-times"></i></button>'
 							+ '			</div>'
 							+ ' 		<div id="edit-quantity-product-body"></div>'
 							+ '		</div>'
@@ -411,14 +414,6 @@ function openEditQtyBox(prd_id, qty) {
 
 	// Get product data
 	var prdData 	= productList[prd_id];
-
-	// Get promotion data
-	if($('input[name="prmSale_' + prd_id + '_prmprd_id').length >0 
-	|| $('input[name="prmSale_' + prd_id + '_prmprd_id').length >0) {
-		alert('have promotion!');
-	}
-
-
 	var eqpBoxHTML  = '<table class="produt-data">'
 					+ '		<tbody>'
 					+ ' 		<tr>'
@@ -465,8 +460,21 @@ function openEditQtyBox(prd_id, qty) {
 					+ '		<button id="removeSlvDtlBtn" type="button" class="pos-btn white">เอาสินค้านี้ออก</button>'
 					+ '</div>';
 
+	// Get promotion data
+	if($('input[name="prmSale_' + prd_id + '_prmprd_id').length >0 
+	|| $('input[name="prmSale_' + prd_id + '_prmprd_id').length >0) {
+		eqpBoxHTML += '<div class="eqp-prm">'
+					+ '	<h1>รายการส่วนลด</h1>'
+					+ ' 	<div class="eqp-prm-list-container">'
+					+ '	</div>'
+					+ '</div>';
+	}
+
 	$('#edit-quantity-product-body').html(eqpBoxHTML);
 	$('#edit-quantity-product-body').css('visibility', 'hidden');
+
+	// add promotion 
+	updateEqpPrm(prd_id);
 
 	// add event
 	$('#eqp-qty-minus-btn').click(function(){
@@ -503,6 +511,64 @@ function openEditQtyBox(prd_id, qty) {
 function closeEditQtyBox() {
 	$('#sale-product-list tr').removeClass('selected');
 	$('#edit-quantity-product').remove();
+}
+
+function updateEqpPrm(prd_id) {
+	// Skip if not open eqp box
+	if($('#edit-quantity-product').length <= 0) {
+		return;
+	}
+
+	var hasEqpPrmBox 	= $('.eqp-prm-list-container').length > 0;
+	var hasEqpPrmSale	= $('input[name="prmSale_' + prd_id + '_prmprd_id').length > 0;
+
+	// Create eqp promotion box
+	if(!hasEqpPrmBox && hasEqpPrmSale) {
+		var eqpPrmBoxHTML  	= '<div class="eqp-prm">'
+							+ '	<h1>รายการส่วนลด</h1>'
+							+ ' 	<div class="eqp-prm-list-container">'
+							+ '	</div>'
+							+ '</div>';
+		$('#edit-quantity-product-body').append(eqpPrmBoxHTML);
+	}
+
+	if(hasEqpPrmSale) {
+		var prdprmgrp_id 	= $('#prdprmgrp_id').val();
+		var sale_prmName 	= $('input[name="prmSale_' + prd_id + '_prdprm_name').val();
+		var sale_amount 	= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
+		var sale_discout 	= parseFloat($('input[name="prmSale_' + prd_id + '_saleprmdtl_discout').val()).formatMoney(2, '.', ',');
+		var prdprmPicPath 	= '../img/product_promotions/'+ promotion[prdprmgrp_id][prd_id]['sale']['prdprm_picture'];
+
+		if($('.eqp-prm-sale-list').length > 0) {
+			// update
+			$('.eqp-prmSale-prdprm_name').text(sale_prmName);
+			$('.eqp-prmSale-saleprmdtl_amount').text(sale_amount);
+			$('.eqp-prmSale-saleprmdtl_discount').text(sale_discout);
+		} else {
+			// add
+			var prmSale = '<div class="eqp-prm-sale-list eqp-prm-list">'
+						+ '		<div class="prm-thumb" style="background-image:url(\'' + prdprmPicPath + '\');">'
+						+ '		</div>'
+						+ '		<table>'
+						+ '			<tr>'
+						+ '				<td class="prm-name-col">'
+						+ '					<span class="eqp-prmSale-prdprm_name prm-name">' + sale_prmName + '</span><br>'
+						+ '					<span class="discount-rate">ลดราคา 30%</span>'
+						+ '				</td>'
+						+ '				<td class="amount-col">'
+						+ '					<span class="eqp-prmSale-saleprmdtl_amount">' + sale_amount + '</span>'
+						+ '				</td>'
+						+ '				<td class="discount-col">'
+						+ '					<span class="eqp-prmSale-saleprmdtl_discount">' + sale_discout + '</span>'
+						+ '				</td>'
+						+ '				<td class="button-col">'
+						+ '				</td>'
+						+ '			</tr>'
+						+ ' 	</table>'
+						+ '</div>';
+			$('.eqp-prm-list-container').append(prmSale);
+		}
+	}
 }
 
 function openPayBox() {
