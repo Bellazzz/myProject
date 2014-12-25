@@ -31,13 +31,27 @@
 	{/literal}
 </head>
 <body>
-<div></div>
-<div id="title-container">
-	<h1><span id="nowDate"></span></h1> 
-	<h2><span id="clock"></span></h2>
+<div class="title-container">
+	<h1><span id="clock"></span></h1> 
+	<h6><span id="nowDate"></span></h6>
 </div>
 <div class="container">
 
+</div>
+<div class="barcode-container">
+	<table>
+		<tr>
+			<td>
+				<span class="welcome-msg">ยินดีต้อนรับ กรุณาสแกนบัตรหรือกรอกรหัสบัตรค่ะ</span>
+			</td>
+			<td style="text-align : left;">
+				<input id="barcode-input" class="ta-input" type="text" name="barcode">
+				<button class="ta-button ta-button-large button-color-green" id="scan-btn">
+					<i class="fa fa-arrow-right"></i>
+				</button>
+			</td>
+		</tr>
+	</table>
 </div>
 </body>
 </html>

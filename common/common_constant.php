@@ -1203,7 +1203,27 @@ function dbClose() {
 			);
 			break;
 
-		
+		case 'advertising':
+			 return array(
+				'tableNameTH'	=> 'ประชาสัมพันธ์หน้าการเข้า-ออกงาน',
+				'keyFieldName'  => 'avs_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'AV',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'avs_id'	  => 'รหัสการประชาสัมพันธ์',
+						'avs_img'	  => 'รูปภาพ',
+						'avs_txt'	  => 'ข้อความ',
+						'avs_status'  => 'สถานะการประชาสัมพันธ์',
+						'avs_sort'	  => 'ลำดับการประชาสัมพันธ์'
+				),
+				'searchFields'	=> array('avs_status','avs_sort'),
+				'deleteTxtField'	=> array('avs_sort'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการประชาสัมพันธ์ลำดับที่ %f1 ใช่หรือไม่?',
+				'hiddenFields' 	=> array('avs_img','avs_txt')
+
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/

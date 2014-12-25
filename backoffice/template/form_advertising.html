@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <title>Spa - Backoffice</title>
+    <meta charset="UTF-8"/>
+    {literal}
+    <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> 
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> 
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+        var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_avertising.php';
+
+        $(document).ready(function() {
+            // Default value of radio input
+            {/literal}
+            {if $values.avs_status}
+                {if $values.avs_status == 1}
+                    $('#avs_status_show').prop('checked', true);
+                {elseif $values.avs_status == 0}
+                    $('#avs_status_unshow').prop('checked', true);
+                {/if}
+            {/if}
+            {literal}
+
+            uploadImageInput({
+                area: $('#avs_img'),
+                input: $('input[name="avs_img"]'),
+                selector: $('#avs_img_file'),
+                defaultValue: '{/literal}{if $values.avs_img}../img/spa/{$values.avs_img}?rand={$randNum}{/if}{literal}'
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+                 
+{include file="form_table_header.html"}
+<div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+    <img src="{if $values.avs_img != '-'}../img/spa/{$values.avs_img}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+    </div>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการประชาสัมพันธ์ :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>ลำดับการประชาสัมพันธ์ :</td>
+                <td>{$values.avs_sort}</td>
+            </tr>
+            <tr>
+                <td>สถานะการประชาสัมพันธ์ :</td>
+                <td>{$values.avs_status}</td>
+            </tr>
+            <tr>
+                <td>ข้อความ :</td>
+                <td>{$values.avs_txt}</td>
+            </tr>
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->                  
+    <form id="form-table" name="form-table" onsubmit="return false;">
+    <input type="hidden" name="requiredFields" value="avs_sort,avs_status">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ลำดับการประชาสัมพันธ์</label>
+                    <input id="avs_sort" name="avs_sort" type="number" class="form-input full" value="{$values.avs_sort}" valuepattern="number" require min="1">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-avs_sort-require" class="errInputMsg err-avs_sort">โปรดป้อนลำดับการประชาสัมพันธ์</span>
+                    <span id="err-avs_sort-character" class="errInputMsg err-avs_sort">โปรดกรอกตัวเลขเท่านั้น</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">สถานะการประชาสัมพันธ์</label>
+                    <label style="display: inline-block;">
+                        <input id="avs_status_show" type="radio" name="avs_status" value="1" checked> แสดง
+                    </label> &nbsp;
+                    <label style="display: inline-block;">
+                        <input id="avs_status_unshow" type="radio" name="avs_status" value="0"> ไม่แสดง
+                    </label>
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-avs_status-require" class="errInputMsg err-avs_status">โปรดเลือกสถานะการประชาสัมพันธ์</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>ข้อความประชาสัมพันธ์</label>
+                    <textarea id="avs_txt" name="avs_txt" class="form-input full" rows="6">{$values.avs_txt}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รูปภาพประชาสัมพันธ์</label>
+                    <div id="avs_img" class="uploadImageArea full"></div>
+                    <input type="hidden" name="avs_img" value="{$values.avs_img}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    </form>
+    <form method="post" enctype="multipart/form-data">
+        <input id="avs_img_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+    </form>
+    {/if}
+</div>
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->
