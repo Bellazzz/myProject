@@ -125,6 +125,38 @@ function setCurPrdTypId(prdtyp_id) {
 	pullProductList();
 }
 
+function hasEqpPrmSale(prd_id) {
+	var prdprmgrp_id = $('#prdprmgrp_id').val();
+	for(prdID in promotion[prdprmgrp_id]) {
+		for(prmType in promotion[prdprmgrp_id][prdID]) {
+			if(prdID == prd_id && prmType == 'sale') {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function hasEqpPrmFree(prd_id) {
+	var prdprmgrp_id = $('#prdprmgrp_id').val();
+	for(prdID in promotion[prdprmgrp_id]) {
+		for(prmType in promotion[prdprmgrp_id][prdID]) {
+			if(prdID == prd_id && prmType == 'free') {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function getPrmFreeAmount(prd_id) {
+	if($('input[name="prmFree_' + prd_id + '_prmprd_id').length > 0) {
+		return parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount').val());
+	} else {
+		return 0;
+	}
+}
+
 function pullProductList() {
 	var pinHTML = '';
 	for(i in productList) {
@@ -210,6 +242,7 @@ function addSaleDetail(data) {
 		// cal total price
 		addPrmSale(data.prd_id);
 		calSummary();
+		updateEqpPrm(prd_id);
 
 		// add event
 		$('#' + data.prd_id).click(function(){
@@ -269,12 +302,12 @@ function addPrmSale(prd_id) {
 				} else {
 					// add first amount
 					var unitPrice 	= productList[prd_id].prd_price;
-					var prmHTML 	= '<input type="hidden" name="prmSale_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
-									+ '<input type="hidden" name="prmSale_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
-									+ '<input type="hidden" name="prmSale_' + prd_id + '_saleprmdtl_amount" value="1">'
-									+ '<input type="hidden" name="prmSale_' + prd_id + '_saleprmdtl_discout" value="">'
-									+ '<input type="hidden" name="prmSale_' + prd_id + '_discout" value="' + prm.prmprd_discout + '">'
-									+ '<input type="hidden" name="prmSale_' + prd_id + '_discout_type" value="' + prm.prmprd_discout_type + '">';
+					var prmHTML 	= '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
+									+ '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
+									+ '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_saleprmdtl_amount" value="1">'
+									+ '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_saleprmdtl_discout" value="">'
+									+ '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_discout" value="' + prm.prmprd_discout + '">'
+									+ '<input type="hidden" class="prmSale_' + prd_id + '" name="prmSale_' + prd_id + '_discout_type" value="' + prm.prmprd_discout_type + '">';
 					$('#' + prd_id).append(prmHTML);
 				}
 				return;
@@ -283,26 +316,80 @@ function addPrmSale(prd_id) {
 	}
 }
 
-function plusPrmSaleAmount(prd_id, action) {
+function addPrmFree(prd_id) {
+	// Skip
+	if(promotion == '') {
+		return;
+	}
+
+	var prdprmgrp_id = $('#prdprmgrp_id').val();
+	for(prdID in promotion[prdprmgrp_id]) {
+		for(prmType in promotion[prdprmgrp_id][prdID]) {
+			if(prdID == prd_id && prmType == 'free') {
+				var prm 		= promotion[prdprmgrp_id][prdID][prmType];
+
+				if($('input[name="prmFree_' + prd_id + '_prmprd_id"]').length > 0) {
+					// plus amount
+					plusPrmFreeAmount(prd_id);
+				} else {
+					// add first amount
+					var unitPrice 	= productList[prd_id].prd_price;
+					var prmHTML 	= '<input type="hidden" class="prmFree_' + prd_id + '" name="prmFree_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
+									+ '<input type="hidden" class="prmFree_' + prd_id + '" name="prmFree_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
+									+ '<input type="hidden" class="prmFree_' + prd_id + '" name="prmFree_' + prd_id + '_saleprmdtl_amount" value="1">'
+									+ '<input type="hidden" class="prmFree_' + prd_id + '" name="prmFree_' + prd_id + '_saleprmdtl_discout" value="' + unitPrice + '">'
+					$('#' + prd_id).append(prmHTML);
+					minusPrmSaleAmount(prd_id);
+				}
+				return;
+			}
+		}
+	}
+}
+
+function plusPrmSaleAmount(prd_id) {
 	var amount = parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val())+1;
 	$('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val(amount);
 }
 
 function minusPrmSaleAmount(prd_id) {
 	var amount = parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val())-1;
-	$('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val(amount);
+	if(amount > 0) {
+		$('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val(amount);
+	} else {
+		$('.prmSale_' + prd_id).remove();
+		$('.eqp-prm-sale-list').remove();
+	}
+}
+
+function plusPrmFreeAmount(prd_id) {
+	var amount = parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount"]').val())+1;
+	$('input[name="prmFree_' + prd_id + '_saleprmdtl_amount"]').val(amount);
+	minusPrmSaleAmount(prd_id);
+}
+
+function minusPrmFreeAmount(prd_id) {
+	var amount = parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount"]').val())-1;
+	if(amount > 0) {
+		$('input[name="prmFree_' + prd_id + '_saleprmdtl_amount"]').val(amount);
+	} else {
+		$('.prmFree_' + prd_id).remove();
+		$('.eqp-prm-free-list').remove();
+	}
+	plusPrmSaleAmount(prd_id);
 }
 
 function calSummaryPrm(prd_id) {
 	var sumDiscoutSale 	= 0;
 	var sumDiscoutFree 	= 0;
 	var totalDiscout 	= 0;
+	var amount 			= 0;
+	var unitPrice 		= productList[prd_id].prd_price;
 
 	if($('input[name="prmSale_' + prd_id + '_prmprd_id"]').length > 0) {
-		var amount 		= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val());
-		var unitPrice 	= productList[prd_id].prd_price;
 		var discout 	= parseFloat($('input[name="prmSale_' + prd_id + '_discout"]').val());
 		var discoutType = $('input[name="prmSale_' + prd_id + '_discout_type"]').val();
+		amount 			= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount"]').val());
 
 		if(discoutType == '%') {
 			discout = parseFloat(unitPrice * discout / 100);
@@ -313,14 +400,14 @@ function calSummaryPrm(prd_id) {
 	}
 
 	if($('input[name="prmFree_' + prd_id + '_prmprd_id"]').length > 0) {
-
+		amount 			= parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount"]').val());
+		sumDiscoutFree 	= parseFloat(unitPrice * amount);
+		$('input[name="prmFree_' + prd_id + '_saleprmdtl_discout"]').val(sumDiscoutFree);
 	}
 
 	totalDiscout = sumDiscoutSale + sumDiscoutFree;
 	$('#' + prd_id).find('input[name="sumDiscout[]"]').val(totalDiscout);
 	$('#' + prd_id).find('.sumDiscout-col').text(totalDiscout.formatMoney(2, '.', ','));
-
-	updateEqpPrm(prd_id);
 }
 
 function calSummary() {
@@ -388,13 +475,16 @@ function plusOrMinusQty(prd_id, qty, action) {
 	
 	// Update promotion
 	if(action == 'plus') {
-		plusPrmSaleAmount(prd_id);
+		if(prdQty - getPrmFreeAmount(prd_id) > 0) {
+			addPrmSale(prd_id);
+		}
 	} else {
 		minusPrmSaleAmount(prd_id);
 	}
 	
 	// cal total price
 	calSummary();
+	updateEqpPrm(prd_id);
 }
 
 function openEditQtyBox(prd_id, qty) {
@@ -455,10 +545,15 @@ function openEditQtyBox(prd_id, qty) {
 					+ ' 			</td>'
 					+ '			</tr>'
 					+ ' 	</tbody>'
-					+ '</table>'
-					+ '<div id="eqp-control">'
-					+ '		<button id="removeSlvDtlBtn" type="button" class="pos-btn white">เอาสินค้านี้ออก</button>'
-					+ '</div>';
+					+ '</table>';
+
+	// Gen button
+	eqpBoxHTML += '<div class="eqp-control">';
+	if(hasEqpPrmFree(prd_id)) {
+		eqpBoxHTML +=  '<button id="addPrmFreeBtn" type="button" class="pos-btn white">แถมฟรี</button>';
+	}
+	eqpBoxHTML += '		<button id="removeSlvDtlBtn" type="button" class="pos-btn white">เอาสินค้านี้ออก</button>'
+				+ '</div>';
 
 	// Get promotion data
 	if($('input[name="prmSale_' + prd_id + '_prmprd_id').length >0 
@@ -498,6 +593,11 @@ function openEditQtyBox(prd_id, qty) {
 		$('#' + prd_id).find('.prd_qty').text(qty.formatMoney(0, '.', ','));
 		calSummary();
 	});
+	$('#addPrmFreeBtn').click(function(){
+			addPrmFree(prd_id);
+			calSummary();
+			updateEqpPrm(prd_id);
+	});
 
 	// show when load image success
 	var prdImg = $('#edit-quantity-product .prd_image');
@@ -520,10 +620,11 @@ function updateEqpPrm(prd_id) {
 	}
 
 	var hasEqpPrmBox 	= $('.eqp-prm-list-container').length > 0;
-	var hasEqpPrmSale	= $('input[name="prmSale_' + prd_id + '_prmprd_id').length > 0;
+	var hasPrmSaleHTML 	= $('input[name="prmSale_' + prd_id + '_prmprd_id').length > 0;
+	var hasPrmFreeHTML 	= $('input[name="prmFree_' + prd_id + '_prmprd_id').length > 0;
 
 	// Create eqp promotion box
-	if(!hasEqpPrmBox && hasEqpPrmSale) {
+	if(!hasEqpPrmBox && (hasPrmSaleHTML || hasPrmFreeHTML)) {
 		var eqpPrmBoxHTML  	= '<div class="eqp-prm">'
 							+ '	<h1>รายการส่วนลด</h1>'
 							+ ' 	<div class="eqp-prm-list-container">'
@@ -532,34 +633,42 @@ function updateEqpPrm(prd_id) {
 		$('#edit-quantity-product-body').append(eqpPrmBoxHTML);
 	}
 
-	if(hasEqpPrmSale) {
-		var prdprmgrp_id 	= $('#prdprmgrp_id').val();
-		var sale_prmName 	= $('input[name="prmSale_' + prd_id + '_prdprm_name').val();
-		var sale_amount 	= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
-		var sale_discout 	= parseFloat($('input[name="prmSale_' + prd_id + '_saleprmdtl_discout').val()).formatMoney(2, '.', ',');
-		var prdprmPicPath 	= '../img/product_promotions/'+ promotion[prdprmgrp_id][prd_id]['sale']['prdprm_picture'];
+	if(hasPrmSaleHTML) {
+		var sale_prmgrp_id 				= $('#prdprmgrp_id').val();
+		var sale_prmName 				= $('input[name="prmSale_' + prd_id + '_prdprm_name').val();
+		var sale_amount 				= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
+		var sale_saleprmdtl_discout 	= parseFloat($('input[name="prmSale_' + prd_id + '_saleprmdtl_discout').val()).formatMoney(2, '.', ',');
+		var sale_discout 				= $('input[name="prmSale_' + prd_id + '_discout').val();
+		var sale_discout_type 			= $('input[name="prmSale_' + prd_id + '_discout_type').val();
+		var sale_prmPicPath 			= '../img/product_promotions/'+ promotion[sale_prmgrp_id][prd_id]['sale']['prdprm_picture'];
 
 		if($('.eqp-prm-sale-list').length > 0) {
 			// update
 			$('.eqp-prmSale-prdprm_name').text(sale_prmName);
 			$('.eqp-prmSale-saleprmdtl_amount').text(sale_amount);
-			$('.eqp-prmSale-saleprmdtl_discount').text(sale_discout);
+			$('.eqp-prmSale-saleprmdtl_discount').text(sale_saleprmdtl_discout);
 		} else {
 			// add
+			var discountRate = '';
+			if(sale_discout_type == '%') {
+				discountRate = sale_discout + '%';
+			} else if(sale_discout_type == 'บาท') {
+				discountRate = sale_discout + ' บาท';
+			}
 			var prmSale = '<div class="eqp-prm-sale-list eqp-prm-list">'
-						+ '		<div class="prm-thumb" style="background-image:url(\'' + prdprmPicPath + '\');">'
+						+ '		<div class="prm-thumb" style="background-image:url(\'' + sale_prmPicPath + '\');">'
 						+ '		</div>'
 						+ '		<table>'
 						+ '			<tr>'
 						+ '				<td class="prm-name-col">'
 						+ '					<span class="eqp-prmSale-prdprm_name prm-name">' + sale_prmName + '</span><br>'
-						+ '					<span class="discount-rate">ลดราคา 30%</span>'
+						+ '					<span class="discount-rate">ลดราคา ' + discountRate + '</span>'
 						+ '				</td>'
 						+ '				<td class="amount-col">'
 						+ '					<span class="eqp-prmSale-saleprmdtl_amount">' + sale_amount + '</span>'
 						+ '				</td>'
 						+ '				<td class="discount-col">'
-						+ '					<span class="eqp-prmSale-saleprmdtl_discount">' + sale_discout + '</span>'
+						+ '					<span class="eqp-prmSale-saleprmdtl_discount">' + sale_saleprmdtl_discout + '</span>'
 						+ '				</td>'
 						+ '				<td class="button-col">'
 						+ '				</td>'
@@ -567,6 +676,44 @@ function updateEqpPrm(prd_id) {
 						+ ' 	</table>'
 						+ '</div>';
 			$('.eqp-prm-list-container').append(prmSale);
+		}
+	}
+
+	if(hasPrmFreeHTML) {
+		var free_prmgrp_id 	= $('#prdprmgrp_id').val();
+		var free_prmName 	= $('input[name="prmFree_' + prd_id + '_prdprm_name').val();
+		var free_amount 	= parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
+		var free_discout 	= parseFloat($('input[name="prmFree_' + prd_id + '_saleprmdtl_discout').val()).formatMoney(2, '.', ',');
+		var free_prmPicPath = '../img/product_promotions/'+ promotion[free_prmgrp_id][prd_id]['free']['prdprm_picture'];
+
+		if($('.eqp-prm-free-list').length > 0) {
+			// update
+			$('.eqp-prmFree-prdprm_name').text(free_prmName);
+			$('.eqp-prmFree-saleprmdtl_amount').text(free_amount);
+			$('.eqp-prmFree-saleprmdtl_discount').text(free_discout);
+		} else {
+			// add
+			var prmFree = '<div class="eqp-prm-free-list eqp-prm-list">'
+						+ '		<div class="prm-thumb" style="background-image:url(\'' + free_prmPicPath + '\');">'
+						+ '		</div>'
+						+ '		<table>'
+						+ '			<tr>'
+						+ '				<td class="prm-name-col">'
+						+ '					<span class="eqp-prmFree-prdprm_name prm-name">' + free_prmName + '</span><br>'
+						+ '					<span class="discount-rate">ฟรี</span>'
+						+ '				</td>'
+						+ '				<td class="amount-col">'
+						+ '					<span class="eqp-prmFree-saleprmdtl_amount">' + free_amount + '</span>'
+						+ '				</td>'
+						+ '				<td class="discount-col">'
+						+ '					<span class="eqp-prmFree-saleprmdtl_discount">' + free_discout + '</span>'
+						+ '				</td>'
+						+ '				<td class="button-col">'
+						+ '				</td>'
+						+ '			</tr>'
+						+ ' 	</table>'
+						+ '</div>';
+			$('.eqp-prm-list-container').append(prmFree);
 		}
 	}
 }

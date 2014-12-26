@@ -89,7 +89,11 @@ if($rows > 0) {
 
 		if($record['prmprd_discout'] == '' && $record['prmprd_discout_type'] == '') {
 			// Free promotion
-			$promotion[$prdprmgrp_id][$prd_id]['free'] = $record['prmprd.prmprd_id'];
+			$promotion[$prdprmgrp_id][$prd_id]['free'] = array(
+				'prmprd_id' 			=> $record['prmprd_id'],
+				'prdprm_name' 			=> $record['prdprm_name'],
+				'prdprm_picture' 		=> $record['prdprm_picture']
+			);
 		} else {
 			// Sale promotion
 			$promotion[$prdprmgrp_id][$prd_id]['sale'] = array(
