@@ -30,15 +30,21 @@ $(document).ready(function() {
 		  	} else if(code == 109) { // -
 		  		$('#eqp-qty-minus-btn').click();
 		  	}
-		} else {
+		} else if(stat == 'addProduct') {
 			if (code == 13) { // ENTER
 				if($('#sale-product-list tr').length > 0) {
-					openPayBox();
+					if(hasProductInOrder()) {
+						openPayBox();
+					}
 				}
 			} else if (code == 115) { // F4
 				$('#sale-product-list tr:first-child').click();
 			}
 		}
+	});
+
+	$('#setPrdprmgrpBtn').click(function() {
+		openPrdprmgrpBox();
 	});
 
 	// barcode input 
@@ -102,6 +108,43 @@ $(document).ready(function() {
 	// Add event prdtyp item
 	$('.prdtypItem').click(function() {
 		setCurPrdTypId($(this).attr('id'));
+		$('#barcode-input').focus();
+	});
+
+	// Sale transaction control
+	$('#openPayBoxBtn').click(function(){
+		var stat = getWindowStatus();
+		if(stat == 'addProduct') {
+			if(hasProductInOrder()) {
+				openPayBox();
+			}
+		}
+	});
+	$('#openSaleDiscountBtn').click(openSaleDiscount);
+	$('#clearSaleBtn').click(function() {
+		showPopupBox({
+			title: 'ยกเลิกการขาย',
+			content: 'คุณต้องการยกเลิกการขายใช่หรือไม่?',
+			buttons: [
+				{
+					id: 'ok',
+					name: 'ตกลง',
+					func:
+					function(){
+						clearSale();
+						closeShowPopupBox();
+					}
+				},
+				{
+					id: 'cancel',
+					name: 'ยกเลิก',
+					func:
+					function(){
+						closeShowPopupBox();
+					}
+				}
+			]
+		});
 	});
 
 	// Set default product type
@@ -113,8 +156,19 @@ function getWindowStatus() {
 		return "pay";
 	} else if($('#edit-quantity-product').length > 0) {
 		return "editQty";
+	} else if($('.popupBox').length > 0) {
+		return "popupBox";
 	} else {
 		return "addProduct";
+	}
+}
+
+function setPrdPrmGrp(prdprmgrp_id) {
+	$('#prdprmgrp_id').val(prdprmgrp_id);
+	if(prdprmgrp_id == '') {
+		$('#prdprmgrp_txt').text('ไม่คิดโปรโมชั่น');
+	} else {
+		$('#prdprmgrp_txt').text(promotionGroups[prdprmgrp_id].name);
 	}
 }
 
@@ -149,12 +203,71 @@ function hasEqpPrmFree(prd_id) {
 	return false;
 }
 
+function hasPrmSaleHTML(prd_id) {
+	return $('input[name="prmSale_' + prd_id + '_prmprd_id').length > 0;
+}
+function hasPrmFreeHTML(prd_id) {
+	return $('input[name="prmFree_' + prd_id + '_prmprd_id').length > 0;
+}
+
+function hasProductInOrder() {
+	if($('#sale-product-list tr').length > 0) {
+ 		return true;;
+ 	} else {
+ 		showPopupBox({
+			title: 'โปรดเลือกรายการสินค้า',
+			content: 'โปรดเลือกรายการสินค้าอย่างน้อย 1 รายการ',
+			buttons: [
+				{
+					id: 'ok',
+					name: 'ตกลง',
+					func:
+					function(){
+						closeShowPopupBox();
+					}
+				}
+			]
+		});
+		return false;
+ 	}
+}
+
+function getPrdQty(prd_id) {
+	if($('#' + prd_id).find('input[name="qty[]"]').length > 0) {
+		return parseInt($('#' + prd_id).find('input[name="qty[]"]').val());
+	} else {
+		return 0;
+	}
+}
+
 function getPrmFreeAmount(prd_id) {
 	if($('input[name="prmFree_' + prd_id + '_prmprd_id').length > 0) {
 		return parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount').val());
 	} else {
 		return 0;
 	}
+}
+
+function getSaleDiscout() {
+	return parseFloat($('#sale-discout-val').val());
+}
+function setSaleDiscount(discout) {
+	var discoutTxt = '';
+	if($('#sale-discout-type').val() == 'บาท'){
+		discoutTxt = parseFloat(discout).formatMoney(2, '.', ',') + ' บาท';
+	} else if($('#sale-discout-type').val() == '%'){
+		discoutTxt = parseFloat(discout) + ' %';
+	}
+	if(discout == 0) {
+		$('#sale-discout-txt').text('ไม่มี');
+	} else {
+		$('#sale-discout-txt').text(discoutTxt);
+	}
+	$('#sale-discout-val').val(discout);
+}
+
+function getTotalPrice() {
+	return parseFloat($('#total-price').text().replace(',',''));
 }
 
 function pullProductList() {
@@ -188,6 +301,7 @@ function pullProductList() {
 				unit_price: prdPrice,
 				qty: 1
 			});
+			$('#barcode-input').focus();
 		});
 	}
 }
@@ -376,7 +490,11 @@ function minusPrmFreeAmount(prd_id) {
 		$('.prmFree_' + prd_id).remove();
 		$('.eqp-prm-free-list').remove();
 	}
-	plusPrmSaleAmount(prd_id);
+	if(hasEqpPrmSale(prd_id)) {
+		if(getPrdQty(prd_id) > amount) {
+			addPrmSale(prd_id);
+		}
+	}
 }
 
 function calSummaryPrm(prd_id) {
@@ -420,22 +538,33 @@ function calSummary() {
 	var discout 		= 0;
 	var totalQty 		= 0;
 	var totalProduct 	= $('#sale-product-list tbody tr').length;
+	var saleDiscout 	= getSaleDiscout();
+	var totalPrmDiscout = 0;
 
 	$('#sale-product-list tbody tr').each(function() {
-		prd_id 		 = $(this).attr('id');
-		unitPrice 	 = parseFloat($(this).find('.unitPrice-col').text().replace(',',''));
-		qty 	 	 = parseInt($(this).find('.prd_qty').text().replace(',',''));
-		sumPrice 	 = parseFloat(unitPrice * qty);
+		prd_id 		 	= $(this).attr('id');
+		unitPrice 	 	= parseFloat($(this).find('.unitPrice-col').text().replace(',',''));
+		qty 	 	 	= parseInt($(this).find('.prd_qty').text().replace(',',''));
+		sumPrice 	 	= parseFloat(unitPrice * qty);
 		calSummaryPrm(prd_id);
-		sumDiscout 	 = parseFloat($(this).find('input[name="sumDiscout[]"]').val());
-		sumPriceReal = sumPrice - sumDiscout;
+		sumDiscout 	 	= parseFloat($(this).find('input[name="sumDiscout[]"]').val());
+		totalPrmDiscout += sumDiscout;
+		sumPriceReal 	= sumPrice - sumDiscout;
 
-		totalPrice += sumPriceReal;
-		totalQty   += qty;
+		totalPrice 		+= sumPriceReal;
+		totalQty   		+= qty;
 
 		$(this).find('input[name="sumPriceReal[]"]').val(sumPriceReal);
 		$(this).find('.sumPrice-col').text(sumPriceReal.formatMoney(2, '.', ','));
 	});
+
+	// Sale discount
+	if($('#sale-discout-type').val() == '%') {
+		saleDiscout = parseFloat(totalPrice * saleDiscout / 100);
+	}
+	$('#sale-discout').val(saleDiscout);
+	$('#total-promotion-discout-txt').text(totalPrmDiscout.formatMoney(2, '.', ',') + ' บาท');
+	totalPrice -= saleDiscout;
 
 	$('#total-price').text(totalPrice.formatMoney(2, '.', ','));
 	$('#total-product').text(totalProduct.formatMoney(0, '.', ','));
@@ -476,10 +605,19 @@ function plusOrMinusQty(prd_id, qty, action) {
 	// Update promotion
 	if(action == 'plus') {
 		if(prdQty - getPrmFreeAmount(prd_id) > 0) {
-			addPrmSale(prd_id);
+			for(i=1; i<=qty; i++) {
+				addPrmSale(prd_id);
+			}
 		}
 	} else {
-		minusPrmSaleAmount(prd_id);
+		for(i=1; i<=qty; i++) {
+			if(hasPrmSaleHTML(prd_id)) {
+				minusPrmSaleAmount(prd_id);
+			} else if(hasPrmFreeHTML(prd_id) && getPrmFreeAmount(prd_id) > prdQty){
+				minusPrmFreeAmount(prd_id);
+			}
+		}
+		
 	}
 	
 	// cal total price
@@ -582,21 +720,23 @@ function openEditQtyBox(prd_id, qty) {
 		removeSaleDetail(prd_id);
 	});
 	$('#eqp-qty').change(function(){
-		var qty;
-		if($(this).val() == '' || parseInt($(this).val()) < 1) {
-			qty = parseInt(1);
-			
-		} else {
-			qty = parseInt($(this).val());
-		}
-		$(this).val(qty);
-		$('#' + prd_id).find('.prd_qty').text(qty.formatMoney(0, '.', ','));
-		calSummary();
-	});
-	$('#addPrmFreeBtn').click(function(){
-			addPrmFree(prd_id);
+		var oldQty 	= getPrdQty(prd_id);
+		var newQty 	= parseInt($(this).val());
+
+		if($(this).val() != '' && newQty >= 1) {
+			if(newQty > oldQty) {
+				var plusAmount = newQty - oldQty;
+				plusOrMinusQty(prd_id, plusAmount, 'plus');
+			} else if(newQty < oldQty) {
+				var minusAmount = oldQty - newQty;
+				plusOrMinusQty(prd_id, minusAmount, 'minus');
+			}
 			calSummary();
 			updateEqpPrm(prd_id);
+		}
+	});
+	$('#addPrmFreeBtn').click(function(){
+			openAddPrmFreeBox(prd_id);
 	});
 
 	// show when load image success
@@ -606,11 +746,16 @@ function openEditQtyBox(prd_id, qty) {
 			prdImg.css('height', '250px');
 		}
 		$('#edit-quantity-product-body').css('visibility', 'visible');
+		$('#edit-quantity-product-inner').css('margin-left', 0);
 	});
 }
 function closeEditQtyBox() {
-	$('#sale-product-list tr').removeClass('selected');
-	$('#edit-quantity-product').remove();
+	$('#edit-quantity-product-inner').css('margin-left', '100%');
+	setTimeout(function() {
+		$('#sale-product-list tr').removeClass('selected');
+		$('#edit-quantity-product').remove();
+		$('#barcode-input').focus();
+	}, 200);
 }
 
 function updateEqpPrm(prd_id) {
@@ -620,20 +765,18 @@ function updateEqpPrm(prd_id) {
 	}
 
 	var hasEqpPrmBox 	= $('.eqp-prm-list-container').length > 0;
-	var hasPrmSaleHTML 	= $('input[name="prmSale_' + prd_id + '_prmprd_id').length > 0;
-	var hasPrmFreeHTML 	= $('input[name="prmFree_' + prd_id + '_prmprd_id').length > 0;
 
 	// Create eqp promotion box
-	if(!hasEqpPrmBox && (hasPrmSaleHTML || hasPrmFreeHTML)) {
+	if(!hasEqpPrmBox && (hasPrmSaleHTML(prd_id) || hasPrmFreeHTML(prd_id))) {
 		var eqpPrmBoxHTML  	= '<div class="eqp-prm">'
 							+ '	<h1>รายการส่วนลด</h1>'
-							+ ' 	<div class="eqp-prm-list-container">'
+							+ ' <div class="eqp-prm-list-container">'
 							+ '	</div>'
 							+ '</div>';
 		$('#edit-quantity-product-body').append(eqpPrmBoxHTML);
 	}
 
-	if(hasPrmSaleHTML) {
+	if(hasPrmSaleHTML(prd_id)) {
 		var sale_prmgrp_id 				= $('#prdprmgrp_id').val();
 		var sale_prmName 				= $('input[name="prmSale_' + prd_id + '_prdprm_name').val();
 		var sale_amount 				= parseInt($('input[name="prmSale_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
@@ -670,8 +813,6 @@ function updateEqpPrm(prd_id) {
 						+ '				<td class="discount-col">'
 						+ '					<span class="eqp-prmSale-saleprmdtl_discount">' + sale_saleprmdtl_discout + '</span>'
 						+ '				</td>'
-						+ '				<td class="button-col">'
-						+ '				</td>'
 						+ '			</tr>'
 						+ ' 	</table>'
 						+ '</div>';
@@ -679,7 +820,7 @@ function updateEqpPrm(prd_id) {
 		}
 	}
 
-	if(hasPrmFreeHTML) {
+	if(hasPrmFreeHTML(prd_id)) {
 		var free_prmgrp_id 	= $('#prdprmgrp_id').val();
 		var free_prmName 	= $('input[name="prmFree_' + prd_id + '_prdprm_name').val();
 		var free_amount 	= parseInt($('input[name="prmFree_' + prd_id + '_saleprmdtl_amount').val()).formatMoney(0, '.', ',');
@@ -708,14 +849,15 @@ function updateEqpPrm(prd_id) {
 						+ '				<td class="discount-col">'
 						+ '					<span class="eqp-prmFree-saleprmdtl_discount">' + free_discout + '</span>'
 						+ '				</td>'
-						+ '				<td class="button-col">'
-						+ '				</td>'
 						+ '			</tr>'
 						+ ' 	</table>'
 						+ '</div>';
 			$('.eqp-prm-list-container').append(prmFree);
 		}
 	}
+}
+function removeEqpPrm() {
+	$('.eqp-prm').remove();
 }
 
 function openPayBox() {
@@ -725,13 +867,52 @@ function openPayBox() {
 					+ '				<h1>ชำระเงิน</h1>'
 					+ '			</div>'
 					+ ' 		<div id="payBox-inner-body">'
-					+ '				<div id="payBox-leftCont"></div>'
+					+ '				<div id="payBox-leftCont">'
+					+ ' 				<h3>ราคาสุทธิ</h3>'
+					+ getTotalPrice() + '<br><br>'
+					+ '					<h3>รับมา</h3>'
+					+ ' 				<input id="payMoney-input" type="text" class="pos-input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"><br><br>'
+					+ ' 				<h3>ทอน</h3>'
+					+ '					<span id="changeMoney"></span><br><br>'
+					+ '					<button id="saveSaleBtn" type="button" class="pos-btn white">บันทึก</button>'
+					+ '				</div>'
 					+ '				<div id="payBox-rightCont"></div>'
 					+ '			</div>'
 					+ ' 	</div>'
 					+ '</div>';
 	$('body').prepend(payBoxHTML);
 	$('#payBox').css('visibility', 'hidden');
+
+	// Add event
+	$('#payMoney-input').change(function() {
+		var totalPrice 	= getTotalPrice();
+		var payMoney 	= parseFloat($(this).val());
+
+		if(validateMoney($(this).val()) && payMoney >= totalPrice) {
+			var change = payMoney - totalPrice;
+			$('#changeMoney').text(change.formatMoney(2, '.', ','));
+		} else if($(this).val() != '') {
+			showPopupBox({
+				title: 'จำนวนเงินไม่ถูกต้อง',
+				content: 'โปรดกรอกจำนวนเงินที่รับให้ถูกต้อง',
+				buttons: [
+					{
+						id: 'ok',
+						name: 'ตกลง',
+						func:
+						function(){
+							$('#payMoney-input').val('');
+							$('#payMoney-input').focus();
+							closeShowPopupBox();
+						}
+					}
+				]
+			});
+		}
+	});
+	$('#saveSaleBtn').click(function() {
+		saveSale();
+	});
 
 	// Set position
     $('#payBox-inner').css('margin-top', -Math.abs($('#payBox-inner').outerHeight(true) / 2));
@@ -746,12 +927,14 @@ function prevPagePrdTyp() {
 	var page = parseInt($('.product-category-list').attr('data-page'))-1;
 	setPagePrdTyp(page);
 	animatePagePrdTyp();
+	$('#barcode-input').focus();
 }
 
 function nextPagePrdTyp() {
 	var page = parseInt($('.product-category-list').attr('data-page'))+1;
 	setPagePrdTyp(page);
 	animatePagePrdTyp();
+	$('#barcode-input').focus();
 }
 
 function setPagePrdTyp(page) {
@@ -775,4 +958,442 @@ function animatePagePrdTyp() {
 
 	var left = -Math.abs(pageWidth * (page-1));
 	$('.product-category-list').css('left', left + 'px');
+}
+
+
+/*
+ * Popup box
+ */
+function showPopupBox(data) {
+	var no 		= $('.popupBox').length + 1;
+	var id 		= 'popupBox-' + no;
+	var html 	= '<div id="' + id + '" class="popupBox">'
+				+ '	<div class="popupBox-container">'
+				+ '		<div class="popupBox-header">'
+				+ '			<div class="popupBox-header-inner">'
+				+ '				<h1>' + data.title + '</h1>'
+				+ '			</div>'
+			 	+ '		</div>'
+			 	+ '		<div class="popupBox-body">' + data.content + '</div>'
+			 	+ '		<div class="popupBox-footer clearfix">'
+			 	+ ' 		<div class="popupBox-footer-left"></div>'
+			 	+ ' 		<div class="popupBox-footer-right"></div>'
+			 	+ '		</div>'
+				+ '	</div>'
+			 	+ '</div>';
+	$('body').prepend(html);
+	$('#' + id).css('visibility', 'hidden');
+
+	// Set width
+    if(typeof(data.boxWidth) != 'undefined') {
+        $('#' + id + ' .popupBox-container').css('width', data.boxWidth + 'px');
+    }
+
+    // Set z-index
+    if(no > 1) {
+    	var prev_ZIndex = parseInt($('#popupBox-' + (no-1)).css('z-index'));
+    	$('#' + id).css('z-index', prev_ZIndex + 1);
+    }
+
+    for (i in data.buttons) {
+        // Create action button
+        var buttonItem = data.buttons[i];
+        var popupBoxBtn = '<button id="' + id + '-action-btn-' + buttonItem.id + '" type="button" class="pos-btn white">'
+                      	+ buttonItem.name
+                      	+ '</button>';
+        // Append button
+        if(buttonItem.position == 'left') {
+        	$('#' + id + ' .popupBox-footer-left').append(popupBoxBtn);
+        } else if(buttonItem.position == 'right') {
+        	$('#' + id + ' .popupBox-footer-right').append(popupBoxBtn);
+        } else {
+        	$('#' + id + ' .popupBox-footer').append(popupBoxBtn);
+        }
+
+        // Add event when click button
+        $('#' + id + '-action-btn-' + buttonItem.id).click(buttonItem.func);
+    }
+
+    // Set position
+   setPosPopupBox(id);
+    
+    // Display
+    $('#' + id).css('visibility', 'visible');
+
+    // Call back funtion when success
+    if(typeof(data.success) == 'function') {
+    	data.success();
+    }
+}
+
+function closeShowPopupBox() {
+	var last = $('.popupBox').length;
+	$('#popupBox-' + last).remove();
+	if(last <= 1) {
+		$('#barcode-input').focus();
+	}
+}
+
+function setPosPopupBox(id) {
+    $('#' + id + ' .popupBox-container').css('margin-top', -Math.abs($('#' + id + ' .popupBox-container').outerHeight() / 2));
+    $('#' + id + ' .popupBox-container').css('margin-left', -Math.abs($('#' + id + ' .popupBox-container').outerWidth() / 2));
+}
+
+function openAddPrmFreeBox(prd_id) {
+	var amount  = parseInt(getPrmFreeAmount(prd_id));
+	var maxQty 	= parseInt($('#' + prd_id).find('input[name="qty[]"]').val());
+	var content = '<button id="prmFreeMinusBtn" type="button" class="qty-circle-btn"><i class="fa fa-minus"></i></button>'
+				+ '<input id="prmFreeAmount" type="text" class="pos-input" value="' + amount + '" onkeypress="return event.charCode >= 48 && event.charCode <= 57">'
+				+ '<button id="prmFreePlusBtn" type="button" class="qty-circle-btn"><i class="fa fa-plus"></i></button>';
+	showPopupBox({
+		title: 'กรอกจำนวนที่แถมฟรี',
+		content: content,
+		buttons: [
+			{
+				id: 'ok',
+				name: 'ตกลง',
+				func:
+				function(){
+					editPrmFreeAmount();
+					closeShowPopupBox();
+				}
+			},
+			{
+				id: 'clear',
+				name: 'ลบทั้งหมด',
+				func:
+				function(){
+					$('#prmFreeAmount').val(0);
+					editPrmFreeAmount();
+					closeShowPopupBox();
+				}
+			},
+			{
+				id: 'cancel',
+				name: 'ยกเลิก',
+				func:
+				function(){
+					closeShowPopupBox();
+				}
+			}
+		],
+		success:
+		function() {
+			$('#prmFreeMinusBtn').click(function() {
+				var newAmount = parseInt($('#prmFreeAmount').val()) - 1;
+				if(newAmount >= 0) {
+					$('#prmFreeAmount').val(newAmount);
+				}
+			});
+			$('#prmFreePlusBtn').click(function() {
+				var newAmount = parseInt($('#prmFreeAmount').val()) + 1;
+				if(newAmount <= maxQty) {
+					$('#prmFreeAmount').val(newAmount);
+				}
+			});
+			$('#prmFreeAmount').change(function() {
+				if(parseInt($(this).val()) > getPrdQty(prd_id)) {
+					showPopupBox({
+						title: 'จำนวนไม่ถูกต้อง',
+						content: 'จำนวนแถมฟรีเกินจำนวนที่ขาย กรุณกรอกใหม่',
+						buttons: [
+							{
+								id: 'ok',
+								name: 'ตกลง',
+								func:
+								function(){
+									$('#prmFreeAmount').val(getPrmFreeAmount(prd_id));
+									$('#prmFreeAmount').focus();
+									closeShowPopupBox();
+								}
+							}
+						]
+					});
+				}
+			});
+		}
+	});
+
+	function editPrmFreeAmount() {
+		var editedAmount = parseInt($('#prmFreeAmount').val());
+		if(editedAmount > amount) {
+			var addAmount = editedAmount - amount;
+			for(i=1; i<=addAmount; i++) {
+				addPrmFree(prd_id);
+			}
+			calSummary();
+			updateEqpPrm(prd_id);
+		} else if(editedAmount < amount) {
+			var removeAmount = amount - editedAmount;
+			for(i=1; i<=removeAmount; i++) {
+				minusPrmFreeAmount(prd_id);
+			}
+			if(editedAmount == 0 && !hasPrmSaleHTML(prd_id)) {
+				removeEqpPrm();
+			}
+			calSummary();
+			updateEqpPrm(prd_id);
+		}
+	}
+}
+
+/*
+ * Sale transaction control
+ */
+ function openSaleDiscount() {
+ 	// Detect product list
+ 	if(!hasProductInOrder()) {
+ 		return;
+ 	}
+
+ 	var saleDiscout  = getSaleDiscout();
+	var totalPrice 	 = getTotalPrice();
+	var content = '<input id="saleDiscoutInput" type="text" class="pos-input" value="' + saleDiscout + '" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">'
+				+ '<br><br><label><input id="saleDiscoutTypeInputBath" type="radio" name="saleDiscoutTypeInput" value="บาท" checked> บาท</label> &nbsp;'
+				+ '<label><input id="saleDiscoutTypeInputPercent" type="radio" name="saleDiscoutTypeInput" value="%"> เปอร์เซ็น</label><br><br>';
+ 	showPopupBox({
+		title: 'ส่วนลดการขาย',
+		content: content,
+		buttons: [
+			{
+				id: 'ok',
+				name: 'ตกลง',
+				func:
+				function(){
+					setSaleDiscoutInput();
+					closeShowPopupBox();
+				}
+			},
+			{
+				id: 'clear',
+				name: 'ไม่มีส่วนลด',
+				func:
+				function(){
+					$('#saleDiscoutInput').val(0);
+					setSaleDiscoutInput();
+					closeShowPopupBox();
+				}
+			},
+			{
+				id: 'cancel',
+				name: 'ยกเลิก',
+				func:
+				function(){
+					closeShowPopupBox();
+				}
+			}
+		],
+		success:
+		function() {
+			// Set default sale discout typea
+			if($('#sale-discout-type').val() == 'บาท') {
+				$('#saleDiscoutTypeInputBath').prop('checked', true);
+			} else if($('#sale-discout-type').val() == '%') {
+				$('#saleDiscoutTypeInputPercent').prop('checked', true);
+			}
+			$('#saleDiscoutInput').change(validateSaleDiscout);
+			$('input[name="saleDiscoutTypeInput"]').change(validateSaleDiscout);
+		}
+	});
+
+	function setSaleDiscoutInput() {
+		$('#sale-discout-type').val($('input[name="saleDiscoutTypeInput"]:checked').val());
+		setSaleDiscount(parseFloat($('#saleDiscoutInput').val()));
+		calSummary();
+	}
+
+	function validateSaleDiscout() {
+		var editedDiscount = parseFloat($('#saleDiscoutInput').val());
+
+		if($('input[name="saleDiscoutTypeInput"]:checked').val() == 'บาท') {
+			var realTotalPrice = totalPrice + saleDiscout;
+			if(editedDiscount > realTotalPrice) {
+				showPopupBox({
+					title: 'ส่วนลดไม่ถูกต้อง',
+					content: 'จำนวนส่วนลดมากกว่าราคาสุทธิ กรุณกรอกใหม่',
+					buttons: [
+						{
+							id: 'ok',
+							name: 'ตกลง',
+							func:
+							function(){
+								$('#saleDiscoutInput').val(saleDiscout);
+								$('#saleDiscoutInput').focus();
+								closeShowPopupBox();
+							}
+						}
+					]
+				});
+			}
+		} else if ($('input[name="saleDiscoutTypeInput"]:checked').val() == '%') {
+			if(editedDiscount > 100) {
+				showPopupBox({
+					title: 'ส่วนลดไม่ถูกต้อง',
+					content: 'ไม่สามารถกำหนดส่วนลดมากกว่า 100% ได้ กรุณกรอกใหม่',
+					buttons: [
+						{
+							id: 'ok',
+							name: 'ตกลง',
+							func:
+							function(){
+								if(saleDiscout > 100) {
+									$('#saleDiscoutInput').val(0);
+								} else {
+									$('#saleDiscoutInput').val(saleDiscout);
+								}
+								$('#saleDiscoutInput').focus();
+								closeShowPopupBox();
+							}
+						}
+					]
+				});
+			}
+		}
+	}
+ }
+
+/*
+ * Save sale
+ */
+function saveSale() {
+	var change = parseFloat($('#changeMoney').text().replace(',',''));
+	if(change >= 0) {
+		$.ajax({
+			url: '../common/ajaxPOSManageSale.php',
+			type: 'POST',
+			data: {
+				formData		: $('#formSale').serialize(),
+				saleDiscout 	: $('#sale-discout').val()
+			},
+			success:
+			function(responseJSON) {
+				var response = $.parseJSON(responseJSON);
+				if(response.status == 'PASS') {
+					closePayBox();
+					showPopupBox({
+						title: 'บันทึกเรียบร้อย',
+						content: 'บันทึกการขายเก็บลงฐานข้อมูลเรียบร้อย',
+						buttons: [
+							{
+								id: 'ok',
+								name: 'การขายถัดไป',
+								func:
+								function(){
+									clearSale();
+									closeShowPopupBox();
+								}
+							}
+						]
+					});
+				} else if(response.status == 'FAIL') {
+					showPopupBox({
+						title: 'เกิดข้อผิดพลาด',
+						content: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลลงฐานข้อมูล<br><br>'.response.error,
+						buttons: [
+							{
+								id: 'ok',
+								name: 'การขายถัดไป',
+								func:
+								function(){
+									closeShowPopupBox();
+								}
+							}
+						],
+						boxWidth: 800
+					});
+				} else {
+					alert(response.status + response.error);
+				}
+			}
+		});
+	}
+}
+
+function clearSale() {
+	$('#sale-product-list tr').remove();
+	closeEditQtyBox();
+	$('#sale-discout-txt').text('ไม่มี');
+	$('#sale-discout-val').val(0);
+	calSummary();
+}
+
+function openPrdprmgrpBox() {
+	var curPrdprmGrpId 	= $('#prdprmgrp_id').val();
+
+	showPopupBox({
+		title: 'ตั้งค่ากลุ่มโปรโมชั่น',
+		content: '<ul id="prdprmgrpRadio" class="pos-radio"></ul>',
+		buttons: [
+			{
+				id: 'ok',
+				name: 'ตกลง',
+				func:
+				function(){
+					var checked = $('#prdprmgrpRadio li.checked').attr('data-value');
+					if(curPrdprmGrpId != checked) {
+						showPopupBox({
+							title: 'เปลียนกลุ่มโปรโมชั่น',
+							content: 'ข้อมูลการขายจะถูกล้าง คุณต้องการเปลี่ยนกลุ่มโปรโมชั่นใช่หรือไม่?',
+							buttons: [
+								{
+									id: 'ok',
+									name: 'ตกลง',
+									func:
+									function(){
+										setPrdPrmGrp(checked);
+										clearSale();
+										closeShowPopupBox(); // Close popupBox parent
+										closeShowPopupBox();
+									}
+								},
+								{
+									id: 'cancel',
+									name: 'ยกเลิก',
+									func:
+									function(){
+										closeShowPopupBox(); // Close popupBox parent
+										closeShowPopupBox();
+									}
+								}
+							],
+							boxWidth: 400
+						});
+					} else {
+						closeShowPopupBox();
+					}
+				}
+			},
+			{
+				id: 'cancel',
+				name: 'ยกเลิก',
+				func:
+				function(){
+					closeShowPopupBox();
+				}
+			}
+		],
+		boxWidth: 500,
+		success:
+		function() {
+			var prdprmgrpRadios = Array({
+				val: '',
+				name: 'ไม่คิดโปรโมชั่น'
+			});
+			for(i in promotionGroups) {
+				prdprmgrpRadios.push({
+					val: promotionGroups[i].id,
+					name: promotionGroups[i].name
+				});
+			}
+			posRadio({
+				elem 		: $('#prdprmgrpRadio'),
+				radios 		: prdprmgrpRadios,
+				valChecked 	: curPrdprmGrpId,
+				success 	:
+				function() {
+					setPosPopupBox('popupBox-1');
+				}
+			});
+		}
+	});
 }

@@ -45,6 +45,23 @@ if($rows > 0) {
 	}
 }
 
+// Get product promotion group data
+$productPrmGrpList = array();
+$sql = "SELECT DISTINCT 	prdprmgrp_id,
+							prdprmgrp_name 
+		FROM 				product_promotion_groups";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$productPrmGrpList[$record['prdprmgrp_id']] = array(
+			'id'		=> $record['prdprmgrp_id'],
+			'name'		=> $record['prdprmgrp_name']
+		);
+	}
+}
+
 // Get products types data
 $productTypeList = array();
 $sql = "SELECT DISTINCT 	pt.prdtyp_id,
@@ -108,6 +125,7 @@ if($rows > 0) {
 }
 
 $smarty->assign('productList', $productList);
+$smarty->assign('productPrmGrpList', $productPrmGrpList);
 $smarty->assign('productTypeList', $productTypeList);
 $smarty->assign('promotion', $promotion);
 

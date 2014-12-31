@@ -9,10 +9,12 @@
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	<script type="text/javascript" src="../js/mbk_common_function.js"></script>
 	<script type="text/javascript" src="../js/point_of_sale.js"></script>
+	<script type="text/javascript" src="../js/point_of_sale_element.js"></script>
 	<script type="text/javascript">
-		var productList 	= {/literal}{$productList|@json_encode}{literal};
-		var productTypeList = {/literal}{$productTypeList|@json_encode}{literal};
-		var promotion 		= {/literal}{$promotion|@json_encode}{literal};
+		var productList 		= {/literal}{$productList|@json_encode}{literal};
+		var promotionGroups 	= {/literal}{$productPrmGrpList|@json_encode}{literal};
+		var productTypeList 	= {/literal}{$productTypeList|@json_encode}{literal};
+		var promotion 			= {/literal}{$promotion|@json_encode}{literal};
 	</script>
 	{/literal}
 </head>
@@ -26,6 +28,16 @@
 					<span style="float:left">฿</span>
 					<span id="total-price">0.00</span>
 				</div>
+			</div>
+			<div class="sale-transaction-setting">
+				<div class="sale-transaction-setting-title">
+					กลุ่มโปรโมชั่น:
+				</div>
+				<span id="prdprmgrp_txt">ไม่คิดโปรโมชั่น</span>
+				<input type="hidden" id="prdprmgrp_id" value="">
+				<button id="setPrdprmgrpBtn" class="sale-transaction-setting-btn">
+					<i class="fa fa-pencil"></i>
+				</button>
 			</div>
 			<div id="sale-product-list-container">
 				<div id="sale-product-list-header">
@@ -45,6 +57,8 @@
 							<tbody>
 							</tbody>
 						</table>
+						<input type="hidden" name="emp_id" value="{$session_emp_id}">
+						<input id="sale-discout" type="hidden" name="sale-discout">
 						<input type="hidden" name="total-price">
 					</form>
 				</div>
@@ -58,16 +72,50 @@
 			<table id="summary-sale-tranaction">
 				<tbody>
 					<tr>
-						<td>รายการสินค้าทั้งหมด: <span id="total-product">0</span></td>
-						<td>จำนวนสินค้าทั้งหมด: <span id="total-qty">0</span></td>
+						<td>
+							รายการสินค้าทั้งหมด:
+						</td>
+						<td class="value-col">
+							<span id="total-product">0</span>
+						</td>
+						<td class="center-col"></td>
+						<td>
+							ส่วนลดการขาย:
+						</td>
+						<td class="value-col">
+							<span id="sale-discout-txt">ไม่มี</span>
+							<input id="sale-discout-val" name="sale-discont" type="hidden" value="0.00">
+							<input id="sale-discout-type" name="sale-discont-type" type="hidden" value="บาท">
+						</td>
 					</tr>
 					<tr>
-						<input type="text" id="prdprmgrp_id" value="DG01" readonly="">
+						<td>
+							จำนวนสินค้าทั้งหมด:
+						</td>
+						<td class="value-col">
+							<span id="total-qty">0</span>
+						</td>
+						<td class="center-col"></td>
+						<td>
+							ส่วนลดโปรโมชั่น:
+						</td>
+						<td class="value-col">
+							<span id="total-promotion-discout-txt">0.00 บาท</span>
+						</td>
+					</tr>
+					<tr>
+						
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<div id="sale-transaction-control"></div>
+		<div id="sale-transaction-control">
+			<div class="sale-transaction-control-inner">
+				<button id="clearSaleBtn" type="button" class="pos-btn white">ยกเลิกการขาย</button> 
+				<button id="openSaleDiscountBtn" type="button" class="pos-btn white">ส่วนลดการขาย</button> 
+				<button id="openPayBoxBtn" type="button" class="pos-btn green">ชำระเงิน</button>
+			</div>
+		</div>
 	</div>
 	
 </div>

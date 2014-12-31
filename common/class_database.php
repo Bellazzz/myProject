@@ -252,7 +252,7 @@ class DBRecord {
 	public function wrapSingleQuote($data) {
 		if(is_array($data)) {
 			foreach ($data as $key => $value) {
-				if($value == null) {
+				if($value === null) {
 			 		$data[$key] = "NULL";
 			 	} else if($value != 'NULL') {
 			 		$data[$key] = (gettype($value) == 'string' ? "'$value'" : $value);
