@@ -13,6 +13,98 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript" src="../js/form_sales.js"></script>
+    <style type="text/css">
+        .prd_unit_price, .prd_sumPrm_price, .saledtl_price_txt {
+            width: 100px;
+            display: inline-block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            text-align: right;
+            padding: 5px;
+            margin-right: 20px;
+        }
+        .prd_sumPrm_price {
+            color: rgb(255, 68, 68);
+        }
+        #order-detail-table .form-input {
+            margin-right: 20px;
+        }
+        #order-detail-table label {
+            font-weight: bold;
+        }
+        .moneyCol {
+            text-align: right;
+            padding-right: 25px;
+            padding-bottom: 10px;
+        }
+        .removeProductBtn {
+            padding: 5px;
+            background: none repeat scroll 0% 0% #EEE;
+            border-radius: 3px;
+        }
+        .product-prm-row > td {
+            padding-left: 100px;
+        }
+        .prm-list-container {
+            width: 100%;
+            margin-bottom: 40px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            box-shadow: 0 2px 2px #ddd;
+        }
+        .prm-list {
+            position: relative;
+            height: 60px;
+            padding: 10px 10px 10px 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        .prm-list .prm-thumb {
+            width: 50px;
+            height: 50px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-color: #F0F0F0;
+            position: absolute;
+            left: 5px;
+            top: 5px;
+        }
+        .prm-list-container .prm-list:last-child {
+            border-bottom: 1px solid rgba(255,255,255,0);
+        }
+        .prm-list table {
+            width: 100%;
+            height: 100%;
+        }
+        .prm-list table td {
+            vertical-align: middle !important;
+            word-break: break-word;
+            font-size: 14px;
+        }
+        .prm-list table td.prm-name-col {
+            width: 50%;
+        }
+        .prm-list table td.amount-col {
+            width: 10%;
+            text-align: right !important;
+        }
+        .prm-list table td.discout-col {
+            width: 40%;
+            text-align: right !important;
+            color: rgb(255, 68, 68) !important;
+        }
+
+        .prm-list table .prm-name {
+            color: #595959;
+        }
+        .prm-list table .discount-rate {
+            color: #b7b7b7;
+        }
+    </style>
     <script type="text/javascript">
         // Global variables
         var action      = '{/literal}{$action}{literal}';
@@ -20,12 +112,24 @@
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_table.php';
+        var refProducts     = {/literal}{$referenceData["products"]|@json_encode}{literal};
+        var products        = {/literal}{$products|@json_encode}{literal};
+        var productPrmGrps  = {/literal}{$referenceData["product_promotion_groups"]|@json_encode}{literal};
+        var promotions      = {/literal}{$promotion|@json_encode}{literal};
 
         $(document).ready(function () {
+            $('#addProjectBtn').click(addProduct);
+            
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
+            });
+            selectReferenceJS({
+                elem            : $('#prdprmgrp_id'),
+                data            : productPrmGrps,
+                showClearBtn    : true,
+                clearBtnText    : 'ไม่คิดโปรโมชั่น'
             });
             $('#sale_date').datetimepicker({
                 lang                : 'th',
@@ -88,11 +192,37 @@
                     <span id="err-sale_time-require" class="errInputMsg half err-sale_time">โปรดป้อนเวลาที่ขาย</span>
                 </td>
             </tr>
+            <tr>
+                 <td colspan="2">
+                    <label class="input-required">ส่วนลดการขาย(บาท)</label>
+                   <input id="sale_discout" name="sale_discout" type="text" class="form-input full" 
+                   value="{$values.sale_discout}" valuepattern="money" require>
+                </td>         
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-sale_discout-require" class="errInputMsg err-sale_discout">โปรดป้อนส่วนลดการขาย</span>
+                    <span id="err-sale_discout-money" class="errInputMsg err-sale_discout">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+            <tr>
+                 <td colspan="2">
+                    <label class="input-required">ส่วนลดโปรโมชั่น(บาท)</label>
+                   <input id="sale_prm_discout" name="sale_prm_discout" type="text" class="form-input full readonly" 
+                   value="{if $values.sale_prm_discout}{$values.sale_prm_discout}{else}0.00{/if}" valuepattern="money" require readonly>
+                </td>         
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-sale_prm_discout-require" class="errInputMsg err-sale_prm_discout">โปรดป้อนส่วนลดโปรโมชั่น</span>
+                    <span id="err-sale_prm_discout-money" class="errInputMsg err-sale_prm_discout">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
 			<tr>
                  <td colspan="2">
-                    <label class="input-required">ราคารวม(บาท)</label>
-                   <input id="sale_total_price" name="sale_total_price" type="text" class="form-input full" 
-                   value="{$values.sale_total_price}" valuepattern="money" require>
+                    <label>ราคารวม(บาท)</label>
+                   <input id="sale_total_price" name="sale_total_price" type="text" class="form-input full readonly" 
+                   value="{if $values.sale_total_price}{$values.sale_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
                 </td>         
             </tr>
             <tr class="errMsgRow">
@@ -101,8 +231,29 @@
                     <span id="err-sale_total_price-money" class="errInputMsg err-sale_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>
+            <tr>
+                 <td colspan="2">
+                    <label class="input-required">กลุ่มโปรโมชั่น</label>
+                   <div id="prdprmgrp_id" class="selectReferenceJS form-input full"></div>
+                </td>         
+            </tr>
 	    </tbody>
     </table>
+
+    <label class="article-title">รายละเอียดการขาย</label>
+    รายการผลิตภัณฑ์ทั้งหมด <span id="allSalePrd"></span> รายการ<br><br>
+    <table id="order-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td><label class="input-required">ผลิตภัณฑ์</label></td>
+                <td class="moneyCol"><label>หน่วยละ</label>
+                <td><label class="input-required">จำนวน</label></td>
+                <td class="moneyCol"><label>ส่วนลด</label>
+                <td class="moneyCol"><label>ราคารวม</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addProjectBtn" class="button button-icon button-icon-add">เพิ่มผลิตภัณฑ์</button>
     </form>
 </div>
 </body>

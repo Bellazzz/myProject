@@ -219,8 +219,7 @@ body {
 	display: block;
 	background: #FFFFFF;
 	background: white;
-	border: 1px solid #e7e7e7;
-	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
+	border: 2px solid #ddd;
 	margin: 0 2px 20px;
 	background: -moz-linear-gradient(90deg, #FFFFFF 70%, #FFFFFF);
 	background: -webkit-linear-gradient(90deg, #FFFFFF 70%, #FFFFFF);
@@ -234,6 +233,9 @@ body {
 	-o-border-radius: 6px;
 	border-radius: 6px;
 	cursor: pointer;
+}
+.pin:active {
+	border-color: #999;
 }
 
 .pin .prd-image-container {
@@ -409,7 +411,6 @@ body {
 	overflow-y: auto;
 	width: 100%;
 	height: 100%;
-	padding: 0 8px;
 }
 
 #sale-product-list {
@@ -472,7 +473,6 @@ body {
 .icon-barcode {
 	width: 50px;
 	height: 100%;
-	background: #eee;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -482,9 +482,6 @@ body {
 	-moz-border-radius: 5px 0 0 5px;
 	-o-border-radius: 5px 0 0 5px;
 	border-radius: 5px 0 0 5px;
-	border: 1px solid #aaa;
-	background: -webkit-linear-gradient(90deg, #eee, #FFF);
-	background: -moz-linear-gradient(90deg, #eee, #FFF);
 	color: rgb(71, 71, 158);
 	font-size: 16px;
 }
@@ -492,13 +489,16 @@ body {
 	width: 100%;
 	height: 100%;
 	font-size: 16px;
-	padding: 4px 20px 4px 60px;
+	padding: 4px 20px 4px 45px;
 	outline: none;
-	border: 1px solid #aaa;
+	border: 2px solid #d9d9d9;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-o-border-radius: 5px;
 	border-radius: 5px;
+}
+#barcode-input:focus {
+	border-color: #b2b2b2;
 }
 
 #summary-sale-tranaction {
@@ -546,8 +546,7 @@ body {
 	-o-border-radius: 100%;
 	border-radius: 100%;
 	border: 2px solid #ddd;
-	background: -moz-linear-gradient(90deg, #eee, #FFF);
-	background: -webkit-linear-gradient(90deg, #eee, #FFF);
+	background: white;
 	color: #666;
 	outline: none;
 	cursor: pointer;
@@ -576,8 +575,7 @@ body {
 	width: 100%;
 	height: 100%;
 	padding: 0px 0px 0px 20px;
-	background: #F0F0F0;
-	border-left: 1px solid #D7D7D7;
+	background: #F5F5F5;
 	position: relative;
 	margin-left: 100%;
 	-webkit-transition: margin .2s ease-in-out;
@@ -593,16 +591,16 @@ body {
 	padding-right: 20px;
 }
 #closeEqpBoxBtn {
-	border: none;
+	border-top: none;
 	-webkit-border-radius:  0 0 6px 6px;
 	-moz-border-radius:  0 0 6px 6px;
 	border-radius: 0 0 6px 6px;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.34);
 }
 #closeEqpBoxBtn:active {
-	background: -webkit-linear-gradient(90deg, #79A01B, #4E690D);
-	background: -moz-linear-gradient(90deg, #79A01B, #4E690D);
+	background: #79A01B;
+	border-color: #79A01B;
 	color: white;
+	box-shadow: none;
 }
 #edit-quantity-product-body {
 	overflow-y: auto;
@@ -668,8 +666,8 @@ body {
 	font-size: 28px;
 	width: 100%;
 	padding: 3px 0;
-	background: #F0F0F0;
-	border: 1px solid rgb(205, 205, 205);
+	background: white;
+	border: 2px solid rgb(205, 205, 205);
 	color: #666;
 	text-align: center;
 	outline: none;
@@ -679,7 +677,7 @@ body {
 	border-radius: 20px;
 }
 #eqp-qty:focus {
-	background: white;
+	border-color: #999;
 }
 .eqp-control {
 	text-align: center;
@@ -715,28 +713,32 @@ body {
 .pos-btn.green {
 	color: white;
 	background: #83B019;
-	background: -webkit-linear-gradient(90deg, #83B019, #9FD520);
-	background: -moz-linear-gradient(90deg, #83B019, #9FD520);
-	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
-	border: 1px solid #999
+	border: 2px solid #666;
+}
+.pos-btn.green:hover {
+	background: #729915;
 }
 .pos-btn.green:active {
-	background: #729915;
-	background: -webkit-linear-gradient(90deg, #83B019, #729915);
-	background: -moz-linear-gradient(90deg, #83B019, #729915);
+	background: #668912;
 }
 .pos-btn.white {
-	color: #666;
+	/*color: #666;
 	background: #EEEEEE;
 	background: -webkit-linear-gradient(90deg, #EEEEEE, #FFFFFF);
 	background: -moz-linear-gradient(90deg, #EEEEEE, #FFFFFF);
 	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
-	border: 1px solid #ddd;
+	border: 1px solid #ddd;*/
+	color: #666;
+	background: white;
+	border: 2px solid #ccc;
+}
+.pos-btn.white:hover {
+	background: rgb(204, 204, 204);
+	color: white;
 }
 .pos-btn.white:active {
-	background: #ddd;
-	background: -webkit-linear-gradient(90deg, #ddd, #CDCDCD);
-	background: -moz-linear-gradient(90deg, #ddd, #CDCDCD);
+	background: #aaa;
+	border-color: #aaa;
 }
 .eqp-prm > h1 {
 	font-family: ThaiSansNeue-Bold;
@@ -751,27 +753,21 @@ body {
 	width: 100%;
 	padding: 10px;
 	height: 80px;
-	border-bottom: 1px solid #ddd;
 	position: relative;
 	padding-left: 80px;
 }
 .eqp-prm-list .prm-thumb {
 	width: 60px;
 	height: 60px;
-	border:5px solid #fff;
-	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-	border-radius: 6px;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
 	background-repeat: no-repeat;
 	background-position: center top;
 	background-size: cover;
 	background-color: #F0F0F0;
 	position: absolute;
 	left:10px;
-}
-.eqp-prm-list-container .eqp-prm-list:last-child {
-	border-bottom: 1px solid rgba(255,255,255,0);
 }
 .eqp-prm-list table {
 	width: 100%;
@@ -887,10 +883,8 @@ body {
   	position: absolute;
 	left: 50%;
 	top: 50%;
-	box-shadow: 0 0 5px #666;
 	border-radius: 4px;
-	padding: 4px;
-	background: #8AC007;
+	border: 2px solid rgba(0,0,0,0.3);
 }
 .popupBox-header {
 	width: 100%;
@@ -901,15 +895,18 @@ body {
 .popupBox-header-inner {
 	width: 100%;
 	padding: 10px;
-	background: #8AC007;
+	background: white;
 	-webkit-border-radius: 4px 4px 0 0;
 	-moz-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
 	text-align: center;
+	color: #8AC007;
+	border-bottom: 2px solid #ddd;
 }
 .popupBox-header h1 {
-	color: white;
+	color: #8AC007;
 	font-family: ThaiSansNeue-Bold;
+	font-size: 25px;
 }
 .popupBox-body {
 	width: 100%;
@@ -922,10 +919,9 @@ body {
 	color: #444;
 }
 .popupBox-footer {
-	/*background: #f7f7f7;*/
-	background: white;
+	background: #f7f7f7;
 	border-radius: 0 0 4px 4px;
-	padding: 15px;
+	padding: 10px;
 	text-align: center;
 	position: relative;
 }
@@ -970,10 +966,13 @@ body {
  */
 .pos-input {
 	padding: 5px;
-	border: 1px solid #ddd;
+	border: 2px solid #d9d9d9;
 	border-radius: 6px;
 	outline: none;
 	color: #444;
+}
+.pos-input:focus {
+	border-color: #b2b2b2;
 }
 .pos-input .required {
 	border-color: red; 
@@ -990,6 +989,10 @@ body {
 	width: 100%;
 	padding: 10px;
 	cursor: pointer;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	margin-bottom: 5px;
 }
 .pos-radio li i {
 	padding: 5px;

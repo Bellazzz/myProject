@@ -114,9 +114,16 @@ $(document).ready(function() {
 	// Sale transaction control
 	$('#openPayBoxBtn').click(function(){
 		var stat = getWindowStatus();
-		if(stat == 'addProduct') {
+		if(stat == 'addProduct' || stat == 'editQty') {
 			if(hasProductInOrder()) {
-				openPayBox();
+				if(stat == 'editQty') {
+					closeEditQtyBox();
+					setTimeout(function() {
+						openPayBox();
+					}, 200);
+				} else {
+					openPayBox();
+				}
 			}
 		}
 	});
@@ -918,6 +925,7 @@ function openPayBox() {
     $('#payBox-inner').css('margin-top', -Math.abs($('#payBox-inner').outerHeight(true) / 2));
     $('#payBox-inner').css('margin-left', -Math.abs($('#payBox-inner').outerWidth(true) / 2));
     $('#payBox').css('visibility', 'visible');
+    $('#payMoney-input').focus();
 }
 function closePayBox() {
 	$('#payBox').remove();
@@ -1342,8 +1350,8 @@ function openPrdprmgrpBox() {
 									function(){
 										setPrdPrmGrp(checked);
 										clearSale();
+										closeShowPopupBox(); 
 										closeShowPopupBox(); // Close popupBox parent
-										closeShowPopupBox();
 									}
 								},
 								{
@@ -1351,7 +1359,6 @@ function openPrdprmgrpBox() {
 									name: 'ยกเลิก',
 									func:
 									function(){
-										closeShowPopupBox(); // Close popupBox parent
 										closeShowPopupBox();
 									}
 								}
