@@ -1,9 +1,14 @@
+var oldPrdPrmGrpId   = '';
+var oldPrdPrmGrpName = '';
+
 $(document).ready(function() {
     // Create product input
     if(action == 'ADD') {
         addProduct({
             defaultValue : false
         });
+
+        $('input[name="sale_totalPrice_no_saleDiscout"]').val(0);
     } else if(action == 'EDIT') {
         for(i in valuesDetail) {
              addProduct({
@@ -14,8 +19,152 @@ $(document).ready(function() {
                 unit_name   : valuesDetail[i].unit_name
             });
         }
+        if(typeof(valuesPrmDetail) != 'undefined') {
+            for(i in valuesPrmDetail) {
+                if(valuesPrmDetail[i].prmprd_discout_type == null) { // null is promotion free
+                    var tr  = $('input[value="' + valuesPrmDetail[i].saledtl_id + '"]').parent().parent();
+                    var freeAmountInput = tr.find('input[name="freeAmount[]"]');
+                    freeAmountInput.val(valuesPrmDetail[i].saleprmdtl_amount);
+                    freeAmountInput.change();
+                }
+            }
+        }
+        
+
+        $('input[name="sale_totalPrice_no_saleDiscout"]').val(parseFloat($('#sale_total_price').val()) - parseFloat($('#sale_prm_discout').val()));
     }
+
+    $('#sale_discout_val').change(checkSaleDiscout);
+    $('input[name="sale_discout_type"]').click(checkSaleDiscout);
 });
+
+function saveOldPrdPrmGrp() {
+    oldPrdPrmGrpId      = $('input[name="prdprmgrp_id"]').val();
+    oldPrdPrmGrpName    = $('#prdprmgrp_id').find('.selectReferenceJS-text').text();
+    return true;
+}
+
+function changePrdprmGrpId() {
+    var prdprmgrpId = $('input[name="prdprmgrp_id"]').val();
+    var msg         = 'การเปลี่ยนกลุ่มโปรโมชั่นจำเป็นต้องเคลียร์ข้อมูลรายละเอียดการขายใหม่ '
+                    + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนกลุ่มโปรโมชั่น?';
+    parent.showActionDialog({
+        title: 'เปลี่ยนกลุ่มโปรโมชั่น',
+        message: msg,
+        actionList: [
+            {
+                id: 'change',
+                name: 'เปลี่ยน',
+                desc: 'ข้อมูลรายละเอียดการขายจะถูกเคลียร์',
+                func:
+                function() {
+                    $('#order-detail-table tr:not(.headTable-row)').remove();
+                    addProduct({
+                        defaultValue : false
+                    });
+                    calSummary();
+                    parent.hideActionDialog();
+                }
+            },
+            {
+                id: 'cancel',
+                name: 'ยกเลิก',
+                desc: 'ยกเลิกการเปลี่ยนกลุ่มโปรโมชั่น',
+                func:
+                function() {
+                    parent.hideActionDialog();
+                    $('#prdprmgrp_id').find('.selectReferenceJS-input').val(oldPrdPrmGrpId);
+                    $('#prdprmgrp_id').find('.selectReferenceJS-text').text(oldPrdPrmGrpName);
+                }
+            }
+        ],
+        boxWidth: 500
+    });
+}
+
+function allowChangePrdPrmGrpId() {
+    if(action == 'EDIT') {
+        parent.showActionDialog({
+            title: 'ไม่สามารถเปลี่ยนกลุ่มโปรโมชั่นได้',
+            message: 'การขายที่บันทึกแล้วไม่สามารถแก้ไขกลุ่มโปรโมชั่นได้',
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        return false;
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+    } else {
+        return true;
+    }
+}
+
+function checkSaleDiscout() {
+    var discoutType = $('input[name="sale_discout_type"]:checked').val();
+    if(discoutType == 'บาท') {
+            if(parseFloat($('#sale_discout_val').val()) > parseFloat($('input[name="sale_totalPrice_no_saleDiscout"]').val())) {
+               if($('.action-dialog').length > 0) {
+                    return;
+               }
+                parent.showActionDialog({
+                    title: 'ส่วนลดการขายไม่ถูกต้อง',
+                    message: 'ส่วนลดการขายมากกว่าราคาสุทธิ กรุณากรอกส่วนลดการขายใหม่',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'แก้ไขส่วนลดการขายใหม่',
+                            func:
+                            function() {
+                                $('#sale_discout_val').val('');
+                                $('#sale_discout_val').focus();
+                                calSummary();
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            } else {
+                calSummary();
+            }
+        } else if(discoutType == '%') {
+            if(parseFloat($('#sale_discout_val').val()) > 100) {
+                if(parent.$('.action-dialog').length > 0) {
+                    return;
+               }
+                parent.showActionDialog({
+                    title: 'ส่วนลดการขายไม่ถูกต้อง',
+                    message: 'ไม่สามารถกำหนดส่วนลดมากกว่า 100% ได้ กรุณากรอกส่วนลดการขายใหม่',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'แก้ไขส่วนลดการขายใหม่',
+                            func:
+                            function() {
+                                $('#sale_discout_val').val('');
+                                $('#sale_discout_val').focus();
+                                calSummary();
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            } else {
+                calSummary();
+            }
+        } else {
+            calSummary();
+        }
+}
 
 function addProduct(data) {
     var randNum;
@@ -24,8 +173,9 @@ function addProduct(data) {
     do {
         randNum     = parseInt(Math.random()*1000);
     } while($('#prd_id_' + randNum).length > 0);
-    var inputKeyId  = 'prd_id_' + randNum;
-    var inputQtyId  = 'prd_qty_' + randNum;
+    var inputKeyId      = 'prd_id_' + randNum;
+    var inputQtyId      = 'prd_qty_' + randNum;
+    var inputFreeQtyId  = 'prd_free_qty_' + randNum;
     if(typeof(data.unit_name) != 'undefined' && data.unit_name != '') {
         unitName = data.unit_name;
     }
@@ -54,6 +204,9 @@ function addProduct(data) {
     }
         prdRowHTML += '     </td>'
                     + '     <td>'
+                    + '         <input id="' + inputFreeQtyId + '" type="text" name="freeAmount[]" value="0" class="form-input readonly" readonly  require valuepattern="number" style="width: 100px;text-align:right;">'
+                    + '     </td>'
+                    + '     <td>'
                     + '         <span class="prd_sumPrm_price">0.00</span>'
                     + '     </td>'
                     + '     <td>'
@@ -73,14 +226,22 @@ function addProduct(data) {
                     + '     <td></td>'
                     + '     <td>'
                     + '         <span id="err-' + inputQtyId + '-require" class="errInputMsg half err-' + inputQtyId + '" style="width:100px;">'
-                    + '             โปรดกรอกจำนวนที่สั่งซื้อ'
+                    + '             โปรดกรอกจำนวนที่ขาย'
                     + '         </span>'
                     + '         <span id="err-' + inputQtyId + '-numberMoreThanZero" class="errInputMsg half err-' + inputQtyId + '" style="width:100px;">'
                     + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็มตั้งแต่ 1 ขึ้นไป'
                     + '         </span>'
                     + '     </td>'
+                    + '     <td>'
+                    + '         <span id="err-' + inputFreeQtyId + '-require" class="errInputMsg half err-' + inputFreeQtyId + '" style="width:100px;">'
+                    + '             โปรดกรอกจำนวนที่ฟรี'
+                    + '         </span>'
+                    + '         <span id="err-' + inputFreeQtyId + '-number" class="errInputMsg half err-' + inputFreeQtyId + '" style="width:100px;">'
+                    + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็ม'
+                    + '         </span>'
+                    + '     </td>'
                     + '</tr>'
-                    + '<tr id="productPrmRow_"' + randNum + ' class="product-prm-row">'
+                    + '<tr id="productPrmRow_' + randNum + '" class="product-prm-row">'
                     + '     <td colspan="6"></td>'
                     + '</tr>';
     $('#order-detail-table > tbody').append(prdRowHTML);
@@ -94,24 +255,70 @@ function addProduct(data) {
         function() {
             pullUnitPrice(inputKeyId);
             addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            addPrmFree($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
             calSummary();
         },
         success         : 
         function() {
             $('input[name="' + inputKeyId + '"]').attr('name', 'prd_id[]');
             setAllSalePrd();
+            pullUnitPrice(inputKeyId);
+            addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            addPrmFree($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            calSummary();
         },
         group           : 'products'
     });
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
+    $('#' + inputFreeQtyId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
-        var sumPriceInput = $(this).parent().parent().find('input[name="saledtl_price[]"]');
-        calSumPriceInput(sumPriceInput);
-        addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
-        calSummary();
+        if(validateFreeAmount()) {
+            var sumPriceInput = $(this).parent().parent().find('input[name="saledtl_price[]"]');
+            calSumPriceInput(sumPriceInput);
+            addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            addPrmFree($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            calSummary();
+        }
     });
+    $('#' + inputFreeQtyId).change(function() {
+        if(validateFreeAmount()) {
+            addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            addPrmFree($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
+            calSummary();
+        }
+    });
+
+    function validateFreeAmount() {
+        if($('#' + inputQtyId).val() != '') {
+            var saleQty = parseInt($('#' + inputQtyId).val());
+            var freeQty = parseInt($('#' + inputFreeQtyId).val());
+            if(freeQty > saleQty) {
+                var prdName = $('#' + inputKeyId).find('.selectReferenceJS-text').text();
+                parent.showActionDialog({
+                    title: 'จำนวนฟรีไม่ถูกต้อง',
+                    message: prdName+ ' มีจำนวนฟรีมากกว่าจำนวนที่ขาย กรุณากรอกจำนวนฟรีใหม่',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'แก้ไขจำนวนฟรีใหม่',
+                            func:
+                            function() {
+                                $('#' + inputFreeQtyId).val('');
+                                $('#' + inputFreeQtyId).focus();
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 function removeProduct(randNum) {
@@ -122,9 +329,9 @@ function removeProduct(randNum) {
         var val         = selectRef.find('.selectReferenceJS-input').val();
         var msg         = '';
         if(val != '') {
-            msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+            msg = 'คุณต้องการลบผลิตภัณฑ์ ' + txt + ' ออกจากการขายครั้งนี้ใช่หรือไม่?';
         } else {
-            msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการสั่งซื้อครั้งนี้ใช่หรือไม่?';
+            msg = 'คุณต้องการลบผลิตภัณฑ์ที่เลือกออกจากการขายครั้งนี้ใช่หรือไม่?';
         }
         parent.showActionDialog({
             title: 'ลบผลิตภัณฑ์',
@@ -133,7 +340,7 @@ function removeProduct(randNum) {
                 {
                     id: 'ok',
                     name: 'ตกลง',
-                    desc: 'ลบผลิตภัณฑ์นี้ออกจากการสั่งซื้อ',
+                    desc: 'ลบผลิตภัณฑ์นี้ออกจากการขาย',
                     func:
                     function() {
                         parent.hideActionDialog();
@@ -159,7 +366,7 @@ function removeProduct(randNum) {
     } else {
         parent.showActionDialog({
             title: 'ไม่สามารถลบผลิตภัณฑ์ได้',
-            message: 'รายการผลิตภัณฑ์ที่สั่งซื้อต้องมีอย่างน้อย 1 รายการค่ะ',
+            message: 'รายการผลิตภัณฑ์ที่ขายต้องมีอย่างน้อย 1 รายการค่ะ',
             actionList: [
                 {
                     id: 'ok',
@@ -208,10 +415,15 @@ function addPrmSale(prd_id) {
         return;
     }
 
-    var prdprmgrp_id    = $('input[name="prdprmgrp_id"]').val();
+    var prdprmgrp_id    = typeof($('input[name="prdprmgrp_id"]').val()) != 'undefined' ? $('input[name="prdprmgrp_id"]').val() : curPrdPrmGrpId;
     var tdPrm           = $('input[value="' + prd_id + '"]').parent().parent().parent().next().next().find('td');
+    var freeAmount      = $('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="freeAmount[]"]');
     var amount          = parseInt($('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="prd_qty[]"]').val());
     
+    if(parseInt(freeAmount.val()) > 0 && validateNumber(freeAmount.val())) {
+        amount -= parseInt(freeAmount.val());
+    }
+
     if(amount == '' || !validateMoney(amount)) {
         tdPrm.find('.prmSale').remove();
         return;
@@ -230,35 +442,34 @@ function addPrmSale(prd_id) {
                     discout = parseFloat(unitPrice * discout / 100);
                 }
                 var sumDiscout  = parseFloat(amount * discout);
-                var prmHTML     = '<div class="prmSale prm-list-container">'
-                                + '     <div class="prm-list">'
-                                + '         <div class="prm-thumb" style="background-image:url(\'../img/product_promotions/' + prm.prdprm_picture + '\');"></div>'
-                                + '         <table>'
-                                + '             <tr>'
-                                + '                 <td class="prm-name-col">'
-                                + '                     <span class="prm-name">' + prm.prdprm_name + '</span><br>'
-                                + '                     <span class="discout-rate">ลดราคา ' + prm.prmprd_discout + ' ' + prm.prmprd_discout_type + '</span>'
-                                + '                 </td>'
-                                + '                 <td class="amount-col">'
-                                + '                     <span class="prm-amount">' + amount + '</span>' 
-                                + '                 </td>'
-                                + '                 <td class="discout-col">'
-                                + '                     <span class="prm-discout">' + sumDiscout + '</span>' 
-                                + '                 </td>'
-                                + '             </tr>'
-                                + '         </table>'
-                                + '         <input type="hidden" class="prm_id" name="prmSale_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
-                                + '         <input type="hidden" class="prm_name" name="prmSale_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
-                                + '         <input type="hidden" class="prm_amount" name="prmSale_' + prd_id + '_saleprmdtl_amount" value="' + amount + '">'
-                                + '         <input type="hidden" class="prm_sumDiscout" name="prmSale_' + prd_id + '_saleprmdtl_discout" value="' + sumDiscout + '">'
-                                + '         <input type="hidden" class="prm_discout" name="prmSale_' + prd_id + '_discout" value="' + prm.prmprd_discout + '">'
-                                + '         <input type="hidden" class="prm_discoutType" name="prmSale_' + prd_id + '_discout_type" value="' + prm.prmprd_discout_type + '">'
-                                + '     </div>'
+                var prmHTML     = '<div class="prmSale prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/product_promotions/' + prm.prdprm_picture + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.prdprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ลดราคา ' + prm.prmprd_discout + ' ' + prm.prmprd_discout_type + '</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                + '         <td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmSale_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmSale_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmSale_' + prd_id + '_saleprmdtl_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + prd_id + '_saleprmdtl_discout" value="' + sumDiscout + '">'
+                                + ' <input type="hidden" class="prm_discout" name="prmSale_' + prd_id + '_discout" value="' + prm.prmprd_discout + '">'
+                                + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + prd_id + '_discout_type" value="' + prm.prmprd_discout_type + '">'
                                 + '</div>';
-                                
-                tdPrm.append(prmHTML);
-                var sumDiscoutTxt = $('input[value="' + prd_id + '"]').parent().parent().parent().find('.prd_sumPrm_price');
-                sumDiscoutTxt.text(sumDiscout.formatMoney(2, '.', ','));
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
                 return;
             }
         }
@@ -266,18 +477,92 @@ function addPrmSale(prd_id) {
     tdPrm.find('.prmSale').remove();
 }
 
+function addPrmFree(prd_id) {
+    // Skip
+    if(prd_id == '' || promotions == '') {
+        return;
+    }
+
+    var prdprmgrp_id    = typeof($('input[name="prdprmgrp_id"]').val()) != 'undefined' ? $('input[name="prdprmgrp_id"]').val() : curPrdPrmGrpId;
+    var tdPrm           = $('input[value="' + prd_id + '"]').parent().parent().parent().next().next().find('td');
+    var saleAmount      = parseInt($('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="prd_qty[]"]').val());
+    var amount          = parseInt($('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="freeAmount[]"]').val());
+    var freeAmountInput = $('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="freeAmount[]"]');
+
+    if(saleAmount == '' || !validateMoney(saleAmount)) {
+        tdPrm.find('.prmFree').remove();
+        return;
+    }
+
+    for(prdID in promotions[prdprmgrp_id]) {
+        for(prmType in promotions[prdprmgrp_id][prdID]) {
+            if(prdID == prd_id && prmType == 'free') {
+                freeAmountInput.removeClass('readonly');
+                freeAmountInput.attr('readonly', false);
+                if(amount <= 0 || !validateNumber(freeAmountInput.val()) || freeAmountInput.val() == '') {
+                    tdPrm.find('.prmFree').remove();
+                    return;
+                }
+
+                var prm         = promotions[prdprmgrp_id][prdID][prmType];
+
+                // add first amount
+                tdPrm.find('.prmFree').remove();
+                var unitPrice   = parseFloat(products[prd_id].prd_price);
+                var sumDiscout  = parseFloat(amount * unitPrice);
+                
+                var prmHTML     = '<div class="prmFree prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/product_promotions/' + prm.prdprm_picture + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.prdprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ฟรี</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                +               '<td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmFree_' + prd_id + '_prmprd_id" value="' + prm.prmprd_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmFree_' + prd_id + '_prdprm_name" value="' + prm.prdprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmFree_' + prd_id + '_saleprmdtl_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmFree_' + prd_id + '_saleprmdtl_discout" value="' + sumDiscout + '">'
+                                + '</div>';
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
+                return;
+            }
+        }
+    }
+    tdPrm.find('.prmFree').remove();
+}
+
 function calSummary() {
     var sale_prm_discout    = 0;
     var sale_discout        = 0;
     var totalPrice          = 0;
 
-    if($('#sale_discout').val() != '' && validateMoney($('#sale_discout').val())) {
-        sale_discout = parseFloat($('#sale_discout').val());
-    }
+    // Cal sum promotion discout
+    $('input[name="prd_id[]"]').each(function() {
+        var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
+        var prd_sumPrm_price    = $(this).parent().parent().parent().find('.prd_sumPrm_price');
+        var saledtl_price_txt   = $(this).parent().parent().parent().find('.saledtl_price_txt');
+        var saledtl_price       = parseFloat($(this).parent().parent().parent().find('input[name="saledtl_price[]"]').val());
+        var sumPrmDiscout       = 0;
 
-    // Cal sum sale promotion discout
-    $('.prm_sumDiscout').each(function() {
-        sale_prm_discout += parseFloat($(this).val());
+        tdPrm.find('.prm_sumDiscout').each(function() {
+            sumPrmDiscout += parseFloat($(this).val());
+        });
+        saledtl_price_txt.text((saledtl_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        prd_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ''));
+        sale_prm_discout += parseFloat(sumPrmDiscout);
     });
     $('#sale_prm_discout').val(sale_prm_discout.formatMoney(2, '.', ''));
 
@@ -285,6 +570,16 @@ function calSummary() {
     $('input[name="saledtl_price[]"]').each(function() {
         totalPrice += parseFloat($(this).val());
     });
+    $('input[name="sale_totalPrice_no_saleDiscout"]').val(totalPrice - sale_prm_discout);
+    if($('#sale_discout_val').val() != '' && validateMoney($('#sale_discout_val').val()) && totalPrice > 0) {
+        if($('input[name="sale_discout_type"]:checked').val() == 'บาท'){
+            sale_discout = parseFloat($('#sale_discout_val').val());
+        } else if($('input[name="sale_discout_type"]:checked').val() == '%'){
+            sale_discout = (totalPrice - sale_prm_discout) * parseFloat($('#sale_discout_val').val()) / 100;
+        }
+        $('#sale_discout').val(sale_discout);
+    }
+
     totalPrice -= sale_discout + sale_prm_discout;
     $('#sale_total_price').val(totalPrice.formatMoney(2, '.', ''));
 

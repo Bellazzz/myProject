@@ -47,7 +47,7 @@ function allowChangeOrderId() {
 	if(action == 'EDIT') {
 		parent.showActionDialog({
 			title: 'ไม่สามารถเปลี่ยนการสั่งซื้อได้',
-	        message: 'การรับสินค้าที่ที่บันทึกแล้วไม่สามารถแก้ไขรหัสการสั่งซื้อได้',
+	        message: 'การรับสินค้าที่บันทึกแล้วไม่สามารถแก้ไขรหัสการสั่งซื้อได้',
 	        actionList: [
 	            {
 	                id: 'ok',

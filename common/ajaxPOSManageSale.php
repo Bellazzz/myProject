@@ -89,12 +89,14 @@ if($code == '') {
 		// Decrease product shelf amount
 		$prdRecord 		= new TableSpa('products', $prd_id);
 		$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
-		$newShelfAmount = $oldShelfAmount - $saledtl_amount;
-		$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
-		if(!$prdRecord->commit()) {
-			$insertResult = false;
-			$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
-			$errTxt .= mysql_error($dbConn).'\n\n';
+		if($oldShelfAmount != '') {
+			$newShelfAmount = $oldShelfAmount - $saledtl_amount;
+			$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+			if(!$prdRecord->commit()) {
+				$insertResult = false;
+				$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+				$errTxt .= mysql_error($dbConn).'\n\n';
+			}
 		}
 	}
 	// End for insert sale details

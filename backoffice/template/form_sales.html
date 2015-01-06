@@ -47,7 +47,7 @@
             padding-left: 100px;
         }
         .prm-list-container {
-            width: 100%;
+            width: 87.5%;
             margin-bottom: 40px;
             background: #f8f8f8;
             border-radius: 6px;
@@ -86,7 +86,7 @@
             font-size: 14px;
         }
         .prm-list table td.prm-name-col {
-            width: 50%;
+            width: 62%;
         }
         .prm-list table td.amount-col {
             width: 10%;
@@ -111,11 +111,27 @@
         var tableName   = '{/literal}{$tableName}{literal}';
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_table.php';
+        var ajaxUrl     = 'form_sales.php';
+        var valuesDetail    = '';
         var refProducts     = {/literal}{$referenceData["products"]|@json_encode}{literal};
         var products        = {/literal}{$products|@json_encode}{literal};
         var productPrmGrps  = {/literal}{$referenceData["product_promotion_groups"]|@json_encode}{literal};
         var promotions      = {/literal}{$promotion|@json_encode}{literal};
+        var curPrdPrmGrpId  = '{/literal}{if $prdprmgrp_id}{$prdprmgrp_id}{/if}{literal}';
+
+        // Set valuesDetail
+        {/literal}
+        {if $valuesDetail}
+        {literal}
+            valuesDetail= {/literal}{$valuesDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {if $valuesPrmDetail}
+        {literal}
+            valuesPrmDetail= {/literal}{$valuesPrmDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {literal}
 
         $(document).ready(function () {
             $('#addProjectBtn').click(addProduct);
@@ -129,7 +145,11 @@
                 elem            : $('#prdprmgrp_id'),
                 data            : productPrmGrps,
                 showClearBtn    : true,
-                clearBtnText    : 'ไม่คิดโปรโมชั่น'
+                clearBtnText    : 'ไม่คิดโปรโมชั่น',
+                allowChangeOption   : saveOldPrdPrmGrp,
+                onOptionSelect      : changePrdprmGrpId,
+                beforeShow          : allowChangePrdPrmGrpId,
+                defaultValue    : '{/literal}{if $prdprmgrp_id}{$prdprmgrp_id}{/if}{literal}'
             });
             $('#sale_date').datetimepicker({
                 lang                : 'th',
@@ -193,16 +213,22 @@
                 </td>
             </tr>
             <tr>
-                 <td colspan="2">
-                    <label class="input-required">ส่วนลดการขาย(บาท)</label>
-                   <input id="sale_discout" name="sale_discout" type="text" class="form-input full" 
-                   value="{$values.sale_discout}" valuepattern="money" require>
+                 <td>
+                    <label class="input-required">ส่วนลดการขายในครั้งนี้</label>
+                   <input id="sale_discout_val" name="sale_discout" type="text" class="form-input half" 
+                   value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}" valuepattern="money" require>
+                   <input id="sale_discout" name="sale_discout" type="hidden" value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}">
+                </td>
+                <td>
+                    <label style="margin-bottom: 10px;visibility: hidden;">รูปแบบส่วนลดการขาย</label>
+                    <label style="display:inline-block"><input type="radio" name="sale_discout_type" value="บาท" checked> บาท</label> &nbsp;
+                    <label style="display:inline-block"><input type="radio" name="sale_discout_type" value="%"> เปอร์เซ็น</label>
                 </td>         
             </tr>
             <tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-sale_discout-require" class="errInputMsg err-sale_discout">โปรดป้อนส่วนลดการขาย</span>
-                    <span id="err-sale_discout-money" class="errInputMsg err-sale_discout">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                    <span id="err-sale_discout_val-require" class="errInputMsg err-sale_discout_val">โปรดป้อนส่วนลดการขาย</span>
+                    <span id="err-sale_discout_val-money" class="errInputMsg err-sale_discout_val">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>
             <tr>
@@ -220,18 +246,19 @@
             </tr>
 			<tr>
                  <td colspan="2">
-                    <label>ราคารวม(บาท)</label>
+                    <label>ราคาสุทธิ(บาท)</label>
                    <input id="sale_total_price" name="sale_total_price" type="text" class="form-input full readonly" 
                    value="{if $values.sale_total_price}{$values.sale_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
+                   <input name="sale_totalPrice_no_saleDiscout" type="hidden">
                 </td>         
             </tr>
             <tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-sale_total_price-require" class="errInputMsg err-sale_total_price">โปรดป้อนราคารวม</span>
+                    <span id="err-sale_total_price-require" class="errInputMsg err-sale_total_price">โปรดป้อนราคาสุทธิ</span>
                     <span id="err-sale_total_price-money" class="errInputMsg err-sale_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>
-            <tr>
+            <tr class="prdprmgrp-row">
                  <td colspan="2">
                     <label class="input-required">กลุ่มโปรโมชั่น</label>
                    <div id="prdprmgrp_id" class="selectReferenceJS form-input full"></div>
@@ -244,10 +271,11 @@
     รายการผลิตภัณฑ์ทั้งหมด <span id="allSalePrd"></span> รายการ<br><br>
     <table id="order-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
-            <tr>
+            <tr class="headTable-row">
                 <td><label class="input-required">ผลิตภัณฑ์</label></td>
                 <td class="moneyCol"><label>หน่วยละ</label>
                 <td><label class="input-required">จำนวน</label></td>
+                <td><label>จำนวนฟรี</label>
                 <td class="moneyCol"><label>ส่วนลด</label>
                 <td class="moneyCol"><label>ราคารวม</label></td>
             </tr>

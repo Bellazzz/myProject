@@ -7,6 +7,11 @@ function validateMoney(money) {
 	return re.test(money);
 }
 
+function validateNumber(number) {
+	var re = /^[0-9]*$/;
+	return re.test(number);
+}
+
 function posRadio(data) {
 	var valChecked   = '';
 	var radioHTML = '';

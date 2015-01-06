@@ -15,7 +15,7 @@ $tableInfo = getTableInfo($tableName);
 if(!$_REQUEST['ajaxCall']) {
 	//1. Display form
 	if($action == 'EDIT') {
-		// Get table orders data
+		// Get table Sales data
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
@@ -23,24 +23,54 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 		$smarty->assign('values', $values);
 
-		// Get table order_details data
+		// Get table sale_details data
 		$valuesDetail = array();
-		$sql = "SELECT 	o.orddtl_id, 
-						p.prd_id, 
-						o.orddtl_amount,
-						u.unit_name 
-				FROM 	order_details o, products p, units u 
-				WHERE 	o.prd_id = p.prd_id AND p.unit_id = u.unit_id 
-						AND ord_id = '$code' ORDER BY orddtl_id";
+		$saledtlIdList = array();
+		$sql = "SELECT 	saledtl_id, 
+						prd_id, 
+						saledtl_amount 
+				FROM 	sale_details  
+				WHERE   sale_id = '$code' ORDER BY saledtl_id";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($valuesDetail, mysql_fetch_assoc($result));
+			$record = mysql_fetch_assoc($result);
+			array_push($valuesDetail, $record);
+			array_push($saledtlIdList, $record['saledtl_id']);
 		}
 		$smarty->assign('valuesDetail', $valuesDetail);
 
+		// Get table sale_promotion_details data
+		$valuesPrmDetail = array();
+		$saledtlIdList 	 = wrapSingleQuote($saledtlIdList);
+		$prdprmgrp_id 	 = '';
+		$sql = "SELECT 	s.saleprmdtl_id, 
+						s.saledtl_id, 
+						s.prmprd_id,
+						s.saleprmdtl_amount,
+						s.saleprmdtl_discout,
+						prmprd.prmprd_discout_type,
+						prdprmgrp.prdprmgrp_id 
+				FROM 	sale_promotion_details s,
+						promotion_products prmprd,
+						product_promotions prdprm,
+						product_promotion_groups prdprmgrp 
+				WHERE  	s.prmprd_id = prmprd.prmprd_id AND 
+						prmprd.prdprm_id = prdprm.prdprm_id AND 
+						prdprm.prdprmgrp_id = prdprmgrp.prdprmgrp_id AND 
+						s.saledtl_id IN (".implode(',', $saledtlIdList).")";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($valuesPrmDetail, $record);
+			$prdprmgrp_id = $record['prdprmgrp_id'];
+		}
+		$smarty->assign('valuesPrmDetail', $valuesPrmDetail);
+		$smarty->assign('prdprmgrp_id', $prdprmgrp_id);
+
 	} else if($action == 'VIEW_DETAIL') {
-		// Get table orders data
+		// Get table Sales data
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
@@ -51,16 +81,16 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['ord_snd_date_th'] 	= dateThaiFormat($values['ord_snd_date']);
 		$smarty->assign('values', $values);
 		
-		// Get detail of orders
+		// Get detail of Sales
 		$orderDetailList = array();
-		$sql 	= "	SELECT o.orddtl_amount,
+		$sql 	= "	SELECT o.saledtl_amount,
 					p.prd_id,
 					p.prd_name,
 					p.prd_price,
 					u.unit_name 
-					FROM order_details o, products p, units u 
+					FROM sale_details o, products p, units u 
 					WHERE o.prd_id = p.prd_id AND p.unit_id = u.unit_id 
-					AND o.ord_id = '$code'";
+					AND o.sale_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
@@ -236,34 +266,7 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 	}
-
-	// Check unique filed
-	if(hasValue($formData['uniqueFields'])) {
-		$uniqueFields = explode(',', $formData['uniqueFields']);
-		foreach($uniqueFields as $key => $fieldName) {
-			// Skip if value is empty
-			if($formData[$fieldName] == '') {
-				continue;
-			}
-
-			$value = $formData[$fieldName];
-			$value = str_replace("\\\'", "'", $value);
-			$value = str_replace('\\\"', '"', $value);
-			$value = str_replace('\\\\"', '\\', $value);
-			$value = "'$value'";
-
-			$sql	= "SELECT $fieldName FROM $tableName WHERE $fieldName = $value AND ".$tableInfo['keyFieldName']." != '$code' LIMIT 1";
-			$result	= mysql_query($sql, $dbConn);
-			if(mysql_num_rows($result) > 0) {
-				$response['status'] = 'UNIQUE_VALUE';
-				$response['text']	= $fieldName;
-				echo json_encode($response);
-				exit();
-			}
-		}
-	}
 	
-
 	// Prepare variable
 	foreach($tableInfo['fieldNameList'] as $field => $value) {
 		array_push($fieldListEn, $field);
@@ -273,6 +276,8 @@ if(!$_REQUEST['ajaxCall']) {
 		//2.1 Insert new record
 		$values['fieldName']  = array();
 		$values['fieldValue'] = array();
+		$insertResult 		  = true;
+		$errTxt 			  = '';
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
@@ -289,50 +294,87 @@ if(!$_REQUEST['ajaxCall']) {
 				array_push($values['fieldValue'], $value);
 			}
 		}
-		// order status default is wait for transport
-		array_push($values['fieldName'], 'ordstat_id');
-		array_push($values['fieldValue'], 'OS01');
 
-		// Insert Orders
+		// Insert Sales
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
-		if($tableRecord->insertSuccess()) {
-			$insertOrdersResult = true;
-		} else {
-			$insertOrdersResult = false;
+		if(!$tableRecord->insertSuccess()) {
+			$insertResult = false;
+			$errTxt .= 'INSERT_SALES_FAIL\n';
+			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 
-		if($insertOrdersResult) {
-			// Insert Orders detail
-			$insertOrdersDetailResult = true;
-			$insertOrdersDetailError  = '';
-			$ord_id = $tableRecord->getKey();
-			foreach ($formData['prd_id'] as $key => $prd_id) {
-				$orddtl_amount 		= $formData['prd_qty'][$key];
-				$orddtlValues 		= array($ord_id, $prd_id, $orddtl_amount);
-				$orderDetailRecord 	= new TableSpa('order_details', $orddtlValues);
-				if(!$orderDetailRecord->insertSuccess()) {
-					$insertOrdersDetailResult = false;
-					$insertOrdersDetailError .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+		
+		// Insert Sales detail
+		$sale_id = $tableRecord->getKey();
+		foreach ($formData['prd_id'] as $key => $prd_id) {
+			$saledtl_amount 	= $formData['prd_qty'][$key];
+			$saledtl_price 		= $formData['saledtl_price'][$key];
+			$saledtlValues 		= array($sale_id, $prd_id, $saledtl_amount, $saledtl_price);
+			$saleDetailsRecord 	= new TableSpa('sale_details', $saledtlValues);
+			if(!$saleDetailsRecord->insertSuccess()) {
+				$insertResult = false;
+				$errTxt .= 'INSERT_SALE_DETAILS['.($key+1).']_FAIL\n';
+				$errTxt .= mysql_error($dbConn).'\n\n';
+			}
+
+			$saledtl_id = $saleDetailsRecord->getKey();
+
+			// Insert sale promotion detail (Sale)
+			if(hasValue($formData['prmSale_'.$prd_id.'_prmprd_id'])) {
+				$prmprd_id 				= $formData['prmSale_'.$prd_id.'_prmprd_id'];
+				$saleprmdtl_amount 		= $formData['prmSale_'.$prd_id.'_saleprmdtl_amount'];
+				$saleprmdtl_discout 	= $formData['prmSale_'.$prd_id.'_saleprmdtl_discout'];
+				$saleprmdtlValues 		= array($saledtl_id, $prmprd_id, $saleprmdtl_amount, $saleprmdtl_discout);
+				$salePrmDetailsRecord 	= new TableSpa('sale_promotion_details', $saleprmdtlValues);
+				if(!$saleDetailsRecord->insertSuccess()) {
+					$insertResult = false;
+					$errTxt .= 'INSERT_SALE_PROMOTION_DETAILS['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+			// Insert sale promotion detail (Free)
+			if(hasValue($formData['prmFree_'.$prd_id.'_prmprd_id'])) {
+				$prmprd_id 				= $formData['prmFree_'.$prd_id.'_prmprd_id'];
+				$saleprmdtl_amount 		= $formData['prmFree_'.$prd_id.'_saleprmdtl_amount'];
+				$saleprmdtl_discout 	= $formData['prmFree_'.$prd_id.'_saleprmdtl_discout'];
+				$saleprmdtlValues 		= array($saledtl_id, $prmprd_id, $saleprmdtl_amount, $saleprmdtl_discout);
+				$salePrmDetailsRecord 	= new TableSpa('sale_promotion_details', $saleprmdtlValues);
+				if(!$saleDetailsRecord->insertSuccess()) {
+					$insertResult = false;
+					$errTxt .= 'INSERT_SALE_PROMOTION_DETAILS['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 			}
 
-			if($insertOrdersDetailResult) {
-				// Add order and order_details success
-				$response['status'] = 'ADD_PASS';
-				echo json_encode($response);
-			} else {
-				$response['status'] = $insertOrdersDetailError;
-				echo json_encode($response);
+			// Decrease product shelf amount
+			$prdRecord 		= new TableSpa('products', $prd_id);
+			if($oldShelfAmount != '') {
+				$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
+				$newShelfAmount = $oldShelfAmount - $saledtl_amount;
+				$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+				if(!$prdRecord->commit()) {
+					$insertResult = false;
+					$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			}
+		}
+		// End for insert sale details
+
+
+		if($insertResult) {
+			$response['status'] = 'ADD_PASS';
+			echo json_encode($response);
 		} else {
-			$response['status'] = 'ADD_ORDERS_FAIL';
+			$response['status'] = $errTxt;
 			echo json_encode($response);
 		}
-		
 
 	} else if($action == 'EDIT') {
 		//2.2 Update record
-		$tableRecord = new TableSpa($tableName, $code);
+		$tableRecord 	= new TableSpa($tableName, $code);
+		$updateResult  	= true;
+		$errTxt 		= '';
 
 		// Set all field value
 		foreach($formData as $fieldName => $value) {
@@ -346,86 +388,79 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
-		// Update orders
-		if($tableRecord->commit()) {
-			$updateOrdersResult = true;
-		} else {
-			$updateOrdersResult = true;
+		// Update Sales
+		if(!$tableRecord->commit()) {
+			$updateResult = false;
+			$errTxt .= 'EDIT_ORDERS_FAIL\n';
+			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 
-		if($updateOrdersResult) {
-			// Delete order_details if delete old order_details
-			$oldOrderDetailList = array();
-			$newOrderDetailList = array();
-			// Find old order_details
-			$sql = "SELECT orddtl_id FROM order_details WHERE ord_id = '$code'";
-			$result = mysql_query($sql, $dbConn);
-			$rows 	= mysql_num_rows($result);
-			for($i=0; $i<$rows; $i++) {
-				$oldOrddtlRecord = mysql_fetch_assoc($result);
-				array_push($oldOrderDetailList, $oldOrddtlRecord['orddtl_id']);
-			}
-			// Find new order_detail
-			foreach ($formData['orddtl_id'] as $key => $newOrddtl_id) {
-				array_push($newOrderDetailList, $newOrddtl_id);
-			}
-			// Check for delete 
-			foreach ($oldOrderDetailList as $key => $oldOrddtl_id) {
-				if(!in_array($oldOrddtl_id, $newOrderDetailList)) {
-					// Delete order_details
-					$orderDetailRecord 	= new TableSpa('order_details', $oldOrddtl_id);
-					if(!$orderDetailRecord->delete()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= "DELETE_ORDERS_DETAIL[$oldOrddtl_id]_FAIL\n";
-					}
+		
+		// Delete sale_details if delete old sale_details
+		$oldSaleDetailList = array();
+		$newSaleDetailList = array();
+		// Find old sale_details
+		$sql = "SELECT saledtl_id FROM sale_details WHERE sale_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldSaledtlRecord = mysql_fetch_assoc($result);
+			array_push($oldSaleDetailList, $oldSaledtlRecord['saledtl_id']);
+		}
+		// Find new order_detail
+		foreach ($formData['saledtl_id'] as $key => $newSaledtl_id) {
+			array_push($newSaleDetailList, $newSaledtl_id);
+		}
+		// Check for delete 
+		foreach ($oldSaleDetailList as $key => $oldSaledtl_id) {
+			if(!in_array($oldSaledtl_id, $newSaleDetailList)) {
+				// Delete sale_details
+				$saleDetailRecord 	= new TableSpa('sale_details', $oldSaledtl_id);
+				if(!$saleDetailRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_ORDERS_DETAIL[$oldSaledtl_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 			}
+		}
 
-			
-			// Update or Add order_details
-			$updateOrdersDetailResult = true;
-			$updateOrdersDetailError  = '';
+		
+		// Update or Add sale_details
+		foreach ($formData['prd_id'] as $key => $prd_id) {
+			$saledtl_amount = $formData['prd_qty'][$key];
+			$saledtl_price 	= $formData['saledtl_price'][$key];
 
-			foreach ($formData['prd_id'] as $key => $prd_id) {
-				$orddtl_amount 	= $formData['prd_qty'][$key];
-
-				if(isset($formData['orddtl_id'][$key])) {
-					// Update order_details
-					$orddtl_id = $formData['orddtl_id'][$key];
-					$orderDetailRecord 	= new TableSpa('order_details', $orddtl_id);
-					$orderDetailRecord->setFieldValue('prd_id', $prd_id);
-					$orderDetailRecord->setFieldValue('orddtl_amount', $orddtl_amount);
-					if(!$orderDetailRecord->commit()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= 'EDIT_ORDERS_DETAIL['.($key+1).']_FAIL\n';
-					}
-				} else {
-					// Add new order_details
-					$orddtlValues 		= array($code, $prd_id, $orddtl_amount);
-					$orderDetailRecord 	= new TableSpa('order_details', $orddtlValues);
-					if(!$orderDetailRecord->insertSuccess()) {
-						$updateOrdersDetailResult = false;
-						$updateOrdersDetailError .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
-					}
+			if(isset($formData['saledtl_id'][$key])) {
+				// Update sale_details
+				$saledtl_id = $formData['saledtl_id'][$key];
+				$saleDetailRecord 	= new TableSpa('sale_details', $saledtl_id);
+				$saleDetailRecord->setFieldValue('prd_id', $prd_id);
+				$saleDetailRecord->setFieldValue('saledtl_amount', $saledtl_amount);
+				$saleDetailRecord->setFieldValue('saledtl_price', $saledtl_price);
+				if(!$saleDetailRecord->commit()) {
+					$updateResult = false;
+					$errTxt .= 'EDIT_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
-			}
-
-			if($updateOrdersDetailResult) {
-				// Edit order and order_details success
-				$response['status'] = 'EDIT_PASS';
-				echo json_encode($response);
 			} else {
-				// Edit order_details fail
-				$response['status'] = $updateOrdersDetailError;
-				echo json_encode($response);
+				// Add new sale_details
+				$saledtlValues 		= array($code, $prd_id, $saledtl_amount, $saledtl_price);
+				$saleDetailRecord 	= new TableSpa('sale_details', $saledtlValues);
+				if(!$saleDetailRecord->insertSuccess()) {
+					$updateResult = false;
+					$errTxt .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			}
+		}
 
+		if($updateResult) {
+			$response['status'] = 'EDIT_PASS';
+			echo json_encode($response);
 		} else {
-			// Edit orders fail
-			$response['status'] = 'EDIT_ORDERS_FAIL';
+			$response['status'] = $errTxt;
 			echo json_encode($response);
 		}
-
 
 	}
 }
