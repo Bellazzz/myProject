@@ -813,8 +813,8 @@ body {
   	-ms-user-select: none;
 }
 #payBox-inner {
-	width: 900px;
-	height: 400px;
+	width: 500px;
+	/*height: 400px;*/
 	padding-top: 60px;
 	background: #F2F2F2;
 	position: absolute;
@@ -856,12 +856,72 @@ body {
 	height: 100%;
 	float: left;
 	padding: 30px 15px 30px 30px;
+	padding: 20px;
+	text-align: center;
 }
 #payBox-rightCont {
-	width: 400px;
+	width: 500px;
 	height: 100%;
 	float: right;
 	padding: 30px 30px 30px 15px;
+	display: none;
+}
+.payBox-table-pay {
+	width: 100%;
+	margin-bottom: 20px;
+}
+.payBox-table-pay td {
+	vertical-align: middle;
+	font-size: 35px;
+	color: #999;
+	font-family: ThaiSansNeue-Bold;
+	border-bottom: 1px solid #ddd;
+	padding: 10px;
+}
+.payBox-table-pay td:first-child {
+	text-align: left;
+}
+.payBox-table-pay td:last-child {
+	text-align: right;
+}
+#payMoney-input {
+	font-family: ThaiSansNeue-Bold;
+	font-size: 35px;
+	text-align: right;
+	padding: 2px 5px;
+	width: 150px;
+}
+.payBox-table-pay .totalPrice-row td {
+	font-size: 35px;
+	color: #666;
+	margin-bottom: 20px;
+}
+.payBox-table-pay .changement-row td {
+	font-size: 35px;
+	color: rgb(255, 97, 97);
+	margin-bottom: 20px;
+}
+#payBox-leftCont button {
+	width: 49%;
+}
+#payBox-leftCont button:first-child {
+	margin-right: 2%;
+}
+.thaiMoneyLevel {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+.thaiMoneyLevel li {
+	width: 22.5%;
+	margin-right: 2%;
+	margin-bottom: 2%;
+	height: 80px;
+	border: 1px solid rgb(221, 221, 221);
+	display: inline-block;
+}
+.thaiMoneyLevel li:nth-child(4n+4) {
+	margin-right: 0px;
 }
 
 /*

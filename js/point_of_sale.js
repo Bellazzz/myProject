@@ -7,7 +7,13 @@ $(document).ready(function() {
 		var stat = getWindowStatus();
 
 		if(stat == 'pay') {
-			if(code == 27) {
+			if(code == 13) {
+				if($('#payMoney-input').is(':focus')) {
+					$('#payMoney-input').blur();
+				} else {
+					saveSale();
+				}
+			} else if(code == 27) {
 				closePayBox();
 			}
 		} else if(stat == 'editQty') {
@@ -302,13 +308,16 @@ function pullProductList() {
 			var prdId 		= $(this).attr('prd-id');
 			var prdPrice 	= $(this).attr('prd-price');
 			var prdName 	= $(this).find('p').text();
-			addSaleDetail({
-				prd_id: prdId,
-				prd_name: prdName,
-				unit_price: prdPrice,
-				qty: 1
-			});
-			$('#barcode-input').focus();
+			var qty 		= getPrdQty(prdId) + 1;
+			prdShelfAmountCover(prdId, qty, function() {
+				addSaleDetail({
+					prd_id: prdId,
+					prd_name: prdName,
+					unit_price: prdPrice,
+					qty: 1
+				});
+				$('#barcode-input').focus();
+			}, null);
 		});
 	}
 }
@@ -339,13 +348,12 @@ function addSaleDetail(data) {
 		html 	= '<tr id="' + data.prd_id + '">'
 				+ '		<td class="prdName-col">' + prdName + '</td>'
 				+ '		<td class="qty-col">'
-				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;left: 0;top: 1px;" '
+				+ ' 		<button type="button" class="minusAmount qty-circle-btn" style="position: absolute;left: 0;top: 1px;" '
 				+ '			onclick="plusOrMinusQty(\'' + data.prd_id + '\',1,\'minus\')">'
 				+ '				<i class="fa fa-minus"></i>'
 				+ '			</button>'
 				+ '			<span class="prd_qty">' + prdQty + '</span>'
-				+ ' 		<button type="button" class="qty-circle-btn" style="position: absolute;right: 0;top: 1px;" '
-				+ '			onclick="plusOrMinusQty(\'' + data.prd_id + '\',1,\'plus\')">'
+				+ ' 		<button type="button" class="plusAmount qty-circle-btn" style="position: absolute;right: 0;top: 1px;">'
 				+ '				<i class="fa fa-plus"></i>'
 				+ '			</button>'
 				+ '		</td>'
@@ -380,6 +388,11 @@ function addSaleDetail(data) {
 		});
 		$('#' + data.prd_id).find('.qty-circle-btn').click(function(e) {
 			e.stopPropagation();
+		});
+		$('#' + data.prd_id).find('.plusAmount').click(function() {
+			prdShelfAmountCover(data.prd_id, getPrdQty(data.prd_id) + 1, function() {
+				plusOrMinusQty(data.prd_id, 1, 'plus');
+			}, null);
 		});
 	}
 
@@ -721,7 +734,9 @@ function openEditQtyBox(prd_id, qty) {
 		plusOrMinusQty(prd_id, 1, 'minus');
 	});
 	$('#eqp-qty-plus-btn').click(function(){
-		plusOrMinusQty(prd_id, 1, 'plus');
+		prdShelfAmountCover(prd_id, getPrdQty(prd_id) + 1, function() {
+			plusOrMinusQty(prd_id, 1, 'plus');
+		}, null);
 	});
 	$('#removeSlvDtlBtn').click(function(){
 		removeSaleDetail(prd_id);
@@ -731,15 +746,21 @@ function openEditQtyBox(prd_id, qty) {
 		var newQty 	= parseInt($(this).val());
 
 		if($(this).val() != '' && newQty >= 1) {
-			if(newQty > oldQty) {
-				var plusAmount = newQty - oldQty;
-				plusOrMinusQty(prd_id, plusAmount, 'plus');
-			} else if(newQty < oldQty) {
-				var minusAmount = oldQty - newQty;
-				plusOrMinusQty(prd_id, minusAmount, 'minus');
-			}
-			calSummary();
-			updateEqpPrm(prd_id);
+			prdShelfAmountCover(prd_id, newQty, function() {
+				if(newQty > oldQty) {
+					var plusAmount = newQty - oldQty;
+					plusOrMinusQty(prd_id, plusAmount, 'plus');
+				} else if(newQty < oldQty) {
+					var minusAmount = oldQty - newQty;
+					plusOrMinusQty(prd_id, minusAmount, 'minus');
+				}
+				calSummary();
+				updateEqpPrm(prd_id);
+				return;
+			},
+			function() {
+				$('#eqp-qty').val(oldQty);
+			});
 		}
 	});
 	$('#addPrmFreeBtn').click(function(){
@@ -875,15 +896,39 @@ function openPayBox() {
 					+ '			</div>'
 					+ ' 		<div id="payBox-inner-body">'
 					+ '				<div id="payBox-leftCont">'
-					+ ' 				<h3>ราคาสุทธิ</h3>'
-					+ getTotalPrice() + '<br><br>'
-					+ '					<h3>รับมา</h3>'
-					+ ' 				<input id="payMoney-input" type="text" class="pos-input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"><br><br>'
-					+ ' 				<h3>ทอน</h3>'
-					+ '					<span id="changeMoney"></span><br><br>'
-					+ '					<button id="saveSaleBtn" type="button" class="pos-btn white">บันทึก</button>'
+					+ '					<table class="payBox-table-pay" cellspacing="0">'
+					+ '						<tr class="totalPrice-row">'
+					+ '							<td>ราคาสุทธิ</td>'
+					+ '							<td>' +  getTotalPrice().formatMoney(2, '.', ',') + '</td>'
+					+ '						</tr>'
+					+ '						<tr>'
+					+ '							<td>รับมา</td>'
+					+ '							<td>'
+					+ ' 							<input id="payMoney-input" type="text" class="pos-input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">'
+					+ '							</td>'
+					+ '						</tr>'
+					+ '						<tr class="changement-row">'
+					+ '							<td>ทอน</td>'
+					+ '							<td>'
+					+ ' 							<span id="changeMoney">0.00</span>'
+					+ '							</td>'
+					+ '						</tr>'
+					+ '					</table>'
+					+ '					<button id="closePayBoxBtn" type="button" class="pos-btn white">ยกเลิก</button>'
+					+ '					<button id="saveSaleBtn" type="button" class="pos-btn green">บันทึก</button>'
 					+ '				</div>'
-					+ '				<div id="payBox-rightCont"></div>'
+					+ '				<div id="payBox-rightCont">'
+					// + '					<ul class="thaiMoneyLevel">'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '						<li></li>'
+					// + '					</ul>'
+					+ '				</div>'
 					+ '			</div>'
 					+ ' 	</div>'
 					+ '</div>';
@@ -919,6 +964,9 @@ function openPayBox() {
 	});
 	$('#saveSaleBtn').click(function() {
 		saveSale();
+	});
+	$('#closePayBoxBtn').click(function() {
+		closePayBox();
 	});
 
 	// Set position
@@ -1265,54 +1313,76 @@ function openAddPrmFreeBox(prd_id) {
  */
 function saveSale() {
 	var change = parseFloat($('#changeMoney').text().replace(',',''));
-	if(change >= 0) {
-		$.ajax({
-			url: '../common/ajaxPOSManageSale.php',
-			type: 'POST',
-			data: {
-				formData		: $('#formSale').serialize(),
-				saleDiscout 	: $('#sale-discout').val()
-			},
-			success:
-			function(responseJSON) {
-				var response = $.parseJSON(responseJSON);
-				if(response.status == 'PASS') {
-					closePayBox();
-					showPopupBox({
-						title: 'บันทึกเรียบร้อย',
-						content: 'บันทึกการขายเก็บลงฐานข้อมูลเรียบร้อย',
-						buttons: [
-							{
-								id: 'ok',
-								name: 'การขายถัดไป',
-								func:
-								function(){
-									clearSale();
-									closeShowPopupBox();
+	if($('#payMoney-input').val() != '' && change >= 0 && $('.popupBox').length <= 0) {
+		showPopupBox({
+			title: 'บันทึกการขาย',
+			content: 'คุณต้องการบันทึกการขายใช่หรือไม่?',
+			buttons: [
+				{
+					id: 'ok',
+					name: 'ตกลง',
+					func:
+					function(){
+						$.ajax({
+							url: '../common/ajaxPOSManageSale.php',
+							type: 'POST',
+							data: {
+								formData		: $('#formSale').serialize(),
+								saleDiscout 	: $('#sale-discout').val()
+							},
+							success:
+							function(responseJSON) {
+								var response = $.parseJSON(responseJSON);
+								if(response.status == 'PASS') {
+									closePayBox();
+									showPopupBox({
+										title: 'บันทึกเรียบร้อย',
+										content: 'บันทึกการขายเก็บลงฐานข้อมูลเรียบร้อย',
+										buttons: [
+											{
+												id: 'ok',
+												name: 'การขายถัดไป',
+												func:
+												function(){
+													clearSale();
+													closeShowPopupBox();
+												}
+											}
+										]
+									});
+								} else if(response.status == 'FAIL') {
+									showPopupBox({
+										title: 'เกิดข้อผิดพลาด',
+										content: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลลงฐานข้อมูล<br><br>'.response.error,
+										buttons: [
+											{
+												id: 'ok',
+												name: 'การขายถัดไป',
+												func:
+												function(){
+													closeShowPopupBox();
+												}
+											}
+										],
+										boxWidth: 800
+									});
+								} else {
+									alert(response.status + response.error);
 								}
 							}
-						]
-					});
-				} else if(response.status == 'FAIL') {
-					showPopupBox({
-						title: 'เกิดข้อผิดพลาด',
-						content: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลลงฐานข้อมูล<br><br>'.response.error,
-						buttons: [
-							{
-								id: 'ok',
-								name: 'การขายถัดไป',
-								func:
-								function(){
-									closeShowPopupBox();
-								}
-							}
-						],
-						boxWidth: 800
-					});
-				} else {
-					alert(response.status + response.error);
+						});
+						closeShowPopupBox();
+					}
+				},
+				{
+					id: 'cancel',
+					name: 'ยกเลิก',
+					func:
+					function(){
+						closeShowPopupBox();
+					}
 				}
-			}
+			]
 		});
 	}
 }
@@ -1401,6 +1471,48 @@ function openPrdprmgrpBox() {
 					setPosPopupBox('popupBox-1');
 				}
 			});
+		}
+	});
+}
+
+function prdShelfAmountCover(prd_id, qty, onEnough, onNotEnough) {
+	$.ajax({
+		url: '../common/ajaxPOSCheckPrdShelfAmountCover.php',
+		type: 'POST',
+		data: {
+			prd_id: prd_id,
+			qty: qty
+		},
+		success:
+		function(response) {
+			if(response == 'ENOUGH') {
+				if(typeof(onEnough) == 'function') {
+					onEnough();
+				}
+			} else if(response == 'NOT_ENOUGH') {
+				showPopupBox({
+					title: 'สินค้าไม่พอ',
+					content: 'จำนวนสินค้าไม่เพียงพอต่อการขาย',
+					buttons: [
+						{
+							id: 'ok',
+							name: 'ตกลง',
+							func:
+							function(){
+								if(typeof(onNotEnough) == 'function') {
+									onNotEnough();
+								}
+								closeShowPopupBox();
+							}
+						}
+					],
+					boxWidth: 300
+				});
+			} else if(response == 'FAIL') {
+				alert('ไม่พบสินค้ารหัสนี้');
+			} else {
+				alert(response);
+			}
 		}
 	});
 }
