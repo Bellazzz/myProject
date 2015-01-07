@@ -518,7 +518,8 @@ if(!$_REQUEST['ajaxCall']) {
 				if($oldShelfAmount != '') {
 					if($saledtl_amount > $old_saledtl_amount) {
 						// Decrease product shelf amount
-						$newShelfAmount = $saledtl_amount - $old_saledtl_amount;
+						$decreaseAmount = $saledtl_amount - $old_saledtl_amount;
+						$newShelfAmount = $oldShelfAmount - $decreaseAmount;
 						$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
 						if(!$prdRecord->commit()) {
 							$insertResult = false;
@@ -527,7 +528,8 @@ if(!$_REQUEST['ajaxCall']) {
 						}
 					} else if($saledtl_amount < $old_saledtl_amount) {
 						// Increase product shelf amount
-						$newShelfAmount = $old_saledtl_amount - $saledtl_amount;
+						$increaseAmount = $old_saledtl_amount + $saledtl_amount;
+						$newShelfAmount = $oldShelfAmount + $increaseAmount;
 						$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
 						if(!$prdRecord->commit()) {
 							$insertResult = false;
