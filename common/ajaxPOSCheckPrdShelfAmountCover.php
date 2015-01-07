@@ -19,7 +19,7 @@ $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	$record 		= mysql_fetch_assoc($result);
 	$shelf_amount 	= $record['prd_shelf_amount'];
-	if($shelf_amount != '' || $qty > $shelf_amount) {
+	if($shelf_amount != '' && $qty > $shelf_amount) {
 		echo 'NOT_ENOUGH';
 	} else {
 		echo 'ENOUGH';

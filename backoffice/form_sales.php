@@ -401,8 +401,8 @@ if(!$_REQUEST['ajaxCall']) {
 
 			// Decrease product shelf amount
 			$prdRecord 		= new TableSpa('products', $prd_id);
+			$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
 			if($oldShelfAmount != '') {
-				$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
 				$newShelfAmount = $oldShelfAmount - $saledtl_amount;
 				$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
 				if(!$prdRecord->commit()) {
@@ -469,10 +469,25 @@ if(!$_REQUEST['ajaxCall']) {
 			if(!in_array($oldSaledtl_id, $newSaleDetailList)) {
 				// Delete sale_details
 				$saleDetailRecord 	= new TableSpa('sale_details', $oldSaledtl_id);
+				$prd_id 			= $saleDetailRecord->getFieldValue('prd_id');
+				$saledtl_amount 	= $saleDetailRecord->getFieldValue('saledtl_amount');
 				if(!$saleDetailRecord->delete()) {
 					$updateResult = false;
 					$errTxt .= "DELETE_ORDERS_DETAIL[$oldSaledtl_id]_FAIL\n";
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+
+				// Increase product shelf amount
+				$prdRecord 		= new TableSpa('products', $prd_id);
+				$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
+				if($oldShelfAmount != '') {
+					$newShelfAmount = $oldShelfAmount + $saledtl_amount;
+					$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+					if(!$prdRecord->commit()) {
+						$insertResult = false;
+						$errTxt .= 'INCREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
 				}
 			}
 		}
@@ -487,6 +502,7 @@ if(!$_REQUEST['ajaxCall']) {
 				// Update sale_details
 				$saledtl_id = $formData['saledtl_id'][$key];
 				$saleDetailRecord 	= new TableSpa('sale_details', $saledtl_id);
+				$old_saledtl_amount = $saleDetailRecord->getFieldValue('saledtl_amount');
 				$saleDetailRecord->setFieldValue('prd_id', $prd_id);
 				$saleDetailRecord->setFieldValue('saledtl_amount', $saledtl_amount);
 				$saleDetailRecord->setFieldValue('saledtl_price', $saledtl_price);
@@ -494,6 +510,31 @@ if(!$_REQUEST['ajaxCall']) {
 					$updateResult = false;
 					$errTxt .= 'EDIT_ORDERS_DETAIL['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+
+				// Update product shelf amount
+				$prdRecord 		= new TableSpa('products', $prd_id);
+				$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
+				if($oldShelfAmount != '') {
+					if($saledtl_amount > $old_saledtl_amount) {
+						// Decrease product shelf amount
+						$newShelfAmount = $saledtl_amount - $old_saledtl_amount;
+						$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+						if(!$prdRecord->commit()) {
+							$insertResult = false;
+							$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+							$errTxt .= mysql_error($dbConn).'\n\n';
+						}
+					} else if($saledtl_amount < $old_saledtl_amount) {
+						// Increase product shelf amount
+						$newShelfAmount = $old_saledtl_amount - $saledtl_amount;
+						$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+						if(!$prdRecord->commit()) {
+							$insertResult = false;
+							$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+							$errTxt .= mysql_error($dbConn).'\n\n';
+						}
+					}
 				}
 			} else {
 				// Add new sale_details
@@ -503,6 +544,19 @@ if(!$_REQUEST['ajaxCall']) {
 					$updateResult = false;
 					$errTxt .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+
+				// Decrease product shelf amount
+				$prdRecord 		= new TableSpa('products', $prd_id);
+				$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
+				if($oldShelfAmount != '') {
+					$newShelfAmount = $oldShelfAmount - $saledtl_amount;
+					$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+					if(!$prdRecord->commit()) {
+						$insertResult = false;
+						$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
 				}
 			}
 		}
