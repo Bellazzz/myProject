@@ -8,10 +8,12 @@
 	$smarty->setCompileDir($subDir.'template_c');//file compile
 	
 	date_default_timezone_set('Asia/Bangkok');
-	$nowDate = date('Y/m/d');
-	$nowTime = date('H:i');
+	$nowDate 		= date('Y/m/d');
+	$nowTime 		= date('H:i');
+	$nowTimeFull 	= date('H:i:s');
 	$smarty->assign('nowDate', date('Y/m/d'));
 	$smarty->assign('nowTime', date('H:i'));
+	$smarty->assign('nowTimeFull', date('H:i:s'));
 
 	// Session
 	if(isset($_SESSION['loggedin'])) {

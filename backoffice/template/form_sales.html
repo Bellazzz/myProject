@@ -166,8 +166,8 @@
             });
              $('#sale_time').datetimepicker({
                 datepicker:false,
-                format:'H:i',
-                minTime:'06:00',
+                format:'H:i:s',
+                step: 5
             });
        
         });
@@ -197,11 +197,11 @@
             <tr>
                 <td>
                     <label class="input-required">วันที่ขาย</label>
-                      <input id="sale_date" name="sale_date" type="text" class="mbk-dtp-th form-input half" value="{$values.sale_date}" require>
+                      <input id="sale_date" name="sale_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.sale_date}{$values.sale_date}{else}{$nowDate}{/if}" require>
                 </td>
                 <td>
                     <label class="input-required">เวลาที่ขาย</label>
-                      <input id="sale_time" name="sale_time" type="text" class="form-input half" value="{$values.sale_time}" require>
+                      <input id="sale_time" name="sale_time" type="text" class="form-input half" value="{if $values.sale_time}{$values.sale_time}{else}{$nowTimeFull}{/if}" require>
                 </td>
 		    </tr>
             <tr class="errMsgRow">

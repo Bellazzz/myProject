@@ -35,7 +35,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
 			$record = mysql_fetch_assoc($result);
-			array_push($valuesDetail, $record);
+			$valuesDetail[$record['prd_id']] = $record;
 			array_push($saledtlIdList, $record['saledtl_id']);
 		}
 		$smarty->assign('valuesDetail', $valuesDetail);

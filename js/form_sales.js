@@ -253,6 +253,7 @@ function addProduct(data) {
         defaultValue    : selectRefDefault,
         onOptionSelect  :
         function() {
+            checkShelfAmountCover($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
             pullUnitPrice(inputKeyId);
             addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
             addPrmFree($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
@@ -275,6 +276,7 @@ function addProduct(data) {
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
         if(validateFreeAmount()) {
+            checkShelfAmountCover($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
             var sumPriceInput = $(this).parent().parent().find('input[name="saledtl_price[]"]');
             calSumPriceInput(sumPriceInput);
             addPrmSale($('#' + inputKeyId).find('input[name="prd_id[]"]').val());
@@ -383,6 +385,65 @@ function removeProduct(randNum) {
     
 }
 
+function checkShelfAmountCover(prd_id) {
+    var tr          = $('input[value="' + prd_id + '"]').parent().parent().parent();
+    var curAmount   = tr.find('input[name="prd_qty[]"]').val();
+    if(prd_id != '' && curAmount != '') {
+        var oldAmount   = 0;
+        curAmount       = parseInt(curAmount);
+
+        if(typeof(valuesDetail) != 'undefined') {
+            for(i in valuesDetail) {
+                if(i == prd_id) {
+                    oldAmount = parseInt(valuesDetail[i].saledtl_amount);
+                    break;
+                }
+            }
+        }
+        if(curAmount > oldAmount) {
+            var newAmount = curAmount - oldAmount;
+            $.ajax({
+                url: '../common/ajaxFormSalesCheckPrdShelfAmountCover.php',
+                type: 'POST',
+                data: {
+                    prd_id: prd_id,
+                    qty: newAmount
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'NOT_ENOUGH') {
+                        parent.showActionDialog({
+                            title: 'สินค้าไม่เพียงพอ',
+                            message: response.prd_name + ' มีจำนวนสินค้าที่วางขายไม่เพียงพอ'
+                                     + ' ขาดอีก ' + response.overAmount,
+                            actionList: [
+                                {
+                                    id: 'ok',
+                                    name: 'ตกลง',
+                                    desc: 'แก้ไขจำนวนที่ขายใหม่',
+                                    func:
+                                    function() {
+                                        parent.hideActionDialog();
+                                        tr.find('input[name="prd_qty[]"]').val('');
+                                        tr.find('input[name="prd_qty[]"]').change();
+                                        tr.find('input[name="prd_qty[]"]').focus();
+                                    }
+                                }
+                            ],
+                            boxWidth: 400
+                        });
+                    } else if(response.status == 'FAIL') {
+                        alert('ไม่พบข้อมูลสินค้ารหัส ' + prd_id);
+                    } else if(response.status != 'ENOUGH') {
+                        alert(response.status);
+                    }
+                }
+            });
+        }
+    }
+}
+
 function setAllSalePrd() {
     $('#allSalePrd').text($('input[name="prd_id[]"]').length);
 }
@@ -425,7 +486,7 @@ function addPrmSale(prd_id) {
     }
 
     if(amount == '' || !validateMoney(amount)) {
-        tdPrm.find('.prmSale').remove();
+        removePrm(tdPrm.find('.prmSale'));
         return;
     }
 
@@ -435,7 +496,7 @@ function addPrmSale(prd_id) {
                 var prm         = promotions[prdprmgrp_id][prdID][prmType];
 
                 // add first amount
-                tdPrm.find('.prmSale').remove();
+                removePrm(tdPrm.find('.prmSale'));
                 var unitPrice   = parseFloat(products[prd_id].prd_price);
                 var discout     = parseFloat(prm.prmprd_discout);
                 if(prm.prmprd_discout_type == '%') {
@@ -474,7 +535,7 @@ function addPrmSale(prd_id) {
             }
         }
     }
-    tdPrm.find('.prmSale').remove();
+    removePrm(tdPrm.find('.prmSale'));
 }
 
 function addPrmFree(prd_id) {
@@ -490,7 +551,7 @@ function addPrmFree(prd_id) {
     var freeAmountInput = $('input[value="' + prd_id + '"]').parent().parent().parent().find('input[name="freeAmount[]"]');
 
     if(saleAmount == '' || !validateMoney(saleAmount)) {
-        tdPrm.find('.prmFree').remove();
+        removePrm(tdPrm.find('.prmFree'));
         return;
     }
 
@@ -500,14 +561,14 @@ function addPrmFree(prd_id) {
                 freeAmountInput.removeClass('readonly');
                 freeAmountInput.attr('readonly', false);
                 if(amount <= 0 || !validateNumber(freeAmountInput.val()) || freeAmountInput.val() == '') {
-                    tdPrm.find('.prmFree').remove();
+                    removePrm(tdPrm.find('.prmFree'));
                     return;
                 }
 
                 var prm         = promotions[prdprmgrp_id][prdID][prmType];
 
                 // add first amount
-                tdPrm.find('.prmFree').remove();
+                removePrm(tdPrm.find('.prmFree'));
                 var unitPrice   = parseFloat(products[prd_id].prd_price);
                 var sumDiscout  = parseFloat(amount * unitPrice);
                 
@@ -541,7 +602,15 @@ function addPrmFree(prd_id) {
             }
         }
     }
-    tdPrm.find('.prmFree').remove();
+    removePrm(tdPrm.find('.prmFree'));
+}
+
+function removePrm(prmList) {
+    var container = prmList.parent();
+    prmList.remove();
+    if(container.html() == '') {
+        container.remove();
+    }
 }
 
 function calSummary() {
