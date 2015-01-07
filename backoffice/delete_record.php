@@ -145,6 +145,58 @@ if($tableName == 'packages') {
 			removeProductAmount($prd_id, $allAmountList[$key]);
 		}
 	}
+} else if($tableName == 'sales') {
+	foreach($keySelected as $index => $sale_id) {
+		// Find sale detail id
+		$saledtlIdList 	= array();
+		$prdList 		= array();
+		$amountList 	= array();
+		$sql 	= "SELECT saledtl_id, prd_id, saledtl_amount FROM sale_details WHERE sale_id = '$sale_id'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($saledtlIdList, $record['saledtl_id']);
+			array_push($prdList, $record['prd_id']);
+			array_push($amountList, $record['saledtl_amount']);
+		}
+		$saledtlIdList = wrapSingleQuote($saledtlIdList);
+
+		// Delete sale_promotion_details
+		$sql 	= "DELETE FROM sale_promotion_details WHERE saledtl_id IN (".implode(',', $saledtlIdList).")";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SALE_PROMOTION_DETAIL_FAIL : $err";
+			exit();
+		}
+
+		// Delete sale_details
+		$sql 	= "DELETE FROM sale_details WHERE saledtl_id IN (".implode(',', $saledtlIdList).")";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SALE_DETAIL_FAIL : $err";
+			exit();
+		}
+
+		// Increase product shelf amount
+		foreach ($prdList as $key => $prd_id) {
+			$prdRecord 		= new TableSpa('products', $prd_id);
+			$oldShelfAmount = $prdRecord->getFieldValue('prd_shelf_amount');
+			if($oldShelfAmount != '') {
+				// Do Increase
+				$newShelfAmount = $oldShelfAmount + $amountList[$key];
+				$prdRecord->setFieldValue('prd_shelf_amount', $newShelfAmount);
+				if(!$prdRecord->commit()) {
+					$err = mysql_error($dbConn);
+					echo "INCREASE_PRODUCT_SHELF_AMOUNT_FAIL : $err";
+					exit();
+				}
+			}
+		}
+		// End Increase product shelf amount
+	}
 }
 
 

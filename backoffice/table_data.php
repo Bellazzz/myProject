@@ -697,25 +697,19 @@ if($rows > 0){
 					<a title="แก้ไข">
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 					</a>
-					<?
-					if($tableName != 'sales') {
-					?>
-						<a title="ลบ">
-							<?
-								if($tableName == 'withdraws') {
-									?>
-									<i class="fa fa-times" onclick="deleteWithdrawsRecord('<?=$code?>')"></i>
-									<?
-								} else {
-									?>
-									<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
-									<?
-								}
-							?>
-						</a>
-					<?
-					}
-					?>
+					<a title="ลบ">
+						<?
+							if($tableName == 'withdraws') {
+								?>
+								<i class="fa fa-times" onclick="deleteWithdrawsRecord('<?=$code?>')"></i>
+								<?
+							} else {
+								?>
+								<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
+								<?
+							}
+						?>
+					</a>
 				</td>
 			<?
 			$offset = 0;

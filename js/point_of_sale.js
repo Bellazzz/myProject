@@ -1319,6 +1319,14 @@ function saveSale() {
 			content: 'คุณต้องการบันทึกการขายใช่หรือไม่?',
 			buttons: [
 				{
+					id: 'cancel',
+					name: 'ยกเลิก',
+					func:
+					function(){
+						closeShowPopupBox();
+					}
+				},
+				{
 					id: 'ok',
 					name: 'ตกลง',
 					func:
@@ -1371,14 +1379,6 @@ function saveSale() {
 								}
 							}
 						});
-						closeShowPopupBox();
-					}
-				},
-				{
-					id: 'cancel',
-					name: 'ยกเลิก',
-					func:
-					function(){
 						closeShowPopupBox();
 					}
 				}
