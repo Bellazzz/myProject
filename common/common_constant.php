@@ -1035,6 +1035,7 @@ function dbClose() {
 						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)'
 				),
 				'searchFields'	=> array('emp_id','sale_date'),
+				'hiddenFields'	=> array('sale_discout','sale_prm_discout'),
 				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายรหัส %f1 ที่ขายในวันที่ %f2 เวลา %f3 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2',

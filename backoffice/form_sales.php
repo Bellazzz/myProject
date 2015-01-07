@@ -77,27 +77,80 @@ if(!$_REQUEST['ajaxCall']) {
 			$values[$field] = $tableRecord->getFieldValue($field);
 		}
 		// Date thai format
-		$values['ord_date_th']  	= dateThaiFormat($values['ord_date']);
-		$values['ord_snd_date_th'] 	= dateThaiFormat($values['ord_snd_date']);
+		$values['sale_date_th']  	= dateThaiFormat($values['sale_date']);
 		$smarty->assign('values', $values);
 		
 		// Get detail of Sales
-		$orderDetailList = array();
-		$sql 	= "	SELECT o.saledtl_amount,
-					p.prd_id,
-					p.prd_name,
-					p.prd_price,
-					u.unit_name 
-					FROM sale_details o, products p, units u 
-					WHERE o.prd_id = p.prd_id AND p.unit_id = u.unit_id 
-					AND o.sale_id = '$code'";
+		$sum_saledtl_amount = 0;
+		$sum_freeAmount 	= 0;
+		$sum_discout		= 0;
+		$sum_saledtl_price 	= 0;
+		$saleDetailList 	= array();
+		$saledtlIdList 		= array();
+		$sql 	= "	SELECT 		s.saledtl_id,
+								p.prd_id,
+								p.prd_name,
+								p.prd_price,
+								s.saledtl_amount,
+								s.saledtl_price 
+					FROM 		sale_details s, 
+								products p 
+					WHERE 		s.prd_id = p.prd_id AND 
+								s.sale_id = '$code' 
+					ORDER BY 	s.saledtl_id";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($orderDetailList, mysql_fetch_assoc($result));
-			$orderDetailList[$i]['no'] = $i+1;
+			$record = mysql_fetch_assoc($result);
+			$saleDetailList[$record['saledtl_id']] = array(
+				'no' 				=> $i+1,
+				'saledtl_id' 		=> $record['saledtl_id'],
+				'prd_id' 			=> $record['prd_id'],
+				'prd_name' 			=> $record['prd_name'],
+				'prd_price' 		=> $record['prd_price'],
+				'saledtl_amount' 	=> $record['saledtl_amount'],
+				'saledtl_price' 	=> $record['saledtl_price'],
+				'freeAmount'		=> 0,
+				'discout' 			=> 0
+			);
+			array_push($saledtlIdList, $record['saledtl_id']);
 		}
-		$smarty->assign('orderDetailList', $orderDetailList);
+
+		// Get detail promotion of Sales
+		$saledtlIdList 	 = wrapSingleQuote($saledtlIdList);
+		$sql 	= "	SELECT  		s.saledtl_id,
+									s.saleprmdtl_amount,
+									s.saleprmdtl_discout,
+									prmprd.prmprd_discout_type 
+					FROM 			sale_promotion_details s,
+									promotion_products prmprd 
+					WHERE 			s.prmprd_id = prmprd.prmprd_id AND 
+									s.saledtl_id IN (".implode(',', $saledtlIdList).")";
+									echo $sql;
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		if($rows > 0) {
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$saleDetailList[$record['saledtl_id']]['discout'] += $record['saleprmdtl_discout'];
+				$saleDetailList[$record['saledtl_id']]['saledtl_price'] -= $record['saleprmdtl_discout'];
+				if($record['prmprd_discout_type'] == '') {
+					$saleDetailList[$record['saledtl_id']]['freeAmount'] += $record['saleprmdtl_amount'];
+				}
+			}
+		}
+		// cal sum of tfoot
+		foreach ($saleDetailList as $key => $list) {
+			$sum_saledtl_amount += $list['saledtl_amount'];
+			$sum_freeAmount 	+= $list['freeAmount'];
+			$sum_discout		+= $list['discout'];
+			$sum_saledtl_price 	+= $list['saledtl_price'];
+		}
+		$smarty->assign('saleDetailList', $saleDetailList);
+		$smarty->assign('sum_saledtl_amount', $sum_saledtl_amount);
+		$smarty->assign('sum_freeAmount', $sum_freeAmount);
+		$smarty->assign('sum_discout', $sum_discout);
+		$smarty->assign('sum_saledtl_price', $sum_saledtl_price);
 	}
 
 	// Get reference data for selectReferenceJS

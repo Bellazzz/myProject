@@ -177,7 +177,89 @@
 <body>
 
 {include file="form_table_header.html"}
-<div class="ftb-body">    
+<div class="ftb-body"> 
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <label class="article-title">ข้อมูลการขาย</label>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการขาย :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>พนักงานที่ขาย :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>วันที่ขาย :</td>
+                <td>{$values.sale_date_th}</td>
+            </tr>
+            <tr>
+                <td>เวลาที่ขาย :</td>
+                <td>{$values.sale_time} น.</td>
+            </tr>
+            <tr>
+                <td>ส่วนลดการขาย :</td>
+                <td>{$values.sale_discout|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>ส่วนลดโปรโมชั่น :</td>
+                <td>{$values.sale_prm_discout|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>ราคาสุทธิ :</td>
+                <td>{$values.sale_total_price|number_format:2:".":","} บาท</td>
+            </tr>
+        </tbody>
+    </table>
+    <!--Sale Details Data-->
+    <label class="article-title">รายการผลิตภัณฑ์ที่ขาย</label>
+    <table class="view-detail-reference">
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th class="txtLong-col">ผลิตภัณฑ์</th>
+                <th>หน่วยละ(บาท)</th>
+                <th>จำนวนที่ขาย</th>
+                <th>จำนวนฟรี</th>
+                <th>ส่วนลด(บาท)</th>
+                <th>ราคารวม(บาท)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$saleDetailList key=i item=saledlt}
+            <tr>
+                <td align="center">{$saledlt.no}</td>
+                <td class="txtLong-col">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=products&code={$saledlt.prd_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$saledlt.prd_name}
+                    </a>
+                </td>
+                <td align="right">{$saledlt.prd_price|number_format:2:".":","}</td>
+                <td align="right">{$saledlt.saledtl_amount|number_format:0:"":""}</td>
+                <td align="right">{$saledlt.freeAmount|number_format:0:"":""}</td>
+                <td align="right">{$saledlt.discout|number_format:2:".":","}</td>
+                <td align="right">{$saledlt.saledtl_price|number_format:2:".":","}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+        <tfoot>
+            <tr class="tfootSummary">
+                <td align="right" colspan="3"><b>รวมทั้งหมด</b></td>
+                <td align="right"><b>{$sum_saledtl_amount|number_format:0:"":""}</b></td>
+                <td align="right"><b>{$sum_freeAmount|number_format:0:"":""}</b></td>
+                <td align="right"><b>{$sum_discout|number_format:2:".":","}</b></td>
+                <td align="right"><b>{$sum_saledtl_price|number_format:2:".":","}</b></td>
+            </tr>
+        </tfoot>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->   
     <form id="form-table" name="form-table" onsubmit="return false;">
 	<input type="hidden" name="requiredFields" value="emp_id,sale_date,sale_total_price,sale_time">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
@@ -283,6 +365,7 @@
     </table>
     <button id="addProjectBtn" class="button button-icon button-icon-add">เพิ่มผลิตภัณฑ์</button>
     </form>
+    {/if}
 </div>
 </body>
 </html>
