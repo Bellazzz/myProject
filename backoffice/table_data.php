@@ -624,6 +624,26 @@ switch ($tableName) {
 				$where 
 				$order";
 		break;
+
+	case 'promotion_discout_sales':
+		$where = 'WHERE p.prdprmgrp_id = g.prdprmgrp_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('prdprmgrp_id', 'g.prdprmgrp_name', $like);
+			$like	= str_replace('%%%','%\%%', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT p.prmds_id,
+				p.prmds_name,
+				g.prdprmgrp_name prdprmgrp_id,
+				p.prmds_purchase,
+				COALESCE(CONCAT(p.prmds_discout,' ', p.prmds_discout_type), 'ฟรี') prmds_discout_type,
+				p.prmds_startdate,
+				p.prmds_enddate 
+				FROM promotion_discout_sales p, product_promotion_groups g  
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
 		
 	default:
 		if(hasValue($like)) {

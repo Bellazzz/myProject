@@ -1228,15 +1228,15 @@ function dbClose() {
 
 		case 'promotion_discout_sales':
 			 return array(
-				'tableNameTH'	=> 'โปรโมชั่นส่วนลดการขาย',
+				'tableNameTH'	=> 'โปรโมชั่นการขาย',
 				'keyFieldName'  => 'prmds_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'PC',
 				'keyLength'		=> 6,
 				'fieldNameList'	=> array(
-						'prmds_id'	  	  		=> 'รหัสโปรโมชั่นส่วนลดการขาย',
+						'prmds_id'	  	  		=> 'รหัสโปรโมชั่นการขาย',
+						'prmds_name'	  		=> 'ชื่อโปรโมชั่นการขาย',
 						'prdprmgrp_id'	  		=> 'กลุ่มโปรโมชั่น',
-						'prmds_name'	  		=> 'ชื่อโปรโมชั่นส่วนลดการขาย',
 						'prmds_startdate'	  	=> 'วันที่เริ่มใช้',
 						'prmds_enddate'	  		=> 'วันที่สิ้นสุด',
 						'prmds_purchase'	  	=> 'ซื้อครบ(บาท)',
@@ -1245,28 +1245,28 @@ function dbClose() {
 				),
 				'hiddenFields' 	=> array('prmds_discout'),
 				'defaultNull' 	=> array('prmds_enddate'),
-				'searchFields'	=> array('prdprmgrp_id','prmds_name','prmds_startdate','prmds_enddate'),
+				'searchFields'	=> array('prmds_name','prdprmgrp_id','prmds_purchase','prmds_discout_type','prmds_startdate','prmds_enddate'),
 				'deleteTxtField'	=> array('prmds_name'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบโปรโมชั่นส่วนลดการขาย %f1 ใช่หรือไม่?',
-				'referenceData'			=> array('product_promotion_groups')
+				'referenceData'			=> array('product_promotion_groups','product_types')
 			);
 			break;
 
 		case 'promotion_discout_sale_details':
 			 return array(
-				'tableNameTH'	=> 'รายละเอียดโปรโมชั่นส่วนลดการขาย',
+				'tableNameTH'	=> 'รายละเอียดโปรโมชั่นการขาย',
 				'keyFieldName'  => 'prmdsdtl_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'ED',
 				'keyLength'		=> 6,
 				'fieldNameList'	=> array(
-						'prmdsdtl_id'	  	=> 'รหัสรายละเอียดโปรโมชั่นส่วนลดการขาย',
+						'prmdsdtl_id'	  	=> 'รหัสรายละเอียดโปรโมชั่นการขาย',
 						'prmds_id'	  		=> 'รหัสโปรโมชั่นส่วนลดการขาย',
 						'prdtyp_id'	  		=> 'ประเภทผลิตภัณฑ์'
 				),
 				'searchFields'	=> array('prmdsdtl_id','prmds_id','prdtyp_id'),
 				'deleteTxtField'	=> array('prmdsdtl_id'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบรายละเอียดโปรโมชั่นส่วนลดการขาย %f1 ใช่หรือไม่?'
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบรายละเอียดโปรโมชั่นการขาย %f1 ใช่หรือไม่?'
 			);
 			break;
 	 }
