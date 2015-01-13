@@ -32,6 +32,16 @@ if($tableName == 'packages') {
 			exit();
 		}
 	}
+} else if($tableName == 'promotion_discout_sales') {
+	foreach($keySelected as $index => $prmds_id) {
+		$sql = "DELETE FROM promotion_discout_sale_details WHERE prmds_id = '$prmds_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_PROMOTION_DISCOUT_SALE_DETAILS_FAIL : $err";
+			exit();
+		}
+	}
 } else if($tableName == 'orders') {
 	foreach($keySelected as $index => $ord_id) {
 		$sql = "SELECT orddtl_id FROM order_details WHERE ord_id = '$ord_id'";
