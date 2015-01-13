@@ -15,6 +15,46 @@ $sql = "SELECT 	e.emp_name,
 				positions p 
 		WHERE 	p.pos_id = e.pos_id AND 
 				e.emp_id = '$emp_id' ";
-echo $sql;
+$result = mysql_query($sql, $dbConn);
+$rows   = mysql_num_rows($result);
+if($rows > 0){
+	$record = mysql_fetch_assoc($result);
+	$response['status']   		= 'PASS';
+	$response['emp_name'] 		= $record['emp_name'];
+	$response['emp_surname'] 	= $record['emp_surname'];
+	$response['emp_pic'] 		= $record['emp_pic'];
+	$response['pos_name'] 		= $record['pos_name'];
+	$response['dateatt_in'] 	= '';
+	$response['timeatt_in'] 	= '';
+	$response['dateatt_out'] 	= '';
+	$response['timeatt_out'] 	= '';
 
+	// get time attendance history
+	$now = date('Y-m-d');
+	$sql = "SELECT 	dateatt_in,
+					timeatt_in,
+					dateatt_out,
+					timeatt_out 
+			FROM 	time_attendances 
+			WHERE 	emp_id = '$emp_id' AND 
+					(
+						dateatt_in = '$now' OR 
+						dateatt_out = '$now' 
+					)";
+	$result = mysql_query($sql, $dbConn);
+	$rows   = mysql_num_rows($result);
+	echo mysql_error($dbConn);
+	if($rows > 0) {
+		$record = mysql_fetch_assoc($result);
+		$response['dateatt_in'] 	= $record['dateatt_in'];
+		$response['timeatt_in'] 	= $record['timeatt_in'];
+		$response['dateatt_out'] 	= $record['dateatt_out'];
+		$response['timeatt_out'] 	= $record['timeatt_out'];
+	}
+
+	echo json_encode($response);
+} else{
+	$response['status']   		= 'FAIL';
+	echo json_encode($response);//ทำอาร์เรย์ให้กลายเป็นเจสัน
+}
 ?>
