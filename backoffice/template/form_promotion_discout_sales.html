@@ -326,17 +326,27 @@
 
         function beforeSaveRecord() {
             // Not check time cover
-            if(action == 'ADD' || $('#prmds_startdate').val() == '') {
+            if($('#prmds_startdate').val() == '') {
                 return false;
             }
 
             var returnVal = true; // false = no err, true = have err
 
+            // Get all product types
+            var prdtypIdList = Array();
+            $('input[name="prdtyp_id[]"]').each(function() {
+                if($(this).val() != '') {
+                    prdtypIdList.push($(this).val());
+                }
+            });
+
             $.ajax({
-                url: '../common/ajaxCheckProductPromotionTimeCover.php',
+                url: '../common/ajaxCheckPromotionDiscoutSaleTimeCover.php',
                 type: 'POST',
                 data: {
-                    prdprm_id       : code,
+                    prmds_id        : code,
+                    prdprmgrp_id    : $('input[name="prdprmgrp_id"]').val(),
+                    prdtypIdList    : prdtypIdList,
                     startdate       : tmpDateToRealDate($('#prmds_startdate').val()),
                     enddate         : tmpDateToRealDate($('#prmds_enddate').val())
                 },
@@ -352,10 +362,10 @@
 
                         var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น '
                                 + $('#prmds_name').val()
-                                + ' ไม่ครอบคลุมผลิตภัณฑ์ที่จัดโปรโมชั่นในช่วงเวลาดังต่อไปนี้' + notCoverListHTML 
-                                + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นให้ครอบคลุมช่วงเวลาดังกล่าว';
+                                + ' ซ้อนทับกับช่วงเวลาดังต่อไปนี้' + notCoverListHTML 
+                                + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นไม่ให้อยู่ในช่วงเวลาดังกล่าว';
                         parent.showActionDialog({
-                            title: 'ระยะเวลาโปรโมชั่นไม่ครอบคลุม',
+                            title: 'ระยะเวลาโปรโมชั่นการขายซ้อนทับกัน',
                             message: msg,
                             actionList: [
                                 {
@@ -370,7 +380,11 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'COVER') {
-                        if(action == 'EDIT') {
+                        if(action == 'ADD') {
+                            if(!hasInputError()) {
+                                saveRecord();
+                            }
+                        } else if(action == 'EDIT') {
                             if(!hasInputError()) {
                                 confirmSaveRecord();
                             }
