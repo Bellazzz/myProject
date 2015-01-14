@@ -181,6 +181,15 @@ if($tableName == 'packages') {
 			exit();
 		}
 
+		// Delete sale_promotion_sale_details
+		$sql 	= "DELETE FROM sale_promotion_sale_details WHERE sale_id = '$sale_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SALE_PROMOTION_SALE_DETAIL_FAIL : $err";
+			exit();
+		}
+
 		// Delete sale_details
 		$sql 	= "DELETE FROM sale_details WHERE saledtl_id IN (".implode(',', $saledtlIdList).")";
 		$result = mysql_query($sql, $dbConn);

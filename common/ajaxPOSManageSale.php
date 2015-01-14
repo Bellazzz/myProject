@@ -4,16 +4,21 @@ include('../common/common_header.php');
 
 $code 				= '';
 $formData 			= array();
+$formPrmds 			= array();
 $saleDiscout 		= 0;
 $errTxt  			= '';
 
 // Prepare variable
 parse_str($_REQUEST['formData'], $formData);
+parse_str($_REQUEST['formPrmds'], $formPrmds);
 if(hasValue($_POST['code'])) {
 	$code = $_POST['code'];
 }
 if(hasValue($_POST['saleDiscout'])) {
 	$saleDiscout = $_POST['saleDiscout'];
+}
+foreach ($formPrmds['saleprmdsdtl_discout'] as $key => $discout) {
+	$saleDiscout += (float)$discout;
 }
 
 // Check for action
@@ -101,12 +106,27 @@ if($code == '') {
 	}
 	// End for insert sale details
 
+	// Insert promotion discout sale
+	foreach ($formPrmds['prmds_id'] as $key => $prmds_id) {
+		$saleprmdsdtl_discout = $formPrmds['saleprmdsdtl_discout'][$key];
+		if($saleprmdsdtl_discout > 0) {
+			$prmds_id 			= $prmds_id == '' ? NULL : $prmds_id;
+			$salePrmSaleValues 	= array($sale_id, $prmds_id, $saleprmdsdtl_discout);
+			$salePrmSaleRecord 	= new TableSpa('sale_promotion_sale_details', $salePrmSaleValues);
+			if(!$salePrmSaleRecord->insertSuccess()) {
+				$insertResult = false;
+				$errTxt .= 'INSERT_SALE_PROMOTION_SALE_DETAILS['.($key+1).']_FAIL\n';
+				$errTxt .= mysql_error($dbConn).'\n\n';
+			}
+		}
+	}
+
 	if($insertResult) {
 		$response['status'] = 'PASS';
 		echo json_encode($response);
 	} else {
 		$response['status'] = 'FAIL';
-		$response['error']	= $errTxt;
+		$response['errorTxt']	= $errTxt;
 		echo json_encode($response);
 	}
 

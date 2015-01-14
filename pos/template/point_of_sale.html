@@ -15,6 +15,8 @@
 		var promotionGroups 	= {/literal}{$productPrmGrpList|@json_encode}{literal};
 		var productTypeList 	= {/literal}{$productTypeList|@json_encode}{literal};
 		var promotion 			= {/literal}{$promotion|@json_encode}{literal};
+		var promotionSale 		= {/literal}{$promotionSale|@json_encode}{literal};
+		var promotionSaleGroup 	= {/literal}{$promotionSaleGroup|@json_encode}{literal};
 	</script>
 	{/literal}
 </head>
@@ -58,7 +60,6 @@
 							</tbody>
 						</table>
 						<input type="hidden" name="emp_id" value="{$session_emp_id}">
-						<input id="sale-discout" type="hidden" name="sale-discout">
 						<input type="hidden" name="total-price">
 					</form>
 				</div>
@@ -69,6 +70,7 @@
 				</div>
 				<input type="text" id="barcode-input" placeholder="แสกนบาร์โค้ด หรือ พิมพ์รหัสบาร์โค้ด">
 			</div>
+			<form id="formPrmds" method="post">
 			<table id="summary-sale-tranaction">
 				<tbody>
 					<tr>
@@ -82,8 +84,10 @@
 						<td>
 							ส่วนลดการขาย:
 						</td>
-						<td class="value-col">
+						<td class="value-col prmdsManual-col">
 							<span id="sale-discout-txt">ไม่มี</span>
+							<input name="prmds_id[]" type="hidden" value="">
+							<input id="saleprmdsdtl_discout_manual" name="saleprmdsdtl_discout[]" type="hidden" value="0">
 							<input id="sale-discout-val" name="sale-discont" type="hidden" value="0.00">
 							<input id="sale-discout-type" name="sale-discont-type" type="hidden" value="บาท">
 						</td>
@@ -97,17 +101,26 @@
 						</td>
 						<td class="center-col"></td>
 						<td>
-							ส่วนลดโปรโมชั่น:
+							ส่วนลดโปรโมชั่นการขาย:
+						</td>
+						<td class="value-col prmds-col">
+							<span id="sale-discout-promotion-txt">0.00 บาท</span>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class="value-col"></td>
+						<td class="center-col"></td>
+						<td>
+							ส่วนลดโปรโมชั่นผลิตภัณฑ์:
 						</td>
 						<td class="value-col">
 							<span id="total-promotion-discout-txt">0.00 บาท</span>
 						</td>
 					</tr>
-					<tr>
-						
-					</tr>
 				</tbody>
 			</table>
+			</form>
 		</div>
 		<div id="sale-transaction-control">
 			<div class="sale-transaction-control-inner">
