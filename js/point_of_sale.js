@@ -113,6 +113,7 @@ $(document).ready(function() {
 
 	// Add event prdtyp item
 	$('.prdtypItem').click(function() {
+		$('#searchProduct').val('');
 		setCurPrdTypId($(this).attr('id'));
 		$('#barcode-input').focus();
 	});
@@ -162,6 +163,9 @@ $(document).ready(function() {
 
 	// Set default product type
 	setCurPrdTypId(productTypeList[0]['prdtyp_id']);
+
+	// Search product
+    $('#searchProduct').keyup(pullProductList);
 });
 
 function getWindowStatus() {
@@ -286,7 +290,23 @@ function getTotalPrice() {
 function pullProductList() {
 	var pinHTML = '';
 	for(i in productList) {
-		if(productList[i].prdtyp_id == curPrdtyp_id) {
+		var displayFlag = false;
+
+		if($('#searchProduct').val() == '') {
+			// Display only current product type
+			if(productList[i].prdtyp_id == curPrdtyp_id) {
+				displayFlag = true;
+			}
+		} else {
+			// Search product
+			var prdName 	= productList[i].prd_name.toLowerCase();
+			var searchText  = $('#searchProduct').val().toLowerCase();
+			if(prdName.indexOf(searchText) > -1) {
+				displayFlag = true;
+			}
+		}
+
+		if(displayFlag) {
 			pinHTML += '<div class="pin-container">'
 					 + '		<div class="pin" prd-id="' + productList[i].prd_id + '" prd-price="' + productList[i].prd_price + '">'
 					 + '			<div class="prd-image-container">'

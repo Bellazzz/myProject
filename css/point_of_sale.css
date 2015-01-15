@@ -51,6 +51,35 @@ body {
 	overflow: hidden;
 }
 
+.searchProduct-container {
+	float: right;
+	height: 30px;
+	background: white;
+	margin-top: 15px;
+	border-radius: 25px;
+	color: #666;
+	display: table;
+	padding: 5px 10px;
+	font-size: 18px;
+}
+.searchProduct-inner {
+	display: table-cell;
+	vertical-align: middle;
+}
+.searchProduct-inner input {
+	width: 200px;
+	border: none;
+	outline: none;
+	font-size: 18px;
+	color: #666;
+	-webkit-transition: width .2s ease-in-out;
+	-moz-transition: width .2s ease-in-out;
+	transition: width .2s ease-in-out;
+}
+.searchProduct-inner input:focus {
+	width: 330px;
+}
+
 #control-sale {
 	position: fixed;
 	top: 0;
