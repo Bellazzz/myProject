@@ -644,6 +644,22 @@ switch ($tableName) {
 				$orderSpecial";
 		$sortBy = $sortBySpecial;
 		break;
+
+	// case 'advertising':
+	// 	$where = 'WHERE p.prdprmgrp_id = g.prdprmgrp_id ';
+	// 	if(hasValue($like)) {
+	// 		$like	= str_replace('avs_id', 'a.avs_name', $like);
+	// 		$like	= str_replace('%%%','%\%%', $like);
+	// 		$where .= " AND $like";
+	// 	}
+	// 	$sql = "SELECT a.avs_id,
+	// 			a.avs_name,
+	// 			a.avs_status 
+	// 			FROM advertising a 
+	// 			$where 
+	// 			$orderSpecial";
+	// 	$sortBy = $sortBySpecial;
+	// 	break;
 		
 	default:
 		if(hasValue($like)) {

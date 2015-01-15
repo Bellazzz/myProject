@@ -1195,10 +1195,10 @@ function dbClose() {
 						'prmprd_discout'	  	=> 'ส่วนลด',
 						'prmprd_discout_type'	=> 'ส่วนลด' 
 				),
-				'hiddenFields' 	=> array('prmprd_discout'),
-				'defaultNull' 	=> array('prmprd_enddate','prmprd_discout','prmprd_discout_type'),
-				'searchFields'	=> array('prd_id','prdprm_id','prmprd_startdate','prmprd_enddate','prmprd_discout_type'),
-				'deleteTxtField'	=> array('prd_id','prdprm_id'),
+				'hiddenFields' 			=> array('prmprd_discout'),
+				'defaultNull' 			=> array('prmprd_enddate','prmprd_discout','prmprd_discout_type'),
+				'searchFields'			=> array('prd_id','prdprm_id','prmprd_startdate','prmprd_enddate','prmprd_discout_type'),
+				'deleteTxtField'		=> array('prd_id','prdprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบผลิตภัณฑ์ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('products','todayOnward_product_promotions')
 			);
@@ -1213,16 +1213,15 @@ function dbClose() {
 				'keyLength'		=> 6,
 				'fieldNameList'	=> array(
 						'avs_id'	  => 'รหัสการประชาสัมพันธ์',
+						'avs_name'	  => 'ชื่อ',
 						'avs_img'	  => 'รูปภาพ',
 						'avs_txt'	  => 'ข้อความ',
-						'avs_status'  => 'สถานะการประชาสัมพันธ์',
-						'avs_sort'	  => 'ลำดับการประชาสัมพันธ์'
+						'avs_status'  => 'สถานะ'
 				),
-				'searchFields'	=> array('avs_status','avs_sort'),
-				'deleteTxtField'	=> array('avs_sort'),
+				'searchFields'			=> array('avs_name','avs_status'),
+				'deleteTxtField'		=> array('avs_name'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการประชาสัมพันธ์ลำดับที่ %f1 ใช่หรือไม่?',
-				'hiddenFields' 	=> array('avs_img','avs_txt')
-
+				'hiddenFields' 			=> array('avs_img','avs_txt')
 			);
 			break;
 
@@ -1243,10 +1242,10 @@ function dbClose() {
 						'prmds_discout'	  		=> 'ส่วนลด',
 						'prmds_discout_type'	=> 'ส่วนลด'
 				),
-				'hiddenFields' 	=> array('prmds_discout'),
-				'defaultNull' 	=> array('prmds_enddate'),
-				'searchFields'	=> array('prmds_name','prdprmgrp_id','prmds_purchase','prmds_discout_type','prmds_startdate','prmds_enddate'),
-				'deleteTxtField'	=> array('prmds_name'),
+				'hiddenFields' 			=> array('prmds_discout'),
+				'defaultNull' 			=> array('prmds_enddate'),
+				'searchFields'			=> array('prmds_name','prdprmgrp_id','prmds_purchase','prmds_discout_type','prmds_startdate','prmds_enddate'),
+				'deleteTxtField'		=> array('prmds_name'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบโปรโมชั่นส่วนลดการขาย %f1 ใช่หรือไม่?',
 				'referenceData'			=> array('product_promotion_groups','product_types')
 			);
@@ -1264,8 +1263,8 @@ function dbClose() {
 						'prmds_id'	  		=> 'รหัสโปรโมชั่นส่วนลดการขาย',
 						'prdtyp_id'	  		=> 'ประเภทผลิตภัณฑ์'
 				),
-				'searchFields'	=> array('prmdsdtl_id','prmds_id','prdtyp_id'),
-				'deleteTxtField'	=> array('prmdsdtl_id'),
+				'searchFields'			=> array('prmdsdtl_id','prmds_id','prdtyp_id'),
+				'deleteTxtField'		=> array('prmdsdtl_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบรายละเอียดโปรโมชั่นการขาย %f1 ใช่หรือไม่?'
 			);
 			break;

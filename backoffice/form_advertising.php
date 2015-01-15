@@ -1,6 +1,6 @@
 <?php
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
-$tableName		= 'spa';
+$tableName		= 'advertising';
 $code			= $_REQUEST['code'];
 
 include('../config/config.php');
@@ -78,23 +78,23 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['fieldValue'] = array();
 
 		// Rename Image
-		if(strpos($formData['spa_logo'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['spa_logo'],"."));
-			$tmpRecord	= new TableSpa('spa', null);
-			$spa_logo	= $tmpRecord->genKeyCharRunning().".$type";
-			$spa_logo_path = '../img/spa/'.$spa_logo;
+		if(strpos($formData['avs_img'], 'temp_') !== FALSE) {
+			$type		= str_replace(".", "", strrchr($formData['avs_img'],"."));
+			$tmpRecord	= new TableSpa('advertising', null);
+			$avs_img	= $tmpRecord->genKeyCharRunning().".$type";
+			$avs_img_path = '../img/advertising/'.$avs_img;
 
 			// Delete Old Image
-			if(file_exists($spa_logo_path)) {
-				if(!unlink($spa_logo_path)) {
+			if(file_exists($avs_img_path)) {
+				if(!unlink($avs_img_path)) {
 					$response['status'] = 'DELETE_OLD_IMG_FAIL';
 					echo json_encode($response);
 					exit();
 				}
 			}
 
-			if(rename('../img/temp/'.$formData['spa_logo'], $spa_logo_path)) {
-				$formData['spa_logo'] = $spa_logo;
+			if(rename('../img/temp/'.$formData['avs_img'], $avs_img_path)) {
+				$formData['avs_img'] = $avs_img;
 			} else {
 				$response['status'] = 'RENAME_FAIL';
 				echo json_encode($response);
@@ -127,11 +127,11 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 
 		// Rename Image
-		if(strpos($formData['spa_logo'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['spa_logo'],"."));
-			$spa_logo	= $code.".$type";
-			$imgTmpPath = '../img/temp/'.$formData['spa_logo'];
-			$imgNewPath = '../img/spa/'.$spa_logo;
+		if(strpos($formData['avs_img'], 'temp_') !== FALSE) {
+			$type		= str_replace(".", "", strrchr($formData['avs_img'],"."));
+			$avs_img	= $code.".$type";
+			$imgTmpPath = '../img/temp/'.$formData['avs_img'];
+			$imgNewPath = '../img/advertising/'.$avs_img;
 
 			// Delete Old Image
 			if(file_exists($imgNewPath)) {
@@ -144,7 +144,7 @@ if(!$_REQUEST['ajaxCall']) {
 			// Rename temp to new image
 			if(file_exists($imgTmpPath)) {
 				if(rename($imgTmpPath, $imgNewPath)) {
-					$formData['spa_logo'] = $spa_logo;
+					$formData['avs_img'] = $avs_img;
 				} else {
 					$response['status'] = 'RENAME_FAIL';
 					echo json_encode($response);
