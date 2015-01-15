@@ -423,7 +423,7 @@
 
         function beforeSaveRecord() {
             // Not check time overlap
-            if(action == 'ADD' || $('#prmprd_startdate').val() == '') {
+            if($('#prmprd_startdate').val() == '') {
                 return false;
             }
 
@@ -470,7 +470,11 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'NOT_OVERLAP') {
-                        if(action == 'EDIT') {
+                        if(action == 'ADD') {
+                            if(!hasInputError()) {
+                                saveRecord();
+                            }
+                        } else if(action == 'EDIT') {
                             if(!hasInputError()) {
                                 confirmSaveRecord();
                             }

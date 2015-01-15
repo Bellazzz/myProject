@@ -1257,7 +1257,7 @@ function dbClose() {
 				'keyFieldName'  => 'prmdsdtl_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'ED',
-				'keyLength'		=> 6,
+				'keyLength'		=> 8,
 				'fieldNameList'	=> array(
 						'prmdsdtl_id'	  	=> 'รหัสรายละเอียดโปรโมชั่นการขาย',
 						'prmds_id'	  		=> 'รหัสโปรโมชั่นส่วนลดการขาย',
@@ -1266,6 +1266,22 @@ function dbClose() {
 				'searchFields'			=> array('prmdsdtl_id','prmds_id','prdtyp_id'),
 				'deleteTxtField'		=> array('prmdsdtl_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบรายละเอียดโปรโมชั่นการขาย %f1 ใช่หรือไม่?'
+			);
+			break;
+
+		case 'sale_promotion_sale_details':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นการขาย',
+				'keyFieldName'  => 'saleprmdsdtl_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SM',
+				'keyLength'		=> 10,
+				'fieldNameList'	=> array(
+						'saleprmdsdtl_id'	  		=> 'รหัสรายละเอียดการเกิดโปรโมชั่นการขาย',
+						'sale_id'	  				=> 'รหัสการขาย',
+						'prmds_id'	  				=> 'รหัสโปรโมชั่นการขาย',
+						'saleprmdsdtl_discout'	  	=> 'ส่วนลด'
+				)
 			);
 			break;
 	 }
