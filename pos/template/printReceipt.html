@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Receipt</title>
+	<style type="text/css">
+		.listOfProduct{
+			width: 100%;
+
+		}
+		.listOfProduct td {
+			vertical-align: top;
+		}
+
+		.prdName-col{
+			width: 15mm;
+			min-width: 15mm;
+			max-width: 15mm;
+		}
+
+		.prdName{
+			width: 100%;
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+	</style>
+	<style type="text/css" media = "print">
+		@page{
+			size:auto;
+			margin: 0mm;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+		}
+
+		body{
+			size:auto;
+			margin: 0px;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+			font-family: Arial, sans-serif;
+		}
+	</style>
+</head>
+<body>
+<center>
+	{$spaData.spa_name} <br>
+	รพ.เจ้าพระยาอภัยภูเบศร ปราจีนบุรี <br>
+	ใบเสร็จรับเงิน <br>
+</center>
+<table class = "listOfProduct">
+	{foreach from=$saledtlData key=i item=saledtl}
+	<tr>
+		<td style="text-align:right;">{$saledtl.saledtl_amount}&nbsp;&nbsp;&nbsp;</td>
+		<td class = "prdName-col"><span class="prdName">{$saledtl.prd_name}</span></td>
+		<td style="text-align:right;">@{$saledtl.prd_price}</td>
+		<td style="text-align:right;">{$saledtl.saledtl_price}</td>
+	</tr>
+	{/foreach}
+
+	<tr>
+		<td style="text-align:right;">({$totalAmount})&nbsp;&nbsp;&nbsp;</td>
+		<td colspan="2">Subtotal</td>
+		<td style="text-align:right;">{$subtotal}</td>
+	</tr>
+
+	<tr>
+		<td colspan="3" >Cash</td>	
+		<td style="text-align:right;">{$cash}</td>
+	</tr>
+
+	<tr>
+		<td colspan="3">Change</td>	
+		<td style="text-align:right;">{$change}</td>
+	</tr>
+</table>
+<center>
+	<strong>****************************************</strong> <br>
+	ขอบคุณค่ะ <br>
+	{$saleData.sale_date}  {$saleData.sale_time}    {$saleData.emp_id} <br>
+	Tel : {$spaData.spa_tel}<br><br><br><br>
+</center>
+
+
+</body>
+</html>
