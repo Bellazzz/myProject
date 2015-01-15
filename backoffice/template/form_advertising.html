@@ -63,7 +63,7 @@
             </tr>
             <tr>
                 <td>สถานะการประชาสัมพันธ์ :</td>
-                <td>{$values.avs_status}</td>
+                <td>{if $values.avs_status==1}แสดงการประชาสัมพันธ์{else if $values.avs_status==0}ไม่แสดงการประชาสัมพันธ์{else}-{/if}</td>
             </tr>
             <tr>
                 <td>ข้อความ :</td>

@@ -645,21 +645,18 @@ switch ($tableName) {
 		$sortBy = $sortBySpecial;
 		break;
 
-	// case 'advertising':
-	// 	$where = 'WHERE p.prdprmgrp_id = g.prdprmgrp_id ';
-	// 	if(hasValue($like)) {
-	// 		$like	= str_replace('avs_id', 'a.avs_name', $like);
-	// 		$like	= str_replace('%%%','%\%%', $like);
-	// 		$where .= " AND $like";
-	// 	}
-	// 	$sql = "SELECT a.avs_id,
-	// 			a.avs_name,
-	// 			a.avs_status 
-	// 			FROM advertising a 
-	// 			$where 
-	// 			$orderSpecial";
-	// 	$sortBy = $sortBySpecial;
-	// 	break;
+	case 'advertising':
+		if(hasValue($like)) {
+			$where = " WHERE $like";
+		}
+		$sql = "SELECT avs_id,
+				avs_name,
+				IF(avs_status,'แสดงประชาสัมพันธ์','ไม่แสดงประชาสัมพันธ์') avs_status 
+				FROM advertising 
+				$where 
+				$orderSpecial";
+			$sortBy = $sortBySpecial;
+		break;
 		
 	default:
 		if(hasValue($like)) {
