@@ -639,6 +639,65 @@ function calSummary() {
     $('input[name="saledtl_price[]"]').each(function() {
         totalPrice += parseFloat($(this).val());
     });
+
+    // Sale discout promotion
+    var prdprmgrp_id = $('input[name="prdprmgrp_id"]');
+    if(typeof(promotionSaleGroup) != 'undefined' && prdprmgrp_id != '') {
+        var prmdsSumPurchase = Array();
+        $('input[name="prd_id[]"]').each(function() {
+            var prd_id          = $(this).val();
+            var prdtyp_id       = '';
+            if(typeof(products[prd_id]) != 'undefined') {
+                prdtyp_id       = products[prd_id].prdtyp_id;
+            }
+            // alert(typeof(promotionSaleGroup[prdprmgrp_id]) + ',' + typeof(promotionSaleGroup[prdprmgrp_id][prdtyp_id]));
+            // if(typeof(promotionSaleGroup[prdprmgrp_id]) != 'undefined' && 
+            // typeof(promotionSaleGroup[prdprmgrp_id][prdtyp_id]) != 'undefined') {
+            //     alert('enter');
+            //     var prmds_id = promotionSaleGroup[prdprmgrp_id][prdtyp_id];
+            //     if(typeof(prmdsSumPurchase[prmds_id]) == 'undefined') {
+            //         prmdsSumPurchase[prmds_id] = 0;
+            //     }
+            //     prmdsSumPurchase[prmds_id] += parseFloat($(this).parent().parent().parent().find('.saledtl_price_txt').val());
+            // }
+
+            for(i in promotionSaleGroup) {
+                for(j in promotionSaleGroup[i]) {
+                    if(i == prdprmgrp_id && j == prdtyp_id) {
+                        alert('enter');
+                        var prmds_id = promotionSaleGroup[i][j];
+                        if(typeof(prmdsSumPurchase[prmds_id]) == 'undefined') {
+                            prmdsSumPurchase[prmds_id] = 0;
+                        }
+                        prmdsSumPurchase[prmds_id] += parseFloat($(this).parent().parent().parent().find('.saledtl_price_txt').val());
+                        break;
+                    }
+                }
+            }
+        });
+        for(i in prmdsSumPurchase) {
+            alert(i + ' = ' + prmdsSumPurchase[i]);
+            // if(prmdsSumPurchase[i] >= promotionSale[i].prmds_purchase) {
+            //     if($('.prmds_' + i).length == 0) {
+            //         // Add
+            //         var prmds_discout =  promotionSale[i].prmds_discout;
+            //         if(promotionSale[i].prmds_discout_type == '%') {
+            //             prmds_discout = parseFloat(totalPrice * prmds_discout / 100);
+            //         }
+            //         var prmdsHTML   = '<input class="prmds_' + i + '" type="hidden" name="prmds_id[]" value="' + i + '">'
+            //                         + '<input class="prmds_' + i + '" type="hidden" name="saleprmdsdtl_discout[]" value="' + prmds_discout + '">';
+            //         $('.prmds-col').append(prmdsHTML);
+            //     }
+            // } else {
+            //     // Remove
+            //     $('.prmds_' + i).remove();
+            // }
+        }
+    } else {
+        alert('not enter');
+    }
+
+
     $('input[name="sale_totalPrice_no_saleDiscout"]').val(totalPrice - sale_prm_discout);
     if($('#sale_discout_val').val() != '' && validateMoney($('#sale_discout_val').val()) && totalPrice > 0) {
         if($('input[name="sale_discout_type"]:checked').val() == 'บาท'){

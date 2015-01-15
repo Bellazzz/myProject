@@ -287,6 +287,42 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('promotion', $promotion);
 	}
 
+	// Get promotion discout sale data
+	$promotionSale 			= array();
+	$promotionSaleGroup 	= array();
+	$sql = "SELECT 		prmds.prmds_id,
+						prmds.prmds_name,
+						prmds.prmds_purchase,
+						prmds.prmds_discout,
+						prmds.prmds_discout_type,
+						prmdsdtl.prdtyp_id 
+			FROM 		promotion_discout_sales prmds,
+						promotion_discout_sale_details prmdsdtl 
+			WHERE 		prmds.prmds_id = prmdsdtl.prmds_id AND 
+						prmds.prmds_startdate <= '$nowDate' AND 
+						(
+							prmds.prmds_enddate IS NULL OR 
+							prmds.prmds_enddate >= '$nowDate'
+						)";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		for($i=0; $i<$rows; $i++) {
+			$record			= mysql_fetch_assoc($result);
+			$prdtyp_id 		= $record['prdtyp_id'];
+
+			$promotionSale[$record['prmds_id']] = array(
+				'prmds_name' 			=> $record['prmds_name'],
+				'prmds_purchase' 		=> $record['prmds_purchase'],
+				'prmds_discout' 		=> $record['prmds_discout'],
+				'prmds_discout_type' 	=> $record['prmds_discout_type']
+			);
+			$promotionSaleGroup[$prdprmgrp_id][$prdtyp_id] = $record['prmds_id'];
+		}
+		$smarty->assign('promotionSale', $promotionSale);
+		$smarty->assign('promotionSaleGroup', $promotionSaleGroup);
+	}
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);

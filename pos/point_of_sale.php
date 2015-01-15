@@ -132,6 +132,7 @@ $sql = "SELECT 		prmds.prmds_id,
 					prmds.prmds_purchase,
 					prmds.prmds_discout,
 					prmds.prmds_discout_type,
+					prmds.prdprmgrp_id,
 					prmdsdtl.prdtyp_id 
 		FROM 		promotion_discout_sales prmds,
 					promotion_discout_sale_details prmdsdtl 
@@ -154,7 +155,7 @@ if($rows > 0) {
 			'prmds_discout' 		=> $record['prmds_discout'],
 			'prmds_discout_type' 	=> $record['prmds_discout_type']
 		);
-		$promotionSaleGroup[$prdprmgrp_id][$prdtyp_id] = $record['prmds_id'];
+		$promotionSaleGroup[$record['prdprmgrp_id']][$prdtyp_id] = $record['prmds_id'];
 	}
 }
 
