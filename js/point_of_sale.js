@@ -427,16 +427,20 @@ function addSaleDetail(data) {
 	$('#' + data.prd_id).addClass('hilight');
 	setTimeout(function(){
 		$('#' + data.prd_id).removeClass('hilight');
-	}, 1000)
+	}, 1000);
 	
 }
 
 function removeSaleDetail(prd_id) {
 	//remove product
 	$('#' + prd_id).remove();
-	closeEditQtyBox();
-	// cal total price
-	calSummary();
+	if($('#sale-product-list tr').length > 0) {
+		closeEditQtyBox();
+		// cal total price
+		calSummary();
+	} else {
+		clearSale();
+	}
 }
 
 function addPrmSale(prd_id) {
@@ -623,15 +627,19 @@ function calSummary() {
 			});
 			for(i in prmdsSumPurchase) {
 				if(prmdsSumPurchase[i] >= promotionSale[i].prmds_purchase) {
+					var prmds_discout =  promotionSale[i].prmds_discout;
+					if(promotionSale[i].prmds_discout_type == '%') {
+						prmds_discout = parseFloat(totalPrice * prmds_discout / 100);
+						alert(totalPrice);
+					}
 					if($('.prmds_' + i).length == 0) {
 						// Add
-						var prmds_discout =  promotionSale[i].prmds_discout;
-						if(promotionSale[i].prmds_discout_type == '%') {
-							prmds_discout = parseFloat(totalPrice * prmds_discout / 100);
-						}
 						var prmdsHTML 	= '<input class="prmds_' + i + '" type="hidden" name="prmds_id[]" value="' + i + '">'
 										+ '<input class="prmds_' + i + '" type="hidden" name="saleprmdsdtl_discout[]" value="' + prmds_discout + '">';
 						$('.prmds-col').append(prmdsHTML);
+					} else {
+						// Update
+						$('.prmds_' + i + '[name="saleprmdsdtl_discout[]"]').val(prmds_discout);
 					}
 				} else {
 					// Remove
