@@ -118,6 +118,7 @@
         var productPrmGrps  = {/literal}{$referenceData["product_promotion_groups"]|@json_encode}{literal};
         var promotions      = {/literal}{$promotion|@json_encode}{literal};
         var curPrdPrmGrpId  = '{/literal}{if $prdprmgrp_id}{$prdprmgrp_id}{/if}{literal}';
+        var promotionSale   = {/literal}{$promotionSale|@json_encode}{literal};
         var promotionSaleGroup = {/literal}{$promotionSaleGroup|@json_encode}{literal};
 
         // Set valuesDetail
@@ -300,7 +301,8 @@
                     <label class="input-required">ส่วนลดการขายในครั้งนี้</label>
                    <input id="sale_discout_val" name="sale_discout" type="text" class="form-input half" 
                    value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}" valuepattern="money" require>
-                   <input id="sale_discout" name="sale_discout" type="hidden" value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}">
+                   <input name="prmds_id[]" type="hidden" value="">
+                   <input id="sale_discout" name="saleprmdsdtl_discout[]" type="hidden" value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}">
                 </td>
                 <td>
                     <label style="margin-bottom: 10px;visibility: hidden;">รูปแบบส่วนลดการขาย</label>
@@ -315,7 +317,7 @@
                 </td>
             </tr>
             <tr>
-                 <td colspan="2">
+                 <td colspan="2" class="prmds-td">
                     <label class="input-required">ส่วนลดโปรโมชั่นการขาย(บาท)</label>
                    <input id="prmds_sum_discout" name="prmds_sum_discout" type="text" class="form-input full readonly" 
                    value="0.00" valuepattern="money" require readonly>

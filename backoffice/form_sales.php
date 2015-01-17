@@ -295,6 +295,7 @@ if(!$_REQUEST['ajaxCall']) {
 						prmds.prmds_purchase,
 						prmds.prmds_discout,
 						prmds.prmds_discout_type,
+						prmds.prdprmgrp_id,
 						prmdsdtl.prdtyp_id 
 			FROM 		promotion_discout_sales prmds,
 						promotion_discout_sale_details prmdsdtl 
@@ -317,7 +318,7 @@ if(!$_REQUEST['ajaxCall']) {
 				'prmds_discout' 		=> $record['prmds_discout'],
 				'prmds_discout_type' 	=> $record['prmds_discout_type']
 			);
-			$promotionSaleGroup[$prdprmgrp_id][$prdtyp_id] = $record['prmds_id'];
+			$promotionSaleGroup[$record['prdprmgrp_id']][$prdtyp_id] = $record['prmds_id'];
 		}
 		$smarty->assign('promotionSale', $promotionSale);
 		$smarty->assign('promotionSaleGroup', $promotionSaleGroup);
@@ -450,6 +451,20 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 		// End for insert sale details
 
+		// Insert promotion discout sale
+		foreach ($formData['prmds_id'] as $key => $prmds_id) {
+			$saleprmdsdtl_discout = $formData['saleprmdsdtl_discout'][$key];
+			if($saleprmdsdtl_discout > 0) {
+				$prmds_id 			= $prmds_id == '' ? NULL : $prmds_id;
+				$salePrmSaleValues 	= array($sale_id, $prmds_id, $saleprmdsdtl_discout);
+				$salePrmSaleRecord 	= new TableSpa('sale_promotion_sale_details', $salePrmSaleValues);
+				if(!$salePrmSaleRecord->insertSuccess()) {
+					$insertResult = false;
+					$errTxt .= 'INSERT_SALE_PROMOTION_SALE_DETAILS['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
 
 		if($insertResult) {
 			$response['status'] = 'ADD_PASS';
