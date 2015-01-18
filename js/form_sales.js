@@ -35,8 +35,7 @@ $(document).ready(function() {
                 var saleprmdsdtlIdHTML = '<input class="prmds_' + valuesPrmSaleDetail[i].prmds_id + '" type="hidden" name="saleprmdsdtl_id[]" value="' + valuesPrmSaleDetail[i].saleprmdsdtl_id + '">';
                 $('#sale_discout_val').val(valuesPrmSaleDetail[i].saleprmdsdtl_discout);
                 $('#sale_discout').val(valuesPrmSaleDetail[i].saleprmdsdtl_discout);
-                $('#prmdsManual-td').append(saleprmdsdtlIdHTML);
-                alert(saleprmdsdtlIdHTML);
+                $('.prmdsManual-td').append(saleprmdsdtlIdHTML);
             } else {
                 // sale discout from promotion
                 addPrmSaleDetail({

@@ -78,7 +78,7 @@ if(!$_REQUEST['ajaxCall']) {
 						LEFT JOIN 
 						promotion_discout_sales p 
 						ON s.prmds_id = p.prmds_id 
-				WHERE  	s.sale_id = '$code'";echo $sql;
+				WHERE  	s.sale_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
@@ -145,7 +145,6 @@ if(!$_REQUEST['ajaxCall']) {
 									promotion_products prmprd 
 					WHERE 			s.prmprd_id = prmprd.prmprd_id AND 
 									s.saledtl_id IN (".implode(',', $saledtlIdList).")";
-									echo $sql;
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {
@@ -170,6 +169,26 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('sum_freeAmount', $sum_freeAmount);
 		$smarty->assign('sum_discout', $sum_discout);
 		$smarty->assign('sum_saledtl_price', $sum_saledtl_price);
+
+		// Get sale_promotion_sale_details data
+		$sumSaledsdtlDiscout 		= 0;
+		$sumSaledsdtlDiscoutManual 	= 0;
+		$sql = "SELECT 	saleprmdsdtl_discout,
+						prmds_id 
+				FROM 	sale_promotion_sale_details 
+				WHERE  	sale_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			if($record['prmds_id'] == '') {
+				$sumSaledsdtlDiscoutManual += $record['saleprmdsdtl_discout'];
+			} else {
+				$sumSaledsdtlDiscout += $record['saleprmdsdtl_discout'];
+			}
+		}
+		$smarty->assign('sumSaledsdtlDiscout', $sumSaledsdtlDiscout);
+		$smarty->assign('sumSaledsdtlDiscoutManual', $sumSaledsdtlDiscoutManual);
 	}
 
 	// Get reference data for selectReferenceJS

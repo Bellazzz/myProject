@@ -212,11 +212,15 @@
                 <td>{$values.sale_time} น.</td>
             </tr>
             <tr>
-                <td>ส่วนลดการขาย :</td>
-                <td>{$values.sale_discout|number_format:2:".":","} บาท</td>
+                <td>ส่วนลดการขายในครั้งนี้ :</td>
+                <td>{$sumSaledsdtlDiscoutManual|number_format:2:".":","} บาท</td>
             </tr>
             <tr>
-                <td>ส่วนลดโปรโมชั่น :</td>
+                <td>ส่วนลดโปรโมชั่นการขาย :</td>
+                <td>{$sumSaledsdtlDiscout|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>ส่วนลดโปรโมชั่นผลิตภัณฑ์ :</td>
                 <td>{$values.sale_prm_discout|number_format:2:".":","} บาท</td>
             </tr>
             <tr>
