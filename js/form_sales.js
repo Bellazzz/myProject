@@ -29,9 +29,24 @@ $(document).ready(function() {
                 }
             }
         }
-        
-
-        $('input[name="sale_totalPrice_no_saleDiscout"]').val(parseFloat($('#sale_total_price').val()) - parseFloat($('#sale_prm_discout').val()));
+        for(i in valuesPrmSaleDetail) {
+            if(valuesPrmSaleDetail[i].prmds_id == null) {
+                // sale discout from manual
+                var saleprmdsdtlIdHTML = '<input class="prmds_' + valuesPrmSaleDetail[i].prmds_id + '" type="hidden" name="saleprmdsdtl_id[]" value="' + valuesPrmSaleDetail[i].saleprmdsdtl_id + '">';
+                $('#sale_discout_val').val(valuesPrmSaleDetail[i].saleprmdsdtl_discout);
+                $('#sale_discout').val(valuesPrmSaleDetail[i].saleprmdsdtl_discout);
+                $('#prmdsManual-td').append(saleprmdsdtlIdHTML);
+                alert(saleprmdsdtlIdHTML);
+            } else {
+                // sale discout from promotion
+                addPrmSaleDetail({
+                    saleprmdsdtl_id         : valuesPrmSaleDetail[i].saleprmdsdtl_id,
+                    prmds_id                : valuesPrmSaleDetail[i].prmds_id,
+                    saleprmdsdtl_discout    : valuesPrmSaleDetail[i].saleprmdsdtl_discout 
+                });
+            }
+        }
+        calSummary();
     }
 
     $('#sale_discout_val').change(checkSaleDiscout);
@@ -383,6 +398,16 @@ function removeProduct(randNum) {
         });
     }
     
+}
+
+function addPrmSaleDetail(data) {
+    var prmSaleHTML = '';
+    if(typeof(data.saleprmdsdtl_id) != 'undefined') {
+        prmSaleHTML += '<input class="prmds_' + data.prmds_id + '" type="hidden" name="saleprmdsdtl_id[]" value="' + data.saleprmdsdtl_id + '">';
+    }
+    prmSaleHTML += '<input class="prmds_' + data.prmds_id + '" type="hidden" name="prmds_id[]" value="' + data.prmds_id + '">'
+                 + '<input class="prmds_' + data.prmds_id + '" type="hidden" name="saleprmdsdtl_discout[]" value="' + data.saleprmdsdtl_discout + '">';
+    $('.prmds-td').append(prmSaleHTML);
 }
 
 function checkShelfAmountCover(prd_id) {

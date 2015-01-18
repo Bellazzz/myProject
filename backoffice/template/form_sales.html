@@ -113,6 +113,7 @@
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_sales.php';
         var valuesDetail    = '';
+        var valuesPrmSaleDetail = '';
         var refProducts     = {/literal}{$referenceData["products"]|@json_encode}{literal};
         var products        = {/literal}{$products|@json_encode}{literal};
         var productPrmGrps  = {/literal}{$referenceData["product_promotion_groups"]|@json_encode}{literal};
@@ -131,6 +132,11 @@
         {if $valuesPrmDetail}
         {literal}
             valuesPrmDetail= {/literal}{$valuesPrmDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {if $valuesPrmSaleDetail}
+        {literal}
+            valuesPrmSaleDetail= {/literal}{$valuesPrmSaleDetail|@json_encode}{literal};
         {/literal}
         {/if}
         {literal}
@@ -297,12 +303,12 @@
                 </td>
             </tr>
             <tr>
-                 <td>
+                 <td class="prmdsManual-td">
                     <label class="input-required">ส่วนลดการขายในครั้งนี้</label>
                    <input id="sale_discout_val" name="sale_discout" type="text" class="form-input half" 
-                   value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}" valuepattern="money" require>
+                   value="0.00" valuepattern="money" require>
                    <input name="prmds_id[]" type="hidden" value="">
-                   <input id="sale_discout" name="saleprmdsdtl_discout[]" type="hidden" value="{if $values.sale_discout}{$values.sale_discout}{else}0.00{/if}">
+                   <input id="sale_discout" name="saleprmdsdtl_discout[]" type="hidden" value="0.00">
                 </td>
                 <td>
                     <label style="margin-bottom: 10px;visibility: hidden;">รูปแบบส่วนลดการขาย</label>

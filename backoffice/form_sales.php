@@ -67,8 +67,27 @@ if(!$_REQUEST['ajaxCall']) {
 			$prdprmgrp_id = $record['prdprmgrp_id'];
 		}
 		$smarty->assign('valuesPrmDetail', $valuesPrmDetail);
-		$smarty->assign('prdprmgrp_id', $prdprmgrp_id);
 
+		// Get table sale_promotion_sale_details data
+		$valuesPrmSaleDetail 	= array();
+		$sql = "SELECT 	s.saleprmdsdtl_id,
+						s.prmds_id, 
+						s.saleprmdsdtl_discout,
+						p.prdprmgrp_id 
+				FROM 	sale_promotion_sale_details s 
+						LEFT JOIN 
+						promotion_discout_sales p 
+						ON s.prmds_id = p.prmds_id 
+				WHERE  	s.sale_id = '$code'";echo $sql;
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($valuesPrmSaleDetail, $record);
+			$prdprmgrp_id = $record['prdprmgrp_id'];
+		}
+		$smarty->assign('valuesPrmSaleDetail', $valuesPrmSaleDetail);
+		$smarty->assign('prdprmgrp_id', $prdprmgrp_id);
 	} else if($action == 'VIEW_DETAIL') {
 		// Get table Sales data
 		$tableRecord = new TableSpa($tableName, $code);
@@ -640,6 +659,64 @@ if(!$_REQUEST['ajaxCall']) {
 						$errTxt .= 'DECREASE_PRODUCT_SHELF_AMOUNT['.($key+1).']_FAIL\n';
 						$errTxt .= mysql_error($dbConn).'\n\n';
 					}
+				}
+			}
+		}
+
+		// Delete sale_promotion_sale_details if delete old sale_promotion_sale_details
+		$oldSalePrmSaleDetailList = array();
+		$newSalePrmSaleDetailList = array();
+		// Find old sale_promotion_sale_details
+		$sql = "SELECT saleprmdsdtl_id FROM sale_promotion_sale_details WHERE sale_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldSaleprmdsdtlRecord = mysql_fetch_assoc($result);
+			array_push($oldSalePrmSaleDetailList, $oldSaleprmdsdtlRecord['saleprmdsdtl_id']);
+		}
+		// Find new sale_promotion_sale_details
+		if(is_array($formData['saleprmdsdtl_id'])) {
+			foreach ($formData['saleprmdsdtl_id'] as $key => $newSaleprmdsdtl_id) {
+				array_push($newSalePrmSaleDetailList, $newSaleprmdsdtl_id);
+			}
+		}
+		// Check for delete 
+		foreach ($oldSalePrmSaleDetailList as $key => $oldSaleprmdsdtl_id) {
+			if(!in_array($oldSaleprmdsdtl_id, $newSalePrmSaleDetailList)) {
+				// Delete sale_promotion_sale_details
+				$salePrmSaleDetailRecord 	= new TableSpa('sale_promotion_sale_details', $oldSaleprmdsdtl_id);
+				if(!$salePrmSaleDetailRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SALE_PROMOTION_SALE_DETAIL[$oldSaleprmdsdtl_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
+
+		// Update or Add sale_promotion_sale_details
+		foreach ($formData['saleprmdsdtl_discout'] as $key => $saleprmdsdtl_discout) {
+			$prmds_id = $formData['prmds_id'][$key] == '' ? NULL : $formData['prmds_id'][$key];
+
+			if(isset($formData['saleprmdsdtl_id'][$key])) {
+				// Update sale_promotion_sale_details
+				$saleprmdsdtl_id 			= $formData['saleprmdsdtl_id'][$key];
+				$salePrmSaleDetailRecord 	= new TableSpa('sale_promotion_sale_details', $saleprmdsdtl_id);
+				$salePrmSaleDetailRecord->setFieldValue('prmds_id', $prmds_id);
+				$salePrmSaleDetailRecord->setFieldValue('saleprmdsdtl_discout', $saleprmdsdtl_discout);
+				if(!$salePrmSaleDetailRecord->commit()) {
+					$updateResult = false;
+					$errTxt .= 'EDIT_SALE_PROMOTION_SALE_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+				
+			} else {
+				// Add new sale_promotion_sale_details
+				$saleprmdsdtlValues 		= array($code, $prmds_id, $saleprmdsdtl_discout);
+				$salePrmSaleDetailRecord 	= new TableSpa('sale_promotion_sale_details', $saleprmdsdtlValues);
+				if(!$salePrmSaleDetailRecord->insertSuccess()) {
+					$updateResult = false;
+					$errTxt .= 'ADD_SALE_PROMOTION_SALE_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 			}
 		}
