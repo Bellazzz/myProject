@@ -630,7 +630,6 @@ function calSummary() {
 					var prmds_discout =  promotionSale[i].prmds_discout;
 					if(promotionSale[i].prmds_discout_type == '%') {
 						prmds_discout = parseFloat(totalPrice * prmds_discout / 100);
-						alert(totalPrice);
 					}
 					if($('.prmds_' + i).length == 0) {
 						// Add
@@ -1413,6 +1412,11 @@ function saveSale() {
 							function(responseJSON) {
 								var response = $.parseJSON(responseJSON);
 								if(response.status == 'PASS') {
+									// Print Receipt
+									var receiptHref = 'printReceipt.php?sale_id=' + response.sale_id
+													+ '&cash=' + $('#payMoney-input').val();
+									window.open(receiptHref, '_blank');
+
 									closePayBox();
 									showPopupBox({
 										title: 'บันทึกเรียบร้อย',

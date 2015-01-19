@@ -123,6 +123,7 @@ if($code == '') {
 
 	if($insertResult) {
 		$response['status'] = 'PASS';
+		$response['sale_id'] = $sale_id;
 		echo json_encode($response);
 	} else {
 		$response['status'] = 'FAIL';

@@ -2,6 +2,23 @@
 <html>
 <head>
 	<title>Receipt</title>
+	<meta charset="utf-8">
+	<style type="text/css" media = "print">
+		@page{
+			size:auto;
+			margin: 0 0 0 0mm;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+		}
+
+		body{
+			size:auto;
+			margin: 0 0 0 0px;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+			font-family: Arial, sans-serif;
+		}
+	</style>
 	<style type="text/css">
 		.listOfProduct{
 			width: 100%;
@@ -24,27 +41,11 @@
 			overflow: hidden;
 		}
 	</style>
-	<style type="text/css" media = "print">
-		@page{
-			size:auto;
-			margin: 0mm;
-			font-size: 8px;
-			padding: 0 4mm 10mm 0mm;
-		}
-
-		body{
-			size:auto;
-			margin: 0px;
-			font-size: 8px;
-			padding: 0 4mm 10mm 0mm;
-			font-family: Arial, sans-serif;
-		}
-	</style>
 </head>
-<body>
+<body onload="window.print();">
 <center>
 	{$spaData.spa_name} <br>
-	รพ.เจ้าพระยาอภัยภูเบศร ปราจีนบุรี <br>
+	รพ.เจ้าพระยาอภัยภูเบศร ปราจีนบุรี <p></p>
 	ใบเสร็จรับเงิน <br>
 </center>
 <table class = "listOfProduct">
@@ -52,22 +53,61 @@
 	<tr>
 		<td style="text-align:right;">{$saledtl.saledtl_amount}&nbsp;&nbsp;&nbsp;</td>
 		<td class = "prdName-col"><span class="prdName">{$saledtl.prd_name}</span></td>
-		<td style="text-align:right;">@{$saledtl.prd_price}</td>
+		<td style="text-align:right;width:100%;">
+			{if $saledtl.saledtl_amount > 1}
+				@{$saledtl.prd_price}
+			{/if}
+		</td>
 		<td style="text-align:right;">{$saledtl.saledtl_price}</td>
 	</tr>
 	{/foreach}
 
+	{if $saleprmdtlData || $saleprmSaledtlData}
 	<tr>
-		<td style="text-align:right;">({$totalAmount})&nbsp;&nbsp;&nbsp;</td>
+		<td style="text-align:right;"></td>
 		<td colspan="2">Subtotal</td>
 		<td style="text-align:right;">{$subtotal}</td>
 	</tr>
+	{/if}
 
+	{foreach from=$saleprmdtlData key=i item=saleprmdtl}
+	<tr>
+		<td style="text-align:right;">{$saleprmdtl.saleprmdtl_amount}&nbsp;&nbsp;&nbsp;</td>
+		<td class = "prdName-col"><span class="prdName">{$saleprmdtl.prdDiscout_name}</span></td>
+		<td style="text-align:right;width:100%;">
+			{if $saleprmdtl.saleprmdtl_amount > 1}
+				@{$saleprmdtl.each_discout}
+			{/if}
+		</td>
+		<td style="text-align:right;">{$saleprmdtl.saleprmdtl_discout}</td>
+	</tr>
+	{/foreach}
+
+	{foreach from=$saleprmSaledtlData key=i item=saleprmdsdtl}
+	<tr>
+		<td style="text-align:right;">1&nbsp;&nbsp;&nbsp;</td>
+		<td class = "prdName-col">
+			<span class="prdName">
+				{if $saleprmdsdtl.prmds_name}
+					{$saleprmdsdtl.prmds_name}
+				{else}
+					ส่วนลดการขาย
+				{/if}
+			</span>
+		</td>
+		<td style="text-align:right;width:100%;"></td>
+		<td style="text-align:right;">{$saleprmdsdtl.saleprmdsdtl_discout}</td>
+	</tr>
+	{/foreach}
+
+	<tr>
+		<td colspan="3" >Total ({$totalAmount})</td>	
+		<td style="text-align:right;">{$saleData.sale_total_price}</td>
+	</tr>
 	<tr>
 		<td colspan="3" >Cash</td>	
 		<td style="text-align:right;">{$cash}</td>
 	</tr>
-
 	<tr>
 		<td colspan="3">Change</td>	
 		<td style="text-align:right;">{$change}</td>
@@ -77,9 +117,14 @@
 	<strong>****************************************</strong> <br>
 	ขอบคุณค่ะ <br>
 	{$saleData.sale_date}  {$saleData.sale_time}    {$saleData.emp_id} <br>
-	Tel : {$spaData.spa_tel}<br><br><br><br>
+	Tel : {$spaData.spa_tel}<br>
 </center>
 
+<span style="color:white;">
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+</span>
 
 </body>
 </html>

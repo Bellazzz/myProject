@@ -262,6 +262,7 @@ body {
 	-o-border-radius: 6px;
 	border-radius: 6px;
 	cursor: pointer;
+	box-shadow: 6px 6px 5px rgba(0,0,0,0.3);
 }
 .pin:active {
 	border-color: #999;
