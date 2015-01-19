@@ -45,6 +45,32 @@ if($rows > 0) {
 	}
 }
 
+// Get product sale frequency
+$retroactDate = date('Y-m-d', strtotime('-1 months'));
+$sql = "SELECT 		sd.prd_id,
+					SUM(sd.saledtl_amount) saleFrequency 
+		FROM 		sale_details sd, 
+					sales s 
+		WHERE 		s.sale_id = sd.sale_id AND 
+					sd.prd_id IN (". implode(',', $prdIdList).") AND 
+					s.sale_date >= '$retroactDate' 
+		GROUP BY 	sd.prd_id";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);				
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$productList[$record['prd_id']]['frequency'] = $record['saleFrequency'];
+	}
+}
+
+// Product list order by frequency
+function cmp_by_optionNumber($a, $b) {
+  return $b["frequency"] - $a["frequency"];
+}
+$productListFrequency = $productList;
+usort($productListFrequency, "cmp_by_optionNumber");
+
 // Get product promotion group data
 $productPrmGrpList = array();
 $sql = "SELECT DISTINCT 	prdprmgrp_id,
@@ -160,6 +186,7 @@ if($rows > 0) {
 }
 
 $smarty->assign('productList', $productList);
+$smarty->assign('productListFrequency', $productListFrequency);
 $smarty->assign('productPrmGrpList', $productPrmGrpList);
 $smarty->assign('productTypeList', $productTypeList);
 $smarty->assign('promotion', $promotion);

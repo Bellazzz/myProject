@@ -86,7 +86,15 @@ $(document).ready(function() {
 	});
 
 	// Add product type list 
-	var prdtypListHtml = '';
+	var prdtypListHtml  = '<li>'
+						+ '	<div id="frequency" class="product-category-item-nopic prdtypItem">'
+						+ ' 	<div class="prdtypName-container">'
+						+ ' 		<div class="prdtypName-inner">'
+						+ ' 			<p>เรียงตามความนิยม</p>'
+						+ ' 		</div>'
+						+ '		</div>'
+						+ '	</div>'
+						+ '</li>';
 	for(i in productTypeList) {
 		prdtypListHtml += '<li>'
 						+ '	<div id="' + productTypeList[i].prdtyp_id + '" class="product-category-item-nopic prdtypItem">'
@@ -289,17 +297,23 @@ function getTotalPrice() {
 
 function pullProductList() {
 	var pinHTML = '';
-	for(i in productList) {
+	var tmpProductList = Array();
+	if(curPrdtyp_id == 'frequency') {
+		tmpProductList = productListFrequency;
+	} else {
+		tmpProductList = productList;
+	}
+	for(i in tmpProductList) {
 		var displayFlag = false;
 
 		if($('#searchProduct').val() == '') {
 			// Display only current product type
-			if(productList[i].prdtyp_id == curPrdtyp_id) {
+			if(tmpProductList[i].prdtyp_id == curPrdtyp_id || curPrdtyp_id == 'frequency') {
 				displayFlag = true;
 			}
 		} else {
 			// Search product
-			var prdName 	= productList[i].prd_name.toLowerCase();
+			var prdName 	= tmpProductList[i].prd_name.toLowerCase();
 			var searchText  = $('#searchProduct').val().toLowerCase();
 			if(prdName.indexOf(searchText) > -1) {
 				displayFlag = true;
@@ -308,12 +322,12 @@ function pullProductList() {
 
 		if(displayFlag) {
 			pinHTML += '<div class="pin-container">'
-					 + '		<div class="pin" prd-id="' + productList[i].prd_id + '" prd-price="' + productList[i].prd_price + '">'
+					 + '		<div class="pin" prd-id="' + tmpProductList[i].prd_id + '" prd-price="' + tmpProductList[i].prd_price + '">'
 					 + '			<div class="prd-image-container">'
-					 + ' 				<div class="prd-image" style="background-image:url(\'../img/products/' + productList[i].prd_pic + '\');"></div>'
+					 + ' 				<div class="prd-image" style="background-image:url(\'../img/products/' + tmpProductList[i].prd_pic + '\');"></div>'
 					 + ' 			</div>'
 					 + ' 			<div class="prd-name-container">'
-					 + '				<p>' + productList[i].prd_name + '</p>'
+					 + '				<p>' + tmpProductList[i].prd_name + '</p>'
 					 + ' 			</div>'
 					 + ' 		</div>'
 					 + '</div>';
