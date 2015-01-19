@@ -1284,6 +1284,41 @@ function dbClose() {
 				)
 			);
 			break;
+
+		case 'privileges':
+			 return array(
+				'tableNameTH'	=> 'สิทธิ์การใช้งาน',
+				'keyFieldName'  => 'privlg_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PV',
+				'keyLength'		=> 5,
+				'fieldNameList'	=> array(
+						'privlg_id'	  	=> 'รหัสสิทธิ์การใช้งาน',
+						'privlg_name'	=> 'ชื่อสิทธิ์การใช้งาน'
+				),
+				'searchFields'			=> array('privlg_name'),
+				'deleteTxtField'		=> array('privlg_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบสิทธิ์การใช้งาน %f1 ใช่หรือไม่?'
+			);
+			break;
+
+		case 'grant_privileges':
+			 return array(
+				'tableNameTH'	=> 'การมอบสิทธิ์การใช้งาน',
+				'keyFieldName'  => 'grnprivlg_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'GP',
+				'keyLength'		=> 7,
+				'fieldNameList'	=> array(
+						'grnprivlg_id'	=> 'รหัสสิทธิ์การใช้งาน',
+						'privlg_id'		=> 'สิทธิ์การใช้งาน',
+						'emp_id' 		=> 'รหัสพนักงาน'
+				),
+				'searchFields'			=> array('privlg_id', 'emp_id'),
+				'deleteTxtField'		=> array('privlg_id', 'emp_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการมอบสิทธิ์การใช้งาน %f1 ของ %f2 ใช่หรือไม่?'
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/

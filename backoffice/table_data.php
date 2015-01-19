@@ -2,8 +2,9 @@
 /*
  * Process Zone
  */
-include('../common/common_constant.php');
-include('../common/common_function.php');
+session_start();
+include('../config/config.php');
+include('../common/common_header.php');
 
 // Pre Valiables
 $tableName	= 'titles';
@@ -699,6 +700,19 @@ for($i = 0; $i < $rows; $i++) {
 
 if($rows > 0){
 //Has record will display table data
+
+// Hide if no privileges
+$displayEditBtn 	= true;
+$displayDeleteBtn 	= true;
+if($tableName == 'withdraws') {
+	if(!in_array('แก้ไขการเบิก', $emp_privileges)) {
+		$displayEditBtn = false;
+	}
+	if(!in_array('ลบการเบิก', $emp_privileges)) {
+		$displayDeleteBtn = false;
+	}
+}
+
 ?>
 <table class="mbk mbk-table-sortable">
 	<? include('table_data_thead.php') ?>
@@ -713,36 +727,44 @@ if($rows > 0){
 				</td>
 				<td class="action-col">
 					<?
-						if($tableName == 'employees'){
-							?>
-							<a title="พิมพ์บัตรพนักงาน">
-								<i class="fa fa-credit-card" onclick="openPrintEmpCard('<?=$code?>')"></i>
-							</a>
-							<?
-						} else if($tableName == 'orders') {
-							?>
-							<a title="พิมพ์ใบสั่งซื้อ">
-								<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
-							</a>
-							<?
-						}
-					?>
-					<a title="แก้ไข">
-						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
-					</a>
-					<a title="ลบ">
-						<?
-							if($tableName == 'withdraws') {
-								?>
-								<i class="fa fa-times" onclick="deleteWithdrawsRecord('<?=$code?>')"></i>
-								<?
-							} else {
-								?>
-								<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
-								<?
-							}
+					if($tableName == 'employees'){
 						?>
-					</a>
+						<a title="พิมพ์บัตรพนักงาน">
+							<i class="fa fa-credit-card" onclick="openPrintEmpCard('<?=$code?>')"></i>
+						</a>
+						<?
+					} else if($tableName == 'orders') {
+						?>
+						<a title="พิมพ์ใบสั่งซื้อ">
+							<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
+						</a>
+						<?
+					}
+					if($displayEditBtn) {
+					?>
+						<a title="แก้ไข">
+							<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
+						</a>
+					<?
+					}
+					if($displayDeleteBtn) {
+					?>
+						<a title="ลบ">
+							<?
+								if($tableName == 'withdraws') {
+									?>
+									<i class="fa fa-times" onclick="deleteWithdrawsRecord('<?=$code?>')"></i>
+									<?
+								} else {
+									?>
+									<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
+									<?
+								}
+							?>
+						</a>
+					<?
+					}
+					?>
 				</td>
 			<?
 			$offset = 0;
