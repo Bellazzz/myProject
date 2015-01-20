@@ -7,6 +7,7 @@ var dateatt_in 		= '';
 var timeatt_in 		= '';
 var dateatt_out 	= '';
 var timeatt_out 	= '';
+var curAds 			= 0;
 
 $(document).ready(function() {
 	// focus barcode input
@@ -34,7 +35,55 @@ $(document).ready(function() {
 	$('#scan-btn').click(function(){
 		pullEmpData($('#barcode-input').val());
 	});
+
+	// Auto display advertising
+	switchAds();
+	setInterval(function() {
+		switchAds();
+	}, 10000);
 });
+
+function switchAds() {
+	$('.container').fadeOut(1000);
+	$('.textRunner-text').fadeOut(1000);
+	setTimeout(function() {
+		nextAds();
+		$('.container').fadeIn(1000);
+		$('.textRunner-text').fadeIn(1000);
+	}, 1000);
+}
+
+function nextAds() {
+	if(curAds >= advertisingList.length) {
+		curAds = 0;
+	}
+	$('.advertising-image').css('display', 'none');
+	$('.advertising-txt').css('display', 'none');
+
+	// Set content
+	$('.advertising-image').css('background-image', 'url(\'../img/advertising/' + advertisingList[curAds].avs_img + '\')');
+	if(advertisingList[curAds].avs_txt == null) {
+		$('.advertising-txt').text('');
+		$('.textRunner-text').text('');
+	} else {
+		$('.advertising-txt').text(advertisingList[curAds].avs_txt);
+		$('.textRunner-text').text(advertisingList[curAds].avs_txt);
+	}
+
+
+	if(advertisingList[curAds].avs_img != null) {
+		$('.advertising-image').css('display', 'block');
+		if(advertisingList[curAds].avs_txt == null) {
+			$('.textRunner').fadeOut(1000);
+		} else {
+			$('.textRunner').fadeIn(1000);
+		}
+	} else if(advertisingList[curAds].avs_txt != null) {
+		$('.advertising-txt').css('display', 'block');
+	}
+
+	curAds++;
+}
 
 function clearBarcodeInput() {
 	$('#barcode-input').val('');

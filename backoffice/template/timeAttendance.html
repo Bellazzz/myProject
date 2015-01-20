@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="../js/timeAttendance.js"></script>
 	<script type="text/javascript">
 		var nowDate = '{/literal}{$nowDate}{literal}';
+		var advertisingList = {/literal}{$advertisingList|@json_encode}{literal};
 
 		$(document).ready(function () {
 			$('#nowDate').text(realDateToThaiDate(nowDate));
@@ -24,7 +25,9 @@
 		function StartClock24() {
 			TheTime = new Date;
 			var curTime = showFilled(TheTime.getHours()) + ":" +
-			showFilled(TheTime.getMinutes()) + ":" + showFilled(TheTime.getSeconds());
+			showFilled(TheTime.getMinutes());
+			// var curTime = showFilled(TheTime.getHours()) + ":" +
+			// showFilled(TheTime.getMinutes()) + ":" + showFilled(TheTime.getSeconds());
 			$('#clock').text(curTime);
 			setTimeout("StartClock24()",1000);
 		}
@@ -38,7 +41,16 @@
 </div>
 <div class="container">
 	<div class="advertising-container">
+		<div class="advertising-image"></div>
+		<div class="advertising-txt-container">
+			<div class="advertising-txt-inner">
+				<div class="advertising-txt"></div>
+			</div>
+		</div>
 	</div>
+</div>
+<div class="textRunner">
+	<marquee class="textRunner-text" scrollamount="4"></marquee>
 </div>
 <div class="barcode-container">
 	<table>
