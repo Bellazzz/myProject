@@ -170,7 +170,7 @@ $(document).ready(function() {
 	});
 
 	// Set default product type
-	setCurPrdTypId(productTypeList[0]['prdtyp_id']);
+	setCurPrdTypId('frequency');
 
 	// Search product
     $('#searchProduct').keyup(pullProductList);
