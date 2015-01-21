@@ -13,9 +13,21 @@ $filter 		= $_REQUEST['filter'];
 $filterRetroact = $_REQUEST['filterRetroact'];
 $where 			= 'WHERE r.ord_id = o.ord_id AND r.emp_id = e.emp_id ';
 $tableInfo		= getTableInfo($tableName);
+$retroactDate 	= '';
 
 if(hasValue($_REQUEST['sortBy'])) {
 	$sortBy	= $_REQUEST['sortBy'];
+}
+if($filterRetroact == '1') {
+	$retroactDate 	= date('Y-m-d', strtotime('-1 months'));
+} else if($filterRetroact == '3') {
+	$retroactDate 	= date('Y-m-d', strtotime('-3 months'));
+} else if($filterRetroact == '6') {
+	$retroactDate 	= date('Y-m-d', strtotime('-6 months'));
+} else if($filterRetroact == '9') {
+	$retroactDate 	= date('Y-m-d', strtotime('-9 months'));
+} else if($filterRetroact == '12') {
+	$retroactDate 	= date('Y-m-d', strtotime('-12 months'));
 }
 
 // Generate search
@@ -46,12 +58,9 @@ if(hasValue($_REQUEST['filter'])) {
 }
 
 // Generate filter retroact
-if(hasValue($_REQUEST['filterRetroact'])) {
-	if($filterRetroact == 'true') {
-		$retroactDate = date('Y-m-d', strtotime('-1 years'));
-		$where .= " AND r.rec_date >= '$retroactDate' ";
-		$whereAllRecord .= " AND r.rec_date >= '$retroactDate' ";
-	}
+if(!hasValue($like)) {
+	$where .= " AND r.rec_date >= '$retroactDate' ";
+	$whereAllRecord .= " AND r.rec_date >= '$retroactDate' ";
 }
  	 	 	 	 	 	 	 	 	
 // Query table data
