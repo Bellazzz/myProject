@@ -22,15 +22,9 @@
 
         $(document).ready(function() {
             // Default value of radio input
-            {/literal}
-            {if $values.avs_status}
-                {if $values.avs_status == 1}
-                    $('#avs_status_show').prop('checked', true);
-                {elseif $values.avs_status == 0}
-                    $('#avs_status_unshow').prop('checked', true);
-                {/if}
-            {/if}
-            {literal}
+            if(action == 'EDIT') {
+                $('input[name="avs_status"][value="{/literal}{$values.avs_status}{literal}"]').click();
+            }
 
             uploadImageInput({
                 area: $('#avs_img'),
