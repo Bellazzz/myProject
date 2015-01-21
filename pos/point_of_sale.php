@@ -1,6 +1,6 @@
 <?php
 session_start();
-//require('check_session.php');
+//require('../backoffice/check_session.php');
 
 include('../config/config.php');
 $tplName = 'point_of_sale.html';

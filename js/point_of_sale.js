@@ -1427,9 +1427,27 @@ function saveSale() {
 								var response = $.parseJSON(responseJSON);
 								if(response.status == 'PASS') {
 									// Print Receipt
-									var receiptHref = 'printReceipt.php?sale_id=' + response.sale_id
+									var receiptSrc = 'printReceipt.php?sale_id=' + response.sale_id
 													+ '&cash=' + $('#payMoney-input').val();
-									window.open(receiptHref, '_blank');
+									//window.open(receiptHref, '_blank');
+									var framePrintReceipt = document.getElementById('framePrintReceipt');
+								    framePrintReceipt.style.visibility = "hidden";
+
+								    function endload() {
+								        framePrintReceipt.style.visibility = "visible";
+								        window.frames["framePrintReceipt"].focus();
+										window.frames["framePrintReceipt"].print();
+								    }
+
+								    if (framePrintReceipt.attachEvent) {
+								        framePrintReceipt.attachEvent('onload', endload);
+								    }
+								    else {
+								        framePrintReceipt.onload = endload;
+								    }
+
+								    framePrintReceipt.src = receiptSrc;
+									
 
 									closePayBox();
 									showPopupBox({
