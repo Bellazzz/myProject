@@ -581,8 +581,11 @@ function refreshFilterQuery() {
         }*/
         filterRecordQueryHTML  += '&emsp;&emsp;' + filterRetroactName + ' '
                                 + '<select id="query-record-filter-retroact" class="mbk-select">'
-                                + '     <option value="true">12 เดือนก่อน - ปัจจุบัน</option>'
-                                + '     <option value="false">ข้อมูลทั้งหมด</option>'
+                                + '     <option value="1">1 เดือนก่อน</option>'
+                                + '     <option value="3">3 เดือนก่อน</option>'
+                                + '     <option value="6">6 เดือนก่อน</option>'
+                                + '     <option value="9">9 เดือนก่อน</option>'
+                                + '     <option value="12">12 เดือนก่อน</option>'
                                 + '</select>'
                                 + ' ' + filterRetroactFrom;
     }

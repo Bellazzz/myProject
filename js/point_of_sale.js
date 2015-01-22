@@ -1,5 +1,6 @@
 var listWidth = 0;
 var curPrdtyp_id = '';
+var printReceiptAuto = true;
 
 $(document).ready(function() {
 	$(document).keyup(function(e) {
@@ -1400,7 +1401,8 @@ function saveSale() {
 	if($('#payMoney-input').val() != '' && change >= 0 && $('.popupBox').length <= 0) {
 		showPopupBox({
 			title: 'บันทึกการขาย',
-			content: 'คุณต้องการบันทึกการขายใช่หรือไม่?',
+			content: 'คุณต้องการบันทึกการขายใช่หรือไม่?<br><br>'
+					+ '<label><input type="checkbox" id="printReceiptAuto"> พิมพ์ใบเสร็จ</label>',
 			buttons: [
 				{
 					id: 'cancel',
@@ -1427,26 +1429,28 @@ function saveSale() {
 								var response = $.parseJSON(responseJSON);
 								if(response.status == 'PASS') {
 									// Print Receipt
-									var receiptSrc = 'printReceipt.php?sale_id=' + response.sale_id
+									if(printReceiptAuto) {
+										var receiptSrc = 'printReceipt.php?sale_id=' + response.sale_id
 													+ '&cash=' + $('#payMoney-input').val();
-									//window.open(receiptHref, '_blank');
-									var framePrintReceipt = document.getElementById('framePrintReceipt');
-								    framePrintReceipt.style.visibility = "hidden";
+										var framePrintReceipt = document.getElementById('framePrintReceipt');
+									    framePrintReceipt.style.visibility = "hidden";
 
-								    function endload() {
-								        framePrintReceipt.style.visibility = "visible";
-								        window.frames["framePrintReceipt"].focus();
-										window.frames["framePrintReceipt"].print();
-								    }
+									    function endload() {
+									        framePrintReceipt.style.visibility = "visible";
+									        window.frames["framePrintReceipt"].focus();
+											window.frames["framePrintReceipt"].print();
+									    }
 
-								    if (framePrintReceipt.attachEvent) {
-								        framePrintReceipt.attachEvent('onload', endload);
-								    }
-								    else {
-								        framePrintReceipt.onload = endload;
-								    }
+									    if (framePrintReceipt.attachEvent) {
+									        framePrintReceipt.attachEvent('onload', endload);
+									    }
+									    else {
+									        framePrintReceipt.onload = endload;
+									    }
 
-								    framePrintReceipt.src = receiptSrc;
+									    framePrintReceipt.src = receiptSrc;
+									}
+									
 									
 
 									closePayBox();
@@ -1489,7 +1493,21 @@ function saveSale() {
 						closeShowPopupBox();
 					}
 				}
-			]
+			],
+			success: 
+			function() {
+				// Set default
+				if(printReceiptAuto) {
+					$('#printReceiptAuto').prop('checked', true);
+				} else {
+					$('#printReceiptAuto').prop('checked', false);
+				}
+
+				// Add event
+				$('#printReceiptAuto').click(function() {
+					printReceiptAuto = !printReceiptAuto;
+				});
+			}
 		});
 	}
 }

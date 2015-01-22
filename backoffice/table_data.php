@@ -23,7 +23,7 @@ $order			= '';
 $limit 			= '';
 $page 			= 1;
 $recordDisplay 	= 20;
-$retroactDate 	= date('Y-m-d', strtotime('-1 years'));
+$retroactDate 	= '';
 
 if(hasValue($_REQUEST['sortBy'])) {
 	$sortBy	= $_REQUEST['sortBy'];
@@ -43,6 +43,17 @@ if(hasValue($_REQUEST['page'])) {
 }
 if(hasValue($_REQUEST['recordDisplay'])) {
 	$recordDisplay = (Int)$_REQUEST['recordDisplay'];
+}
+if($filterRetroact == '1') {
+	$retroactDate 	= date('Y-m-d', strtotime('-1 months'));
+} else if($filterRetroact == '3') {
+	$retroactDate 	= date('Y-m-d', strtotime('-3 months'));
+} else if($filterRetroact == '6') {
+	$retroactDate 	= date('Y-m-d', strtotime('-6 months'));
+} else if($filterRetroact == '9') {
+	$retroactDate 	= date('Y-m-d', strtotime('-9 months'));
+} else if($filterRetroact == '12') {
+	$retroactDate 	= date('Y-m-d', strtotime('-12 months'));
 }
 // Generate order and limit
 $startPage 		= ($page - 1) * $recordDisplay;
@@ -113,8 +124,7 @@ switch ($tableName) {
 					$like		= str_replace('bnkacc_id','a.bnkacc_no', $like);
 				}
 				$where .= " AND $like";						
-			}
-			if($filterRetroact == 'true') {
+			} else {
 				$where .= " AND b.bkg_date >= '$retroactDate' ";
 			}
 			$sql = "SELECT b.bkg_id,
@@ -275,8 +285,7 @@ switch ($tableName) {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			}
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
+		} else {
 			$where .= " AND t.dateatt_in >= '$retroactDate' ";
 		}
 		$sql = "SELECT t.timeatt_id,
@@ -298,8 +307,7 @@ switch ($tableName) {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			}
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
+		} else {
 			$where .= " AND p.payroll_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT p.payroll_id,
@@ -327,8 +335,7 @@ switch ($tableName) {
 				$like	= str_replace('bed_id', 'b.bed_name', $like);
 			}
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
+		} else {
 			$where .= " AND s.ser_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT s.ser_id,
@@ -410,8 +417,6 @@ switch ($tableName) {
 				$like	= str_replace('eletyp_id', 'et.eletyp_name', $like);
 			}
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
 			$where .= " AND ec.elechk_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT ec.elechk_id,
@@ -507,8 +512,6 @@ switch ($tableName) {
 			}
 			$like	= str_replace('wdwtyp_id', 'wt.wdwtyp_name', $like);
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
 			$where .= " AND w.wdw_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT w.wdw_id,
@@ -544,8 +547,6 @@ switch ($tableName) {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			}
 			$where .= " AND $like";
-		}
-		if($filterRetroact == 'true') {
 			$where .= " AND s.sale_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT s.sale_id,
