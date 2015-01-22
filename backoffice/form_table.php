@@ -261,6 +261,43 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText ASC";
 					$refField 	= 'prd_id';
 					break;
+
+				case 'packages':
+					$sqlRefData = "	SELECT 		pkg_id refValue,
+												pkg_name refText,
+												pkg_start,
+												pkg_stop,
+												pkg_desc,
+												pkg_price,
+												pkg_picture 
+									FROM 		packages p 
+									ORDER BY 	refText ASC";
+					$refField 	= 'pkg_id';
+					break;
+
+				case 'package_promotions':
+					$sqlRefData = "	SELECT 		pkgprm_id refValue,
+												pkgprm_name refText,
+												pkgprm_startdate,
+												pkgprm_pic,
+												pkgprm_desc,
+												custype_id 
+									FROM 		package_promotions p 
+									ORDER BY 	refText ASC";
+					$refField 	= 'pkgprm_id';
+					break;
+
+				case 'service_list_promotions':
+					$sqlRefData = "	SELECT 		svlprm_id refValue,
+												svlprm_name refText,
+												svlprm_startdate,
+												svlprm_enddate,
+												svlprm_pic,
+												svlprm_desc 
+									FROM 		service_list_promotions p 
+									ORDER BY 	refText ASC";
+					$refField 	= 'svlprm_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {
