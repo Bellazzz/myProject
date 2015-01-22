@@ -1319,6 +1319,78 @@ function dbClose() {
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการมอบสิทธิ์การใช้งาน %f1 ของ %f2 ใช่หรือไม่?'
 			);
 			break;
+
+		case 'package_promotions':
+			 return array(
+				'tableNameTH'	=> 'โปรโมชั่นแพ็คเกจ',
+				'keyFieldName'  => 'prmds_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PG',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'pkgprm_id'	  	  		=> 'รหัสโปรโมชั่นแพ็คเกจ',
+						'pkgprm_name'	  		=> 'ชื่อโปรโมชั่นแพ็คเกจ',
+						'custype_id'	  		=> 'รหัสประเถทผู้ใช้บริการ',
+						'pkgprm_startdate'	  	=> 'วันที่เริ่มใช้',
+						'pkgprm_enddate'	  	=> 'วันที่สิ้นสุด',
+						'pkgprm_desc'	  		=> 'คำอธิบาย',
+						'pkgprm_pic'	  		=> 'รูปภาพ'
+				),
+				'hiddenFields' 			=> array('pkgprm_desc','pkgprm_pic'),
+				'defaultNull' 			=> array('prmds_enddate','pkgprm_desc','pkgprm_desc'),
+				'searchFields'			=> array('pkgprm_name','custype_id','pkgprm_startdate','pkgprm_enddate'),
+				'deleteTxtField'		=> array('pkgprm_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบโปรโมชั่นส่วนลดการขาย %f1 ใช่หรือไม่?',
+				'referenceData'			=> array('customer_types')
+			);
+			break;
+
+		case 'package_promotion_details':
+			 return array(
+				'tableNameTH'	=> 'แพ็คเกจที่จัดโปรโมชั่น',
+				'keyFieldName'  => 'prmds_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'PE',
+				'keyLength'		=> 10,
+				'fieldNameList'	=> array(
+						'pkgprmdtl_id'	  	  		=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
+						'pkgprm_id'	  				=> 'รหัสโปรโมชั่นแพ็คเกจ',
+						'pkg_id'	  				=> 'รหัสแพ็คเกจ',
+						'pkgprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
+						'pkgprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
+						'pkgprmdtl_discout_types'	=> 'รูปแบบส่วนลด',
+						'pkgprmdtl_discout'	  		=> 'ส่วนลด'
+				),
+				'hiddenFields' 			=> array('pkgprmdtl_discout_types'),
+				'defaultNull' 			=> array('prmds_enddate'),
+				'searchFields'			=> array('pkgprm_id','pkg_id','pkgprmdtl_startdate','pkgprmdtl_enddate','pkgprmdtl_discout_types','pkgprmdtl_discout'),
+				'deleteTxtField'		=> array('pkg_id','pkgprm_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบแพ็คเกจ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
+				'referenceData'			=> array('package_promotions','packages')
+			);
+			break;
+
+		case 'service_package_promotions':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
+				'keyFieldName'  => 'prmds_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SP',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'serpkgprm_id'	  	  		=> 'รหัสแรายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
+						'ser_id'	  				=> 'รหัสการใช้บริการ',
+						'prkprmdtl_id'	  			=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
+						'serpkgprm_discout_total'	=> 'ส่วนลด',
+						'serpkgprm_amount'	  		=> 'จำนวนการเกิด'
+				),
+				'hiddenFields' 			=> array('serpkgprm_amount'),
+				'searchFields'			=> array('ser_id','prkprmdtl_id','serpkgprm_discout_total','serpkgprm_amount'),
+				'deleteTxtField'		=> array('ser_id','prkprmdtl_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบรายการบริการ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
+				'referenceData'			=> array('package_promotion_details','services')
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/
