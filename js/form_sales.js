@@ -727,6 +727,7 @@ function calSummary() {
     }
     
     totalPrice -= sale_discout + sale_prm_discout + saleDiscoutPrm;
+    totalPrice = Math.ceil(totalPrice);
     $('#sale_total_price').val(totalPrice.formatMoney(2, '.', ''));
 
 }

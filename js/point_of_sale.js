@@ -670,6 +670,7 @@ function calSummary() {
 
 	$('#total-promotion-discout-txt').text(totalPrmDiscout.formatMoney(2, '.', ',') + ' บาท');
 	totalPrice -= saleDiscout + saleDiscoutPrm;
+	totalPrice = Math.ceil(totalPrice);
 
 	$('#total-price').text(totalPrice.formatMoney(2, '.', ','));
 	$('#total-product').text(totalProduct.formatMoney(0, '.', ','));
