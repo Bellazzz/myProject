@@ -169,6 +169,7 @@ body {
 	border: 1px solid #ddd;
 	cursor: pointer;
 	padding: 5px;
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 .product-category-item-nopic.selected {
 	background: rgb(230, 230, 230);
@@ -657,7 +658,8 @@ body {
 	-o-border-radius: 6px;
 	max-width: 13vw;
 	border: 8px solid #fff;
-	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);
+	/*box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.22);*/
+	box-shadow: 2px 2px 6px rgba(0,0,0,0.22);
 }
 #edit-quantity-product td {
 	vertical-align: top;
