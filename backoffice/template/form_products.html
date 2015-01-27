@@ -28,6 +28,8 @@
         var ajaxUrl             = 'form_products.php';
         var tmpPrdAmount        = '';
         var tmpPrdShelfAmount   = '';
+        var tmpPrdAmountMax     = '';
+        var tmpPrdAmountMin     = '';
 
         $(document).ready(function () {
             selectReferenceJS({
@@ -82,6 +84,32 @@
                     $('#prd_shelf_amount').attr('readonly', '');
                     $('#prd_shelf_amount_label').removeClass('input-required');
                     $('#prd_shelf_amount').addClass('readonly');
+
+                    if($('#prd_amount_max').val() == '') {
+                        tmpPrdAmountMax = 0;
+                    } else {
+                        tmpPrdAmountMax = $('#prd_amount_max').val();
+                    }
+                    $('#prd_amount_max').val('');
+                    $('#prd_amount_max').removeClass('required');
+                    $('.err-prd_amount_max').css('display', 'none');
+                    $('#prd_amount_max').removeAttr('require');
+                    $('#prd_amount_max').attr('readonly', '');
+                    $('#prd_amount_max_label').removeClass('input-required');
+                    $('#prd_amount_max').addClass('readonly');
+
+                    if($('#prd_amount_min').val() == '') {
+                        tmpPrdAmountMin = 0;
+                    } else {
+                        tmpPrdAmountMin = $('#prd_amount_min').val();
+                    }
+                    $('#prd_amount_min').val('');
+                    $('#prd_amount_min').removeClass('required');
+                    $('.err-prd_amount_min').css('display', 'none');
+                    $('#prd_amount_min').removeAttr('require');
+                    $('#prd_amount_min').attr('readonly', '');
+                    $('#prd_amount_min_label').removeClass('input-required');
+                    $('#prd_amount_min').addClass('readonly');
                 } else {
                     $('#prd_amount').val(tmpPrdAmount);
                     $('#prd_amount').attr('require', '');
@@ -96,6 +124,20 @@
                     $('#prd_shelf_amount_label').addClass('input-required');
                     $('#prd_shelf_amount').removeClass('readonly');
                     $('#prd_shelf_amount').focusout(validateInput);
+
+                    $('#prd_amount_max').val(tmpPrdAmountMax);
+                    $('#prd_amount_max').attr('require', '');
+                    $('#prd_amount_max').removeAttr('readonly');
+                    $('#prd_amount_max_label').addClass('input-required');
+                    $('#prd_amount_max').removeClass('readonly');
+                    $('#prd_amount_max').focusout(validateInput);
+
+                    $('#prd_amount_min').val(tmpPrdAmountMin);
+                    $('#prd_amount_min').attr('require', '');
+                    $('#prd_amount_min').removeAttr('readonly');
+                    $('#prd_amount_min_label').addClass('input-required');
+                    $('#prd_amount_min').removeClass('readonly');
+                    $('#prd_amount_min').focusout(validateInput);
                 }
             });
 
@@ -103,6 +145,8 @@
                 if(action == 'ADD') {
                     $('#prd_amount').val('0');
                     $('#prd_shelf_amount').val('0');
+                    $('#prd_amount_max').val('0');
+                    $('#prd_amount_min').val('0');
                 } else if(action == 'EDIT') {
                     $('#toggleAmountBtn').prop('checked', true);
                     $('#toggleAmountBtn').change();
@@ -113,6 +157,8 @@
             if(action == 'VIEW_DETAIL') {
                 var unitName = $('#unit_id').find('.selectReferenceJS-text').text();
                 $('#shelf_amount_unit').text(unitName);
+                $('#prd_amount_max_unit').text(unitName);
+                $('#prd_amount_min_unit').text(unitName);
             }
         });
     </script>
@@ -178,6 +224,26 @@
                 <td>รหัสบาร์โค้ด :</td>
                 <td>{if $values.prd_barcode}{$values.prd_barcode}{else}-{/if}</td>
             </tr>
+            <tr>
+                <td>จำนวนคงเหลือน้อยสุด :</td>
+                <td>
+                    {if $values.prd_amount_max != '-'}
+                    {$values.prd_amount_max|number_format:0:".":","}   <span id="prd_amount_max_unit"></span>
+                    {else}
+                    ไม่มีจำนวนในสต็อค
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>จำนวนคงเหลือสูงสุด :</td>
+                <td>
+                    {if $values.prd_amount_min != '-'}
+                    {$values.prd_amount_min|number_format:0:".":","}   <span id="prd_amount_min_unit"></span>
+                    {else}
+                    ไม่มีจำนวนในสต็อค
+                    {/if}
+                </td>
+            </tr>
         </tbody>
     </table>
     {else}      
@@ -231,6 +297,27 @@
                 <td colspan="2">
                     <span id="err-prd_price-require" class="errInputMsg half err-prd_price">โปรดป้อนราคา</span>
                     <span id="err-prd_price-money" class="errInputMsg half err-prd_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label id="prd_amount_min_label" class="input-required">จำนวนคงเหลือน้อยสุด</label>
+                    <input id="prd_amount_min" name="prd_amount_min" type="text" class="form-input half" value="{$values.prd_amount_min}" maxlength="6" size="6" valuepattern="number" require>
+                </td>
+                <td>
+                    <label id="prd_amount_max_label" class="input-required">จำนวนคงเหลือสูงสุด</label>
+                    <input id="prd_amount_max" name="prd_amount_max" type="text" class="form-input half" value="{$values.prd_amount_max}" maxlength="6" size="6" valuepattern="number" require>
+                </td>
+                
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-prd_amount_min-require" class="errInputMsg half err-prd_amount_min">โปรดป้อนจำนวนคงเหลือน้อยสุด</span>
+                    <span id="err-prd_amount_min-number" class="errInputMsg half err-prd_amount_min">โปรดกรอกจำนวนเป็นตัวเลขเท่านั้น</span>
+                </td>
+                <td>
+                    <span id="err-prd_amount_max-require" class="errInputMsg half err-prd_amount_max">โปรดป้อนจำนวนคงเหลือสูงสุด</span>
+                    <span id="err-prd_amount_max-number" class="errInputMsg half err-prd_amount_max">โปรดกรอกจำนวนเป็นตัวเลขเท่านั้น</span>
                 </td>
             </tr>
             <tr>

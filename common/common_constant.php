@@ -550,10 +550,12 @@ function dbClose() {
 						'prd_shelf_amount'=> 'จำนวนที่วางขาย',
 						'prd_pic'      	  => 'รูปภาพ',
 						'prd_desc'		  => 'คำอธิบาย',
-						'prd_barcode'	  => 'รหัสบาร์โค้ด'
+						'prd_barcode'	  => 'รหัสบาร์โค้ด',
+						'prd_amount_max'  => 'จำนวนคงเหลือสูงสุด',
+						'prd_amount_min'  => 'จำนวนคงเหลือน้อยสุด'
 				),
-				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode'),
-				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode'),
+				'hiddenFields'	=> array('prd_pic','prd_amount','unit_id','prd_desc','prd_barcode','prd_amount_max','prd_amount_min'),
+				'defaultNull' 	=> array('prd_amount','prd_desc','prd_barcode','prd_amount_max','prd_amount_min'),
 				'searchFields'	=> array('prd_name','prdtyp_id','brand_id','prd_barcode'),
 				'deleteTxtField' 		=> array('prd_name'),
 				'referenceData'			=> array('product_types', 'brands', 'units')
