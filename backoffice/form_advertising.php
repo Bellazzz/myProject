@@ -24,6 +24,7 @@ if(!$_REQUEST['ajaxCall']) {
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
+	$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
 	include('../common/common_footer.php');
 } else {
 	//2. Process record

@@ -8,6 +8,7 @@ var timeatt_in 		= '';
 var dateatt_out 	= '';
 var timeatt_out 	= '';
 var curAds 			= 0;
+var autoDisplayTimer;
 
 $(document).ready(function() {
 	// focus barcode input
@@ -36,12 +37,36 @@ $(document).ready(function() {
 		pullEmpData($('#barcode-input').val());
 	});
 
+	// Display number of advertising
+	var numAdsHtml = '';
+	for(i in advertisingList) {
+		numAdsHtml += '<a id="numAds_' + i + '" class="numAds" data-numAds="' + i + '">' + (parseInt(i)+1) + '</a>';
+	}
+	$('.numAds-container').html(numAdsHtml);
+
+	// When numAds click
+	$('.numAds').click(function() {
+		stopDisplayAds();
+		curAds = parseInt($(this).attr('data-numAds'));
+		switchAds();
+		refreshIntervalId  = setInterval(function() {
+			switchAds();
+		}, 10000);
+	});
+
 	// Auto display advertising
 	switchAds();
-	setInterval(function() {
+	startDisplayAds();
+});
+
+function startDisplayAds() {
+	refreshIntervalId  = setInterval(function() {
 		switchAds();
 	}, 10000);
-});
+}
+function stopDisplayAds() {
+	clearInterval(refreshIntervalId);
+}
 
 function switchAds() {
 	$('.container').fadeOut(1000);
@@ -59,6 +84,7 @@ function nextAds() {
 	}
 	$('.advertising-image').css('display', 'none');
 	$('.advertising-txt').css('display', 'none');
+	$('.numAds').removeClass('selected');
 
 	// Set content
 	$('.advertising-image').css('background-image', 'url(\'../img/advertising/' + advertisingList[curAds].avs_img + '\')');
@@ -82,6 +108,7 @@ function nextAds() {
 		$('.advertising-txt').css('display', 'block');
 	}
 
+	$('#numAds_' + curAds).addClass('selected');
 	curAds++;
 }
 
