@@ -19,11 +19,13 @@ if(hasValue($sale_id)) {
 		'spa_addr' 	=> $spaRecord->getFieldValue('spa_addr'),
 		'spa_tel' 	=> $spaRecord->getFieldValue('spa_tel'),
 		'spa_fax' 	=> $spaRecord->getFieldValue('spa_fax'),
-		'spa_email' => $spaRecord->getFieldValue('spa_email')
+		'spa_email' => $spaRecord->getFieldValue('spa_email'),
+		'spa_logo'  => $spaRecord->getFieldValue('spa_logo'),
 	);
 	// Check null
 	$spaData['spa_fax'] 	= $spaData['spa_fax'] 	== '' ? '-' : $spaData['spa_fax'];
 	$spaData['spa_email'] 	= $spaData['spa_email'] == '' ? '-' : $spaData['spa_email'];
+	$spaData['spa_logo'] 	= $spaData['spa_logo']  == '' ? ''  : $spaData['spa_logo'];
 
 	$smarty->assign('spaData', $spaData);
 
@@ -140,6 +142,6 @@ if(hasValue($sale_id)) {
 	$smarty->assign('change', $change);
 
 }
-
+$smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
 include('../common/common_footer.php');
 ?>
