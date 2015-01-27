@@ -233,10 +233,12 @@ body {
     position: absolute;
     left: 0;
     top: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
 }
 .empInfo .empFullName {
-    font-size: 18px;
+    font-size: 25px;
     display: block;
+    font-family: ThaiSansNeue-Bold;
 }
 .empInfo .posName {
     color: #999;
