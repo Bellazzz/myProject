@@ -235,6 +235,14 @@ function delteCurrentRecord(code) {
         delText = 'คุณต้องการลบ' + table.nameTH + ' ' + delVal + 'ใช่หรือไม่?';
     }
 
+    if(table.name == 'withdraws') {
+        showConfirmDeleteWithdraws(code, delText);
+    } else {
+        confirmDelteCurrentRecord(code, delText);
+    }
+}
+
+function confirmDelteCurrentRecord(code, delText) {
     showActionDialog({
         title: 'ลบข้อมูล',
         message: delText,
@@ -324,54 +332,42 @@ function deleteWithdrawsRecord(code) {
                     ],
                     boxWidth: 400
                 });
+            } else {
+                alert(response.status);
+            }
+        }
+    });
+}
 
-                // var msg = '';
-
-                // // Gen over product amount error
-                // if(response.overAmountList != '') {
-                //     msg += 'จำนวนผลิตภัณฑ์ในคลังสินค้าไม่เพียงพอต่อการเบิก ได้แก่<ul>';
-                //     for(i in response.overAmountList) {
-                //         msg += '<li>' 
-                //              + response.overAmountList[i].prdName 
-                //              + ' เหลือ ' + response.overAmountList[i].stockAmount 
-                //              + ' ' +  response.overAmountList[i].unitName 
-                //              + ' <span style="color:red;">(ต้องการอีก ' + response.overAmountList[i].overAmount 
-                //              + ' ' +  response.overAmountList[i].unitName + ')</span>'
-                //              + '</li>';
-                //     }
-                //      msg += '</ul>';
-                // }
-
-                // // Gen over product amount error
-                // if(response.overShelfAmountList != '') {
-                //     msg += 'จำนวนผลิตภัณฑ์ที่วางขายไม่เพียงพอต่อการคืน ได้แก่<ul>';
-                //     for(i in response.overShelfAmountList) {
-                //         msg += '<li>' 
-                //              + response.overShelfAmountList[i].prdName 
-                //              + ' จำนวนที่วางขาย ' + response.overShelfAmountList[i].stockAmount 
-                //              + ' ' +  response.overShelfAmountList[i].unitName 
-                //              + ' <span style="color:red;">(ต้องการคืนอีก ' + response.overShelfAmountList[i].overAmount 
-                //              + ' ' +  response.overShelfAmountList[i].unitName + ')</span>'
-                //              + '</li>';
-                //     }
-                //      msg += '</ul>';
-                // }
-
-                // parent.showActionDialog({
-                //     title: 'จำนวนผลิตภัณฑ์ไม่เพียงพอ',
-                //     message: msg,
-                //     actionList: [
-                //         {
-                //             id: 'ok',
-                //             name: 'ตกลง',
-                //             func:
-                //             function() {
-                //                 parent.hideActionDialog();
-                //             }
-                //         }
-                //     ],
-                //     boxWidth: 650
-                // });
+function showConfirmDeleteWithdraws(code, delText) {
+    $.ajax({
+        url: '../common/ajaxGetWithdrawDetailForDeleteDialog.php',
+        type: 'POST',
+        data: {
+            wdwId : code
+        },
+        success:
+        function(responseJSON) {
+            var response = $.parseJSON(responseJSON);
+            if(response.status == 'PASS') {
+                // send to delete
+                confirmDelteCurrentRecord(code, delText + response.wdwdtlHtml);
+            } else if(response.status == 'FAIL') {
+                parent.showActionDialog({
+                    title: 'เกิดข้อผิดพลาด',
+                    message: 'ไม่พบการเบิกรหัส ' + code,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
             } else {
                 alert(response.status);
             }
