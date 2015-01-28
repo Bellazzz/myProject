@@ -659,6 +659,40 @@ switch ($tableName) {
 				$orderSpecial";
 			$sortBy = $sortBySpecial;
 		break;
+
+	case 'package_promotions':
+		$where = 'WHERE p.custype_id = c.custype_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('custype_id', 'c.custype_name', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT p.pkgprm_id,
+				p.pkgprm_name,
+				c.custype_name custype_id,
+				p.pkgprm_startdate,
+				p.pkgprm_enddate 
+				FROM package_promotions p, customer_types c 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
+
+	case 'service_list_promotions':
+		$where = 'WHERE p.custype_id = c.custype_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('custype_id', 'c.custype_name', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT p.svlprm_id,
+				p.svlprm_name,
+				c.custype_name custype_id,
+				p.svlprm_startdate,
+				p.svlprm_enddate 
+				FROM service_list_promotions p, customer_types c 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
 		
 	default:
 		if(hasValue($like)) {
