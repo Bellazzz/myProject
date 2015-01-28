@@ -181,7 +181,7 @@ function showClockInOutBox(){
 						+ '							<div class="empPicThumb" style="background-image:url(\'../img/employees/' + emp_pic + '?rand=' + randNum + '\');"></div>'
 						+ '							<small>สวัสดี</small>'
 						+ '							<span class="empFullName">คุณ' + emp_name + '  ' + emp_surname + '</span>'
-						+ '							<span class="posName">' + pos_name + '</span>'
+						+ '							<span class="posName">ตำแหน่ง ' + pos_name + '</span>'
 						+ '						</div>'
 						+ '					</div>'
 						+ '				</div>'

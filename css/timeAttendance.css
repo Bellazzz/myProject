@@ -202,6 +202,8 @@ body {
     background: #fff;
     color: #666;
     text-align: center;
+    font-family: ThaiSansNeue-Bold;
+    font-size: 23px;
 }
 .empInfo {
     width: 100%;
@@ -285,7 +287,7 @@ body {
     border-radius: 4px;
     outline: none;
     border: none;
-    font-family: Arial, sans-serif;
+    font-family: ThaiSansNeue-Bold;
     cursor: pointer;
 }
 .btnLarge {
@@ -302,6 +304,7 @@ body {
 .btnColor-gray {
     background: #e8e8e8;
     color: #999;
+    font-size: 18px;
 }
 .btnColor-gray:active {
     background: #aaa;
@@ -340,4 +343,16 @@ body {
 .numAds.selected, .numAds:hover {
     background: rgb(75, 100, 15);
     color: white;
+}
+
+#nowDate {
+    padding: 5px 87px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    font-family: ThaiSansNeue-Bold;
+    background: #666666;
+    color: #FFFFFF;
 }
