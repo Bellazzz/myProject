@@ -39,6 +39,10 @@ switch ($tableName) {
 	case 'promotion_discout_sales':
 		header("location:form_promotion_discout_sales.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
+
+	case 'package_promotion_details':
+		header("location:form_package_promotion_details.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		break;
 }
 
 include('../config/config.php');
@@ -273,18 +277,6 @@ if(!$_REQUEST['ajaxCall']) {
 									FROM 		packages p 
 									ORDER BY 	refText ASC";
 					$refField 	= 'pkg_id';
-					break;
-
-				case 'package_promotions':
-					$sqlRefData = "	SELECT 		pkgprm_id refValue,
-												pkgprm_name refText,
-												pkgprm_startdate,
-												pkgprm_pic,
-												pkgprm_desc,
-												custype_id 
-									FROM 		package_promotions p 
-									ORDER BY 	refText ASC";
-					$refField 	= 'pkgprm_id';
 					break;
 
 				case 'service_list_promotions':
