@@ -1376,7 +1376,7 @@ function dbClose() {
 				'searchFields'			=> array('svlprm_id','svl_id','svlprmdtl_startdate','svlprmdtl_enddate','svlprmdtl_discout_types','svlprmdtl_discout'),
 				'deleteTxtField'		=> array('svl_id','svlprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการบริการ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
-				'referenceData'			=> array('service_list_promotions','service_lists')
+				'referenceData'			=> array('todayOnward_service_list_promotions','service_lists')
 			);
 			break;
 
