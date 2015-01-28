@@ -181,65 +181,65 @@
             }
         }
 
-        function beforeSaveRecord() {
-            // Not check time cover
-            if(action == 'ADD' || $('#svlprm_startdate').val() == '') {
-                return false;
-            }
+        // function beforeSaveRecord() {
+        //     // Not check time cover
+        //     if(action == 'ADD' || $('#svlprm_startdate').val() == '') {
+        //         return false;
+        //     }
 
-            var returnVal = true; // false = no err, true = have err
+        //     var returnVal = true; // false = no err, true = have err
 
-            $.ajax({
-                url: '../common/ajaxCheckPackagePromotionTimeCover.php',
-                type: 'POST',
-                data: {
-                    svlprm_id       : code,
-                    startdate       : tmpDateToRealDate($('#svlprm_startdate').val()),
-                    enddate         : tmpDateToRealDate($('#svlprm_enddate').val())
-                },
-                success:
-                function(responseJSON) {
-                    var response = $.parseJSON(responseJSON);
-                    if(response.status == 'NOT_COVER') {
-                        var notCoverListHTML = '<ul>';
-                        for(i in response.notCoverList) {
-                            notCoverListHTML += '<li>' + response.notCoverList[i] + '</li>';
-                        }
-                        notCoverListHTML += '</ul>';
+        //     $.ajax({
+        //         url: '../common/ajaxCheckPackagePromotionTimeCover.php',
+        //         type: 'POST',
+        //         data: {
+        //             svlprm_id       : code,
+        //             startdate       : tmpDateToRealDate($('#svlprm_startdate').val()),
+        //             enddate         : tmpDateToRealDate($('#svlprm_enddate').val())
+        //         },
+        //         success:
+        //         function(responseJSON) {
+        //             var response = $.parseJSON(responseJSON);
+        //             if(response.status == 'NOT_COVER') {
+        //                 var notCoverListHTML = '<ul>';
+        //                 for(i in response.notCoverList) {
+        //                     notCoverListHTML += '<li>' + response.notCoverList[i] + '</li>';
+        //                 }
+        //                 notCoverListHTML += '</ul>';
 
-                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น '
-                                + $('#svlprm_name').val()
-                                + ' ไม่ครอบคลุมรายการบริการที่จัดโปรโมชั่นในช่วงเวลาดังต่อไปนี้' + notCoverListHTML 
-                                + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นให้ครอบคลุมช่วงเวลาดังกล่าว';
-                        parent.showActionDialog({
-                            title: 'ระยะเวลาโปรโมชั่นไม่ครอบคลุม',
-                            message: msg,
-                            actionList: [
-                                {
-                                    id: 'ok',
-                                    name: 'ตกลง',
-                                    func:
-                                    function() {
-                                        parent.hideActionDialog();
-                                    }
-                                }
-                            ],
-                            boxWidth: 500
-                        });
-                    } else if(response.status == 'COVER') {
-                        if(action == 'EDIT') {
-                            if(!hasInputError()) {
-                                confirmSaveRecord();
-                            }
-                        }
-                    } else {
-                        alert(response.status);
-                    }
-                }
-            });
+        //                 var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น '
+        //                         + $('#svlprm_name').val()
+        //                         + ' ไม่ครอบคลุมรายการบริการที่จัดโปรโมชั่นในช่วงเวลาดังต่อไปนี้' + notCoverListHTML 
+        //                         + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นให้ครอบคลุมช่วงเวลาดังกล่าว';
+        //                 parent.showActionDialog({
+        //                     title: 'ระยะเวลาโปรโมชั่นไม่ครอบคลุม',
+        //                     message: msg,
+        //                     actionList: [
+        //                         {
+        //                             id: 'ok',
+        //                             name: 'ตกลง',
+        //                             func:
+        //                             function() {
+        //                                 parent.hideActionDialog();
+        //                             }
+        //                         }
+        //                     ],
+        //                     boxWidth: 500
+        //                 });
+        //             } else if(response.status == 'COVER') {
+        //                 if(action == 'EDIT') {
+        //                     if(!hasInputError()) {
+        //                         confirmSaveRecord();
+        //                     }
+        //                 }
+        //             } else {
+        //                 alert(response.status);
+        //             }
+        //         }
+        //     });
 
-            return returnVal;
-        }
+        //     return returnVal;
+        // }
     </script>
     {/literal}
 </head>

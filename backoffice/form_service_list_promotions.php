@@ -93,23 +93,23 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['fieldValue'] = array();
 
 		// Rename Image
-		if(strpos($formData['pkgprm_pic'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['pkgprm_pic'],"."));
+		if(strpos($formData['svlprm_pic'], 'temp_') !== FALSE) {
+			$type		= str_replace(".", "", strrchr($formData['svlprm_pic'],"."));
 			$tmpRecord	= new TableSpa('service_list_promotions', null);
-			$pkgprm_pic	= $tmpRecord->genKeyCharRunning().".$type";
-			$pkgprm_pic_path = '../img/service_list_promotions/'.$pkgprm_pic;
+			$svlprm_pic	= $tmpRecord->genKeyCharRunning().".$type";
+			$svlprm_pic_path = '../img/service_list_promotions/'.$svlprm_pic;
 
 			// Delete Old Image
-			if(file_exists($pkgprm_pic_path)) {
-				if(!unlink($pkgprm_pic_path)) {
+			if(file_exists($svlprm_pic_path)) {
+				if(!unlink($svlprm_pic_path)) {
 					$response['status'] = 'DELETE_OLD_IMG_FAIL';
 					echo json_encode($response);
 					exit();
 				}
 			}
 
-			if(rename('../img/temp/'.$formData['pkgprm_pic'], $pkgprm_pic_path)) {
-				$formData['pkgprm_pic'] = $pkgprm_pic;
+			if(rename('../img/temp/'.$formData['svlprm_pic'], $svlprm_pic_path)) {
+				$formData['svlprm_pic'] = $svlprm_pic;
 			} else {
 				$response['status'] = 'RENAME_FAIL';
 				echo json_encode($response);
@@ -147,11 +147,11 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 
 		// Rename Image
-		if(strpos($formData['pkgprm_pic'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['pkgprm_pic'],"."));
-			$pkgprm_pic	= $code.".$type";
-			$imgTmpPath = '../img/temp/'.$formData['pkgprm_pic'];
-			$imgNewPath = '../img/service_list_promotions/'.$pkgprm_pic;
+		if(strpos($formData['svlprm_pic'], 'temp_') !== FALSE) {
+			$type		= str_replace(".", "", strrchr($formData['svlprm_pic'],"."));
+			$svlprm_pic	= $code.".$type";
+			$imgTmpPath = '../img/temp/'.$formData['svlprm_pic'];
+			$imgNewPath = '../img/service_list_promotions/'.$svlprm_pic;
 
 			// Delete Old Image
 			if(file_exists($imgNewPath)) {
@@ -164,7 +164,7 @@ if(!$_REQUEST['ajaxCall']) {
 			// Rename temp to new image
 			if(file_exists($imgTmpPath)) {
 				if(rename($imgTmpPath, $imgNewPath)) {
-					$formData['pkgprm_pic'] = $pkgprm_pic;
+					$formData['svlprm_pic'] = $svlprm_pic;
 				} else {
 					$response['status'] = 'RENAME_FAIL';
 					echo json_encode($response);
