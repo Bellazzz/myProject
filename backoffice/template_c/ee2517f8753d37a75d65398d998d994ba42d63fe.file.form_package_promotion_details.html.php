@@ -1,9 +1,40 @@
-<!DOCTYPE html>
+<?php /* Smarty version Smarty-3.1.18, created on 2015-01-28 22:59:52
+         compiled from "C:\AppServ\www\myProject\backoffice\template\form_package_promotion_details.html" */ ?>
+<?php /*%%SmartyHeaderCode:911754c8f6b29c9ce9-30170666%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    'ee2517f8753d37a75d65398d998d994ba42d63fe' => 
+    array (
+      0 => 'C:\\AppServ\\www\\myProject\\backoffice\\template\\form_package_promotion_details.html',
+      1 => 1422460781,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '911754c8f6b29c9ce9-30170666',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_54c8f6b2e54dd0_73890811',
+  'variables' => 
+  array (
+    'action' => 0,
+    'tableName' => 0,
+    'tableNameTH' => 0,
+    'code' => 0,
+    'referenceData' => 0,
+    'values' => 0,
+    'nowDate' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_54c8f6b2e54dd0_73890811')) {function content_54c8f6b2e54dd0_73890811($_smarty_tpl) {?><!DOCTYPE html>
 <html lang="th">
 <head>
     <title>Spa - Backoffice</title>
     <meta charset="UTF-8"/>
-    {literal}
+    
     <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
     <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
@@ -56,19 +87,25 @@
     </style>
     <script type="text/javascript">
         // Global variables
-        var action      = '{/literal}{$action}{literal}';
-        var tableName   = '{/literal}{$tableName}{literal}';
-        var tableNameTH = '{/literal}{$tableNameTH}{literal}';
-        var code        = '{/literal}{$code}{literal}';
+        var action      = '<?php echo $_smarty_tpl->tpl_vars['action']->value;?>
+';
+        var tableName   = '<?php echo $_smarty_tpl->tpl_vars['tableName']->value;?>
+';
+        var tableNameTH = '<?php echo $_smarty_tpl->tpl_vars['tableNameTH']->value;?>
+';
+        var code        = '<?php echo $_smarty_tpl->tpl_vars['code']->value;?>
+';
         var ajaxUrl     = 'form_package_promotion_details.php';
-        var refPkgData      = {/literal}{$referenceData["packages"]|@json_encode}{literal};
-        var refPkgprmData   = {/literal}{$referenceData["todayOnward_package_promotions"]|@json_encode}{literal};
+        var refPkgData      = <?php echo json_encode($_smarty_tpl->tpl_vars['referenceData']->value["packages"]);?>
+;
+        var refPkgprmData   = <?php echo json_encode($_smarty_tpl->tpl_vars['referenceData']->value["todayOnward_package_promotions"]);?>
+;
         var curPkgPrice     = null;
         var curPrdPrmGrpId     = '';
 
         // Check if not have product promotion now
-        {/literal}
-        {if $referenceData["todayOnward_package_promotions"] == null}
+        
+        <?php if ($_smarty_tpl->tpl_vars['referenceData']->value["todayOnward_package_promotions"]==null) {?>
         parent.showActionDialog({
             title: 'ไม่พบโปรโมชั่นแพ็คเกจ',
             message: 'ไม่พบโปรโมชั่นแพ็คเกจที่สามารถจัดได้ในขณะนี้ กรุณาเพิ่มโปรโมชั่นแพ็คเกจก่อน',
@@ -88,14 +125,15 @@
             ],
             boxWidth: 400
         });
-        {/if}
-        {literal}
+        <?php }?>
+        
 
         $(document).ready(function () {
             selectReferenceJS({
                 elem            : $('#pkg_id'),
                 data            : refPkgData,
-                defaultValue    : '{/literal}{$values.pkg_id}{literal}',
+                defaultValue    : '<?php echo $_smarty_tpl->tpl_vars['values']->value['pkg_id'];?>
+',
                 success         : 
                 function () {
                     setCurPkgPrice();
@@ -112,7 +150,8 @@
             selectReferenceJS({
                 elem            : $('#pkgprm_id'),
                 data            : refPkgprmData,
-                defaultValue    : '{/literal}{$values.pkgprm_id}{literal}',
+                defaultValue    : '<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprm_id'];?>
+',
                 onOptionSelect  :
                 function() {
                     $('#pkgprmdtl_startdate').val('');
@@ -137,7 +176,8 @@
                 onShow:function( ct ){
                     if(action == 'ADD') {
                         this.setOptions({
-                            minDate: realDateToTmpDate('{/literal}{$nowDate}{literal}'),
+                            minDate: realDateToTmpDate('<?php echo $_smarty_tpl->tpl_vars['nowDate']->value;?>
+'),
                             maxDate:$('#pkgprmdtl_enddate').val()?unconvertThaiDate($('#pkgprmdtl_enddate').val()):false
                         });
                     } else if(action == 'EDIT') {
@@ -163,7 +203,8 @@
                 onShow:function( ct ){
                     if(action == 'ADD') {
                         this.setOptions({
-                            minDate:$('#pkgprmdtl_startdate').val()?unconvertThaiDate($('#pkgprmdtl_startdate').val()):realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                            minDate:$('#pkgprmdtl_startdate').val()?unconvertThaiDate($('#pkgprmdtl_startdate').val()):realDateToTmpDate('<?php echo $_smarty_tpl->tpl_vars['nowDate']->value;?>
+')
                         });
                     } else if(action="EDIT") {
                         this.setOptions({
@@ -197,7 +238,8 @@
 
             // Set default radio input
             if(action == 'EDIT') {
-                $('input[name="pkgprmdtl_discout_type"][value="{/literal}{$values.pkgprmdtl_discout_type}{literal}"]').click();
+                $('input[name="pkgprmdtl_discout_type"][value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout_type'];?>
+"]').click();
             }
         });
 
@@ -221,7 +263,8 @@
 
             var selfDate        = new Date(self.val());
             var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
-            var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+            var nowDate         = new Date(realDateToTmpDate('<?php echo $_smarty_tpl->tpl_vars['nowDate']->value;?>
+'));
             var selfId          = self.attr('id');
 
             // Check sibling
@@ -536,24 +579,27 @@
             }
         }
     </script>
-    {/literal}
+    
 </head>
 <body>
 
-{include file="form_table_header.html"}
+<?php echo $_smarty_tpl->getSubTemplate ("form_table_header.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
 <div class="ftb-body">
-    {if $action == 'VIEW_DETAIL'}
+    <?php if ($_smarty_tpl->tpl_vars['action']->value=='VIEW_DETAIL') {?>
     <!-- VIEW_DETAIL -->
     <table class="table-view-detail">
         <tbody>             
             <tr>
                 <td>รหัสแพ็คเกจที่จัดโปรโมชั่น :</td>
-                <td>{$code}</td>
+                <td><?php echo $_smarty_tpl->tpl_vars['code']->value;?>
+</td>
             </tr>
             <tr>
                 <td>แพ็คเกจ :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$values.pkg_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code=<?php echo $_smarty_tpl->tpl_vars['values']->value['pkg_id'];?>
+&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
                         <div id="pkg_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                     </a>
                 </td>
@@ -561,7 +607,8 @@
             <tr>
                 <td>โปรโมชั่นแพ็คเกจที่จัด :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=package_promotions&code={$values.pkgprm_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=package_promotions&code=<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprm_id'];?>
+&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
                         <div id="pkgprm_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                     </a>
                 </td>
@@ -569,27 +616,33 @@
             <tr>
                 <td>ส่วนลด :</td>
                 <td>
-                    {if $values.pkgprmdtl_discout != '-'}
-                        {$values.pkgprmdtl_discout} {$values.pkgprmdtl_discout_type}
-                    {else}
+                    <?php if ($_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout']!='-') {?>
+                        <?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout'];?>
+ <?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout_type'];?>
+
+                    <?php } else { ?>
                         ฟรี
-                    {/if}
+                    <?php }?>
                 </td>
             </tr>
             <tr>
                 <td>วันที่เริ่มใช้ :</td>
-                <td>{$values.pkgprmdtl_startdate}</td>
+                <td><?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_startdate'];?>
+</td>
             </tr>
             <tr>
                 <td>วันที่สิ้นสุด :</td>
-                <td>{if $values.pkgprmdtl_enddate != '-'}{$values.pkgprmdtl_enddate}{else}ไม่มีกำหนด{/if}</td>
+                <td><?php if ($_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_enddate']!='-') {?><?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_enddate'];?>
+<?php } else { ?>ไม่มีกำหนด<?php }?></td>
             </tr>
         </tbody>
     </table>
     <!--For calculate PreviewPrmPrice-->
-    <input name="pkgprmdtl_discout_type" type="radio" value="{$values.pkgprmdtl_discout_type}" style="display:none;" checked>
-    <input id="pkgprmdtl_discout" type="hidden" value="{$values.pkgprmdtl_discout}"> 
-    {else}      
+    <input name="pkgprmdtl_discout_type" type="radio" value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout_type'];?>
+" style="display:none;" checked>
+    <input id="pkgprmdtl_discout" type="hidden" value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout'];?>
+"> 
+    <?php } else { ?>      
     <!-- ADD, EDIT -->   
     <form id="form-table" name="form-table" onsubmit="return false;">
     <input type="hidden" name="requiredFields" value="pkgprm_id,pkg_id,pkgprmdtl_startdate,pkgprmdtl_discout,pkgprmdtl_discout_type">
@@ -621,11 +674,13 @@
             <tr>
                 <td>
                     <label class="input-required">วันที่เริ่มใช้</label>
-                    <input id="pkgprmdtl_startdate" name="pkgprmdtl_startdate" type="text" class="mbk-dtp-th form-input half" value="{$values.pkgprmdtl_startdate}" require>
+                    <input id="pkgprmdtl_startdate" name="pkgprmdtl_startdate" type="text" class="mbk-dtp-th form-input half" value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_startdate'];?>
+" require>
                 </td>
                 <td>
                     <label id="prmprd_enddate_label">วันที่สิ้นสุด</label>
-                    <input id="pkgprmdtl_enddate" name="pkgprmdtl_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.pkgprmdtl_enddate}">
+                    <input id="pkgprmdtl_enddate" name="pkgprmdtl_enddate" type="text" class="mbk-dtp-th form-input half" value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_enddate'];?>
+">
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -646,7 +701,8 @@
             <tr class="showForSale">
                 <td colspan="2">
                     <label class="input-required">ส่วนลด (<span id="pkgprmdtl_discout_type_text">บาท</span>)</label>
-                    <input id="pkgprmdtl_discout" name="pkgprmdtl_discout" type="text" class="form-input full" value="{$values.pkgprmdtl_discout}" valuepattern="money" require>
+                    <input id="pkgprmdtl_discout" name="pkgprmdtl_discout" type="text" class="form-input full" value="<?php echo $_smarty_tpl->tpl_vars['values']->value['pkgprmdtl_discout'];?>
+" valuepattern="money" require>
                 </td>
             </tr>
             <tr class="errMsgRow showForSale">
@@ -658,8 +714,8 @@
         </tbody>
     </table>
     </form>
-    {/if}
-    <ul id="previewPrmPrice" class="showForSale{if $action == 'VIEW_DETAIL'} viewDetail{/if}">
+    <?php }?>
+    <ul id="previewPrmPrice" class="showForSale<?php if ($_smarty_tpl->tpl_vars['action']->value=='VIEW_DETAIL') {?> viewDetail<?php }?>">
         <li>
             <h2>ราคาปกติ</h2>
             <p>฿<span id="preview-pkg_price">0.00</span></p>
@@ -685,4 +741,4 @@
     1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
     2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
     3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
--->
+--><?php }} ?>

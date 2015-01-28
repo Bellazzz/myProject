@@ -1301,7 +1301,7 @@ function dbClose() {
 						'pkg_id'	  				=> 'รหัสแพ็คเกจ',
 						'pkgprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
 						'pkgprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
-						'pkgprmdtl_discout_types'	=> 'รูปแบบส่วนลด',
+						'pkgprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
 						'pkgprmdtl_discout'	  		=> 'ส่วนลด'
 				),
 				'hiddenFields' 			=> array('pkgprmdtl_discout_types'),
@@ -1309,7 +1309,7 @@ function dbClose() {
 				'searchFields'			=> array('pkgprm_id','pkg_id','pkgprmdtl_startdate','pkgprmdtl_enddate','pkgprmdtl_discout_types','pkgprmdtl_discout'),
 				'deleteTxtField'		=> array('pkg_id','pkgprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบแพ็คเกจ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
-				'referenceData'			=> array('package_promotions','packages')
+				'referenceData'			=> array('todayOnward_package_promotions','packages')
 			);
 			break;
 
@@ -1368,7 +1368,7 @@ function dbClose() {
 						'svl_id'	  				=> 'รหัสรายการบริการ',
 						'svlprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
 						'svlprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
-						'svlprmdtl_discout_types'	=> 'รูปแบบส่วนลด',
+						'svlprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
 						'svlprmdtl_discout'	  		=> 'ส่วนลด'
 				),
 				'hiddenFields' 			=> array('svlprmdtl_discout_types'),
