@@ -2,13 +2,13 @@
 include('../config/config.php');
 include('../common/common_header.php');
 
-$pkgprm_id 		= '';
+$pkgprmdtl_id 		= '';
 $pkg_id 		= '';
 $startdate 		= '';
 $enddate 		= '';
 $custype_id 	= '';
-if(hasValue($_POST['pkgprm_id'])) {
-	$pkgprm_id = $_POST['pkgprm_id'];
+if(hasValue($_POST['pkgprmdtl_id'])) {
+	$pkgprmdtl_id = $_POST['pkgprmdtl_id'];
 }
 if(hasValue($_POST['pkg_id'])) {
 	$pkg_id = $_POST['pkg_id'];
@@ -55,8 +55,8 @@ if($enddate == '') {
 				) 
 			  )";
 }
-if($pkgprm_id != '') {
-	$sql .= " AND pkgprmdtl.pkgprm_id != '$pkgprm_id' ";
+if($pkgprmdtl_id != '') {
+	$sql .= " AND pkgprmdtl.pkgprmdtl_id != '$pkgprmdtl_id' ";
 }
 $sql .= " ORDER BY pkgprmdtl.pkgprmdtl_startdate ASC";
 

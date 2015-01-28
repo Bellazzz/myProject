@@ -64,7 +64,7 @@
         var refPkgData      = {/literal}{$referenceData["packages"]|@json_encode}{literal};
         var refPkgprmData   = {/literal}{$referenceData["todayOnward_package_promotions"]|@json_encode}{literal};
         var curPkgPrice     = null;
-        var curPrdPrmGrpId     = '';
+        var curCusTypeId     = '';
 
         // Check if not have product promotion now
         {/literal}
@@ -432,11 +432,11 @@
                 url: '../common/ajaxCheckPackagePromotionDetailsTimeOverlap.php',
                 type: 'POST',
                 data: {
-                    pkgprm_id       : code,
+                    pkgprmdtl_id       : code,
                     pkg_id          : $('input[name="pkg_id"]').val(),
                     startdate       : tmpDateToRealDate($('#pkgprmdtl_startdate').val()),
                     enddate         : tmpDateToRealDate($('#pkgprmdtl_enddate').val()),
-                    prdprmgrp_id    : curPrdPrmGrpId
+                    custype_id      : curCusTypeId
                 },
                 success:
                 function(responseJSON) {
@@ -448,12 +448,12 @@
                         }
                         overlapListHTML += '</ul>';
 
-                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ของผลิตภัณฑ์ ' 
+                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่นของแพ็คเกจ ' 
                                 + $('#pkg_id').find('.selectReferenceJS-text').text()
                                 + ' ซ้อนทับกับช่วงเวลาดังต่อไปนี้' + overlapListHTML 
                                 + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นไม่ให้อยู่ในช่วงเวลาดังกล่าว';
                         parent.showActionDialog({
-                            title: 'ระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ซ้อนทับกัน',
+                            title: 'จัดโปรโมชั่นแพ็คเกจซ้อนทับกัน',
                             message: msg,
                             actionList: [
                                 {
@@ -489,46 +489,29 @@
         function pkgprmIdChange() {
             for(i in refPkgprmData) {
                 if(refPkgprmData[i].refValue == $('#pkgprm_id').find('.selectReferenceJS-input').val()) {
-                    curPrdPrmGrpId = refPkgprmData[i].prdprmgrp_id;
+                    curCusTypeId = refPkgprmData[i].custype_id;
                     // Gen promotion time text
                     var timeTxt = '(ระยะเวลาโปรโมชั่น: ';
-                    if(refPkgprmData[i].pkgprmdtl_enddate == '') {
-                        timeTxt += realDateToThaiDate(refPkgprmData[i].pkgprmdtl_startdate) + ' - ไม่มีกำหนด)';
-                    } else if(refPkgprmData[i].pkgprmdtl_startdate == refPkgprmData[i].pkgprmdtl_enddate) {
-                        timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refPkgprmData[i].pkgprmdtl_startdate) + ')';
+                    if(refPkgprmData[i].pkgprm_enddate == '') {
+                        timeTxt += realDateToThaiDate(refPkgprmData[i].pkgprm_startdate) + ' - ไม่มีกำหนด)';
+                    } else if(refPkgprmData[i].pkgprm_startdate == refPkgprmData[i].pkgprm_enddate) {
+                        timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refPkgprmData[i].pkgprm_startdate) + ')';
                     } else {
-                        timeTxt += realDateToThaiDate(refPkgprmData[i].pkgprmdtl_startdate) + ' - '
-                                 + realDateToThaiDate(refPkgprmData[i].pkgprmdtl_enddate) + ')';
+                        timeTxt += realDateToThaiDate(refPkgprmData[i].pkgprm_startdate) + ' - '
+                                 + realDateToThaiDate(refPkgprmData[i].pkgprm_enddate) + ')';
                     }
                     $('#pkgprmTime').text(timeTxt);
                     $('#pkgprmTime').css('display','block');
 
-                    // Show for sale type
-                    if(curPrdPrmType == 'ลดราคา') {
-                        $('.showForSale').css('visibility', 'visible');
-                        $('.discout_type_hidden').prop('disabled', true);
-                        $('.discout_hidden').prop('disabled', true);
-                        $('.discout_type_radio').prop('disabled', false);
-                        $('#pkgprmdtl_discout').prop('disabled', false);
-                    } else if(curPrdPrmType == 'ฟรี'){
-                        $('.showForSale').css('visibility', 'hidden');
-                        $('.discout_type_radio').prop('disabled', true);
-                        $('#pkgprmdtl_discout').prop('disabled', true);
-                        $('.discout_type_hidden').prop('disabled', false);
-                        $('.discout_hidden').prop('disabled', false);
-                        $('#pkgprmdtl_discout').removeClass('required');
-                        $('.err-pkgprmdtl_discout').css('display', 'none');
-                    }
-
                     // Add or remove require of enddate
-                    if(refPkgprmData[i].pkgprmdtl_enddate == '') {
+                    if(refPkgprmData[i].pkgprm_enddate == '') {
                         $('#pkgprmdtl_enddate').removeClass('required');
                         $('.err-pkgprmdtl_enddate').css('display', 'none');
                         $('#pkgprmdtl_enddate').removeAttr('require');
-                        $('#prmprd_enddate_label').removeClass('input-required');
+                        $('#pkgprmdtl_enddate_label').removeClass('input-required');
                     } else {
                         $('#pkgprmdtl_enddate').attr('require', '');
-                        $('#prmprd_enddate_label').addClass('input-required');
+                        $('#pkgprmdtl_enddate_label').addClass('input-required');
                         $('#pkgprmdtl_enddate').focusout(validateInput);
                     }
                     break;
@@ -624,7 +607,7 @@
                     <input id="pkgprmdtl_startdate" name="pkgprmdtl_startdate" type="text" class="mbk-dtp-th form-input half" value="{$values.pkgprmdtl_startdate}" require>
                 </td>
                 <td>
-                    <label id="prmprd_enddate_label">วันที่สิ้นสุด</label>
+                    <label id="pkgprmdtl_enddate_label">วันที่สิ้นสุด</label>
                     <input id="pkgprmdtl_enddate" name="pkgprmdtl_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.pkgprmdtl_enddate}">
                 </td>
             </tr>

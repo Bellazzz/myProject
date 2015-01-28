@@ -31,7 +31,7 @@ if(!$_REQUEST['ajaxCall']) {
 					
 					if($colFieldType == 'date' || $colFieldType == 'datetime') {
 						// get real enddate to find expired
-						if($field == 'prmprd_enddate') {
+						if($field == 'pkgprmdtl_enddate') {
 							$end_time = strtotime($values[$field]);
 						}
 						
@@ -61,17 +61,8 @@ if(!$_REQUEST['ajaxCall']) {
 									FROM 		package_promotions 
 									WHERE 		pkgprm_enddate IS NULL OR 
 												pkgprm_enddate >= CURDATE() 
-									ORDER BY 	refValue DESC";echo $sqlRefData;
+									ORDER BY 	refValue DESC";
 					$refField 	= 'pkgprm_id';
-					break;
-
-				case 'products':
-					$sqlRefData = "	SELECT 		prd_id refValue,
-												prd_name refText,
-												prd_price 
-									FROM 		products p 
-									ORDER BY 	refText ASC";
-					$refField 	= 'prd_id';
 					break;
 
 				case 'packages':
@@ -114,7 +105,7 @@ if(!$_REQUEST['ajaxCall']) {
 	}
 
 	// Hide edit button
-	if($values['pkgprd_enddate'] != '-') {
+	if($values['pkgprmdtl_enddate'] != '-') {
 		$cur_time = strtotime($nowDate);
 		if($end_time < $cur_time) { // Expired
 			$hideEditButton = 'true';
