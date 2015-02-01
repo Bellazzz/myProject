@@ -18,8 +18,8 @@ $sql = "SELECT 	p.prd_name,
 				p.unit_id = u.unit_id AND 
 				wdw_id = '$wdwId'";
 $result = mysql_query($sql, $dbConn);
-$row	= mysql_num_rows($result);
-if($row > 0) {
+$rows	= mysql_num_rows($result);
+if($rows > 0) {
 	$html = "<br><br>รายการผลิตภัณฑ์ที่เบิก<br><ol>";
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
