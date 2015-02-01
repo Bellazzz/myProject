@@ -693,7 +693,26 @@ switch ($tableName) {
 				$orderSpecial";
 		$sortBy = $sortBySpecial;
 		break;
-		
+	
+	case 'package_promotion_details':
+		$where = 'WHERE p.pkg_id = d.pkg_id and t.pkgprm_id = d.pkgprm_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('pkgprm_id', 't.pkgprm_name', $like);
+			$like	= str_replace('pkg_id', 'p.pkg_name', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT d.pkgprmdtl_id,
+				t.pkgprm_name pkgprm_id,
+				p.pkg_name pkg_id,
+				d.pkgprmdtl_startdate,
+				d.pkgprmdtl_enddate,
+				COALESCE(CONCAT(d.pkgprmdtl_discout,' ', d.pkgprmdtl_discout_type)) pkgprmdtl_discout_type 
+				FROM package_promotion_details d, package_promotions t, packages p 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
+
 	default:
 		if(hasValue($like)) {
 			$where = "WHERE $like";

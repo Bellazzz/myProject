@@ -1273,7 +1273,7 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'pkgprm_id'	  	  		=> 'รหัสโปรโมชั่นแพ็คเกจ',
 						'pkgprm_name'	  		=> 'ชื่อโปรโมชั่นแพ็คเกจ',
-						'custype_id'	  		=> 'รหัสประเถทผู้ใช้บริการ',
+						'custype_id'	  		=> 'ประเภทผู้ใช้บริการ',
 						'pkgprm_startdate'	  	=> 'วันที่เริ่มใช้',
 						'pkgprm_enddate'	  	=> 'วันที่สิ้นสุด',
 						'pkgprm_desc'	  		=> 'คำอธิบาย',
@@ -1297,16 +1297,16 @@ function dbClose() {
 				'keyLength'		=> 10,
 				'fieldNameList'	=> array(
 						'pkgprmdtl_id'	  	  		=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
-						'pkgprm_id'	  				=> 'รหัสโปรโมชั่นแพ็คเกจ',
-						'pkg_id'	  				=> 'รหัสแพ็คเกจ',
+						'pkgprm_id'	  				=> 'โปรโมชั่นแพ็คเกจ',
+						'pkg_id'	  				=> 'แพ็คเกจ',
 						'pkgprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
 						'pkgprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
-						'pkgprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
+						'pkgprmdtl_discout_type'	=> 'ส่วนลดที่จัด',
 						'pkgprmdtl_discout'	  		=> 'ส่วนลด'
 				),
-				'hiddenFields' 			=> array('pkgprmdtl_discout_types'),
+				'hiddenFields' 			=> array('pkgprmdtl_discout'),
 				'defaultNull' 			=> array('pkgprmdtl_enddate'),
-				'searchFields'			=> array('pkgprm_id','pkg_id','pkgprmdtl_startdate','pkgprmdtl_enddate','pkgprmdtl_discout_types','pkgprmdtl_discout'),
+				'searchFields'			=> array('pkgprm_id','pkg_id','pkgprmdtl_startdate','pkgprmdtl_enddate','pkgprmdtl_discout_type','pkgprmdtl_discout'),
 				'deleteTxtField'		=> array('pkg_id','pkgprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบแพ็คเกจ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('todayOnward_package_promotions','packages')
@@ -1340,7 +1340,7 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'svlprm_id'	  	  		=> 'รหัสโปรโมชั่นรายการบริการ',
 						'svlprm_name'	  		=> 'ชื่อโปรโมชั่นรายการบริการ',
-						'custype_id'	  		=> 'รหัสประเถทผู้ใช้บริการ',
+						'custype_id'	  		=> 'ประเภทผู้ใช้บริการ',
 						'svlprm_startdate'	  	=> 'วันที่เริ่มใช้',
 						'svlprm_enddate'	  	=> 'วันที่สิ้นสุด',
 						'svlprm_desc'	  		=> 'คำอธิบาย',
