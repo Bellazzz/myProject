@@ -43,6 +43,10 @@ switch ($tableName) {
 	case 'package_promotion_details':
 		header("location:form_package_promotion_details.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
+
+		case 'service_list_promotion_details':
+		header("location:form_service_list_promotion_details.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		break;
 }
 
 include('../config/config.php');
