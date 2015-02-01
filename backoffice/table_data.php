@@ -812,6 +812,12 @@ if($tableName == 'withdraws') {
 							<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
 						</a>
 						<?
+					} else if($tableName == 'sales') {
+						?>
+						<a title="พิมพ์ใบเสร็จ">
+							<i class="fa fa-file-text-o" onclick="openPrintReceipt('<?=$code?>')"></i>
+						</a>
+						<?
 					}
 					if($displayEditBtn) {
 					?>

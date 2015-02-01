@@ -10,6 +10,7 @@ $cash			= $_REQUEST['cash'];
 $change			= 0;
 $subtotal 		= 0;
 $totalAmount 	= 0;
+$printImmediately = true;
 
 if(hasValue($sale_id)) {
 	// Get spa data
@@ -37,7 +38,8 @@ if(hasValue($sale_id)) {
 					e.emp_id,
 					s.sale_discout,
 					s.sale_prm_discout,
-					s.sale_total_price 
+					s.sale_total_price,
+					s.sale_pay_price 
 			FROM 	sales s, employees e 
 			WHERE 	s.emp_id = e.emp_id 
 			 		AND s.sale_id = '$sale_id' LIMIT 1";
@@ -51,9 +53,11 @@ if(hasValue($sale_id)) {
 			'emp_id' 			=> $saleRecord['emp_id'],
 			'sale_discout' 		=> $saleRecord['sale_discout'],
 			'sale_prm_discout' 	=> $saleRecord['sale_prm_discout'],
-			'sale_total_price' 	=> number_format($saleRecord['sale_total_price'], 2)
+			'sale_total_price' 	=> number_format($saleRecord['sale_total_price'], 2),
+			'sale_pay_price' 	=> number_format($saleRecord['sale_pay_price'], 2)
 			
 	);
+	$cash = $saleRecord['sale_pay_price'];
 	$change = number_format($cash - $saleRecord['sale_total_price'], 2);
 	$smarty->assign('saleData', $saleData);
 
@@ -143,5 +147,9 @@ if(hasValue($sale_id)) {
 
 }
 $smarty->assign('randNum', substr(str_shuffle('0123456789'), 0, 5));
+if(hasValue($_REQUEST['printImmediately'])) {
+	$printImmediately = (bool)$_REQUEST['printImmediately'];
+}
+$smarty->assign('printImmediately', $printImmediately);
 include('../common/common_footer.php');
 ?>

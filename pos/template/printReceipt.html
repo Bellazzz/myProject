@@ -20,6 +20,9 @@
 		}
 	</style>
 	<style type="text/css">
+		body {
+			max-width: 300px;
+		}
 		.listOfProduct{
 			width: 100%;
 
@@ -42,7 +45,11 @@
 		}
 	</style>
 </head>
+{if $printImmediately}
 <body onload="window.print();">
+{else}
+<body>
+{/if}
 <center>
 	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:30%; height:30%;" ><br>
 	{$spaData.spa_name} <br>
@@ -107,7 +114,7 @@
 	</tr>
 	<tr>
 		<td colspan="3" >Cash</td>	
-		<td style="text-align:right;">{$cash}</td>
+		<td style="text-align:right;">{$saleData.sale_pay_price}</td>
 	</tr>
 	<tr>
 		<td colspan="3">Change</td>	

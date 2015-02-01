@@ -39,7 +39,8 @@ if($code == '') {
 		date('H:i:s'),
 		$saleDiscout,
 		$sale_prm_discout,
-		$formData['total-price']
+		$formData['total-price'],
+		$formData['pay-price']
 	);
 
 	$salesRecord = new TableSpa('sales', $saleValues);
