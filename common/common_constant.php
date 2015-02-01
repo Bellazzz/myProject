@@ -975,10 +975,11 @@ function dbClose() {
 						'sale_time'	  		  => 'เวลาที่ขาย',
 						'sale_discout'		  => 'ส่วนลดการขาย',
 						'sale_prm_discout' 	  => 'ส่วนลดโปรโมชั่น',
-						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)'
+						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)',
+						'sale_pay_price'	  => 'รับเงินมา'
 				),
 				'searchFields'	=> array('sale_id','emp_id','sale_date'),
-				'hiddenFields'	=> array('sale_discout','sale_prm_discout'),
+				'hiddenFields'	=> array('sale_discout','sale_prm_discout','sale_pay_price'),
 				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายรหัส %f1 ที่ขายในวันที่ %f2 เวลา %f3 น. ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2',

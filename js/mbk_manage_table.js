@@ -832,6 +832,13 @@ function openPrintPurchaseOrder(ordId) {
     //$('#manage-box').addClass('large');
 }
 
+function openPrintReceipt(saleId) {
+    var src = 'printReceiptBOF.php?sale_id=' + saleId + '&hideBackButton=true';
+    openManageBox({
+        formSrc: src
+    });
+}
+
 function showTableTooltip(top, left, text) {
 	var htmlTooltip = '<div class="table-tooltip">' + text + '</div>';
 	$('body').append(htmlTooltip);
