@@ -101,7 +101,7 @@ function saveRecord() {
 		},
 		success:
 		function (responseJSON) {
-			alert(responseJSON);
+			//alert(responseJSON);
 			var response = $.parseJSON(responseJSON);
 			if (response.status == 'ADD_PASS') {
 				// Add record success

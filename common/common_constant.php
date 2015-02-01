@@ -1371,9 +1371,9 @@ function dbClose() {
 						'svlprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
 						'svlprmdtl_discout'	  		=> 'ส่วนลด'
 				),
-				'hiddenFields' 			=> array('svlprmdtl_discout_types'),
+				'hiddenFields' 			=> array('svlprmdtl_discout_type'),
 				'defaultNull' 			=> array('svlprmdtl_enddate'),
-				'searchFields'			=> array('svlprm_id','svl_id','svlprmdtl_startdate','svlprmdtl_enddate','svlprmdtl_discout_types','svlprmdtl_discout'),
+				'searchFields'			=> array('svlprm_id','svl_id','svlprmdtl_startdate','svlprmdtl_enddate','svlprmdtl_discout_type','svlprmdtl_discout'),
 				'deleteTxtField'		=> array('svl_id','svlprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการบริการ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('todayOnward_service_list_promotions','service_lists')
