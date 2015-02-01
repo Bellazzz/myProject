@@ -2,11 +2,11 @@
 include('../config/config.php');
 include('../common/common_header.php');
 
-$prdprm_id 		= '';
+$pkgprm_id 		= '';
 $startdate 		= '';
 $enddate 		= '';
-if(hasValue($_POST['prdprm_id'])) {
-	$prdprm_id = $_POST['prdprm_id'];
+if(hasValue($_POST['pkgprm_id'])) {
+	$pkgprm_id = $_POST['pkgprm_id'];
 }
 if(hasValue($_POST['startdate'])) {
 	$startdate = $_POST['startdate'];
@@ -15,25 +15,25 @@ if(hasValue($_POST['enddate'])) {
 	$enddate = $_POST['enddate'];
 }
 
-$sql = "SELECT 		prmprd.prmprd_startdate,
-					prmprd.prmprd_enddate 
-		FROM 		product_promotions prdprm,
-					promotion_products prmprd  
-		WHERE 		prdprm.prdprm_id = prmprd.prdprm_id 
-					AND prdprm.prdprm_id = '$prdprm_id' ";
+$sql = "SELECT 		pkgprmdtl.pkgprmdtl_startdate,
+					pkgprmdtl.pkgprmdtl_enddate 
+		FROM 		package_promotions pkgprm,
+					package_promotion_details pkgprmdtl  
+		WHERE 		pkgprm.pkgprm_id = pkgprmdtl.pkgprm_id 
+					AND pkgprm.pkgprm_id = '$pkgprm_id' ";
 
 if($enddate == '') {
-	$sql .= " AND prmprd_startdate < '$startdate' ";
+	$sql .= " AND pkgprmdtl_startdate < '$startdate' ";
 } else {
 	$sql .= " AND (
-				prmprd_startdate < '$startdate' 
-				OR prmprd_startdate > '$enddate' 
-				OR prmprd_enddate IS NULL 
-				OR prmprd_enddate < '$startdate' 
-				OR prmprd_enddate > '$enddate' 
+				pkgprmdtl_startdate < '$startdate' 
+				OR pkgprmdtl_startdate > '$enddate' 
+				OR pkgprmdtl_enddate IS NULL 
+				OR pkgprmdtl_enddate < '$startdate' 
+				OR pkgprmdtl_enddate > '$enddate' 
 			  )";
 }
-$sql .= " ORDER BY prmprd.prmprd_startdate ASC";
+$sql .= " ORDER BY pkgprmdtl.pkgprmdtl_startdate ASC";
 
 $result 	= mysql_query($sql, $dbConn);
 $rows 		= mysql_num_rows($result);
@@ -46,18 +46,18 @@ if($rows > 0) {
 
 	for($i=0; $i<$rows; $i++) {
 		$tmpRecord = mysql_fetch_assoc($result);
-		$tmpRecord['prmprd_startdate'] = dateThaiFormat($tmpRecord['prmprd_startdate']);
-		if(hasValue($tmpRecord['prmprd_enddate'])) {
-			$tmpRecord['prmprd_enddate'] = dateThaiFormat($tmpRecord['prmprd_enddate']);
+		$tmpRecord['pkgprmdtl_startdate'] = dateThaiFormat($tmpRecord['pkgprmdtl_startdate']);
+		if(hasValue($tmpRecord['pkgprmdtl_enddate'])) {
+			$tmpRecord['pkgprmdtl_enddate'] = dateThaiFormat($tmpRecord['pkgprmdtl_enddate']);
 		} else {
-			$tmpRecord['prmprd_enddate'] = 'ไม่มีกำหนด';
+			$tmpRecord['pkgprmdtl_enddate'] = 'ไม่มีกำหนด';
 		}
 
-		if($tmpRecord['prmprd_startdate'] == $tmpRecord['prmprd_enddate']) {
-			$prmTime = $tmpRecord['prmprd_startdate'];
+		if($tmpRecord['pkgprmdtl_startdate'] == $tmpRecord['pkgprmdtl_enddate']) {
+			$prmTime = $tmpRecord['pkgprmdtl_startdate'];
 		} else {
-			$prmTime = $tmpRecord['prmprd_startdate'].' - '
-					 . $tmpRecord['prmprd_enddate'];
+			$prmTime = $tmpRecord['pkgprmdtl_startdate'].' - '
+					 . $tmpRecord['pkgprmdtl_enddate'];
 		}
 
 		array_push($response['notCoverList'], $prmTime);
