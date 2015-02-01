@@ -713,6 +713,25 @@ switch ($tableName) {
 		$sortBy = $sortBySpecial;
 		break;
 
+	case 'service_list_promotion_details':
+		$where = 'WHERE p.svl_id = d.svl_id and t.svlprm_id = d.svlprm_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('svlprm_id', 't.svlprm_name', $like);
+			$like	= str_replace('svl_id', 'p.svl_name', $like);
+			$where .= " AND $like";
+		}
+		$sql = "SELECT d.svlprmdtl_id,
+				t.svlprm_name svlprm_id,
+				p.svl_name svl_id,
+				d.svlprmdtl_startdate,
+				d.svlprmdtl_enddate,
+				COALESCE(CONCAT(d.svlprmdtl_discout,' ', d.svlprmdtl_discout_type)) svlprmdtl_discout_type 
+				FROM service_list_promotion_details d, service_list_promotions t, service_lists p 
+				$where 
+				$orderSpecial";
+		$sortBy = $sortBySpecial;
+		break;
+
 	default:
 		if(hasValue($like)) {
 			$where = "WHERE $like";

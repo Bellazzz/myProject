@@ -1371,7 +1371,7 @@ function dbClose() {
 						'svlprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
 						'svlprmdtl_discout'	  		=> 'ส่วนลด'
 				),
-				'hiddenFields' 			=> array('svlprmdtl_discout_type'),
+				'hiddenFields' 			=> array('svlprmdtl_discout'),
 				'defaultNull' 			=> array('svlprmdtl_enddate'),
 				'searchFields'			=> array('svlprm_id','svl_id','svlprmdtl_startdate','svlprmdtl_enddate','svlprmdtl_discout_type','svlprmdtl_discout'),
 				'deleteTxtField'		=> array('svl_id','svlprm_id'),
