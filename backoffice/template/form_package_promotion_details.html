@@ -257,16 +257,16 @@
             if(pkgprm_id != '') {
                 for(i in refPkgprmData) {
                     if(refPkgprmData[i].refValue == pkgprm_id) {
-                        var startDate = new Date(realDateToTmpDate(refPkgprmData[i].pkgprmdtl_startdate));
+                        var startDate = new Date(realDateToTmpDate(refPkgprmData[i].pkgprm_startdate));
                         
-                        if(refPkgprmData[i].pkgprmdtl_enddate == '') {
+                        if(refPkgprmData[i].pkgprm_enddate == '') {
                             // no enddate
                             if(selfDate.getTime() < startDate.getTime()) {
                                 showAlertInvalidDate(self, 'notInPrmTime');
                             }
                         } else {
                             // have enddate
-                            var endDate = new Date(realDateToTmpDate(refPkgprmData[i].pkgprmdtl_enddate));
+                            var endDate = new Date(realDateToTmpDate(refPkgprmData[i].pkgprm_enddate));
 
                             if(selfDate.getTime() < startDate.getTime() || 
                                selfDate.getTime() > endDate.getTime()) {

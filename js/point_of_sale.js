@@ -1028,6 +1028,7 @@ function openPayBox() {
 
 		if(validateMoney($(this).val()) && payMoney >= totalPrice) {
 			var change = payMoney - totalPrice;
+			$('#pay-price').val(payMoney);
 			$('#changeMoney').text(change.formatMoney(2, '.', ','));
 		} else if($(this).val() != '') {
 			showPopupBox({

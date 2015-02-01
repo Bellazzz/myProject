@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
     <style type="text/css">
-        #pkgprmTime {
+        #svlprmTime {
             display: none;
             margin-top: -12px;
             margin-bottom: 15px;
@@ -63,9 +63,8 @@
         var ajaxUrl     = 'form_service_list_promotion_details.php';
         var refSvlData      = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
         var refSvlprmData   = {/literal}{$referenceData["todayOnward_service_list_promotions"]|@json_encode}{literal};
-        var curPkgPrice     = null;
-        var curPrdPrmType   = '';
-        var curPrdPrmGrpId  = '';
+        var curSvlPrice     = null;
+        var curCusTypeId     = '';
 
         // Check if not have product promotion now
         {/literal}
@@ -99,14 +98,14 @@
                 defaultValue    : '{/literal}{$values.svl_id}{literal}',
                 success         : 
                 function () {
-                    setCurPrdPrice();
-                    calPreviewPkgPrice();
+                    setCurSvlPrice();
+                    calPreviewSvlPrice();
                 },
                 onOptionSelect  : 
                 function() {
-                    setCurPrdPrice();
+                    setCurSvlPrice();
                     validateDiscout();
-                    calPreviewPkgPrice();
+                    calPreviewSvlPrice();
                 }
             });
 
@@ -118,10 +117,10 @@
                 function() {
                     $('#svlprmdtl_startdate').val('');
                     $('#svlprmdtl_enddate').val('');
-                    pkgprmIdChange();
+                    svlprmIdChange();
                     validateDiscout();
                 },
-                success         : pkgprmIdChange
+                success         : svlprmIdChange
             });
 
             $('#svlprmdtl_startdate').datetimepicker({
@@ -202,12 +201,12 @@
             }
         });
 
-        function setCurPrdPrice() {
+        function setCurSvlPrice() {
             var svl_id = $('#svl_id').find('.selectReferenceJS-input').val();
             if(svl_id != '') {
                 for(i in refSvlData) {
                     if(refSvlData[i].refValue == svl_id) {
-                        curPkgPrice = parseFloat(refSvlData[i].prd_price);
+                        curSvlPrice = parseFloat(refSvlData[i].svl_price);
                         break;
                     }
                 } 
@@ -258,16 +257,16 @@
             if(svlprm_id != '') {
                 for(i in refSvlprmData) {
                     if(refSvlprmData[i].refValue == svlprm_id) {
-                        var startDate = new Date(realDateToTmpDate(refSvlprmData[i].svlprmdtl_startdate));
+                        var startDate = new Date(realDateToTmpDate(refSvlprmData[i].svlprm_startdate));
                         
-                        if(refSvlprmData[i].svlprmdtl_enddate == '') {
+                        if(refSvlprmData[i].svlprm_enddate == '') {
                             // no enddate
                             if(selfDate.getTime() < startDate.getTime()) {
                                 showAlertInvalidDate(self, 'notInPrmTime');
                             }
                         } else {
                             // have enddate
-                            var endDate = new Date(realDateToTmpDate(refSvlprmData[i].svlprmdtl_enddate));
+                            var endDate = new Date(realDateToTmpDate(refSvlprmData[i].svlprm_enddate));
 
                             if(selfDate.getTime() < startDate.getTime() || 
                                selfDate.getTime() > endDate.getTime()) {
@@ -336,16 +335,16 @@
         }
 
         function validateDiscout() {
-            if($('#svlprmdtl_discout').val() == '' || curPrdPrmType == 'ฟรี') {
+            if($('#svlprmdtl_discout').val() == '') {
                 return;
             }
 
             var discout = parseFloat($('#svlprmdtl_discout').val());
 
             if($('input[name="svlprmdtl_discout_type"]:checked').val() == 'บาท') {
-                if(curPkgPrice != null && discout >= curPkgPrice) {
+                if(curSvlPrice != null && discout >= curSvlPrice) {
                     var msg = $('#svl_id').find('.selectReferenceJS-text').text()
-                            + ' ราคา ' + curPkgPrice.formatMoney(2, '.', ',') + ' บาท '
+                            + ' ราคา ' + curSvlPrice.formatMoney(2, '.', ',') + ' บาท '
                             + 'คุณไม่สามารถกำหนดส่วนลดให้มากกว่าหรือเท่ากับราคาผลิตภัณฑ์ได้';
 
                     parent.showActionDialog({
@@ -361,7 +360,7 @@
                                     parent.hideActionDialog();
                                     $('#svlprmdtl_discout').val('');
                                     $('#svlprmdtl_discout').focus();
-                                    calPreviewPkgPrice();
+                                    calPreviewSvlPrice();
                                 }
                             }
                         ],
@@ -370,7 +369,7 @@
                     return;
                 }
             } else if($('input[name="svlprmdtl_discout_type"]:checked').val() == '%') {
-                if(curPkgPrice != null && discout >= 100) {
+                if(curSvlPrice != null && discout >= 100) {
                     parent.showActionDialog({
                         title: 'ส่วนลดไม่ถูกต้อง',
                         message: '%ส่วนลดต้องน้อยกว่า 100%',
@@ -384,7 +383,7 @@
                                     parent.hideActionDialog();
                                     $('#svlprmdtl_discout').val('');
                                     $('#svlprmdtl_discout').focus();
-                                    calPreviewPkgPrice();
+                                    calPreviewSvlPrice();
                                 }
                             }
                         ],
@@ -393,15 +392,15 @@
                     return;
                 }
             }
-            calPreviewPkgPrice();
+            calPreviewSvlPrice();
         }
 
-        function calPreviewPkgPrice() {
+        function calPreviewSvlPrice() {
             var discout = parseFloat($('#svlprmdtl_discout').val());
 
             // Product Price
-            if(curPkgPrice != null) {
-                $('#preview-svl_price').text(curPkgPrice.formatMoney(2, '.', ','));
+            if(curSvlPrice != null) {
+                $('#preview-svl_price').text(curSvlPrice.formatMoney(2, '.', ','));
             }
 
             // Discout
@@ -410,14 +409,14 @@
                 $('#preview-discout').text('0.00');
             } else {
                 if($('input[name="svlprmdtl_discout_type"]:checked').val() == '%') {
-                    discout = Math.round(parseFloat(curPkgPrice * discout / 100));
+                    discout = Math.round(parseFloat(curSvlPrice * discout / 100));
                 }
                 $('#preview-discout').text(discout.formatMoney(2, '.', ','));
             }
 
             // Promotion Price
-            if(curPkgPrice != null) {
-                $('#preview-svl_price').text(parseFloat(curPkgPrice - discout).formatMoney(2, '.', ','));
+            if(curSvlPrice != null) {
+                $('#preview-svlPrm_price').text(parseFloat(curSvlPrice - discout).formatMoney(2, '.', ','));
             }
         }
 
@@ -433,12 +432,11 @@
                 url: '../common/ajaxCheckServiceListPromotionDetailsTimeOverlap.php',
                 type: 'POST',
                 data: {
-                    svlprm_id       : code,
+                    svlprmdtl_id       : code,
                     svl_id          : $('input[name="svl_id"]').val(),
                     startdate       : tmpDateToRealDate($('#svlprmdtl_startdate').val()),
                     enddate         : tmpDateToRealDate($('#svlprmdtl_enddate').val()),
-                    prdprm_type     : curPrdPrmType,
-                    prdprmgrp_id    : curPrdPrmGrpId
+                    custype_id      : curCusTypeId
                 },
                 success:
                 function(responseJSON) {
@@ -450,12 +448,12 @@
                         }
                         overlapListHTML += '</ul>';
 
-                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ของผลิตภัณฑ์ ' 
+                        var msg = 'คุณกำหนดระยะเวลาโปรโมชั่นของรายการบริการ ' 
                                 + $('#svl_id').find('.selectReferenceJS-text').text()
                                 + ' ซ้อนทับกับช่วงเวลาดังต่อไปนี้' + overlapListHTML 
                                 + '<br>โปรดแก้ไขระยะเวลาโปรโมชั่นไม่ให้อยู่ในช่วงเวลาดังกล่าว';
                         parent.showActionDialog({
-                            title: 'ระยะเวลาโปรโมชั่น' + response.prdprm_type + 'ซ้อนทับกัน',
+                            title: 'จัดโปรโมชั่นรายการบริการซ้อนทับกัน',
                             message: msg,
                             actionList: [
                                 {
@@ -488,50 +486,32 @@
             return returnVal;
         }
 
-        function pkgprmIdChange() {
+        function svlprmIdChange() {
             for(i in refSvlprmData) {
                 if(refSvlprmData[i].refValue == $('#svlprm_id').find('.selectReferenceJS-input').val()) {
-                    curPrdPrmType  = refSvlprmData[i].prdprm_type;
-                    curPrdPrmGrpId = refSvlprmData[i].prdprmgrp_id;
+                    curCusTypeId  = refSvlprmData[i].custype_id;
                     // Gen promotion time text
-                    var timeTxt = '(ประเภทโปรโมชั่น: ' + curPrdPrmType + ', ระยะเวลาโปรโมชั่น: ';
-                    if(refSvlprmData[i].svlprmdtl_enddate == '') {
-                        timeTxt += realDateToThaiDate(refSvlprmData[i].svlprmdtl_startdate) + ' - ไม่มีกำหนด)';
-                    } else if(refSvlprmData[i].svlprmdtl_startdate == refSvlprmData[i].svlprmdtl_enddate) {
-                        timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refSvlprmData[i].svlprmdtl_startdate) + ')';
+                    var timeTxt = '(ระยะเวลาโปรโมชั่น: ';
+                    if(refSvlprmData[i].svlprm_enddate == '') {
+                        timeTxt += realDateToThaiDate(refSvlprmData[i].svlprm_startdate) + ' - ไม่มีกำหนด)';
+                    } else if(refSvlprmData[i].svlprm_startdate == refSvlprmData[i].svlprm_enddate) {
+                        timeTxt += 'เฉพาะวันที่ ' + realDateToThaiDate(refSvlprmData[i].svlprm_startdate) + ')';
                     } else {
-                        timeTxt += realDateToThaiDate(refSvlprmData[i].svlprmdtl_startdate) + ' - '
-                                 + realDateToThaiDate(refSvlprmData[i].svlprmdtl_enddate) + ')';
+                        timeTxt += realDateToThaiDate(refSvlprmData[i].svlprm_startdate) + ' - '
+                                 + realDateToThaiDate(refSvlprmData[i].svlprm_enddate) + ')';
                     }
-                    $('#pkgprmTime').text(timeTxt);
-                    $('#pkgprmTime').css('display','block');
-
-                    // Show for sale type
-                    if(curPrdPrmType == 'ลดราคา') {
-                        $('.showForSale').css('visibility', 'visible');
-                        $('.discout_type_hidden').prop('disabled', true);
-                        $('.discout_hidden').prop('disabled', true);
-                        $('.discout_type_radio').prop('disabled', false);
-                        $('#svlprmdtl_discout').prop('disabled', false);
-                    } else if(curPrdPrmType == 'ฟรี'){
-                        $('.showForSale').css('visibility', 'hidden');
-                        $('.discout_type_radio').prop('disabled', true);
-                        $('#svlprmdtl_discout').prop('disabled', true);
-                        $('.discout_type_hidden').prop('disabled', false);
-                        $('.discout_hidden').prop('disabled', false);
-                        $('#svlprmdtl_discout').removeClass('required');
-                        $('.err-svlprmdtl_discout').css('display', 'none');
-                    }
+                    $('#svlprmTime').text(timeTxt);
+                    $('#svlprmTime').css('display','block');
 
                     // Add or remove require of enddate
-                    if(refSvlprmData[i].svlprmdtl_enddate == '') {
+                    if(refSvlprmData[i].svlprm_enddate == '') {
                         $('#svlprmdtl_enddate').removeClass('required');
                         $('.err-svlprmdtl_enddate').css('display', 'none');
                         $('#svlprmdtl_enddate').removeAttr('require');
-                        $('#prmprd_enddate_label').removeClass('input-required');
+                        $('#svlprmdtl_enddate_label').removeClass('input-required');
                     } else {
                         $('#svlprmdtl_enddate').attr('require', '');
-                        $('#prmprd_enddate_label').addClass('input-required');
+                        $('#svlprmdtl_enddate_label').addClass('input-required');
                         $('#svlprmdtl_enddate').focusout(validateInput);
                     }
                     break;
@@ -613,7 +593,7 @@
                 <td colspan="2">
                     <label class="input-required">โปรโมชั่นรายการบริการที่จัด</label>
                     <div id="svlprm_id" class="selectReferenceJS form-input full" require></div>
-                    <span id="pkgprmTime"></span>
+                    <span id="svlprmTime"></span>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -627,7 +607,7 @@
                     <input id="svlprmdtl_startdate" name="svlprmdtl_startdate" type="text" class="mbk-dtp-th form-input half" value="{$values.svlprmdtl_startdate}" require>
                 </td>
                 <td>
-                    <label id="prmprd_enddate_label">วันที่สิ้นสุด</label>
+                    <label id="svlprmdtl_enddate_label">วันที่สิ้นสุด</label>
                     <input id="svlprmdtl_enddate" name="svlprmdtl_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.svlprmdtl_enddate}">
                 </td>
             </tr>
@@ -642,7 +622,6 @@
             <tr class="showForSale">
                 <td colspan="2">
                     <label class="input-required">รูปแบบส่วนลด</label>
-                    <input type="hidden" name="svlprmdtl_discout_type" value="" class="discout_type_hidden">
                     <label style="display:inline-block;"><input type="radio" name="svlprmdtl_discout_type" value="บาท" class="discout_type_radio" checked> ราคาสุทธิ</label><br>
                     <label style="display:inline-block;"><input type="radio" name="svlprmdtl_discout_type" value="%" class="discout_type_radio"> เปอร์เซ็น</label><br><br>
                 </td>
@@ -651,7 +630,6 @@
                 <td colspan="2">
                     <label class="input-required">ส่วนลด (<span id="svlprmdtl_discout_type_text">บาท</span>)</label>
                     <input id="svlprmdtl_discout" name="svlprmdtl_discout" type="text" class="form-input full" value="{$values.svlprmdtl_discout}" valuepattern="money" require>
-                    <input name="svlprmdtl_discout" type="hidden" value="" class="discout_hidden">
                 </td>
             </tr>
             <tr class="errMsgRow showForSale">
@@ -678,7 +656,7 @@
         <li>
             <h2>ราคาโปรโมชั่น</h2>
             <p style="color: rgb(41, 127, 210);">
-                ฿<span id="preview-svl_price">0.00</span>
+                ฿<span id="preview-svlPrm_price">0.00</span>
             </p>
         </li>
     </ul>
