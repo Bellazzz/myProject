@@ -28,6 +28,10 @@
 				    <a id="printPurchaseOrd-btn" href="printPurchaseOrder.php?ordId={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบสั่งซื้อ
 				    </a>
+				    {elseif $tableName == 'sales'}
+				    <a id="printReceipt-btn" href="printReceiptBOF.php?sale_id={$code}">
+					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
+				    </a>
 				    {/if}
 				    
 				    {if !$hideEditButton}
