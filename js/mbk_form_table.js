@@ -194,6 +194,20 @@ function validateInput() {
 					$('#err-' + id + '-username').css('display', 'block');
 					$(this).addClass('required');
 				}
+    		} else if(attrPattern == 'moneyMorethanEqual') {
+    			if(!validateMoney(value)) {
+					$('#err-' + id + '-money').css('display', 'block');
+					$(this).addClass('required');
+				} else {
+					// validate less than
+					var thisVal 			= parseFloat(value);
+	    			var morethanEqualId 	= $(this).attr('data-morethanEqual-id');
+	    			var morethanEqualVal 	= parseFloat($('#' + morethanEqualId).val());
+	    			if(thisVal < morethanEqualVal) {
+	    				$('#err-' + id + '-moneyMorethanEqual').css('display', 'block');
+						$(this).addClass('required');
+	    			}
+				}
     		}
 		}
     }

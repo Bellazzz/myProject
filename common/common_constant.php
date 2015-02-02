@@ -957,7 +957,7 @@ function dbClose() {
 						'wdwdtl_amount' 	  => 'จำนวนที่เบิก'
 				),
 				'searchFields'	=> array('wdw_id','prd_id','wdwdtl_id','wdwtyp_id'),
-				'referenceData'			=> array('withdraws','products')
+				'referenceData'	=> array('withdraws','products')
 			);
 			break;
 
@@ -978,8 +978,8 @@ function dbClose() {
 						'sale_total_price' 	  => 'ราคาทั้งหมด(บาท)',
 						'sale_pay_price'	  => 'รับเงินมา'
 				),
-				'searchFields'	=> array('sale_id','emp_id','sale_date'),
-				'hiddenFields'	=> array('sale_discout','sale_prm_discout','sale_pay_price'),
+				'searchFields'		=> array('sale_id','emp_id','sale_date'),
+				'hiddenFields'		=> array('sale_discout','sale_prm_discout','sale_pay_price'),
 				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายรหัส %f1 ที่ขายในวันที่ %f2 เวลา %f3 น. ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2',

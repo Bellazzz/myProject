@@ -50,6 +50,9 @@ $(document).ready(function() {
 
     $('#sale_discout_val').change(checkSaleDiscout);
     $('input[name="sale_discout_type"]').click(checkSaleDiscout);
+
+    //Cal change money
+    $('#sale_pay_price').change(calSummary);
 });
 
 function saveOldPrdPrmGrp() {
@@ -729,5 +732,19 @@ function calSummary() {
     totalPrice -= sale_discout + sale_prm_discout + saleDiscoutPrm;
     totalPrice = Math.ceil(totalPrice);
     $('#sale_total_price').val(totalPrice.formatMoney(2, '.', ''));
+    
+    calChangeMoney(totalPrice);
+}
 
+function calChangeMoney(totalPrice) {
+    if($('#sale_pay_price').val() != '' && validateMoney($('#sale_pay_price').val())) {
+        totalPrice          = parseFloat(totalPrice);
+        var sale_pay_price  = parseFloat($('#sale_pay_price').val());
+        if(sale_pay_price >= totalPrice){
+            var change_money   = sale_pay_price - totalPrice;
+            $('#changeMoney').val(change_money.formatMoney(2, '.', ','));
+        } else {
+            $('#changeMoney').val("0.00");
+        }
+    }
 }
