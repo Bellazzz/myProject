@@ -22,6 +22,10 @@ if(!$_REQUEST['ajaxCall']) {
 			$values[$field] = $tableRecord->getFieldValue($field);
 		}
 		$smarty->assign('values', $values);
+		
+		//Cal change money
+		$changeMoney = $values['sale_pay_price'] - $values['sale_total_price'];
+		$smarty->assign('changeMoney', $changeMoney);
 
 		// Get table sale_details data
 		$valuesDetail = array();
@@ -98,7 +102,11 @@ if(!$_REQUEST['ajaxCall']) {
 		// Date thai format
 		$values['sale_date_th']  	= dateThaiFormat($values['sale_date']);
 		$smarty->assign('values', $values);
-		
+
+		//Cal change money
+		$changeMoney = $values['sale_pay_price'] - $values['sale_total_price'];
+		$smarty->assign('changeMoney', $changeMoney);
+
 		// Get detail of Sales
 		$sum_saledtl_amount = 0;
 		$sum_freeAmount 	= 0;

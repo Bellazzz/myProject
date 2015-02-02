@@ -227,6 +227,14 @@
                 <td>ราคาสุทธิ :</td>
                 <td>{$values.sale_total_price|number_format:2:".":","} บาท</td>
             </tr>
+            <tr>
+                <td>จำนวนเงินที่รับมา :</td>
+                <td>{$values.sale_pay_price|number_format:2:".":","} บาท</td>
+            </tr>
+             <tr>
+                <td>จำนวนเงินทอน :</td>
+                <td>{$changeMoney|number_format:2:".":","}  บาท</td>
+            </tr>
         </tbody>
     </table>
     <!--Sale Details Data-->
@@ -273,7 +281,7 @@
     {else}      
     <!-- ADD, EDIT -->   
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="emp_id,sale_date,sale_total_price,sale_time">
+	<input type="hidden" name="requiredFields" value="emp_id,sale_date,sale_total_price,sale_time,sale_pay_price">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
@@ -364,6 +372,34 @@
                 <td colspan="2">
                     <span id="err-sale_total_price-require" class="errInputMsg err-sale_total_price">โปรดป้อนราคาสุทธิ</span>
                     <span id="err-sale_total_price-money" class="errInputMsg err-sale_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                </td>
+            </tr>
+            <tr>
+                 <td colspan="2">
+                    <label>จำนวนเงินที่รับมา(บาท)</label>
+                   <input id="sale_pay_price" name="sale_pay_price" type="text" class="form-input full" 
+                   value="{if $values.sale_pay_price}{$values.sale_pay_price|number_format:2:".":""}{else}0.00{/if}" valuepattern="moneyMorethanEqual" data-morethanEqual-id="sale_total_price" require>
+                </td>         
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-sale_pay_price-require" class="errInputMsg err-sale_pay_price">โปรดป้อนจำนวนเงินที่รับมา</span>
+                    <span id="err-sale_pay_price-money" class="errInputMsg err-sale_pay_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                    <span id="err-sale_pay_price-moneyMorethanEqual" class="errInputMsg err-sale_pay_price">จำนวนเงินที่รับมาน้อยกว่าราคาสุทธิ กรุณาป้อนจำนวนเงินใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                 <td colspan="2">
+                    <label>เงินทอน(บาท)</label>
+                   <input id="changeMoney" name="changeMoney" type="text" class="form-input full readonly" 
+                   value="{if $changeMoney}{$changeMoney|number_format:2:".":","}{else}0.00{/if}" valuepattern="money" require readonly>
+                   <input name="sale_totalPrice_no_saleDiscout" type="hidden">
+                </td>         
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-changeMoney-require" class="errInputMsg err-changeMoney">โปรดป้อนเงินทอน</span>
+                    <span id="err-changeMoney-money" class="errInputMsg err-changeMoney">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>
             <tr class="prdprmgrp-row">
