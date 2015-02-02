@@ -391,6 +391,68 @@
         function setAllOrdPrd() {
             $('#allOrdPrd').text($('input[name="prd_id[]"]').length);
         }
+
+        function beforeSaveRecord() {
+            // Not check time overlap
+            if(hasInputError()) {
+                return false;
+            }
+
+            var returnVal = true; // false = no err, true = have err
+            var prdOrdList = {};
+
+            // Get product list
+            $('input[name="prd_id[]"]').each(function() {
+                var index   = $(this).val();
+                var qty     = $(this).parent().parent().parent().find('input[name="prd_qty[]"]').val();
+                prdOrdList[index] = {
+                    prd_id  : index,
+                    qty     : qty
+                };
+            });
+
+            $.ajax({
+                url: '../common/ajaxRemindProductMaxAmount.php',
+                type: 'POST',
+                data: {
+                    prdOrdList : prdOrdList
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'OVER') {
+                        var msg = 'ผลิตภัณฑ์ที่คุณสั่งซื้อมีจำนวนในคลังสินค้าเกินกว่ากำหนด ได้แก่<br>' 
+                                + response.overListHtml
+                                + '<br>โปรดแก้ไขจำนวนที่สั่งซื้อของผลิตภัณฑ์ดังกล่าวใหม่';
+                        parent.showActionDialog({
+                            title: 'จำนวนในคลังสินค้าเกินกว่ากำหนด',
+                            message: msg,
+                            actionList: [
+                                {
+                                    id: 'ok',
+                                    name: 'ตกลง',
+                                    func:
+                                    function() {
+                                        parent.hideActionDialog();
+                                    }
+                                }
+                            ],
+                            boxWidth: 500
+                        });
+                    } else if(response.status == 'NOT_OVER') {
+                        if(action == 'ADD') {
+                                saveRecord();
+                        } else if(action == 'EDIT') {
+                                confirmSaveRecord();
+                        }
+                    } else {
+                        alert(response.status);
+                    }
+                }
+            });
+
+            return returnVal;
+        }
     </script>
     {/literal}
 </head>
