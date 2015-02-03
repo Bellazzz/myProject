@@ -95,6 +95,13 @@ $(document).ready(function () {
 	    $('#search-record-input').val('');
 	    searchRecord();
 	});
+
+    /*
+     * Remind product min amount
+     */
+    if(isRemindPrdMinAmount) {
+        remindProductMinAmount();
+    }
 });
 
 function init() {
@@ -847,4 +854,34 @@ function showTableTooltip(top, left, text) {
 }
 function hideTableTooltip() {
 	$('.table-tooltip').remove();
+}
+
+function remindProductMinAmount() {
+    $.ajax({
+        url: '../common/ajaxGetRemindProductMinAmount.php',
+        type: 'POST',
+        success:
+        function(responseJSON) {
+            var response = $.parseJSON(responseJSON);
+            if(response.status == 'OUT_OF_STOCK') {
+                var msg = 'ผลิตภัณฑ์ดังต่อไปนี้มีจำนวนคงเหลือน้อยกว่าจำนวนที่กำหนดไว้'
+                        + response.outOfStockListHtml;
+                parent.showActionDialog({
+                    title: 'ผลิตภัณฑ์คงเหลือน้อยกว่ากำหนด',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 500
+                });
+            }
+        }
+    });
 }
