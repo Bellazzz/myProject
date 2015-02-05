@@ -10,8 +10,12 @@
     <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
     <script type="text/javascript">
-    var isRemindPrdMinAmount = {/literal}{$isRemindPrdMinAmount}{literal};
-
+    /*
+     * Remind product min amount
+     */
+     {/literal}{if $emp_privileges.view_orders && $emp_privileges.insert_orders}{literal}
+        remindProductMinAmount();
+     {/literal}{/if}{literal}
     </script>
 	{/literal}
 </head>
@@ -37,12 +41,14 @@
                         จัดการข้อมูล
                     </a>
                 </li>
+                {if $emp_privileges.point_of_sale}
 				<li>
-                    <a href="../pos/select_shops.php" class="selected">
+                    <a href="../pos/select_shops.php">
                         <img src="../img/backoffice/nav-cacher.png"><br>
                         แคชเชียร์
                     </a>
                 </li>
+                {/if}
 				<li>
                     <a href="#">
                         <img src="../img/backoffice/nav-authen.png"><br>
@@ -71,6 +77,7 @@
 		</div>
 		<div class="sidebar" aria-expanded="true">
             <div class="sidebar-body">
+            {if $emp_privileges.manage_standard_tables}
                 <div class="tree-view">
 			        <div class="tree-view-root">
                         <a>
@@ -185,6 +192,7 @@
 				        </ul>
 			        </div>
 		        </div>
+            {/if}
 		        <div class="tree-view">
 			        <div class="tree-view-root">
                         <a>
@@ -395,12 +403,14 @@
                                     <span class="item-label">การตรวจธาตุ</span>
                                 </a>
 					        </li>
+                            {if $emp_privileges.view_orders}
 					        <li id="tn-orders">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-orders"></span>
                                     <span class="item-label">การสั่งซื้อ</span>
                                 </a>
 					        </li>
+                            {/if}
                             <!--<li id="tn-order_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-order-details"></span>
@@ -417,26 +427,33 @@
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-receive-details"></span>
                                     <span class="item-label">รายละเอียดการรับ</span>
-                                </a>-->
-                            </li>
+                                </a>
+                            </li>-->
+
+                            {if $emp_privileges.view_withdraws}
                             <li id="tn-withdraws">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-withdraws"></span>
                                     <span class="item-label">การเบิก</span>
                                 </a>
                             </li>
+                            {/if}
+
                             <!--<li id="tn-withdraw_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-withdraw_details"></span>
                                     <span class="item-label">รายละเอียดการเบิก</span>
-                                </a>-->
-                            </li>
+                                </a>
+                            </li>-->
+
+                            {if $emp_privileges.view_sales}
 					        <li id="tn-sales">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-sales"></span>
                                     <span class="item-label">การขาย</span>
                                 </a>
 					        </li>
+                            {/if}
                              <!--<li id="tn-sale_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-sale_details"></span>

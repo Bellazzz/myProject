@@ -2,8 +2,9 @@
 /*
  * Process Zone
  */
-include('../common/common_constant.php');
-include('../common/common_function.php');
+session_start();
+include('../config/config.php');
+include('../common/common_header.php');
 
 // Pre Valiable
 $tableName		= 'orders';
@@ -114,6 +115,21 @@ for($i = 0; $i < $rows; $i++) {
  * Display Zone
  */
 
+// Hide if no privileges
+$displayAddBtn 		= true;
+$displayEditBtn 	= true;
+$displayDeleteBtn 	= true;
+switch ($tableName) {
+	case 'orders':
+		if(!$emp_privileges['insert_orders'])
+			$displayAddBtn = false;
+		if(!$emp_privileges['update_orders'])
+			$displayEditBtn = false;
+		if(!$emp_privileges['delete_orders'])
+			$displayDeleteBtn = false;
+		break;
+}
+
 if($rows > 0){
 //Has record will display table data
 ?>
@@ -135,21 +151,25 @@ if($rows > 0){
 				}
 				?>
 					<td class="action-col">
-						<a title="ดูใบสั่งซื้อ">
-							<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
-						</a>
-						<?
-						if($filter == 'WAIT') {
-						?>
-						<a title="แก้ไข">
-							<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
-						</a>
-						<a title="ลบ">
-							<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
-						</a>
-						<?
-						}
-						?>
+					<?php
+					?>
+						<?php if ($emp_privileges['print_purchase_orders']) { ?>
+							<a title="ดูใบสั่งซื้อ">
+								<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
+							</a>
+						<?php } ?>
+						<?php if($filter == 'WAIT') { ?>
+							<?php if($displayEditBtn) { ?>
+								<a title="แก้ไข">
+									<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
+								</a>
+							<?php } ?>
+							<?php if($displayDeleteBtn) { ?>
+								<a title="ลบ">
+									<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
+								</a>
+							<?php } ?>
+						<?php } ?>
 					</td>
 			<?
 			$offset = 0;
@@ -248,6 +268,19 @@ if($rows > 0){
 	// Config column
 	configColumn(<? echo count($tableInfo['fieldNameList']); ?>);
 
-	//$('#tmpScriptTableData1').remove();
-	//$('#tmpScriptTableData2').remove();
+	// Hide or show AddBtn
+	<?php
+	if($displayAddBtn) {
+		?>
+		$('#add-record-btn').css('visibility', 'visible');
+		<?php
+	} else {
+		?>
+		$('#add-record-btn').css('visibility', 'hidden');
+		<?php
+	}
+	?>
+
+	$('#tmpScriptTableData1').remove();
+	$('#tmpScriptTableData2').remove();
 </script>

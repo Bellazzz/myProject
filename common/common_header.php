@@ -37,7 +37,26 @@
 	/*
 	 * Get Privileges
 	 */
-	$emp_privileges = array();
+	$emp_privileges = array(
+		'view_withdraws' 		=> false,
+		'insert_withdraws' 		=> false,
+		'update_withdraws' 		=> false,
+		'delete_withdraws' 		=> false,
+
+		'view_sales' 			=> false,
+		'insert_sales' 			=> false,
+		'update_sales' 			=> false,
+		'delete_sales' 			=> false,
+
+		'view_orders' 			=> false,
+		'insert_orders' 		=> false,
+		'update_orders' 		=> false,
+		'delete_orders' 		=> false,
+		'print_purchase_orders' => false,
+
+		'manage_standard_tables'=> false,
+		'point_of_sale'			=> false
+	);
 	if(isset($session_emp_id)) {
 		$sql = "SELECT  	p.privlg_name 
 				FROM 		privileges p, 
@@ -49,8 +68,9 @@
 		if($rows > 0) {
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
-				array_push($emp_privileges, $record['privlg_name']);
+				$emp_privileges[$record['privlg_name']] = true;
 			}
+			$smarty->assign("emp_privileges", $emp_privileges);
 		}
 	}
 ?>

@@ -76,7 +76,7 @@ body {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 3;
+	z-index: 7;
     overflow: hidden;
 }
 #header-logo {
@@ -975,6 +975,7 @@ table.mbk .icon {
     min-width: 600px;
     background: white;
     overflow-y: auto;
+    box-shadow: -4px 0px 20px rgba(0,0,0,0.33);
 }
 #manage-box.large {
     min-width: 1050px;
@@ -1034,7 +1035,7 @@ table.mbk .icon {
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.2);
-    z-index: 7;
+    z-index: 8;
 }
 .action-dialog {
     position: fixed;

@@ -771,21 +771,32 @@ for($i = 0; $i < $rows; $i++) {
  * Display Zone
  */
 
-if($rows > 0){
-//Has record will display table data
-
 // Hide if no privileges
+$displayAddBtn 		= true;
 $displayEditBtn 	= true;
 $displayDeleteBtn 	= true;
-if($tableName == 'withdraws') {
-	if(!in_array('แก้ไขการเบิก', $emp_privileges)) {
-		$displayEditBtn = false;
-	}
-	if(!in_array('ลบการเบิก', $emp_privileges)) {
-		$displayDeleteBtn = false;
-	}
+switch ($tableName) {
+	case 'withdraws':
+		if(!$emp_privileges['insert_withdraws'])
+			$displayAddBtn = false;
+		if(!$emp_privileges['update_withdraws'])
+			$displayEditBtn = false;
+		if(!$emp_privileges['delete_withdraws'])
+			$displayDeleteBtn = false;
+		break;
+
+	case 'sales':
+		if(!$emp_privileges['insert_sales'])
+			$displayAddBtn = false;
+		if(!$emp_privileges['update_sales'])
+			$displayEditBtn = false;
+		if(!$emp_privileges['delete_sales'])
+			$displayDeleteBtn = false;
+		break;
 }
 
+if($rows > 0){
+//Has record will display table data
 ?>
 <table class="mbk mbk-table-sortable">
 	<? include('table_data_thead.php') ?>
@@ -806,15 +817,9 @@ if($tableName == 'withdraws') {
 							<i class="fa fa-credit-card" onclick="openPrintEmpCard('<?=$code?>')"></i>
 						</a>
 						<?
-					} else if($tableName == 'orders') {
+					} else if($tableName == 'sales' && $emp_privileges["print_sales_receipt"]) {
 						?>
-						<a title="พิมพ์ใบสั่งซื้อ">
-							<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
-						</a>
-						<?
-					} else if($tableName == 'sales') {
-						?>
-						<a title="พิมพ์ใบเสร็จ">
+						<a title="ดูใบเสร็จ">
 							<i class="fa fa-file-text-o" onclick="openPrintReceipt('<?=$code?>')"></i>
 						</a>
 						<?
@@ -954,6 +959,19 @@ if($tableName == 'withdraws') {
 
 	// Config column
 	configColumn(<? echo count($tableInfo['fieldNameList']); ?>);
+
+	// Hide or show AddBtn
+	<?php
+	if($displayAddBtn) {
+		?>
+		$('#add-record-btn').css('visibility', 'visible');
+		<?php
+	} else {
+		?>
+		$('#add-record-btn').css('visibility', 'hidden');
+		<?php
+	}
+	?>
 
 	$('#tmpScriptTableData1').remove();
 	$('#tmpScriptTableData2').remove();

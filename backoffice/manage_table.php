@@ -7,9 +7,5 @@ $subDir	 = WEB_ROOTDIR.'/backoffice/';
 
 include('../common/common_header.php');
 
-$isRemindPrdMinAmount = true;
-$smarty->assign('isRemindPrdMinAmount', $isRemindPrdMinAmount);
-
-
 include('../common/common_footer.php');
 ?>

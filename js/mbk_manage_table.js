@@ -95,13 +95,6 @@ $(document).ready(function () {
 	    $('#search-record-input').val('');
 	    searchRecord();
 	});
-
-    /*
-     * Remind product min amount
-     */
-    if(isRemindPrdMinAmount) {
-        remindProductMinAmount();
-    }
 });
 
 function init() {
