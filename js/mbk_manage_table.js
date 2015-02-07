@@ -577,11 +577,11 @@ function refreshFilterQuery() {
         }*/
         filterRecordQueryHTML  += '&emsp;&emsp;' + filterRetroactName + ' '
                                 + '<select id="query-record-filter-retroact" class="mbk-select">'
-                                + '     <option value="1">1 เดือนก่อน</option>'
-                                + '     <option value="3">3 เดือนก่อน</option>'
-                                + '     <option value="6">6 เดือนก่อน</option>'
-                                + '     <option value="9">9 เดือนก่อน</option>'
-                                + '     <option value="12">12 เดือนก่อน</option>'
+                                + '     <option value="1">1 เดือนที่ผ่านมา</option>'
+                                + '     <option value="3">3 เดือนที่ผ่านมา</option>'
+                                + '     <option value="6">6 เดือนที่ผ่านมา</option>'
+                                + '     <option value="9">9 เดือนที่ผ่านมา</option>'
+                                + '     <option value="12">12 เดือนที่ผ่านมา</option>'
                                 + '</select>'
                                 + ' ' + filterRetroactFrom;
     }
@@ -741,7 +741,7 @@ function openFormTable(action, code) {
         src += '&code=' + code;
     }
 
-    if(table.name == 'receives' || table.name == 'sales') {
+    if(table.name == 'receives' || table.name == 'sales' || table.name == 'services') {
         openManageBox({
             formSrc     : src,
             widthSize   : 'full'

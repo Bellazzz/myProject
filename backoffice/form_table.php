@@ -44,8 +44,12 @@ switch ($tableName) {
 		header("location:form_package_promotion_details.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 
-		case 'service_list_promotion_details':
+	case 'service_list_promotion_details':
 		header("location:form_service_list_promotion_details.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		break;
+
+	case 'services':
+		header("location:form_services.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
 }
 

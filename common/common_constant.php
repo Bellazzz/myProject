@@ -722,7 +722,7 @@ function dbClose() {
 				'deleteTxtField'		=> array('cus_id','ser_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการใช้บริการของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> '%f1 ใช้บริการวันที่ %f2',
-				'referenceData'			=> array('employees','customers','booking','beds','pay_types')
+				'referenceData'			=> array('employees','customers','customer_types','booking','beds','pay_types','packages', 'service_lists')
 
 			);
 			break;
@@ -769,9 +769,10 @@ function dbClose() {
 				'keyChar'		=> 'SK',
 				'keyLength'		=> 14,
 				'fieldNameList'	=> array(
-						'serpkg_id'	  		  => 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
-						'ser_id'	          => 'รหัสรายการใช้บริการ',
-						'serpkg_total_price'  => 'ราคารวม(บาท)'
+						'serpkg_id'	  		  	=> 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
+						'ser_id'	          	=> 'รหัสรายการใช้บริการ',
+						'serpkg_amount' 		=> 'จำนวนครั้งที่ใช้บริการ',
+						'serpkg_total_price'  	=> 'ราคารวม(บาท)'
 				),
 				'searchFields'	=> array('serpkg_id','ser_id')
 			);

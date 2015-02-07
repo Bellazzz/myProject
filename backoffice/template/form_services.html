@@ -13,13 +13,98 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript" src="../js/form_services.js"></script>
+    <style type="text/css">
+        .pkg_unit_price, .svl_unit_price, .pkg_sumPrm_price, .serpkg_price_txt,
+        .svl_sumPrm_price, .sersvl_price_txt {
+            width: 150px;
+            display: inline-block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            text-align: right;
+            padding: 5px;
+        }
+        .removePackageBtn, .removeServiceListBtn {
+            padding: 5px;
+            background: none repeat scroll 0% 0% #EEE;
+            border-radius: 3px;
+            margin-left: 40px;
+        }
+
+        .package-prm-row > td, .service-list-prm-row > td {
+            padding-left: 100px;
+        }
+        .prm-list-container {
+            width: 718px;
+            margin-bottom: 40px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            box-shadow: 0 2px 2px #ddd;
+        }
+        .prm-list {
+            position: relative;
+            height: 60px;
+            padding: 10px 10px 10px 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        .prm-list .prm-thumb {
+            width: 50px;
+            height: 50px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-color: #F0F0F0;
+            position: absolute;
+            left: 5px;
+            top: 5px;
+        }
+        .prm-list-container .prm-list:last-child {
+            border-bottom: 1px solid rgba(255,255,255,0);
+        }
+        .prm-list table {
+            width: 100%;
+            height: 100%;
+        }
+        .prm-list table td {
+            vertical-align: middle !important;
+            word-break: break-word;
+            font-size: 14px;
+        }
+        .prm-list table td.prm-name-col {
+            width: 412px;
+        }
+        .prm-list table td.amount-col {
+            width: 80px;
+            text-align: right !important;
+        }
+        .prm-list table td.discout-col {
+            text-align: right !important;
+            color: rgb(255, 68, 68) !important;
+        }
+
+        .prm-list table .prm-name {
+            color: #595959;
+        }
+        .prm-list table .discount-rate {
+            color: #b7b7b7;
+        }
+    </style>
     <script type="text/javascript">
         // Global variables
         var action      = '{/literal}{$action}{literal}';
         var tableName   = '{/literal}{$tableName}{literal}';
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_table.php';
+        var ajaxUrl     = 'form_services.php';
+        var refPkgData  = {/literal}{$referenceData["packages"]|@json_encode}{literal};
+        var refSvlData  = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
+        var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
+        var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
+        var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
+        var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
 
         $(document).ready(function () {
             selectReferenceJS({
@@ -29,8 +114,16 @@
             });
             selectReferenceJS({
                 elem            : $('#cus_id'),
-                data            : {/literal}{$referenceData["customers"]|@json_encode}{literal},
+                data            : refCusData,
+                allowChangeOption   : saveOldCusId,
+                onOptionSelect      : changeCusId,
                 defaultValue    : '{/literal}{$values.cus_id}{literal}'
+            });
+            selectReferenceJS({
+                elem            : $('#custype_id'),
+                data            : {/literal}{$referenceData["customer_types"]|@json_encode}{literal},
+                beforeShow      : allowChangeCusTypeId,
+                defaultValue    : '{/literal}{$values.custype_id}{literal}'
             });
             selectReferenceJS({
                 elem            : $('#paytyp_id'),
@@ -153,6 +246,12 @@
             </tr>
             <tr>
                 <td colspan="2">
+                    <label>ประเภทผู้ใช้บริการ</label>
+                    <div id="custype_id" class="selectReferenceJS form-input full"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
                     <label>รหัสการจอง</label>
                     <div id="bkg_id" class="selectReferenceJS form-input full"></div>
                 </td>
@@ -171,7 +270,7 @@
             <tr>
                 <td>
                     <label class="input-required">วันที่ใช้บริการ</label>
-                      <input id="ser_date" name="ser_date" type="text" class="mbk-dtp-th form-input half" value="{$values.ser_date}" require>
+                      <input id="ser_date" name="ser_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.ser_date}{$values.ser_date}{else}{$nowDate}{/if}" require>
                 </td>
                 <td>
                     <label class="input-required">เวลาที่ใช้บริการ</label>
@@ -217,6 +316,38 @@
             </tr>
 	    </tbody>
     </table>
+
+    <label class="article-title">รายละเอียดการใช้บริการแพ็คเกจ</label>
+    รายการแพ็คเกจทั้งหมด <span id="allPkg"></span> รายการ<br><br>
+    <table id="service-package-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+        <tbody>
+            <tr class="headTable-row">
+                <td><label class="input-required"><b>แพ็คเกจ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td align="right"><label>ส่วนลด</label></td>
+                <td align="right"><label>ราคารวม</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addPackageBtn" class="button button-icon button-icon-add">เพิ่มแพ็คเกจ</button>
+    <br>
+    <br>
+    <br>
+    <label class="article-title">รายละเอียดการใช้บริการรายการบริการ</label>
+    รายการบริการทั้งหมด <span id="allSvl"></span> รายการ<br><br>
+    <table id="service-service-list-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+        <tbody>
+            <tr class="headTable-row">
+                <td><label class="input-required"><b>รายการบริการ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td align="right"><label>ส่วนลด</label></td>
+                <td align="right"><label>ราคารวม</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addServiceListBtn" class="button button-icon button-icon-add">เพิ่มรายการบริการ</button>
     </form>
     {/if}
 </div>
