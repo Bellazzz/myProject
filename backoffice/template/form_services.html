@@ -247,7 +247,7 @@
             <tr>
                 <td colspan="2">
                     <label>ประเภทผู้ใช้บริการ</label>
-                    <div id="custype_id" class="selectReferenceJS form-input full"></div>
+                    <div id="custype_id" class="selectReferenceJS form-input full readonly"></div>
                 </td>
             </tr>
             <tr>
@@ -274,7 +274,7 @@
                 </td>
                 <td>
                     <label class="input-required">เวลาที่ใช้บริการ</label>
-                      <input id="ser_time" name="ser_time" type="text" class="form-input half" value="{$values.ser_time}" require>
+                      <input id="ser_time" name="ser_time" type="text" class="form-input half" value="{if $values.ser_time}{$values.ser_time}{else}{$nowTime}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
@@ -283,35 +283,6 @@
                 </td>
                 <td>
                     <span id="err-ser_time-require" class="errInputMsg half err-ser_time">โปรดป้อนเวลาที่ใช้บริการ</span>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <label class="input-required">ราคารวมทั้งหมด(บาท)</label>
-                    <input id="ser_total_price" name="ser_total_price" type="text" class="form-input full" value="{$values.ser_total_price}" valuepattern="money" require>
-                </td>
-            </tr>
-            <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-ser_total_price-require" class="errInputMsg err-ser_total_price">โปรดป้อนราคารวมทั้งหมด</span>
-                    <span id="err-ser_total_price-money" class="errInputMsg err-ser_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-                </td>
-            </tr>
-			<tr>          
-                <td colspan="2">
-                    <label class="input-required">ประเภทการชำระเงิน</label>
-                    <div id="paytyp_id" class="selectReferenceJS form-input full" require></div>
-                </td>
-            </tr>
-            <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-paytyp_id-require" class="errInputMsg err-paytyp_id">โปรดเลือกประเภทการชำระเงิน</span>
-                </td>
-            </tr>
-             <tr>
-                <td colspan="2">
-                    <label class="input-required">พนักงานที่รับเงิน</label>
-                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
             </tr>
 	    </tbody>
@@ -348,6 +319,78 @@
         </tbody>
     </table>
     <button id="addServiceListBtn" class="button button-icon button-icon-add">เพิ่มรายการบริการ</button>
+
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="margin-top: 40px;">
+        <tr>          
+            <td colspan="2">
+                <label class="input-required">ประเภทการชำระเงิน</label>
+                <div id="paytyp_id" class="selectReferenceJS form-input full" require></div>
+            </td>
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-paytyp_id-require" class="errInputMsg err-paytyp_id">โปรดเลือกประเภทการชำระเงิน</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="input-required">พนักงานที่รับเงิน</label>
+                <div id="emp_id" class="selectReferenceJS form-input full" require></div>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label class="input-required">ส่วนลดโปรโมชั่นทั้งหมด(บาท)</label>
+               <input id="ser_prm_discout" name="ser_prm_discout" type="text" class="form-input full readonly" 
+               value="{if $values.ser_prm_discout}{$values.ser_prm_discout}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_prm_discout-require" class="errInputMsg err-ser_prm_discout">โปรดป้อนส่วนลดโปรโมชั่น</span>
+                <span id="err-ser_prm_discout-money" class="errInputMsg err-ser_prm_discout">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="input-required">ราคาสุทธิ(บาท)</label>
+                <input id="ser_total_price" name="ser_total_price" type="text" class="form-input full readonly" value="{if $values.ser_total_price}{$values.ser_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_total_price-require" class="errInputMsg err-ser_total_price">โปรดป้อนราคาสุทธิ</span>
+                <span id="err-ser_total_price-money" class="errInputMsg err-ser_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label>จำนวนเงินที่รับมา(บาท)</label>
+               <input id="ser_pay_price" name="ser_pay_price" type="text" class="form-input full" 
+               value="{if $values.ser_pay_price}{$values.ser_pay_price|number_format:2:".":""}{else}0.00{/if}" valuepattern="moneyMorethanEqual" data-morethanEqual-id="ser_total_price" require>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_pay_price-require" class="errInputMsg err-ser_pay_price">โปรดป้อนจำนวนเงินที่รับมา</span>
+                <span id="err-ser_pay_price-money" class="errInputMsg err-ser_pay_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                <span id="err-ser_pay_price-moneyMorethanEqual" class="errInputMsg err-ser_pay_price">จำนวนเงินที่รับมาน้อยกว่าราคาสุทธิ กรุณาป้อนจำนวนเงินใหม่</span>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label>เงินทอน(บาท)</label>
+               <input id="changeMoney" name="changeMoney" type="text" class="form-input full readonly" 
+               value="{if $changeMoney}{$changeMoney|number_format:2:".":","}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-changeMoney-require" class="errInputMsg err-changeMoney">โปรดป้อนเงินทอน</span>
+                <span id="err-changeMoney-money" class="errInputMsg err-changeMoney">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+    </table>
     </form>
     {/if}
 </div>

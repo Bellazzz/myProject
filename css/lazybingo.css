@@ -303,7 +303,7 @@ body {
     text-decoration: none;
 }
 .toolbar-menu>li>a:hover {
-    color: #45A858;
+    color: #8AC007;
 }
 .toolbar-menu .mbk-icon.edit {
     background: url('../img/backoffice/edit-icon.png') no-repeat center;
@@ -1466,10 +1466,17 @@ label.article-title {
 	font-family: Tahoma, san-serif;
  }
  .button-icon {
-	background: none;
+	background: #efefef;
 	color: #666;
-	padding: 0;
+	padding: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 }
+ .button-icon:hover {
+    background: #8AC007;
+    color: white;
+ }
 .button-icon:before {
 	font-family: FontAwesome;
 	font-style: normal;
@@ -1485,7 +1492,7 @@ label.article-title {
 	font-size: 20px;
 }
 .button-icon:hover, .button-icon:hover:before {
-	color: #45A858;
+	color: white;
 }
 .button-icon-add:before {
 	content: "\f055";

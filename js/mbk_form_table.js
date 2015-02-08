@@ -18,6 +18,25 @@ $(document).ready(function () {
 	    	} else if (action == 'ADD'){
 	    		saveRecord();
 	    	}
+	    } else {
+	    	if(parent.$('.action-dialog').length == 0) {
+	    		parent.showActionDialog({
+			        title: 'ข้อมูลไม่ถูกต้อง',
+			        message: 'คุณป้อนข้อมูลไม่ครบ หรือรูปแบบข้อมูลไม่ถูกต้อง '
+			        		+'โปรดตรวจสอบข้อความแจ้งเตือนและแก้ไขให้ถูกต้องด้วยค่ะ',
+			        actionList: [
+			            {
+			                id: 'ok',
+			                name: 'ตกลง',
+			                func:
+			                function() { 
+			                    parent.hideActionDialog();
+			                }
+			            }
+			        ],
+			        boxWidth: 450
+			    });
+	    	}
 	    }
     });
     $('#cancel-btn').click(function () {

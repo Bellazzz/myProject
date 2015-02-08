@@ -6,6 +6,9 @@ $(document).ready(function(){
 	$('#addPackageBtn').click(addPackage);
 	$('#addServiceListBtn').click(addServiceList);
 
+	//Cal change money
+    $('#ser_pay_price').change(calSummary);
+
 	setAllSerDetailAmount();
 });
 
@@ -516,8 +519,8 @@ function addPkgPrmSale(pkg_id) {
                             + ' </table>'
                             + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
                             + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_pkgprmdtl_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_pkgprmdtl_total_price" value="' + sumDiscout + '">'
+                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_serpkgprm_amount" value="' + amount + '">'
+                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_serpkgprm_discout_total" value="' + sumDiscout + '">'
                             + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
                             + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
                             + '</div>';
@@ -576,8 +579,8 @@ function addSvlPrmSale(svl_id) {
                             + ' </table>'
                             + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
                             + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_svlprmdtl_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_svlprmdtl_total_price" value="' + sumDiscout + '">'
+                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_sersvlprm_amount" value="' + amount + '">'
+                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_sersvlprm_discout_total" value="' + sumDiscout + '">'
                             + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
                             + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
                             + '</div>';
@@ -602,7 +605,7 @@ function removePrm(prmList) {
 
 function calSummary() {
     var totalPrice          = 0;
-    var saleDiscoutPkgPrm   = 0;
+    var totalDiscoutPrm   = 0;
 
     // Cal sum promotion discout
     $('input[name="pkg_id[]"]').each(function() {
@@ -615,18 +618,81 @@ function calSummary() {
         tdPrm.find('.prm_sumDiscout').each(function() {
             sumPrmDiscout += parseFloat($(this).val());
         });
+
+        totalDiscoutPrm += sumPrmDiscout;
+
         serpkg_price_txt.text((serpkg_price - sumPrmDiscout).formatMoney(2, '.', ','));
         pkg_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
     });
+    $('input[name="svl_id[]"]').each(function() {
+        var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
+        var svl_sumPrm_price    = $(this).parent().parent().parent().find('.svl_sumPrm_price');
+        var sersvl_price_txt    = $(this).parent().parent().parent().find('.sersvl_price_txt');
+        var sersvl_price        = parseFloat($(this).parent().parent().parent().find('input[name="sersvl_total_price[]"]').val());
+        var sumPrmDiscout       = 0;
+
+        tdPrm.find('.prm_sumDiscout').each(function() {
+            sumPrmDiscout += parseFloat($(this).val());
+        });
+
+        totalDiscoutPrm += sumPrmDiscout;
+
+        sersvl_price_txt.text((sersvl_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        svl_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
+    });
 
     // Cal total price
-    $('input[name="serpkg_price[]"]').each(function() {
+    $('input[name="serpkg_total_price[]"]').each(function() {
+        totalPrice += parseFloat($(this).val());
+    });
+    $('input[name="sersvl_total_price[]"]').each(function() {
         totalPrice += parseFloat($(this).val());
     });
     
-    totalPrice -= saleDiscoutPkgPrm;
+    totalPrice -= totalDiscoutPrm;
     totalPrice = Math.ceil(totalPrice);
-    $('#sale_total_price').val(totalPrice.formatMoney(2, '.', ''));
+
+    $('#ser_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
+    $('#ser_total_price').val(totalPrice.formatMoney(2, '.', ''));
     
-    //calChangeMoney(totalPrice);
+    $('#ser_pay_price').focusout();
+    calChangeMoney(totalPrice);
+}
+
+function calChangeMoney(totalPrice) {
+    if($('#ser_pay_price').val() != '' && validateMoney($('#ser_pay_price').val())) {
+        totalPrice          = parseFloat(totalPrice);
+        var ser_pay_price  = parseFloat($('#ser_pay_price').val());
+        if(ser_pay_price >= totalPrice){
+            var change_money   = ser_pay_price - totalPrice;
+            $('#changeMoney').val(change_money.formatMoney(2, '.', ','));
+        } else {
+            $('#changeMoney').val("0.00");
+        }
+    }
+}
+
+function beforeSaveRecord() {
+    // Check input required
+    var returnVal 				= false;
+
+    // Not input service
+    if(!hasInputError() && $('input[name="pkg_id[]"]').length == 0 && $('input[name="svl_id[]"]').length == 0) {
+    	parent.showActionDialog({
+            title	: 'คุณยังไม่ได้ป้อนข้อมูล',
+            message : 'โปรดป้อนข้อมูลรายละเอียดการใช้บริการอย่างน้อย 1 รายการค่ะ',
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                    }
+                }
+            ]
+        });
+    	returnVal = true;
+    }
+    return returnVal;
 }

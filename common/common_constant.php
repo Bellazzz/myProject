@@ -714,7 +714,9 @@ function dbClose() {
 						'bkg_id'	  		  => 'รหัสการจอง',
 						'ser_date'	          => 'วันที่ใช้บริการ',
 						'ser_time'	          => 'เวลาที่ใช้บริการ',
-						'ser_total_price' 	  => 'ราคารวมทั้งหมด(บาท)'
+						'ser_prm_discout'	  => 'ส่วนลดโปรโมชั่น',
+						'ser_total_price' 	  => 'ราคาสุทธิ(บาท)',
+						'ser_pay_price'		  => 'จำนวนเงินที่รับมา'
 				),
 				'hiddenFields'	=> array('emp_id','bed_id','bkg_id','ser_time','ser_total_price'),
 				'defaultNull' 	=> array('bkg_id'),
@@ -737,6 +739,8 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'sersvl_id'	  		  => 'รหัสรายละเอียดการใช้บริการรายการบริการ',
 						'ser_id'	          => 'รหัสการใช้บริการ',
+						'svl_id' 			  => 'รหัสรายการบริการ',
+						'sersvl_amount' 	  => 'จำนวนครั้งที่ใช้บริการ',
 						'sersvl_total_price'  => 'ราคารวม(บาท)'
 				)
 
@@ -771,6 +775,7 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'serpkg_id'	  		  	=> 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
 						'ser_id'	          	=> 'รหัสรายการใช้บริการ',
+						'pkg_id' 				=> 'รหัสแพ็คเกจ',
 						'serpkg_amount' 		=> 'จำนวนครั้งที่ใช้บริการ',
 						'serpkg_total_price'  	=> 'ราคารวม(บาท)'
 				),
@@ -1315,23 +1320,6 @@ function dbClose() {
 			);
 			break;
 
-		case 'service_package_promotions':
-			 return array(
-				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
-				'keyFieldName'  => 'serpkgprm_id',
-				'keyFieldType'	=> 2, 
-				'keyChar'		=> 'SP',
-				'keyLength'		=> 14,
-				'fieldNameList'	=> array(
-						'serpkgprm_id'	  	  		=> 'รหัสรายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
-						'ser_id'	  				=> 'รหัสการใช้บริการ',
-						'pkgprmdtl_id'	  			=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
-						'serpkgprm_discout_total'	=> 'ส่วนลด',
-						'serpkgprm_amount'	  		=> 'จำนวนการเกิด'
-				)
-			);
-			break;
-
 		case 'service_list_promotions':
 			 return array(
 				'tableNameTH'	=> 'โปรโมชั่นรายการบริการ',
@@ -1384,17 +1372,34 @@ function dbClose() {
 
 		case 'service_package_promotions':
 			 return array(
-				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นรายการบริการ',
-				'keyFieldName'  => 'prmds_id',
+				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
+				'keyFieldName'  => 'serpkgprm_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'SP',
+				'keyLength'		=> 14,
+				'fieldNameList'	=> array(
+						'serpkgprm_id'	  	  		=> 'รหัสรายละเอียดการเกิดโปรโมชั่นแพ็คเกจ',
+						'ser_id'	  				=> 'รหัสการใช้บริการ',
+						'pkgprmdtl_id'	  			=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
+						'serpkgprm_amount'	  		=> 'จำนวนการเกิด',
+						'serpkgprm_discout_total'	=> 'ส่วนลด'
+				)
+			);
+			break;
+
+		case 'service_service_list_promotions':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดการเกิดโปรโมชั่นรายการบริการ',
+				'keyFieldName'  => 'sersvlprm_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'SO',
 				'keyLength'		=> 14,
 				'fieldNameList'	=> array(
 						'sersvlprm_id'	  	  		=> 'รหัสรายละเอียดการเกิดโปรโมชั่นรายการบริการ',
 						'ser_id'	  				=> 'รหัสการใช้บริการ',
 						'svlprmdtl_id'	  			=> 'รหัสรายการบริการที่จัดโปรโมชั่น',
-						'sersvlprm_discout_total'	=> 'ส่วนลด',
-						'sersvlprm_amount'	  		=> 'จำนวนการเกิด'
+						'sersvlprm_amount'	  		=> 'จำนวนการเกิด',
+						'sersvlprm_discout_total'	=> 'ส่วนลด'
 				)
 			);
 			break;
