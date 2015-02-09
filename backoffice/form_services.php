@@ -24,20 +24,38 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('values', $values);
 
 		// Get table service_packages data
-		$valuesDetail = array();
-		$sql = "SELECT 	o.orddtl_id, 
-						p.pkg_id, 
-						o.serpkg_amount,
-						u.unit_name 
-				FROM 	service_packages o, products p, units u 
-				WHERE 	o.pkg_id = p.pkg_id AND p.unit_id = u.unit_id 
-						AND ser_id = '$code' ORDER BY orddtl_id";
+		$valuesPkg = array();
+		$sql = "SELECT 		s.serpkg_id, 
+							p.pkg_id, 
+							s.serpkg_amount,
+							p.pkg_price 
+				FROM 		service_packages s, packages p  
+				WHERE 		s.pkg_id = p.pkg_id AND 
+							ser_id = '$code' 
+				ORDER BY 	serpkg_id";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($valuesDetail, mysql_fetch_assoc($result));
+			array_push($valuesPkg, mysql_fetch_assoc($result));
 		}
-		$smarty->assign('valuesDetail', $valuesDetail);
+		$smarty->assign('valuesPkg', $valuesPkg);
+
+		// Get table service_service_lists data
+		$valuesSvl = array();
+		$sql = "SELECT 		ss.sersvl_id, 
+							s.svl_id, 
+							ss.sersvl_amount,
+							s.svl_price 
+				FROM 		service_service_lists ss, service_lists s  
+				WHERE 		ss.svl_id = s.svl_id AND 
+							ser_id = '$code' 
+				ORDER BY 	sersvl_id";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			array_push($valuesSvl, mysql_fetch_assoc($result));
+		}
+		$smarty->assign('valuesSvl', $valuesSvl);
 
 	} else if($action == 'VIEW_DETAIL') {
 		// Get table services data
@@ -344,58 +362,62 @@ if(!$_REQUEST['ajaxCall']) {
 		$ser_id = $tableRecord->getKey();
 		
 		// Insert service packages
-		foreach ($formData['pkg_id'] as $key => $pkg_id) {
-			$serpkg_amount 	= $formData['pkg_qty'][$key];
-			$serpkg_total_price 		= $formData['serpkg_total_price'][$key];
-			$serpkgValues 		= array($ser_id, $pkg_id, $serpkg_amount, $serpkg_total_price);
-			$serpkgRecord 	= new TableSpa('service_packages', $serpkgValues);
-			if(!$serpkgRecord->insertSuccess()) {
-				$insertResult = false;
-				$errTxt .= 'INSERT_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
-				$errTxt .= mysql_error($dbConn).'\n\n';
-			}
-
-
-			// Insert service packages promotion (Sale)
-			if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
-				$pkgprmdtl_id 				= $formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'];
-				$serpkgprm_amount 			= $formData['prmSale_'.$pkg_id.'_serpkgprm_amount'];
-				$serpkgprm_discout_total 	= $formData['prmSale_'.$pkg_id.'_serpkgprm_discout_total'];
-				$serpkgprmValues 			= array($ser_id, $pkgprmdtl_id, $serpkgprm_amount, $serpkgprm_discout_total);
-				$serpkgprmRecord 			= new TableSpa('service_package_promotions', $serpkgprmValues);
-				if(!$serpkgprmRecord->insertSuccess()) {
+		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
+			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				$serpkg_amount 	= $formData['pkg_qty'][$key];
+				$serpkg_total_price 		= $formData['serpkg_total_price'][$key];
+				$serpkgValues 		= array($ser_id, $pkg_id, $serpkg_amount, $serpkg_total_price);
+				$serpkgRecord 	= new TableSpa('service_packages', $serpkgValues);
+				if(!$serpkgRecord->insertSuccess()) {
 					$insertResult = false;
-					$errTxt .= 'INSERT_SERVICE_PACKAGE_PROMOTIONS['.($key+1).']_FAIL\n';
+					$errTxt .= 'INSERT_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+
+
+				// Insert service packages promotion (Sale)
+				if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
+					$pkgprmdtl_id 				= $formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'];
+					$serpkgprm_amount 			= $formData['prmSale_'.$pkg_id.'_serpkgprm_amount'];
+					$serpkgprm_discout_total 	= $formData['prmSale_'.$pkg_id.'_serpkgprm_discout_total'];
+					$serpkgprmValues 			= array($ser_id, $pkgprmdtl_id, $serpkgprm_amount, $serpkgprm_discout_total);
+					$serpkgprmRecord 			= new TableSpa('service_package_promotions', $serpkgprmValues);
+					if(!$serpkgprmRecord->insertSuccess()) {
+						$insertResult = false;
+						$errTxt .= 'INSERT_SERVICE_PACKAGE_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
 				}
 			}
 		}
 		// End service packages
 
 		// Insert service service_list
-		foreach ($formData['svl_id'] as $key => $svl_id) {
-			$sersvl_amount 	= $formData['svl_qty'][$key];
-			$sersvl_total_price 		= $formData['sersvl_total_price'][$key];
-			$sersvlValues 		= array($ser_id, $svl_id, $sersvl_amount, $sersvl_total_price);
-			$sersvlRecord 	= new TableSpa('service_service_lists', $sersvlValues);
-			if(!$sersvlRecord->insertSuccess()) {
-				$insertResult = false;
-				$errTxt .= 'INSERT_SERVICE_SERVICE_LISTS['.($key+1).']_FAIL\n';
-				$errTxt .= mysql_error($dbConn).'\n\n';
-			}
-
-
-			// Insert service service_list promotion (Sale)
-			if(hasValue($formData['prmSale_'.$svl_id.'_svlprmdtl_id'])) {
-				$svlprmdtl_id 				= $formData['prmSale_'.$svl_id.'_svlprmdtl_id'];
-				$sersvlprm_amount 			= $formData['prmSale_'.$svl_id.'_sersvlprm_amount'];
-				$sersvlprm_discout_total 	= $formData['prmSale_'.$svl_id.'_sersvlprm_discout_total'];
-				$sersvlprmValues 			= array($ser_id, $svlprmdtl_id, $sersvlprm_amount, $sersvlprm_discout_total);
-				$sersvlprmRecord 			= new TableSpa('service_service_list_promotions', $sersvlprmValues);
-				if(!$sersvlprmRecord->insertSuccess()) {
+		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
+			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$sersvl_amount 	= $formData['svl_qty'][$key];
+				$sersvl_total_price 		= $formData['sersvl_total_price'][$key];
+				$sersvlValues 		= array($ser_id, $svl_id, $sersvl_amount, $sersvl_total_price);
+				$sersvlRecord 	= new TableSpa('service_service_lists', $sersvlValues);
+				if(!$sersvlRecord->insertSuccess()) {
 					$insertResult = false;
-					$errTxt .= 'INSERT_SERVICE_SERVICE_LIST_PROMOTIONS['.($key+1).']_FAIL\n';
+					$errTxt .= 'INSERT_SERVICE_SERVICE_LISTS['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+
+
+				// Insert service service_list promotion (Sale)
+				if(hasValue($formData['prmSale_'.$svl_id.'_svlprmdtl_id'])) {
+					$svlprmdtl_id 				= $formData['prmSale_'.$svl_id.'_svlprmdtl_id'];
+					$sersvlprm_amount 			= $formData['prmSale_'.$svl_id.'_sersvlprm_amount'];
+					$sersvlprm_discout_total 	= $formData['prmSale_'.$svl_id.'_sersvlprm_discout_total'];
+					$sersvlprmValues 			= array($ser_id, $svlprmdtl_id, $sersvlprm_amount, $sersvlprm_discout_total);
+					$sersvlprmRecord 			= new TableSpa('service_service_list_promotions', $sersvlprmValues);
+					if(!$sersvlprmRecord->insertSuccess()) {
+						$insertResult = false;
+						$errTxt .= 'INSERT_SERVICE_SERVICE_LIST_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
 				}
 			}
 		}
@@ -415,6 +437,8 @@ if(!$_REQUEST['ajaxCall']) {
 	} else if($action == 'EDIT') {
 		//2.2 Update record
 		$tableRecord = new TableSpa($tableName, $code);
+		$updateResult  	= true;
+		$errTxt 		= '';
 
 		// Set all field value
 		foreach($formData as $fieldName => $value) {
@@ -428,83 +452,266 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
-		// Update services
-		if($tableRecord->commit()) {
-			$updateservicesResult = true;
-		} else {
-			$updateservicesResult = true;
+		// Update Services
+		if(!$tableRecord->commit()) {
+			$updateResult = false;
+			$errTxt .= 'EDIT_SERVICES_FAIL\n';
+			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 
-		if($updateservicesResult) {
-			// Delete service_packages if delete old service_packages
-			$oldOrderDetailList = array();
-			$newOrderDetailList = array();
-			// Find old service_packages
-			$sql = "SELECT orddtl_id FROM service_packages WHERE ser_id = '$code'";
-			$result = mysql_query($sql, $dbConn);
-			$rows 	= mysql_num_rows($result);
-			for($i=0; $i<$rows; $i++) {
-				$oldOrddtlRecord = mysql_fetch_assoc($result);
-				array_push($oldOrderDetailList, $oldOrddtlRecord['orddtl_id']);
+		### Update service_packages & service_package_promotions
+		// Delete service_packages if delete old service_packages
+		$oldServicePkgList = array();
+		$newServicePkgList = array();
+		$oldPkgPrmDtlList = array();
+		$newPkgPrmDtlList = array();
+		$oldSerPkgPrmList = array();
+		// Find old service_packages
+		$sql = "SELECT serpkg_id FROM service_packages WHERE ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldServicePkgRecord = mysql_fetch_assoc($result);
+			array_push($oldServicePkgList, $oldServicePkgRecord['serpkg_id']);
+		}
+		// Find old service_package_promotions
+		$sql = "SELECT serpkgprm_id, pkgprmdtl_id FROM service_package_promotions WHERE ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldServicePkgPrmRecord = mysql_fetch_assoc($result);
+			array_push($oldPkgPrmDtlList, $oldServicePkgPrmRecord['pkgprmdtl_id']);
+			$oldSerPkgPrmList[$oldServicePkgPrmRecord['pkgprmdtl_id']] = $oldServicePkgPrmRecord['serpkgprm_id'];
+		}
+		// Find new service_packages
+		foreach ($formData['serpkg_id'] as $key => $newserpkg_id) {
+			array_push($newServicePkgList, $newserpkg_id);
+		}
+		// Find new service_package_promotions
+		foreach ($formData['pkg_id'] as $key => $pkg_id) {
+			if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
+				array_push($newPkgPrmDtlList, $formData['prmSale_'.$pkg_id.'_pkgprmdtl_id']);
 			}
-			// Find new order_detail
-			foreach ($formData['orddtl_id'] as $key => $newOrddtl_id) {
-				array_push($newOrderDetailList, $newOrddtl_id);
+		}
+		
+
+		// Check for delete service_packages
+		foreach ($oldServicePkgList as $key => $oldserpkg_id) {
+			if(!in_array($oldserpkg_id, $newServicePkgList)) {
+				// Delete service_packages
+				$servicePkgRecord 	= new TableSpa('service_packages', $oldserpkg_id);
+				if(!$servicePkgRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SERVICE_PACKAGES[$oldserpkg_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			}
-			// Check for delete 
-			foreach ($oldOrderDetailList as $key => $oldOrddtl_id) {
-				if(!in_array($oldOrddtl_id, $newOrderDetailList)) {
-					// Delete service_packages
-					$serpkgReccord 	= new TableSpa('service_packages', $oldOrddtl_id);
-					if(!$serpkgReccord->delete()) {
-						$updateservicesDetailResult = false;
-						$updateservicesDetailError .= "DELETE_services_DETAIL[$oldOrddtl_id]_FAIL\n";
-					}
+		}
+
+		// Check for delete service_package_promotions
+		foreach ($oldPkgPrmDtlList as $key => $oldpkgprmdtl_id) {
+			if(!in_array($oldpkgprmdtl_id, $newPkgPrmDtlList)) {
+				// Delete service_package_promotions
+				$serpkgprm_id = $oldSerPkgPrmList[$oldpkgprmdtl_id];
+				$servicePkgPrmRecord 	= new TableSpa('service_package_promotions', $serpkgprm_id);
+				if(!$servicePkgPrmRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SERVICE_PACKAGE_PROMOTIONS[$serpkgprm_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
+
+		// Update or Add service_packages
+		foreach ($formData['pkg_id'] as $key => $pkg_id) {
+			$serpkg_amount  = $formData['pkg_qty'][$key];
+			$serpkg_total_price = $formData['serpkg_total_price'][$key];
+
+			if(isset($formData['serpkg_id'][$key])) {
+				// Update service_packages
+				$serpkg_id = $formData['serpkg_id'][$key];
+				$servicePkgRecord 	= new TableSpa('service_packages', $serpkg_id);
+				$old_pkg_id 		= $servicePkgRecord->getFieldValue('pkg_id');
+				$old_serpkg_amount = $servicePkgRecord->getFieldValue('serpkg_amount');
+				$servicePkgRecord->setFieldValue('pkg_id', $pkg_id);
+				$servicePkgRecord->setFieldValue('serpkg_amount', $serpkg_amount);
+				$servicePkgRecord->setFieldValue('serpkg_total_price', $serpkg_total_price);
+				if(!$servicePkgRecord->commit()) {
+					$updateResult = false;
+					$errTxt .= 'EDIT_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			} else {
+				// Add new service_packages
+				$saledtlValues 		= array($code, $pkg_id, $serpkg_amount, $serpkg_total_price);
+				$servicePkgRecord 	= new TableSpa('service_packages', $saledtlValues);
+				if(!$servicePkgRecord->insertSuccess()) {
+					$updateResult = false;
+					$errTxt .= 'ADD_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 			}
 
-			
-			// Update or Add service_packages
-			$updateservicesDetailResult = true;
-			$updateservicesDetailError  = '';
+			if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
+				$pkgprmdtl_id 				= $formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'];
+				$serpkgprm_amount 			= $formData['prmSale_'.$pkg_id.'_serpkgprm_amount'];
+				$serpkgprm_discout_total 	= $formData['prmSale_'.$pkg_id.'_serpkgprm_discout_total'];
 
-			foreach ($formData['pkg_id'] as $key => $pkg_id) {
-				$serpkg_amount 	= $formData['pkg_qty'][$key];
-
-				if(isset($formData['orddtl_id'][$key])) {
-					// Update service_packages
-					$orddtl_id = $formData['orddtl_id'][$key];
-					$serpkgReccord 	= new TableSpa('service_packages', $orddtl_id);
-					$serpkgReccord->setFieldValue('pkg_id', $pkg_id);
-					$serpkgReccord->setFieldValue('serpkg_amount', $serpkg_amount);
-					if(!$serpkgReccord->commit()) {
-						$updateservicesDetailResult = false;
-						$updateservicesDetailError .= 'EDIT_services_DETAIL['.($key+1).']_FAIL\n';
+				if(!in_array($pkgprmdtl_id, $oldPkgPrmDtlList)) {
+					// Add service_package_promotions
+					$serpkgprmValues = array($code, $pkgprmdtl_id, $serpkgprm_amount, $serpkgprm_discout_total);
+					$serpkgprmRecord = new TableSpa('service_package_promotions', $serpkgprmValues);
+					if(!$serpkgprmRecord->insertSuccess()) {
+						$updateResult = false;
+						$errTxt .= 'INSERT_SERVICE_PACKAGE_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
 					}
 				} else {
-					// Add new service_packages
-					$serpkgValues 		= array($code, $pkg_id, $serpkg_amount);
-					$serpkgReccord 	= new TableSpa('service_packages', $serpkgValues);
-					if(!$serpkgReccord->insertSuccess()) {
-						$updateservicesDetailResult = false;
-						$updateservicesDetailError .= 'ADD_services_DETAIL['.($key+1).']_FAIL\n';
+					// Update service_package_promotions
+					$serpkgprm_id = $oldSerPkgPrmList[$pkgprmdtl_id];
+					$servicePkgPrmRecord = new TableSpa('service_package_promotions', $serpkgprm_id);
+					$servicePkgPrmRecord->setFieldValue('serpkgprm_amount', $serpkgprm_amount);
+					$servicePkgPrmRecord->setFieldValue('serpkgprm_discout_total', $serpkgprm_discout_total);
+					if(!$servicePkgPrmRecord->commit()) {
+						$updateResult = false;
+						$errTxt .= 'EDIT_SERVICE_PACKAGE_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
 					}
 				}
 			}
+		}
+		### End update service_packages & service_package_promotions
 
-			if($updateservicesDetailResult) {
-				// Edit order and service_packages success
-				$response['status'] = 'EDIT_PASS';
-				echo json_encode($response);
+
+		### Update service_service_lists & service_service_list_promotions
+		// Delete service_service_lists if delete old service_service_lists
+		$oldServiceSvlList = array();
+		$newServiceSvlList = array();
+		$oldSvlPrmDtlList = array();
+		$newSvlPrmDtlList = array();
+		$oldSerSvlPrmList = array();
+		// Find old service_service_lists
+		$sql = "SELECT sersvl_id FROM service_service_lists WHERE ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldServiceSvlRecord = mysql_fetch_assoc($result);
+			array_push($oldServiceSvlList, $oldServiceSvlRecord['sersvl_id']);
+		}
+		// Find old service_service_list_promotions
+		$sql = "SELECT sersvlprm_id, svlprmdtl_id FROM service_service_list_promotions WHERE ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$oldServiceSvlPrmRecord = mysql_fetch_assoc($result);
+			array_push($oldSvlPrmDtlList, $oldServiceSvlPrmRecord['svlprmdtl_id']);
+			$oldSerSvlPrmList[$oldServiceSvlPrmRecord['svlprmdtl_id']] = $oldServiceSvlPrmRecord['sersvlprm_id'];
+		}
+		// Find new service_service_lists
+		if(isset($formData['sersvl_id']) && is_array($formData['sersvl_id'])) {
+			foreach ($formData['sersvl_id'] as $key => $newsersvl_id) {
+				array_push($newServiceSvlList, $newsersvl_id);
+			}
+			// Find new service_service_list_promotions
+			foreach ($formData['svl_id'] as $key => $svl_id) {
+				if(hasValue($formData['prmSale_'.$svl_id.'_svlprmdtl_id'])) {
+					array_push($newSvlPrmDtlList, $formData['prmSale_'.$svl_id.'_svlprmdtl_id']);
+				}
+			}
+		}
+		
+		
+
+		// Check for delete service_service_lists
+		foreach ($oldServiceSvlList as $key => $oldsersvl_id) {
+			if(!in_array($oldsersvl_id, $newServiceSvlList)) {
+				// Delete service_service_lists
+				$serviceSvlRecord 	= new TableSpa('service_service_lists', $oldsersvl_id);
+				if(!$serviceSvlRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SERVICE_SERVICE_LISTS[$oldsersvl_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
+
+		// Check for delete service_service_list_promotions
+		foreach ($oldSvlPrmDtlList as $key => $oldsvlprmdtl_id) {
+			if(!in_array($oldsvlprmdtl_id, $newSvlPrmDtlList)) {
+				// Delete service_service_list_promotions
+				$sersvlprm_id = $oldSerSvlPrmList[$oldsvlprmdtl_id];
+				$serviceSvlPrmRecord 	= new TableSpa('service_service_list_promotions', $sersvlprm_id);
+				if(!$serviceSvlPrmRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SERVICE_SERVICE_LIST_PROMOTIONS[$sersvlprm_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
+
+		// Update or Add service_service_lists
+		foreach ($formData['svl_id'] as $key => $svl_id) {
+			$sersvl_amount  = $formData['svl_qty'][$key];
+			$sersvl_total_price = $formData['sersvl_total_price'][$key];
+
+			if(isset($formData['sersvl_id'][$key])) {
+				// Update service_service_lists
+				$sersvl_id = $formData['sersvl_id'][$key];
+				$serviceSvlRecord 	= new TableSpa('service_service_lists', $sersvl_id);
+				$serviceSvlRecord->setFieldValue('svl_id', $svl_id);
+				$serviceSvlRecord->setFieldValue('sersvl_amount', $sersvl_amount);
+				$serviceSvlRecord->setFieldValue('sersvl_total_price', $sersvl_total_price);
+				if(!$serviceSvlRecord->commit()) {
+					$updateResult = false;
+					$errTxt .= 'EDIT_SERVICE_SERVICE_LISTS['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			} else {
-				// Edit service_packages fail
-				$response['status'] = $updateservicesDetailError;
-				echo json_encode($response);
+				// Add new service_service_lists
+				$sersvlValues 		= array($code, $svl_id, $sersvl_amount, $sersvl_total_price);
+				$serviceSvlRecord 	= new TableSpa('service_service_lists', $sersvlValues);
+				if(!$serviceSvlRecord->insertSuccess()) {
+					$updateResult = false;
+					$errTxt .= 'ADD_SERVICE_SERVICE_LISTS['.($key+1).']_FAIL\n';
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			}
 
+			if(hasValue($formData['prmSale_'.$svl_id.'_svlprmdtl_id'])) {
+				$svlprmdtl_id 				= $formData['prmSale_'.$svl_id.'_svlprmdtl_id'];
+				$sersvlprm_amount 			= $formData['prmSale_'.$svl_id.'_sersvlprm_amount'];
+				$sersvlprm_discout_total 	= $formData['prmSale_'.$svl_id.'_sersvlprm_discout_total'];
+
+				if(!in_array($svlprmdtl_id, $oldSvlPrmDtlList)) {
+					// Add service_service_list_promotions
+					$sersvlprmValues = array($code, $svlprmdtl_id, $sersvlprm_amount, $sersvlprm_discout_total);
+					$sersvlprmRecord = new TableSpa('service_service_list_promotions', $sersvlprmValues);
+					if(!$sersvlprmRecord->insertSuccess()) {
+						$updateResult = false;
+						$errTxt .= 'INSERT_SERVICE_SERVICE_LIST_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
+				} else {
+					// Update service_service_list_promotions
+					$sersvlprm_id = $oldSerSvlPrmList[$svlprmdtl_id];
+					$serviceSvlPrmRecord = new TableSpa('service_service_list_promotions', $sersvlprm_id);
+					$serviceSvlPrmRecord->setFieldValue('sersvlprm_amount', $sersvlprm_amount);
+					$serviceSvlPrmRecord->setFieldValue('sersvlprm_discout_total', $sersvlprm_discout_total);
+					if(!$serviceSvlPrmRecord->commit()) {
+						$updateResult = false;
+						$errTxt .= 'EDIT_SERVICE_SERVICE_LIST_PROMOTIONS['.($key+1).']_FAIL\n';
+						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
+				}
+			}
+		}
+		### End update service_service_lists & service_service_list_promotions
+
+		if($updateResult) {
+			$response['status'] = 'EDIT_PASS';
+			echo json_encode($response);
 		} else {
-			// Edit services fail
-			$response['status'] = 'EDIT_services_FAIL';
+			$response['status'] = $errTxt;
 			echo json_encode($response);
 		}
 

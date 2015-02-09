@@ -106,6 +106,31 @@
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
 
+        // Set valuesDetail
+        {/literal}
+        {if $valuesPkg}
+        {literal}
+            valuesPkg = {/literal}{$valuesPkg|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesPkg = Array();
+        {/literal}
+        {/if}
+        {literal}
+
+        {/literal}
+        {if $valuesSvl}
+        {literal}
+            valuesSvl = {/literal}{$valuesSvl|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesSvl = Array();
+        {/literal}
+        {/if}
+        {literal}
+
         $(document).ready(function () {
             selectReferenceJS({
                 elem            : $('#emp_id'),
@@ -123,7 +148,14 @@
                 elem            : $('#custype_id'),
                 data            : {/literal}{$referenceData["customer_types"]|@json_encode}{literal},
                 beforeShow      : allowChangeCusTypeId,
-                defaultValue    : '{/literal}{$values.custype_id}{literal}'
+                defaultValue    : '{/literal}{$values.custype_id}{literal}',
+                success         : 
+                function() {
+                    {/literal}{if $values.cus_id}{literal}
+                        setCusTypeId('{/literal}{$values.cus_id}{literal}');
+                    {/literal}{/if}{literal}
+                    addItemForEdit();
+                }
             });
             selectReferenceJS({
                 elem            : $('#paytyp_id'),

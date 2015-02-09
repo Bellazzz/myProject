@@ -541,7 +541,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Update Sales
 		if(!$tableRecord->commit()) {
 			$updateResult = false;
-			$errTxt .= 'EDIT_ORDERS_FAIL\n';
+			$errTxt .= 'EDIT_SALES_FAIL\n';
 			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 
@@ -557,7 +557,7 @@ if(!$_REQUEST['ajaxCall']) {
 			$oldSaledtlRecord = mysql_fetch_assoc($result);
 			array_push($oldSaleDetailList, $oldSaledtlRecord['saledtl_id']);
 		}
-		// Find new order_detail
+		// Find new sale_detail
 		foreach ($formData['saledtl_id'] as $key => $newSaledtl_id) {
 			array_push($newSaleDetailList, $newSaledtl_id);
 		}
@@ -570,7 +570,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$saledtl_amount 	= $saleDetailRecord->getFieldValue('saledtl_amount');
 				if(!$saleDetailRecord->delete()) {
 					$updateResult = false;
-					$errTxt .= "DELETE_ORDERS_DETAIL[$oldSaledtl_id]_FAIL\n";
+					$errTxt .= "DELETE_SALES_DETAIL[$oldSaledtl_id]_FAIL\n";
 					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 
@@ -606,7 +606,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$saleDetailRecord->setFieldValue('saledtl_price', $saledtl_price);
 				if(!$saleDetailRecord->commit()) {
 					$updateResult = false;
-					$errTxt .= 'EDIT_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= 'EDIT_SALES_DETAIL['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 
@@ -671,7 +671,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$saleDetailRecord 	= new TableSpa('sale_details', $saledtlValues);
 				if(!$saleDetailRecord->insertSuccess()) {
 					$updateResult = false;
-					$errTxt .= 'ADD_ORDERS_DETAIL['.($key+1).']_FAIL\n';
+					$errTxt .= 'ADD_SALES_DETAIL['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 

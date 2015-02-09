@@ -8,52 +8,173 @@
 	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
 	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
     <script type="text/javascript" src="../js/jquery.min.js"></script>
-	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script> 
-	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript" src="../js/form_services.js"></script>
+    <style type="text/css">
+        .pkg_unit_price, .svl_unit_price, .pkg_sumPrm_price, .serpkg_price_txt,
+        .svl_sumPrm_price, .sersvl_price_txt {
+            width: 150px;
+            display: inline-block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            text-align: right;
+            padding: 5px;
+        }
+        .removePackageBtn, .removeServiceListBtn {
+            padding: 5px;
+            background: none repeat scroll 0% 0% #EEE;
+            border-radius: 3px;
+            margin-left: 40px;
+        }
+
+        .package-prm-row > td, .service-list-prm-row > td {
+            padding-left: 100px;
+        }
+        .prm-list-container {
+            width: 718px;
+            margin-bottom: 40px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            box-shadow: 0 2px 2px #ddd;
+        }
+        .prm-list {
+            position: relative;
+            height: 60px;
+            padding: 10px 10px 10px 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        .prm-list .prm-thumb {
+            width: 50px;
+            height: 50px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-color: #F0F0F0;
+            position: absolute;
+            left: 5px;
+            top: 5px;
+        }
+        .prm-list-container .prm-list:last-child {
+            border-bottom: 1px solid rgba(255,255,255,0);
+        }
+        .prm-list table {
+            width: 100%;
+            height: 100%;
+        }
+        .prm-list table td {
+            vertical-align: middle !important;
+            word-break: break-word;
+            font-size: 14px;
+        }
+        .prm-list table td.prm-name-col {
+            width: 412px;
+        }
+        .prm-list table td.amount-col {
+            width: 80px;
+            text-align: right !important;
+        }
+        .prm-list table td.discout-col {
+            text-align: right !important;
+            color: rgb(255, 68, 68) !important;
+        }
+
+        .prm-list table .prm-name {
+            color: #595959;
+        }
+        .prm-list table .discount-rate {
+            color: #b7b7b7;
+        }
+    </style>
     <script type="text/javascript">
         // Global variables
         var action      = '{/literal}{$action}{literal}';
         var tableName   = '{/literal}{$tableName}{literal}';
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
-        var ajaxUrl     = 'form_booking.php';
+        var ajaxUrl     = 'form_services.php';
+        var refPkgData  = {/literal}{$referenceData["packages"]|@json_encode}{literal};
+        var refSvlData  = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
+        var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
+        var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
+        var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
+        var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
 
-		$(document).ready(function() {
-			selectReferenceJS({
+        // Set valuesDetail
+        {/literal}
+        {if $valuesPkg}
+        {literal}
+            valuesPkg = {/literal}{$valuesPkg|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesPkg = Array();
+        {/literal}
+        {/if}
+        {literal}
+
+        {/literal}
+        {if $valuesSvl}
+        {literal}
+            valuesSvl = {/literal}{$valuesSvl|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesSvl = Array();
+        {/literal}
+        {/if}
+        {literal}
+
+        $(document).ready(function () {
+            selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
             selectReferenceJS({
                 elem            : $('#cus_id'),
-                data            : {/literal}{$referenceData["customers"]|@json_encode}{literal},
+                data            : refCusData,
+                allowChangeOption   : saveOldCusId,
+                onOptionSelect      : changeCusId,
                 defaultValue    : '{/literal}{$values.cus_id}{literal}'
             });
             selectReferenceJS({
-                elem            : $('#status_id'),
-                data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.status_id}{literal}'
+                elem            : $('#custype_id'),
+                data            : {/literal}{$referenceData["customer_types"]|@json_encode}{literal},
+                beforeShow      : allowChangeCusTypeId,
+                defaultValue    : '{/literal}{$values.custype_id}{literal}',
+                success         : 
+                function() {
+                    {/literal}{if $values.cus_id}{literal}
+                        setCusTypeId('{/literal}{$values.cus_id}{literal}');
+                    {/literal}{/if}{literal}
+                    addItemForEdit();
+                }
             });
-			selectReferenceJS({
-                elem            : $('#bnkacc_id'),
-                data            : {/literal}{$referenceData["bank_accounts"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.bnkacc_id}{literal}',
-                showClearBtn	: true,
+            selectReferenceJS({
+                elem            : $('#paytyp_id'),
+                data            : {/literal}{$referenceData["pay_types"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.paytyp_id}{literal}'
+            });
+            selectReferenceJS({
+                elem            : $('#bed_id'),
+                data            : {/literal}{$referenceData["beds"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.bed_id}{literal}'
+            });
+            selectReferenceJS({
+                elem            : $('#bkg_id'),
+                data            : {/literal}{$referenceData["booking"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.bkg_id}{literal}',
+                showClearBtn    : true,
                 clearBtnText    : 'ไม่ระบุ'
             });
-			
-			uploadImageInput({
-				area: $('#bkg_transfer_evidence'),
-				input: $('input[name="bkg_transfer_evidence"]'),
-				selector: $('#bkg_transfer_evidence_file'),
-				defaultValue: '{/literal}{if $values.bkg_transfer_evidence}../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}{/if}{literal}'
-			});
-			//	 	
-
-			$('#bkg_date').datetimepicker({
+            $('#ser_date').datetimepicker({
                 lang                : 'th',
                 format              : 'Y/m/d',
                 timepicker          :false,
@@ -62,231 +183,248 @@
                 yearOffset          :543,
                 onSelectDate: 
                 function(){
-                  $('#bkg_date').blur();
+                  $('#ser_date').blur();
                 },
                 timepicker:false
             });
-			$('#bkg_transfer_date').datetimepicker({
-                lang                : 'th',
-                format              : 'Y/m/d',
-                timepicker          :false,
-                closeOnDateSelect   :true,
-                scrollInput         :false,
-                yearOffset          :543,
-                onSelectDate: 
-                function(){
-                  $('#bkg_transfer_date').blur();
-                },
-                timepicker:false
-            });
-			 $('#bkg_time').datetimepicker({
+             $('#ser_time').datetimepicker({
                 datepicker:false,
-                format:'H:i'
+                format:'H:i',
+                minTime:'06:00',
             });
-			  $('#bkg_transfer_time').datetimepicker({
-                datepicker:false,
-                format:'H:i'
-            });
-		});
+        });
     </script>
     {/literal}
 </head>
 <body>
- 	 	 	 	 
+
 {include file="form_table_header.html"}
-<div class="ftb-body"> 
 <div class="ftb-body">
-	{if $action == 'VIEW_DETAIL'}
-	<!-- VIEW_DETAIL -->
-	<table class="table-view-detail">
-		<tbody> 			
-			<tr>
-				<td>รหัสการจอง :</td>
-				<td>{$code}</td>
-			</tr>
-			<tr>
-				<td>พนักงานที่บันทึก :</td>
-				<td>
-					<a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-	                        <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-	                	</a>
-				</td>
-			</tr>
-			<tr>
-				<td>ผู้ใช้บริการที่ทำการจอง :</td>
-				<td>
-					<a href="form_table.php?action=VIEW_DETAIL&tableName=customers&code={$values.cus_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-	                        <div id="cus_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-	                	</a>
-				</td>
-			</tr>
-			<tr>
-				<td>วันที่จอง :</td>
-				<td>{$values.bkg_date}</td>
-			</tr>
-			<tr>
-				<td>เวลาที่จอง :</td>
-				<td>{$values.bkg_time} น.</td>
-			</tr>
-			<tr>
-				<td>ราคารวมการจองทั้งหมด :</td>
-				<td>
-					{if $values.bkg_total_price != '-'}
-						{$values.bkg_total_price|number_format:2:".":","} บาท
-					{else}
-						-
-					{/if}
-				</td>
-			</tr>
-			<tr>
-				<td>สถานะการจอง :</td>
-				<td><div id="status_id" class="selectReferenceJS text"></div></td>
-			</tr>
-			<tr>
-				<td>บัญชีธนาคาร :</td>
-				<td><div id="bnkacc_id" class="selectReferenceJS text"></div></td>
-			</tr>
-			<tr>
-				<td>วันที่โอน :</td>
-				<td>{$values.bkg_transfer_date}</td>
-			</tr>
-			<tr>
-				<td>เวลาที่โอน :</td>
-				<td>
-					{if $values.bkg_transfer_time != '-'}
-						{$values.bkg_transfer_time} น.
-					{else}
-						-
-					{/if}
-				</td>
-			</tr>
-			<tr>
-				<td>จำนวนเงินที่โอน :</td>
-				<td>
-					{if $values.bkg_transfer_money != '-'}
-						{$values.bkg_transfer_money|number_format:2:".":","} บาท
-					{else}
-						-
-					{/if}
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<label>รูปภาพหลักฐานการโอนเงิน</label>
-	<div class="table-view-detail-image full">
-		<img src="{if $values.bkg_transfer_evidence != '-'}../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
-	</div>
-	{else}	 	
-	<!-- ADD, EDIT -->	 	 	 	 	 	 	 	 	
-    <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="cus_id,emp_id,status_id,bkg_total_price,bkg_date,bkg_time">
-	<table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
-		<tbody>
-			<tr>
-				<td colspan="2">
-					<label class="input-required">พนักงานที่บันทึก</label>
-					 <div id="emp_id" class="selectReferenceJS form-input full" require></div>
-				</td>
-			</tr>
-			<tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่บันทึก</span>
-                </td>
+    <div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+                        
+    </div>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการใช้บริการ :</td>
+                <td>{$code}</td>
             </tr>
-			<tr>
-				<td colspan="2">
-					<label class="input-required">ผู้ใช้บริการที่ทำการจอง</label>
-					 <div id="cus_id" class="selectReferenceJS form-input full" require></div>
-				</td>
-			</tr>
-			<tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการที่ทำการจอง</span>
+            <tr>
+                <td>ผู้ใช้บริการ :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=customers&code={$values.cus_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="cus_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
                 </td>
             </tr>
             <tr>
-            	<td>
-					<label class="input-required">วันที่จอง</label>
-					<input id="bkg_date" name="bkg_date" type="text" class="mbk-dtp-th form-input half" value="{$values.bkg_date}" require>
-				</td>
-				<td>
-					<label class="input-required">เวลาที่จอง</label>
-					<input id="bkg_time" name="bkg_time" type="text" class="form-input half" value="{$values.bkg_time}" require>
-				</td>
+                <td>ประเภทการชำระเงิน :</td>
+                <td><div id="paytyp_id" class="selectReferenceJS text"></div></td>
+            </tr>
+            <tr>
+                <td>เตียงนวด :</td>
+                <td><div id="bed_id" class="selectReferenceJS text"></div></td>
+            </tr>
+            <tr>
+                <td>รหัสการจอง :</td>
+                <td>{$values.bkg_id}</td>
+            </tr>
+            <tr>
+                <td>วันที่ใช้บริการ :</td>
+                <td>{$values.ser_date }</td>
+            </tr>
+            <tr>
+                <td>เวลาที่ใช้บริการ :</td>
+                <td>{$values.ser_time} น.</td>
+            </tr>
+            <tr>
+                <td>ราคารวมทั้งหมด :</td>
+                <td>{$values.ser_total_price|number_format:2:".":","} บาท</td>
+            </tr>
+           <tr>
+                <td>พนักงานที่บันทึก :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+        </tbody> 
+    </table> 
+    {else}      
+    <!-- ADD, EDIT -->             
+    <form id="form-table" name="form-table" onsubmit="return false;">
+    <input type="hidden" name="requiredFields" value="emp_id,cus_id,paytyp_id,bed_id,ser_date,ser_total_price,ser_time">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่รับเงิน</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">ผู้ใช้บริการ</label>
+                    <div id="cus_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>ประเภทผู้ใช้บริการ</label>
+                    <div id="custype_id" class="selectReferenceJS form-input full readonly"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รหัสการจอง</label>
+                    <div id="bkg_id" class="selectReferenceJS form-input full"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">เตียงนวด</label>
+                    <div id="bed_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-bed_id-require" class="errInputMsg err-bed_id">โปรดเลือกเตียงนวด</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">วันที่ใช้บริการ</label>
+                      <input id="ser_date" name="ser_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.ser_date}{$values.ser_date}{else}{$nowDate}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาที่ใช้บริการ</label>
+                      <input id="ser_time" name="ser_time" type="text" class="form-input half" value="{if $values.ser_time}{$values.ser_time}{else}{$nowTime}{/if}" require>
+                </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-bkg_date-require" class="errInputMsg half err-bkg_date">โปรดป้อนวันที่จอง</span>
+                    <span id="err-ser_date-require" class="errInputMsg half err-ser_date">โปรดป้อนวันที่ใช้บริการ</span>
                 </td>
                 <td>
-                    <span id="err-bkg_time-require" class="errInputMsg half err-bkg_time">โปรดป้อนเวลาที่จอง</span>
+                    <span id="err-ser_time-require" class="errInputMsg half err-ser_time">โปรดป้อนเวลาที่ใช้บริการ</span>
                 </td>
             </tr>
-            <tr>
-				<td>
-					<label class="input-required">ราคารวมการจอง(บาท)</label>
-					<input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input half" value="{$values.bkg_total_price}" valuepattern="money" require style="text-align:right;">
-				</td>
-				<td>
-					<label class="input-required">สถานะการจอง</label>
-					 <div id="status_id" class="selectReferenceJS form-input half" require></div>
-				</td>
-			</tr>
-			<tr class="errMsgRow">
-                <td>
-                    <span id="err-bkg_total_price-require" class="errInputMsg err-bkg_total_price">โปรดป้อนราคารวมการจอง</span>
-                    <span id="err-bkg_total_price-money" class="errInputMsg err-bkg_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-                </td>
-                <td>
-                    <span id="err-status_id-require" class="errInputMsg err-status_id">โปรดเลือกสถานะการจอง</span>
-                </td>
-            </tr>
-		</tbody>
-    </table>
-    <label class="article-title">ข้อมูลการชำระเงิน</label>
-    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
-		<tbody>
-			<tr>
-				<td colspan="2">
-					<label>บัญชีธนาคาร</label>
-					 <div id="bnkacc_id" class="selectReferenceJS form-input full"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>วันที่โอน</label>
-                	<input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{$values.bkg_transfer_date}">
-                </td>
-                <td>
-					<label>เวลาที่โอน</label>
-                	<input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{$values.bkg_transfer_time}">
-                </td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<label>จำนวนเงินที่โอน(บาท)</label>
-					<input id="bkg_transfer_money" name="bkg_transfer_money" type="text" class="form-input full" value="{$values.bkg_transfer_money}" valuepattern="money">
-				</td>
-			</tr>
-			<tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-bkg_transfer_money-money" class="errInputMsg err-bkg_transfer_money">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-                </td>
-            </tr>
-			<tr>
-				<td colspan="2">
-					<label>รูปภาพหลักฐานการโอนเงิน</label>
-					<div id="bkg_transfer_evidence" class="uploadImageArea full"></div>
-					<input type="hidden" name="bkg_transfer_evidence" value="{$values.bkg_transfer_evidence}">
-				</td>
-			</tr> 
 	    </tbody>
     </table>
+
+    <label class="article-title">รายละเอียดการใช้บริการแพ็คเกจ</label>
+    รายการแพ็คเกจทั้งหมด <span id="allPkg"></span> รายการ<br><br>
+    <table id="service-package-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+        <tbody>
+            <tr class="headTable-row">
+                <td><label class="input-required"><b>แพ็คเกจ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td align="right"><label>ส่วนลด</label></td>
+                <td align="right"><label>ราคารวม</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addPackageBtn" class="button button-icon button-icon-add">เพิ่มแพ็คเกจ</button>
+    <br>
+    <br>
+    <br>
+    <label class="article-title">รายละเอียดการใช้บริการรายการบริการ</label>
+    รายการบริการทั้งหมด <span id="allSvl"></span> รายการ<br><br>
+    <table id="service-service-list-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+        <tbody>
+            <tr class="headTable-row">
+                <td><label class="input-required"><b>รายการบริการ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td align="right"><label>ส่วนลด</label></td>
+                <td align="right"><label>ราคารวม</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="addServiceListBtn" class="button button-icon button-icon-add">เพิ่มรายการบริการ</button>
+
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="margin-top: 40px;">
+        <tr>          
+            <td colspan="2">
+                <label class="input-required">ประเภทการชำระเงิน</label>
+                <div id="paytyp_id" class="selectReferenceJS form-input full" require></div>
+            </td>
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-paytyp_id-require" class="errInputMsg err-paytyp_id">โปรดเลือกประเภทการชำระเงิน</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="input-required">พนักงานที่รับเงิน</label>
+                <div id="emp_id" class="selectReferenceJS form-input full" require></div>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label class="input-required">ส่วนลดโปรโมชั่นทั้งหมด(บาท)</label>
+               <input id="ser_prm_discout" name="ser_prm_discout" type="text" class="form-input full readonly" 
+               value="{if $values.ser_prm_discout}{$values.ser_prm_discout}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_prm_discout-require" class="errInputMsg err-ser_prm_discout">โปรดป้อนส่วนลดโปรโมชั่น</span>
+                <span id="err-ser_prm_discout-money" class="errInputMsg err-ser_prm_discout">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="input-required">ราคาสุทธิ(บาท)</label>
+                <input id="ser_total_price" name="ser_total_price" type="text" class="form-input full readonly" value="{if $values.ser_total_price}{$values.ser_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_total_price-require" class="errInputMsg err-ser_total_price">โปรดป้อนราคาสุทธิ</span>
+                <span id="err-ser_total_price-money" class="errInputMsg err-ser_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label>จำนวนเงินที่รับมา(บาท)</label>
+               <input id="ser_pay_price" name="ser_pay_price" type="text" class="form-input full" 
+               value="{if $values.ser_pay_price}{$values.ser_pay_price|number_format:2:".":""}{else}0.00{/if}" valuepattern="moneyMorethanEqual" data-morethanEqual-id="ser_total_price" require>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-ser_pay_price-require" class="errInputMsg err-ser_pay_price">โปรดป้อนจำนวนเงินที่รับมา</span>
+                <span id="err-ser_pay_price-money" class="errInputMsg err-ser_pay_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                <span id="err-ser_pay_price-moneyMorethanEqual" class="errInputMsg err-ser_pay_price">จำนวนเงินที่รับมาน้อยกว่าราคาสุทธิ กรุณาป้อนจำนวนเงินใหม่</span>
+            </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                <label>เงินทอน(บาท)</label>
+               <input id="changeMoney" name="changeMoney" type="text" class="form-input full readonly" 
+               value="{if $changeMoney}{$changeMoney|number_format:2:".":","}{else}0.00{/if}" valuepattern="money" require readonly>
+            </td>         
+        </tr>
+        <tr class="errMsgRow">
+            <td colspan="2">
+                <span id="err-changeMoney-require" class="errInputMsg err-changeMoney">โปรดป้อนเงินทอน</span>
+                <span id="err-changeMoney-money" class="errInputMsg err-changeMoney">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+            </td>
+        </tr>
+    </table>
     </form>
-	<form method="post" enctype="multipart/form-data">
-		<input id="bkg_transfer_evidence_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
-	</form>
-	{/if}
+    {/if}
 </div>
 </body>
 </html>
@@ -294,4 +432,5 @@
     [Note]
     1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
     2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
 -->
