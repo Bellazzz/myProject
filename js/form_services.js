@@ -346,6 +346,9 @@ function addServiceList(data) {
                     + '</tr>'
                     + '<tr id="serviceListPrmRow_' + randNum + '" class="service-list-prm-row">'
                     + '     <td colspan="6"></td>'
+                    + '</tr>'
+                    + '<tr id="serviceListComRow_' + randNum + '" class="service-list-com-row">'
+                    + '     <td colspan="6"></td>'
                     + '</tr>';
     $('#service-service-list-table > tbody').append(svlRowHTML);
 
@@ -359,6 +362,10 @@ function addServiceList(data) {
             pullSvlUnitPrice(inputKeyId);
             addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
             calSummary();
+            addServiceListCommission({
+		    	svl_id: $('#' + inputKeyId).find('input[name="svl_id[]"]').val(),
+		    	parentRandNum: randNum
+		    });
         },
         success         : 
         function() {
@@ -379,6 +386,84 @@ function addServiceList(data) {
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
     });
+
+    
+}
+
+function addServiceListCommission(data) {
+	var randNum;
+    var selectRefDefault = '';
+    do {
+        randNum     = parseInt(Math.random()*1000);
+    } while($('#emp_id_svlCom_' + randNum).length > 0);
+    var inputKeyId  	= 'emp_id_svlCom_' + randNum;
+    var inputComRateId  = 'com_rate_svlCom_' + randNum;
+	var selectRef    	= $('#svl_id_' + data.parentRandNum);
+	var tr           	= selectRef.parent().parent();
+	var tdCom 		 	= tr.next().next().next().find('td');
+
+	var commissionHTML      = '<div class="svlCom com-list">'
+                            + ' <table cellpadding="0" cellspacing="0">'
+                            + '     <tr>'
+                            + '         <td class="emp-col">'
+                            + ' 			<div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                            + '         </td>'
+                            + '         <td class="com-rate-col">ค่าคอมมิชชั่น ';
+
+    // add input commisstion rate
+    if(data.defaultValue) {
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+        selectRefDefault = data.emp_id;
+    } else {
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+    }
+
+    commissionHTML         += '         %</td>'
+                            + '     </tr>'
+                            + ' </table>'
+                            + ' <input type="hidden" class="emp_id" name="svlCom_' + data.svl_id + '_emp_id[]" value="">'
+                            + ' <input type="hidden" class="com_rate" name="svlCom_' + data.svl_id + '_com_rate[]" value="100">'
+                            + '</div>';
+    if(tdCom.find('.com-list-container').length <= 0) {
+        var comCont     = '<div class="com-list-container"><span class="com-list-title" data-status="1"><i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ</span></div>';
+        tdCom.append(comCont);
+        tdCom.find('.com-list-container').append(commissionHTML);
+    } else {
+    	tdCom.find('.emp_id').attr('name', 'svlCom_' + data.svl_id + '_emp_id[]');
+    	tdCom.find('.com_rate').attr('name', 'svlCom_' + data.svl_id + '_com_rate[]');
+    }
+
+    // Create select reference
+    selectReferenceJS({
+        elem            : $('#' + inputKeyId),
+        data            : refEmpData,
+        defaultValue    : selectRefDefault,
+        onOptionSelect  :
+        function() {
+        	var empId = $('#' + inputKeyId).find('selectReferenceJS-value').val();
+            $('#' + inputKeyId).parent().parent().parent().parent().find('.emp_id').val(empId);
+        },
+        success         : 
+        function() {
+            var empId = $('#' + inputKeyId).find('selectReferenceJS-value').val();
+            $('#' + inputKeyId).parent().parent().parent().parent().find('.emp_id').val(empId);
+        },
+        group           : 'employee_' + data.parentRandNum
+    });
+
+    tdCom.find('.com-list-title').click(function() {
+        var stat = $(this).attr('data-status');
+        if(stat == "1") {
+            $(this).parent().find('.com-list').css('display', 'none');
+            $(this).attr('data-status', '0');
+            $(this).html('<i class="fa fa-chevron-down"></i> แสดงพนักงานที่ให้บริการ');
+        } else {
+            $(this).parent().find('.com-list').css('display', 'block');
+            $(this).attr('data-status', '1');
+            $(this).html('<i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ');
+        }
+    });           
+    
 }
 
 function removeServiceList(randNum) {
@@ -406,6 +491,7 @@ function removeServiceList(randNum) {
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#serviceListPrmRow_' + randNum).remove();
+                    $('#serviceListComRow_' + randNum).remove();
                     setAllSerDetailAmount();
                     calSummary();
                 }

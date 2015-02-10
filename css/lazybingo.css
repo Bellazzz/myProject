@@ -1469,9 +1469,6 @@ label.article-title {
 	background: #efefef;
 	color: #666;
 	padding: 6px;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
 }
  .button-icon:hover {
     background: #8AC007;

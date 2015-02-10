@@ -759,6 +759,7 @@ function dbClose() {
 						'svl_id'	          => 'รหัสรายการบริการ',
 						'emp_id' 			  => 'ชื่อ-นามสกุลพนักงาน',
 						'sersvl_id'	  		  => 'รหัสรายละเอียดการใช้บริการรายการบริการ',
+						'svldtl_amount' 	  => 'จำนวนครั้งที่ทำ',
 						'svldtl_com'	      => 'ค่าคอมมิชชั่น(บาท)'
 				),
 				'searchFields'	=> array('svldtl_id','svl_id','emp_id')

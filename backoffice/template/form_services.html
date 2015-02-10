@@ -27,19 +27,16 @@
         .removePackageBtn, .removeServiceListBtn {
             padding: 5px;
             background: none repeat scroll 0% 0% #EEE;
-            border-radius: 3px;
             margin-left: 40px;
         }
 
-        .package-prm-row > td, .service-list-prm-row > td {
+        .package-prm-row > td, .service-list-prm-row > td, .service-list-com-row > td {
             padding-left: 100px;
         }
         .prm-list-container {
-            width: 718px;
-            margin-bottom: 40px;
-            background: #f8f8f8;
-            border-radius: 6px;
-            box-shadow: 0 2px 2px #ddd;
+            width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #DDD;
         }
         .prm-list {
             position: relative;
@@ -50,9 +47,6 @@
         .prm-list .prm-thumb {
             width: 50px;
             height: 50px;
-            -webkit-border-radius: 6px;
-            -moz-border-radius: 6px;
-            border-radius: 6px;
             background-repeat: no-repeat;
             background-position: center top;
             background-size: cover;
@@ -74,15 +68,16 @@
             font-size: 14px;
         }
         .prm-list table td.prm-name-col {
-            width: 412px;
+            width: 378px;
         }
         .prm-list table td.amount-col {
             width: 80px;
             text-align: right !important;
         }
         .prm-list table td.discout-col {
-            text-align: right !important;
-            color: rgb(255, 68, 68) !important;
+            color: #F44 !important;
+            text-align: left !important;
+            padding-left: 111px;
         }
 
         .prm-list table .prm-name {
@@ -90,6 +85,36 @@
         }
         .prm-list table .discount-rate {
             color: #b7b7b7;
+        }
+
+        .com-list-container {
+            width: 100%;
+        }
+        .com-list-title {
+            margin-bottom: 10px;
+            display: inline-block;
+            color: #666;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+        .com-list-title:hover {
+            color: #8AC007;
+        }
+        #service-service-list-table .service-list-row:not(:first-child) > td {
+            border-top: 1px solid #c4c4c4;
+            padding-top: 21px;
+        }
+        .svlCom.com-list>table>tbody>tr>td {
+            border-top: solid 1px #c4c4c4;
+            padding-top: 15px;
+        }
+        .svlCom.com-list>table>tbody>tr>td:last-child {
+            width: 100%;
+            padding-left: 37px;
+        }
+        .com-list > table {
+            width: 100%;
         }
     </style>
     <script type="text/javascript">
@@ -102,6 +127,7 @@
         var refPkgData  = {/literal}{$referenceData["packages"]|@json_encode}{literal};
         var refSvlData  = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
         var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
+        var refEmpData  = {/literal}{$referenceData["employees"]|@json_encode}{literal};
         var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
@@ -134,7 +160,7 @@
         $(document).ready(function () {
             selectReferenceJS({
                 elem            : $('#emp_id'),
-                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                data            : refEmpData,
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
             selectReferenceJS({
