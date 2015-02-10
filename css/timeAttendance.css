@@ -64,8 +64,8 @@ body {
     left:0;
     width: 100%;
     height: 100%;
-    padding-top: 200px;
-    padding-bottom: 235px;
+    padding-top: 244px;
+    padding-bottom: 144px;
 }
 .advertising-container {
     margin: 0 auto;
@@ -107,7 +107,7 @@ body {
 }
 .textRunner {
     position: fixed;
-    bottom: 120px;
+    bottom: 65px;
     left: 0;
     width: 100%;
     height: 45px;
@@ -122,7 +122,7 @@ body {
     background: white;
     position: fixed;
     bottom: 0;
-    padding: 35px;
+    padding: 9px;
 }
 
 .barcode-container table {
@@ -317,7 +317,7 @@ body {
 .numAds-container {
     position: fixed;
     left: 0;
-    bottom: 185px;
+    bottom: 107px;
     width: 100%;
     height: 40px;
     text-align: center;
