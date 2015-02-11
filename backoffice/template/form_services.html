@@ -116,6 +116,9 @@
         .com-list > table {
             width: 100%;
         }
+        .addSvlComBtn {
+            margin-bottom: 10px;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -153,6 +156,18 @@
         {else}
         {literal}
             valuesSvl = Array();
+        {/literal}
+        {/if}
+        {literal}
+
+        {/literal}
+        {if $valuesSvlDtl}
+        {literal}
+            valuesSvlDtl = {/literal}{$valuesSvlDtl|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesSvlDtl = Array();
         {/literal}
         {/if}
         {literal}
