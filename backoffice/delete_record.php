@@ -216,6 +216,88 @@ if($tableName == 'packages') {
 		}
 		// End Increase product shelf amount
 	}
+} else if($tableName == 'services') {
+	foreach($keySelected as $index => $ser_id) {
+		// Find service service_list id
+		$sersvlIdList 	= array();
+		$sql 	= "SELECT sersvl_id FROM service_service_lists WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($sersvlIdList, $record['sersvl_id']);
+		}
+		$sersvlIdList = wrapSingleQuote($sersvlIdList);
+
+		// Find service package id
+		$serpkgIdList 	= array();
+		$sql 	= "SELECT serpkg_id FROM service_packages WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($serpkgIdList, $record['serpkg_id']);
+		}
+		$serpkgIdList = wrapSingleQuote($serpkgIdList);
+
+		// Delete service_service_list_promotions
+		$sql 	= "DELETE FROM service_service_list_promotions WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SERVICE_SERVICE_LIST_PROMOTIONS : $err";
+			exit();
+		}
+
+		// Delete service_package_promotions
+		$sql 	= "DELETE FROM service_package_promotions WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SERVICE_PACKAGE_PROMOTIONS : $err";
+			exit();
+		}
+
+		// Delete service_list_details
+		if(is_array($sersvlIdList) && count($sersvlIdList) > 0) {
+			$sql 	= "DELETE FROM service_list_details WHERE sersvl_id IN (".implode(',', $sersvlIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$err = mysql_error($dbConn);
+				echo "DELETE_SERVICE_LIST_DETAILS : $err";
+				exit();
+			}
+		}
+		
+		// Delete package_details
+		if(is_array($serpkgIdList) && count($serpkgIdList) > 0) {
+			$sql 	= "DELETE FROM package_details WHERE serpkg_id IN (".implode(',', $serpkgIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$err = mysql_error($dbConn);
+				echo "DELETE_PACKAGE_DETAILS : $err";
+				exit();
+			}
+		}
+
+		// Delete service_service_list_promotions
+		$sql 	= "DELETE FROM service_service_lists WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SERVICE_SERVICE_LISTS : $err";
+			exit();
+		}
+
+		// Delete service_packages
+		$sql 	= "DELETE FROM service_packages WHERE ser_id = '$ser_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_SERVICE_PACKAGES : $err";
+			exit();
+		}
+	}
 }
 
 
