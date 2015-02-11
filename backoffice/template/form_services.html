@@ -30,7 +30,8 @@
             margin-left: 40px;
         }
 
-        .package-prm-row > td, .service-list-prm-row > td, .service-list-com-row > td {
+        .package-prm-row > td, .service-list-prm-row > td, .service-list-com-row > td,
+        .package-svl-row > td {
             padding-left: 100px;
         }
         .prm-list-container {
@@ -114,10 +115,22 @@
             padding-left: 37px;
         }
         .com-list > table {
-            width: 100%;
+            width: 660px;
         }
         .addSvlComBtn {
             margin-bottom: 10px;
+        }
+        .pkgsvl-list {
+            padding: 10px 10px 10px 0;
+            border-top: 1px solid #ddd;
+            width: 660px;
+        }
+        .com-rate-col {
+            width: 100%;
+            padding-left: 37px !important;
+        }
+        .pkgsvlCom.com-list {
+            padding-top: 15px;
         }
     </style>
     <script type="text/javascript">
@@ -133,7 +146,8 @@
         var refEmpData  = {/literal}{$referenceData["employees"]|@json_encode}{literal};
         var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
-        var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
+        var pkgsvlData      = {/literal}{$pkgsvlData|@json_encode}{literal};
+        var curCustypeId    = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
 
         // Set valuesDetail
         {/literal}

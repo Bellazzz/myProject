@@ -218,6 +218,9 @@ function addPackage(data) {
                     + '</tr>'
                     + '<tr id="packagePrmRow_' + randNum + '" class="package-prm-row">'
                     + '     <td colspan="6"></td>'
+                    + '</tr>'
+                    + '<tr id="packagePkgSvlRow_' + randNum + '" class="package-svl-row">'
+                    + '     <td colspan="6"></td>'
                     + '</tr>';
     $('#service-package-table > tbody').append(pkgRowHTML);
 
@@ -228,9 +231,14 @@ function addPackage(data) {
         defaultValue    : selectRefDefault,
         onOptionSelect  :
         function() {
+            var curPkgId = $('#' + inputKeyId).find('input[name="pkg_id[]"]').val();
             pullPkgUnitPrice(inputKeyId);
-            addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
+            addPkgPrmSale(curPkgId);
             calSummary();
+            addServiceListOfPackage({
+                pkg_id          : curPkgId,
+                parentRandNum   : randNum
+            });
         },
         success         : 
         function() {
@@ -294,6 +302,100 @@ function removePackage(randNum) {
         ],
         boxWidth: 400
     });
+}
+
+function addServiceListOfPackage(data) {
+    //$('#packagePkgSvlRow_' + data.randNum).
+    var svlPkgTd    = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
+    var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ</span>'
+                    + '<div class="pkgsvl-list-container"></div>';
+    svlPkgTd.html(initHTML);
+    svlPkgTd.find('.com-list-title').click(function() {
+        var stat = $(this).attr('data-status');
+        if(stat == "1") {
+            $(this).parent().find('.pkgsvl-list-container').css('display', 'none');
+            $(this).attr('data-status', '0');
+            $(this).html('<i class="fa fa-chevron-down"></i> แสดงพนักงานที่ให้บริการ');
+        } else {
+            $(this).parent().find('.pkgsvl-list-container').css('display', 'block');
+            $(this).attr('data-status', '1');
+            $(this).html('<i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ');
+        }
+    });
+
+    for(i in pkgsvlData[data.pkg_id]) {
+        var no = parseInt(i) + 1;
+        var randNum;
+        var selectRefDefault = '';
+        do {
+            randNum     = parseInt(Math.random()*1000);
+        } while($('#emp_id_pkgCom_' + randNum).length > 0);
+        var inputKeyId      = 'emp_id_pkgCom_' + randNum;
+        var inputComRateId  = 'com_rate_pkgCom_' + randNum;
+        var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
+        var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var pkgsvlHTML= '<div class="pkgsvl-list">'
+                      + '   ' + no + '. ' + svl_name
+                      + '   <div class="pkgsvlCom-list-container">'
+                      + '       <div class="pkgsvlCom com-list">'
+                      + '           <table cellpadding="0" cellspacing="0">'
+                      + '               <tbody>'
+                      + '                   <tr>'
+                      + '                       <td class="emp-col">'
+                      + '                           <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                      + '                       </td>'
+                      + '                       <td class="com-rate-col">ค่าคอมมิชชั่น ';
+
+        // add input commisstion rate
+        if(data.defaultValue) {
+            pkgsvlHTML += '                         <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+            selectRefDefault = data.emp_id;
+            comRate          = data.com_rate;
+        } else {
+            pkgsvlHTML += '                         <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+        }
+
+        pkgsvlHTML    += '                          %&nbsp;&nbsp;&nbsp;'
+                      + '                           <button id="removeSvlComBtn_' + inputKeyId + '" class="removeSvlComBtn button button-icon button-icon-delete">ลบ</button>'
+                      + '                       </td>'
+                      + '                   </tr>'
+                      + '               </tbody>'
+                      + '           </table>'
+                      + '       </div>'
+                      + '   </div>'
+                      + '</div>';
+        svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
+
+        // Create select reference
+        selectReferenceJS({
+            elem            : $('#' + inputKeyId),
+            data            : refEmpData,
+            defaultValue    : selectRefDefault,
+            onOptionSelect  :
+            function() {
+                // var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+                // $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
+            },
+            success         : 
+            function() {
+                // var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+                // $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
+            },
+            group           : 'employeePkg_' + data.parentRandNum
+        });
+
+
+    //                   var commissionHTML      = '<div class="svlCom com-list">'
+    //                         + ' <table cellpadding="0" cellspacing="0">'
+    //                         + '     <tbody>'
+    //                         + '     <tr>'
+    //                         + '         <td class="emp-col">'
+    //                         + '             <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+    //                         + '         </td>'
+    //                         + '         <td class="com-rate-col">ค่าคอมมิชชั่น ';
+
+    
+    }
 }
 
 function addServiceList(data) {

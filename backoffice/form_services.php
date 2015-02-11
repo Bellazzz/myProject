@@ -314,6 +314,35 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('svlPromotions', $svlPromotions);
 	}
 
+	// Get package_service_lists data
+	$pkgsvlData = array();
+	$sql = "SELECT 		pkg.pkg_id,
+						s.svl_id,
+						s.svl_name 
+			FROM 		packages pkg,
+						package_service_lists pkgsvl,
+						service_lists s  
+			WHERE 		pkg.pkg_id = pkgsvl.pkg_id AND 
+						pkgsvl.svl_id = s.svl_id";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		for($i=0; $i<$rows; $i++) {
+			$record	= mysql_fetch_assoc($result);
+
+			if(!isset($pkgsvlData[$record['pkg_id']])) {
+				$pkgsvlData[$record['pkg_id']] = array();
+			}
+
+			$pkgsvlValues = array(
+				'svl_id' 	=> $record['svl_id'],
+				'svl_name' 	=> $record['svl_name']
+			);
+			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
+		}
+		$smarty->assign('pkgsvlData', $pkgsvlData);
+	}
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
