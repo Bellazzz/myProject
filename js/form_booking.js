@@ -7,9 +7,9 @@ $(document).ready(function(){
 	$('#addServiceListBtn').click(addServiceList);
 
 	//Cal change money
-    $('#ser_pay_price').change(calSummary);
+    $('#bkg_pay_price').change(calSummary);
 
-	setAllSerDetailAmount();
+	setAllBkgDetailAmount();
 
 	
 });
@@ -19,18 +19,18 @@ function addItemForEdit() {
 		for(i in valuesPkg) {
              addPackage({
                 defaultValue : true,
-                serpkg_id   : valuesPkg[i].serpkg_id,
+                bkgpkg_id   : valuesPkg[i].bkgpkg_id,
                 pkg_id      : valuesPkg[i].pkg_id,
-                pkg_qty     : valuesPkg[i].serpkg_amount,
+                pkg_qty     : valuesPkg[i].bkgpkg_persons,
                 unitPrice   : valuesPkg[i].pkg_price
             });
         }
         for(i in valuesSvl) {
              addServiceList({
                 defaultValue : true,
-                sersvl_id   : valuesSvl[i].sersvl_id,
+                bkgsvl_id   : valuesSvl[i].bkgsvl_id,
                 svl_id      : valuesSvl[i].svl_id,
-                svl_qty     : valuesSvl[i].sersvl_amount,
+                svl_qty     : valuesSvl[i].bkgsvl_persons,
                 unitPrice   : valuesSvl[i].svl_price
             });
         }
@@ -84,21 +84,21 @@ function changeCusId() {
 	newCusId = $('input[name="cus_id"]').val();
     if(($('input[name="pkg_id[]"]').length > 0 || $('input[name="svl_id[]"]').length > 0) 
     	&& getCusTypeId(oldCusId) != getCusTypeId(newCusId)) {
-    	var msg         = 'การเปลี่ยนผู้ใช้บริการที่มีประเภทต่างกันจำเป็นต้องเคลียร์ข้อมูลรายละเอียดการใช้บริการใหม่ '
-	                    + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนผู้ใช้บริการ?';
+    	var msg         = 'การเปลี่ยนผู้จองที่มีประเภทต่างกันจำเป็นต้องเคลียร์ข้อมูลรายละเอียดการจองใหม่ '
+	                    + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนผู้จอง?';
 	    parent.showActionDialog({
-	        title: 'เปลี่ยนผู้ใช้บริการ',
+	        title: 'เปลี่ยนผู้จอง',
 	        message: msg,
 	        actionList: [
 	            {
 	                id: 'change',
 	                name: 'เปลี่ยน',
-	                desc: 'ข้อมูลรายละเอียดการใช้บริการจะถูกเคลียร์',
+	                desc: 'ข้อมูลรายละเอียดการจองจะถูกเคลียร์',
 	                func:
 	                function() {
-	                    $('#service-package-table tr:not(.headTable-row)').remove();
-	                    $('#service-service-list-table tr:not(.headTable-row)').remove();
-	                    setAllSerDetailAmount();
+	                    $('#booking-package-table tr:not(.headTable-row)').remove();
+	                    $('#bookinbookg-service-list-table tr:not(.headTable-row)').remove();
+	                    setAllBkgDetailAmount();
 	                    setCusTypeId(newCusId);
 	                    calSummary();
 	                    parent.hideActionDialog();
@@ -171,17 +171,17 @@ function addPackage(data) {
         pkgRowHTML += '         <input id="' + inputQtyId + '" name="pkg_qty[]" type="text" class="form-input half" value="1" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
-    // add service package id for update
-    if(action == 'EDIT' && typeof(data.serpkg_id) != 'undefined') {
-        pkgRowHTML += '         <input name="serpkg_id[]" type="hidden" value="' + data.serpkg_id + '">';
+    // add booking package id for update
+    if(action == 'EDIT' && typeof(data.bkgpkg_id) != 'undefined') {
+        pkgRowHTML += '         <input name="bkgpkg_id[]" type="hidden" value="' + data.bkgpkg_id + '">';
     }
         pkgRowHTML += ' 	</td>'
         			+ '     <td>'
                     + '         <span class="pkg_sumPrm_price">0.00</span>'
                     + '     </td>'
                     + '     <td>'
-                    + '         <span class="serpkg_price_txt">0.00</span>'
-                    + '         <input type="hidden" name="serpkg_total_price[]" value="0">'
+                    + '         <span class="bkgpkg_price_txt">0.00</span>'
+                    + '         <input type="hidden" name="bkgpkg_total_price[]" value="0">'
                     + '     </td>'
                     + '		<td style="width:100%">'
         			+ '			<button class="removePackageBtn button button-icon button-icon-delete" onclick="removePackage(\'' + randNum + '\')">ลบ</button>'
@@ -206,7 +206,7 @@ function addPackage(data) {
                     + '<tr id="packagePrmRow_' + randNum + '" class="package-prm-row">'
                     + '     <td colspan="6"></td>'
                     + '</tr>';
-    $('#service-package-table > tbody').append(pkgRowHTML);
+    $('#booking-package-table > tbody').append(pkgRowHTML);
 
     // Create select reference
     selectReferenceJS({
@@ -222,7 +222,7 @@ function addPackage(data) {
         success         : 
         function() {
             $('input[name="' + inputKeyId + '"]').attr('name', 'pkg_id[]');
-            setAllSerDetailAmount();
+            setAllBkgDetailAmount();
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
@@ -233,7 +233,7 @@ function addPackage(data) {
     $('#' + inputQtyId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
-        var sumPriceInput = $(this).parent().parent().find('input[name="serpkg_total_price[]"]');
+        var sumPriceInput = $(this).parent().parent().find('input[name="bkgpkg_total_price[]"]');
         calSumPriceInput(sumPriceInput, 'packages');
         addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
         calSummary();
@@ -247,9 +247,9 @@ function removePackage(randNum) {
     var val         = selectRef.find('.selectReferenceJS-input').val();
     var msg         = '';
     if(val != '') {
-        msg = 'คุณต้องการลบแพ็คเกจ ' + txt + ' ออกจากการใช้บริการครั้งนี้ใช่หรือไม่?';
+        msg = 'คุณต้องการลบแพ็คเกจ ' + txt + ' ออกจากการจองครั้งนี้ใช่หรือไม่?';
     } else {
-        msg = 'คุณต้องการลบแพ็คเกจที่เลือกออกจากการใช้บริการครั้งนี้ใช่หรือไม่?';
+        msg = 'คุณต้องการลบแพ็คเกจที่เลือกออกจากการจองครั้งนี้ใช่หรือไม่?';
     }
     parent.showActionDialog({
         title: 'ลบแพ็คเกจ',
@@ -265,7 +265,7 @@ function removePackage(randNum) {
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#packagePrmRow_' + randNum).remove();
-                    setAllSerDetailAmount();
+                    setAllBkgDetailAmount();
                     calSummary();
                 }
             },
@@ -312,17 +312,17 @@ function addServiceList(data) {
         svlRowHTML += '         <input id="' + inputQtyId + '" name="svl_qty[]" type="text" class="form-input half" value="1" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
-    // add service package id for update
-    if(action == 'EDIT' && typeof(data.sersvl_id) != 'undefined') {
-        svlRowHTML += '         <input name="sersvl_id[]" type="hidden" value="' + data.sersvl_id + '">';
+    // add booking package id for update
+    if(action == 'EDIT' && typeof(data.bkgsvl_id) != 'undefined') {
+        svlRowHTML += '         <input name="bkgsvl_id[]" type="hidden" value="' + data.bkgsvl_id + '">';
     }
         svlRowHTML += ' 	</td>'
         			+ '     <td>'
                     + '         <span class="svl_sumPrm_price">0.00</span>'
                     + '     </td>'
                     + '     <td>'
-                    + '         <span class="sersvl_price_txt">0.00</span>'
-                    + '         <input type="hidden" name="sersvl_total_price[]" value="0">'
+                    + '         <span class="bkgsvl_price_txt">0.00</span>'
+                    + '         <input type="hidden" name="bkgsvl_total_price[]" value="0">'
                     + '     </td>'
                     + '		<td style="width:100%">'
                     + '			<button class="removeServiceListBtn button button-icon button-icon-delete" onclick="removeServiceList(\'' + randNum + '\')">ลบ</button>'
@@ -347,7 +347,7 @@ function addServiceList(data) {
                     + '<tr id="serviceListPrmRow_' + randNum + '" class="service-list-prm-row">'
                     + '     <td colspan="6"></td>'
                     + '</tr>';
-    $('#service-service-list-table > tbody').append(svlRowHTML);
+    $('#booking-service-list-table > tbody').append(svlRowHTML);
 
     // Create select reference
     selectReferenceJS({
@@ -363,7 +363,7 @@ function addServiceList(data) {
         success         : 
         function() {
             $('input[name="' + inputKeyId + '"]').attr('name', 'svl_id[]');
-            setAllSerDetailAmount();
+            setAllBkgDetailAmount();
             pullSvlUnitPrice(inputKeyId);
             addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
             calSummary();
@@ -374,7 +374,7 @@ function addServiceList(data) {
     $('#' + inputQtyId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
-        var sumPriceInput = $(this).parent().parent().find('input[name="sersvl_total_price[]"]');
+        var sumPriceInput = $(this).parent().parent().find('input[name="bkgsvl_total_price[]"]');
         calSumPriceInput(sumPriceInput, 'service_lists');
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
@@ -388,9 +388,9 @@ function removeServiceList(randNum) {
     var val         = selectRef.find('.selectReferenceJS-input').val();
     var msg         = '';
     if(val != '') {
-        msg = 'คุณต้องการลบรายการบริการ ' + txt + ' ออกจากการใช้บริการครั้งนี้ใช่หรือไม่?';
+        msg = 'คุณต้องการลบรายการบริการ ' + txt + ' ออกจากการจองครั้งนี้ใช่หรือไม่?';
     } else {
-        msg = 'คุณต้องการลบรายการบริการที่เลือกออกจากการใช้บริการครั้งนี้ใช่หรือไม่?';
+        msg = 'คุณต้องการลบรายการบริการที่เลือกออกจากการจองครั้งนี้ใช่หรือไม่?';
     }
     parent.showActionDialog({
         title: 'ลบรายการบริการ',
@@ -399,14 +399,14 @@ function removeServiceList(randNum) {
             {
                 id: 'ok',
                 name: 'ตกลง',
-                desc: 'ลบรายการบริการนี้ออกจากการใช้บริการ',
+                desc: 'ลบรายการบริการนี้ออกจากการจอง',
                 func:
                 function() {
                     parent.hideActionDialog();
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#serviceListPrmRow_' + randNum).remove();
-                    setAllSerDetailAmount();
+                    setAllBkgDetailAmount();
                     calSummary();
                 }
             },
@@ -439,7 +439,7 @@ function pullPkgUnitPrice(inputKeyId) {
         }
 
         pkgUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
-        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="serpkg_total_price[]"]'), 'packages');
+        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgpkg_total_price[]"]'), 'packages');
     }
 }
 
@@ -458,7 +458,7 @@ function pullSvlUnitPrice(inputKeyId) {
         }
 
         svlUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
-        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="sersvl_total_price[]"]'), 'service_lists');
+        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgsvl_total_price[]"]'), 'service_lists');
     }
 }
 
@@ -467,11 +467,11 @@ function calSumPriceInput(sumPriceInput, type) {
 	if(type == 'packages') {
 		unitSelector 	= '.pkg_unit_price';
 		qtySelector  	= 'input[name="pkg_qty[]"]';
-		SumSelector  	= '.serpkg_price_txt';
+		SumSelector  	= '.bkgpkg_price_txt';
 	} else if(type == 'service_lists') {
 		unitSelector 	= '.svl_unit_price';
 		qtySelector  	= 'input[name="svl_qty[]"]';
-		SumSelector  	= '.sersvl_price_txt';
+		SumSelector  	= '.bkgsvl_price_txt';
 	}
     var unitPrice   = parseFloat(sumPriceInput.parent().parent().find(unitSelector).text().replace(',', ''));
     var qtyInput    = sumPriceInput.parent().parent().find(qtySelector);
@@ -482,21 +482,21 @@ function calSumPriceInput(sumPriceInput, type) {
     sumPriceTxt.text(sumPrice.formatMoney(2, '.', ','));
 }
 
-function setAllSerDetailAmount() {
+function setAllBkgDetailAmount() {
 	var pkgNum = $('input[name="pkg_id[]"]').length;
 	var svlNum = $('input[name="svl_id[]"]').length;
     $('#allPkg').text(pkgNum);
     $('#allSvl').text(svlNum);
 
     if(pkgNum > 0) {
-    	$('#service-package-table').css('display', 'table');
+    	$('#booking-package-table').css('display', 'table');
     } else {
-    	$('#service-package-table').css('display', 'none');
+    	$('#booking-package-table').css('display', 'none');
     }
     if(svlNum > 0) {
-    	$('#service-service-list-table').css('display', 'table');
+    	$('#booking-service-list-table').css('display', 'table');
     } else {
-    	$('#service-service-list-table').css('display', 'none');
+    	$('#booking-service-list-table').css('display', 'none');
     }
 }
 
@@ -546,8 +546,8 @@ function addPkgPrmSale(pkg_id) {
                             + ' </table>'
                             + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
                             + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_serpkgprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_serpkgprm_discout_total" value="' + sumDiscout + '">'
+                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_bkgpkgprm_amount" value="' + amount + '">'
+                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_bkgpkgprm_discout_total" value="' + sumDiscout + '">'
                             + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
                             + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
                             + '</div>';
@@ -606,8 +606,8 @@ function addSvlPrmSale(svl_id) {
                             + ' </table>'
                             + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
                             + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_sersvlprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_sersvlprm_discout_total" value="' + sumDiscout + '">'
+                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_bkgsvlprm_amount" value="' + amount + '">'
+                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_bkgsvlprm_discout_total" value="' + sumDiscout + '">'
                             + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
                             + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
                             + '</div>';
@@ -631,15 +631,15 @@ function removePrm(prmList) {
 }
 
 function calSummary() {
-    var totalPrice          = 0;
+    var totalPrice        = 0;
     var totalDiscoutPrm   = 0;
 
     // Cal sum promotion discout
     $('input[name="pkg_id[]"]').each(function() {
         var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
         var pkg_sumPrm_price    = $(this).parent().parent().parent().find('.pkg_sumPrm_price');
-        var serpkg_price_txt    = $(this).parent().parent().parent().find('.serpkg_price_txt');
-        var serpkg_price        = parseFloat($(this).parent().parent().parent().find('input[name="serpkg_total_price[]"]').val());
+        var bkgpkg_price_txt    = $(this).parent().parent().parent().find('.bkgpkg_price_txt');
+        var bkgpkg_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgpkg_total_price[]"]').val());
         var sumPrmDiscout       = 0;
 
         tdPrm.find('.prm_sumDiscout').each(function() {
@@ -648,14 +648,14 @@ function calSummary() {
 
         totalDiscoutPrm += sumPrmDiscout;
 
-        serpkg_price_txt.text((serpkg_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        bkgpkg_price_txt.text((bkgpkg_price - sumPrmDiscout).formatMoney(2, '.', ','));
         pkg_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
     });
     $('input[name="svl_id[]"]').each(function() {
         var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
         var svl_sumPrm_price    = $(this).parent().parent().parent().find('.svl_sumPrm_price');
-        var sersvl_price_txt    = $(this).parent().parent().parent().find('.sersvl_price_txt');
-        var sersvl_price        = parseFloat($(this).parent().parent().parent().find('input[name="sersvl_total_price[]"]').val());
+        var bkgsvl_price_txt    = $(this).parent().parent().parent().find('.bkgsvl_price_txt');
+        var bkgsvl_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgsvl_total_price[]"]').val());
         var sumPrmDiscout       = 0;
 
         tdPrm.find('.prm_sumDiscout').each(function() {
@@ -664,34 +664,34 @@ function calSummary() {
 
         totalDiscoutPrm += sumPrmDiscout;
 
-        sersvl_price_txt.text((sersvl_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        bkgsvl_price_txt.text((bkgsvl_price - sumPrmDiscout).formatMoney(2, '.', ','));
         svl_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
     });
 
     // Cal total price
-    $('input[name="serpkg_total_price[]"]').each(function() {
+    $('input[name="bkgpkg_total_price[]"]').each(function() {
         totalPrice += parseFloat($(this).val());
     });
-    $('input[name="sersvl_total_price[]"]').each(function() {
+    $('input[name="bkgsvl_total_price[]"]').each(function() {
         totalPrice += parseFloat($(this).val());
     });
     
     totalPrice -= totalDiscoutPrm;
     totalPrice = Math.ceil(totalPrice);
 
-    $('#ser_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
-    $('#ser_total_price').val(totalPrice.formatMoney(2, '.', ''));
+    $('#pkg_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
+    $('#pkg_total_price').val(totalPrice.formatMoney(2, '.', ''));
     
-    $('#ser_pay_price').focusout();
+    $('#bkg_pay_price').focusout();
     calChangeMoney(totalPrice);
 }
 
 function calChangeMoney(totalPrice) {
-    if($('#ser_pay_price').val() != '' && validateMoney($('#ser_pay_price').val())) {
+    if($('#bkg_pay_price').val() != '' && validateMoney($('#bkg_pay_price').val())) {
         totalPrice          = parseFloat(totalPrice);
-        var ser_pay_price  = parseFloat($('#ser_pay_price').val());
-        if(ser_pay_price >= totalPrice){
-            var change_money   = ser_pay_price - totalPrice;
+        var bkg_pay_price  = parseFloat($('#bkg_pay_price').val());
+        if(bkg_pay_price >= totalPrice){
+            var change_money   = bkg_pay_price - totalPrice;
             $('#changeMoney').val(change_money.formatMoney(2, '.', ''));
         } else {
             $('#changeMoney').val("0.00");
@@ -703,11 +703,11 @@ function beforeSaveRecord() {
     // Check input required
     var returnVal 				= false;
 
-    // Not input service
+    // Not input booking
     if(!hasInputError() && $('input[name="pkg_id[]"]').length == 0 && $('input[name="svl_id[]"]').length == 0) {
     	parent.showActionDialog({
             title	: 'คุณยังไม่ได้ป้อนข้อมูล',
-            message : 'โปรดป้อนข้อมูลรายละเอียดการใช้บริการอย่างน้อย 1 รายการค่ะ',
+            message : 'โปรดป้อนข้อมูลรายละเอียดการจองอย่างน้อย 1 รายการค่ะ',
             actionList: [
                 {
                     id: 'ok',

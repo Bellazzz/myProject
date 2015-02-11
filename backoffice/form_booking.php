@@ -65,8 +65,8 @@ if(!$_REQUEST['ajaxCall']) {
 			$values[$field] = $tableRecord->getFieldValue($field);
 		}
 		// Date thai format
-		$values['ord_date_th']  	= dateThaiFormat($values['ord_date']);
-		$values['ord_snd_date_th'] 	= dateThaiFormat($values['ord_snd_date']);
+		$values['bkg_transfer_date_th']  	= dateThaiFormat($values['bkg_transfer_date']);
+		$values['bkg_date_th'] 	= dateThaiFormat($values['bkg_date']);
 		$smarty->assign('values', $values);
 		
 		// Get detail of booking
@@ -406,6 +406,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$insertResult = false;
 					$errTxt .= 'INSERT_BOOKING_SERVICE_LISTS['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
 			}
 		}
 		// End booking packages
