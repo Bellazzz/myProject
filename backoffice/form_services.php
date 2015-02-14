@@ -510,13 +510,13 @@ if(!$_REQUEST['ajaxCall']) {
 				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
 						if(hasValue($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id']) && is_array($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'])) {
-							foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $empKey => $emp_id) {
+							foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $empKey => $comEmp_id) {
 								$com_per 			= 20; // Percent
 								$initCom 			= $svlTotalPrices[$svl_id] * $com_per / 100;
 								$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$empKey];
 								$pkgsvl_id 			= $pkgSvlIdList[$pkg_id][$svl_id];
 								$pkgdtl_com 		= $initCom * $com_rate / 100;
-								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $emp_id, $pkgdtl_com);
+								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $comEmp_id, $pkgdtl_com);
 								$pkgdtlprmRecord 	= new TableSpa('package_details', $pkgdtlValues);
 								if(!$pkgdtlprmRecord->insertSuccess()) {
 									$insertResult = false;
@@ -564,12 +564,12 @@ if(!$_REQUEST['ajaxCall']) {
 				// Insert service_list_detail (Commission)
 				$real_sersvl_total_price = $sersvl_total_price;
 				if(hasValue($formData['svlCom_'.$svl_id.'_emp_id']) && is_array($formData['svlCom_'.$svl_id.'_emp_id'])) {
-					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $key => $emp_id) {
+					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $key => $comEmp_id) {
 						$com_per 			= 20; // Percent
 						$initCom 			= $real_sersvl_total_price * $com_per / 100;
 						$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$key];
 						$svldtl_com 		= $initCom * $com_rate / 100;
-						$svldtlValues 		= array($svl_id, $emp_id, $sersvl_id, $svldtl_com);
+						$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
 						$svldtlprmRecord 	= new TableSpa('service_list_details', $svldtlValues);
 						if(!$svldtlprmRecord->insertSuccess()) {
 							$insertResult = false;
@@ -908,7 +908,7 @@ if(!$_REQUEST['ajaxCall']) {
 
 				// Update or Add service_list_details
 				if(isset($formData['svlCom_'.$svl_id.'_emp_id']) && is_array($formData['svlCom_'.$svl_id.'_emp_id'])) {
-					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $comKey => $emp_id) {
+					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
 						$com_per 			= 20; // Percent
 						$realSvlTotalPrice 	= getRealSerSvlTotalPrice($code, $svl_id);
 						$initCom 			= $realSvlTotalPrice * $com_per / 100;
@@ -918,7 +918,7 @@ if(!$_REQUEST['ajaxCall']) {
 							// Update service_list_details
 							$svldtl_id 	= $formData['svlCom_'.$svl_id.'_svldtl_id'][$comKey];
 							$svlDtlRecord 	= new TableSpa('service_list_details', $svldtl_id);
-							$svlDtlRecord->setFieldValue('emp_id', $emp_id);
+							$svlDtlRecord->setFieldValue('emp_id', $comEmp_id);
 							$svlDtlRecord->setFieldValue('svldtl_com', $svldtl_com);
 							if(!$svlDtlRecord->commit()) {
 								$updateResult = false;
@@ -927,7 +927,7 @@ if(!$_REQUEST['ajaxCall']) {
 							}
 						} else {
 							// Add service_list_details
-							$svldtlValues 		= array($svl_id, $emp_id, $sersvl_id, $svldtl_com);
+							$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
 							$svlDtlRecord 		= new TableSpa('service_list_details', $svldtlValues);
 							if(!$svlDtlRecord->insertSuccess()) {
 								$updateResult = false;
