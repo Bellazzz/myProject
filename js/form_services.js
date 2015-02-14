@@ -410,7 +410,7 @@ function addPkgCommission(data) {
             var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
             $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
         },
-        group           : 'employeePkg_' + data.parentRandNum
+        group           : 'employeePkg_' + data.parentRandNum + '_' + data.svl_id
     });
 
     $('#removeSvlComBtn_' + inputKeyId).click(function() {
