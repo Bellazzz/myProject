@@ -680,7 +680,7 @@ function calSummary() {
     totalPrice = Math.ceil(totalPrice);
 
     $('#pkg_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
-    $('#pkg_total_price').val(totalPrice.formatMoney(2, '.', ''));
+    $('#bkg_total_price').val(totalPrice.formatMoney(2, '.', ''));
     
     $('#bkg_pay_price').focusout();
     calChangeMoney(totalPrice);

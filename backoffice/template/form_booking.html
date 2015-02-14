@@ -353,7 +353,7 @@
             <tr>
             <td colspan="2">
                 <label class="input-required">ราคาสุทธิ(บาท)</label>
-                <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" requirebkg_total_price readonly>
+                <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
             </td>
         </tr>
 	    </tbody>
@@ -365,10 +365,10 @@
         <tbody>
             <tr class="headTable-row">
                 <td><label class="input-required"><b>แพ็คเกจ</b></label></td>
-                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>ราคา(บาท)</b></label></td>
                 <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
-                <td align="right"><label>ส่วนลด</label></td>
-                <td align="right"><label>ราคารวม</label></td>
+                <td align="right" style="font-weight:bold;"><label>ส่วนลด(บาท)</label></td>
+                <td align="right" style="font-weight:bold;"><label>ราคารวม(บาท)</label></td>
             </tr>
         </tbody>
     </table>
@@ -382,10 +382,10 @@
         <tbody>
             <tr class="headTable-row">
                 <td><label class="input-required"><b>รายการบริการ</b></label></td>
-                <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
+                <td align="right" style="padding-right:20px;"><label><b>ราคา(บาท)</b></label></td>
                 <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
-                <td align="right"><label>ส่วนลด</label></td>
-                <td align="right"><label>ราคารวม</label></td>
+                <td align="right" style="font-weight:bold;"><label>ส่วนลด(บาท)</label></td>
+                <td align="right" style="font-weight:bold;"><label>ราคารวม(บาท)</label></td>
             </tr>
         </tbody>
     </table>
