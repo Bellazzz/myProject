@@ -307,7 +307,7 @@ function removePackage(randNum) {
 function addServiceListOfPackage(data) {
     //$('#packagePkgSvlRow_' + data.randNum).
     var svlPkgTd    = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
-    var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ</span>'
+    var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-down"></i> ซ่อนพนักงานที่ให้บริการ</span>'
                     + '<div class="pkgsvl-list-container"></div>';
     svlPkgTd.html(initHTML);
     svlPkgTd.find('.com-list-title').click(function() {
@@ -315,87 +315,150 @@ function addServiceListOfPackage(data) {
         if(stat == "1") {
             $(this).parent().find('.pkgsvl-list-container').css('display', 'none');
             $(this).attr('data-status', '0');
-            $(this).html('<i class="fa fa-chevron-down"></i> แสดงพนักงานที่ให้บริการ');
+            $(this).html('<i class="fa fa-chevron-right"></i> แสดงพนักงานที่ให้บริการ');
         } else {
             $(this).parent().find('.pkgsvl-list-container').css('display', 'block');
             $(this).attr('data-status', '1');
-            $(this).html('<i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ');
+            $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนพนักงานที่ให้บริการ');
         }
     });
 
     for(i in pkgsvlData[data.pkg_id]) {
-        var no = parseInt(i) + 1;
-        var randNum;
-        var selectRefDefault = '';
-        do {
-            randNum     = parseInt(Math.random()*1000);
-        } while($('#emp_id_pkgCom_' + randNum).length > 0);
-        var inputKeyId      = 'emp_id_pkgCom_' + randNum;
-        var inputComRateId  = 'com_rate_pkgCom_' + randNum;
+        var no        = parseInt(i) + 1;
         var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
         var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var addPkgComBtnRandNum;
+        do {
+            addPkgComBtnRandNum     = parseInt(Math.random()*1000);
+        } while($('#addPkgComBtn_' + addPkgComBtnRandNum).length > 0);
         var pkgsvlHTML= '<div class="pkgsvl-list">'
                       + '   ' + no + '. ' + svl_name
-                      + '   <div class="pkgsvlCom-list-container">'
-                      + '       <div class="pkgsvlCom com-list">'
-                      + '           <table cellpadding="0" cellspacing="0">'
-                      + '               <tbody>'
-                      + '                   <tr>'
-                      + '                       <td class="emp-col">'
-                      + '                           <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
-                      + '                       </td>'
-                      + '                       <td class="com-rate-col">ค่าคอมมิชชั่น ';
-
-        // add input commisstion rate
-        if(data.defaultValue) {
-            pkgsvlHTML += '                         <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
-            selectRefDefault = data.emp_id;
-            comRate          = data.com_rate;
-        } else {
-            pkgsvlHTML += '                         <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
-        }
-
-        pkgsvlHTML    += '                          %&nbsp;&nbsp;&nbsp;'
-                      + '                           <button id="removeSvlComBtn_' + inputKeyId + '" class="removeSvlComBtn button button-icon button-icon-delete">ลบ</button>'
-                      + '                       </td>'
-                      + '                   </tr>'
-                      + '               </tbody>'
-                      + '           </table>'
-                      + '       </div>'
-                      + '   </div>'
+                      + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
+                      + '   <div class="pkgsvlCom-list-container-body"></div>'
+                      + '</div>'
+                      + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                       + '</div>';
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
-
-        // Create select reference
-        selectReferenceJS({
-            elem            : $('#' + inputKeyId),
-            data            : refEmpData,
-            defaultValue    : selectRefDefault,
-            onOptionSelect  :
-            function() {
-                // var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
-                // $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
-            },
-            success         : 
-            function() {
-                // var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
-                // $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
-            },
-            group           : 'employeePkg_' + data.parentRandNum
+        addPkgCommission({
+            pkg_id          : data.pkg_id,
+            svl_id          : svl_id,
+            parentRandNum   : data.parentRandNum
         });
-
-
-    //                   var commissionHTML      = '<div class="svlCom com-list">'
-    //                         + ' <table cellpadding="0" cellspacing="0">'
-    //                         + '     <tbody>'
-    //                         + '     <tr>'
-    //                         + '         <td class="emp-col">'
-    //                         + '             <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
-    //                         + '         </td>'
-    //                         + '         <td class="com-rate-col">ค่าคอมมิชชั่น ';
-
-    
+        $('#addPkgComBtn_' + addPkgComBtnRandNum).click(function() {
+            addPkgCommission({
+                pkg_id          : data.pkg_id,
+                svl_id          : $(this).attr('data-svlId'),
+                parentRandNum   : data.parentRandNum
+            });
+        });
     }
+}
+
+function addPkgCommission(data) {
+    var randNum;
+    var selectRefDefault = '';
+    var comRate          = 100;
+    do {
+        randNum     = parseInt(Math.random()*1000);
+    } while($('#emp_id_pkgCom_' + randNum).length > 0);
+    var inputKeyId      = 'emp_id_pkgCom_' + randNum;
+    var inputComRateId  = 'com_rate_pkgCom_' + randNum;
+
+    var pkgsvlComHtml = '<div class="pkgsvlCom com-list">'
+                      + '   <table cellpadding="0" cellspacing="0">'
+                      + '       <tbody>'
+                      + '           <tr>'
+                      + '               <td class="emp-col">'
+                      + '                   <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                      + '               </td>'
+                      + '               <td class="com-rate-col">ค่าคอมมิชชั่น ';
+
+    // add input commisstion rate
+    if(data.defaultValue) {
+        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+        selectRefDefault = data.emp_id;
+        comRate          = data.com_rate;
+    } else {
+        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+    }
+
+    pkgsvlComHtml    += '                   %&nbsp;&nbsp;&nbsp;'
+                      + '                   <button id="removeSvlComBtn_' + inputKeyId + '" class="removeSvlComBtn button button-icon button-icon-delete">ลบ</button>'
+                      + '               </td>'
+                      + '               <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + data.svl_id + '">'
+                      + '               <input type="hidden" class="emp_id" name="pkgCom_'+ data.pkg_id + '_' + data.svl_id + '_emp_id[]" value="">'
+                      + '               <input id="com_rate_' + inputKeyId + '" type="hidden" class="com_rate" name="pkgCom_' + data.pkg_id + '_' + data.svl_id + '_com_rate[]" value="' + comRate + '">'
+                      + '           </tr>'
+                      + '       </tbody>'
+                      + '   </table>'
+                      + '</div>';
+
+    $('#pkgsvl-list-com-container_' + data.pkg_id + '_' + data.svl_id).find('.pkgsvlCom-list-container-body').append(pkgsvlComHtml);
+
+    // Create select reference
+    selectReferenceJS({
+        elem            : $('#' + inputKeyId),
+        data            : refEmpData,
+        defaultValue    : selectRefDefault,
+        onOptionSelect  :
+        function() {
+            var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+            $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
+        },
+        success         : 
+        function() {
+            var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+            $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
+        },
+        group           : 'employeePkg_' + data.parentRandNum
+    });
+
+    $('#removeSvlComBtn_' + inputKeyId).click(function() {
+        var pkgsvlList = $('#removeSvlComBtn_' + inputKeyId).parent().parent().parent().parent().parent();
+        var pkgsvlCont = pkgsvlList.parent();
+        if(pkgsvlCont.find('.com-list').length > 1) {
+            parent.showActionDialog({
+                title: 'ลบพนักงานที่ให้บริการ',
+                message: 'คุณต้องการลบพนักงานที่ให้บริการใช่หรือไม่?',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            pkgsvlList.remove();
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        } else {
+            parent.showActionDialog({
+                title: 'ไม่สามารถลบพนักงานที่ให้บริการได้',
+                message: 'พนักงานที่ให้บริการต้องมีอย่างน้อย 1 คนค่ะ',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+    });
 }
 
 function addServiceList(data) {
@@ -562,7 +625,7 @@ function addServiceListCommission(data) {
                             + '</div>';
     if(tdCom.find('.com-list-container').length <= 0) {
         var comCont     = '<span class="com-list-title" data-status="1">'
-                        + '     <i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ'
+                        + '     <i class="fa fa-chevron-down"></i> ซ่อนพนักงานที่ให้บริการ'
                         + '</span>'
                         + '<div class="com-list-container">'
                         + '     <div class="com-list-container-body"></div>'
@@ -574,11 +637,11 @@ function addServiceListCommission(data) {
             if(stat == "1") {
                 $(this).parent().find('.com-list-container').css('display', 'none');
                 $(this).attr('data-status', '0');
-                $(this).html('<i class="fa fa-chevron-down"></i> แสดงพนักงานที่ให้บริการ');
+                $(this).html('<i class="fa fa-chevron-right"></i> แสดงพนักงานที่ให้บริการ');
             } else {
                 $(this).parent().find('.com-list-container').css('display', 'block');
                 $(this).attr('data-status', '1');
-                $(this).html('<i class="fa fa-chevron-up"></i> ซ่อนพนักงานที่ให้บริการ');
+                $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนพนักงานที่ให้บริการ');
             }
         });
         tdCom.find('.addSvlComBtn').click(function() {
@@ -610,7 +673,50 @@ function addServiceListCommission(data) {
     });
     // Delete svlCom
     $('#removeSvlComBtn_' + inputKeyId).click(function() {
-        $(this).parent().parent().parent().parent().parent().remove();
+        var svlcomList = $('#removeSvlComBtn_' + inputKeyId).parent().parent().parent().parent().parent();
+        var svlcomConn = svlcomList.parent();
+        if(svlcomConn.find('.com-list').length > 1) {
+            parent.showActionDialog({
+                title: 'ลบพนักงานที่ให้บริการ',
+                message: 'คุณต้องการลบพนักงานที่ให้บริการใช่หรือไม่?',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            svlcomList.remove();
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        } else {
+            parent.showActionDialog({
+                title: 'ไม่สามารถลบพนักงานที่ให้บริการได้',
+                message: 'พนักงานที่ให้บริการต้องมีอย่างน้อย 1 คนค่ะ',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
     });
     $('#' + inputComRateId).change(function() {
         $('#com_rate_' + inputKeyId).val($(this).val());

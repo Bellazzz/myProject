@@ -795,7 +795,7 @@ function dbClose() {
 						'serpkg_id'	  		  => 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
 						'pkgsvl_id'	          => 'รหัสรายการบริการที่จัดแพ็คเกจ',
 						'emp_id' 			  => 'ชื่อ-สกุลพนักงาน',
-						'pkgdtl_comm'		  => 'ค่าคอมมิชชั่น(บาท)'
+						'pkgdtl_com'		  => 'ค่าคอมมิชชั่น(บาท)'
 				),
 				'searchFields'	=> array('pkgdtl_id','pkgsvl_id')
 			);

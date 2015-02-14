@@ -431,6 +431,37 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
+		// Get service_list price
+		$svlPrices = array();
+		$sql 		= "SELECT svl_id, svl_price FROM service_lists";
+		$result 	= mysql_query($sql, $dbConn);
+		$rows 		= mysql_num_rows($result);
+		if($rows > 0) {
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$svlPrices[$record['svl_id']] = $record['svl_price'];
+			}
+		}
+
+		// Get package_service_list
+		$pkgSvlIdList = array();
+		$sql = "SELECT 		ps.pkgsvl_id,
+							p.pkg_id, 
+							s.svl_id 
+				FROM 		packages p, 
+							package_service_lists ps,
+							service_lists s 
+				WHERE 		p.pkg_id = ps.pkg_id AND 
+							s.svl_id = ps.svl_id";
+		$result 	= mysql_query($sql, $dbConn);
+		$rows 		= mysql_num_rows($result);
+		if($rows > 0) {
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$pkgSvlIdList[$record['pkg_id']][$record['svl_id']] = $record['pkgsvl_id'];
+			}
+		}
+
 		// Insert services
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if(!$tableRecord->insertSuccess()) {
@@ -444,13 +475,20 @@ if(!$_REQUEST['ajaxCall']) {
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
 				$serpkg_amount 	= $formData['pkg_qty'][$key];
-				$serpkg_total_price 		= $formData['serpkg_total_price'][$key];
+				$serpkg_total_price = $formData['serpkg_total_price'][$key];
 				$serpkgValues 		= array($ser_id, $pkg_id, $serpkg_amount, $serpkg_total_price);
-				$serpkgRecord 	= new TableSpa('service_packages', $serpkgValues);
+				$serpkgRecord 		= new TableSpa('service_packages', $serpkgValues);
 				if(!$serpkgRecord->insertSuccess()) {
 					$insertResult = false;
 					$errTxt .= 'INSERT_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
 					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+				$serpkg_id = $serpkgRecord->getKey();
+
+				// Calculage svl total price
+				$svlTotalPrices = array();
+				foreach ($svlPrices as $svl_id => $price) {
+					$svlTotalPrices[$svl_id] = $price * $serpkg_amount;
 				}
 
 
@@ -465,6 +503,28 @@ if(!$_REQUEST['ajaxCall']) {
 						$insertResult = false;
 						$errTxt .= 'INSERT_SERVICE_PACKAGE_PROMOTIONS['.($key+1).']_FAIL\n';
 						$errTxt .= mysql_error($dbConn).'\n\n';
+					}
+				}
+
+				// Insert package_detail (Commission)
+				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
+					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						if(hasValue($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id']) && is_array($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'])) {
+							foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $empKey => $emp_id) {
+								$com_per 			= 20; // Percent
+								$initCom 			= $svlTotalPrices[$svl_id] * $com_per / 100;
+								$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$empKey];
+								$pkgsvl_id 			= $pkgSvlIdList[$pkg_id][$svl_id];
+								$pkgdtl_com 		= $initCom * $com_rate / 100;
+								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $emp_id, $pkgdtl_com);
+								$pkgdtlprmRecord 	= new TableSpa('package_details', $pkgdtlValues);
+								if(!$pkgdtlprmRecord->insertSuccess()) {
+									$insertResult = false;
+									$errTxt .= 'INSERT_PACKAGE_DETAILS['.($empKey+1).']_FAIL\n';
+									$errTxt .= mysql_error($dbConn).'\n\n';
+								}
+							}
+						}
 					}
 				}
 			}
