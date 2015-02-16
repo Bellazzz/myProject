@@ -664,7 +664,11 @@ function selectReferenceJS(select) {
 
     // Call back function success
     if(typeof(select.success) == 'function') {
-        select.success();
+        if(typeof(select.defaultValue) != 'undefined' && select.defaultValue != '') {
+            select.success(select.defaultValue);
+        } else {
+            select.success();
+        }
     }
 }
 

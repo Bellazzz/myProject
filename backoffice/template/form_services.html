@@ -186,6 +186,18 @@
         {/if}
         {literal}
 
+        {/literal}
+        {if $valuesPkgDtl}
+        {literal}
+            valuesPkgDtl = {/literal}{$valuesPkgDtl|@json_encode}{literal};
+        {/literal}
+        {else}
+        {literal}
+            valuesPkgDtl = Array();
+        {/literal}
+        {/if}
+        {literal}
+
         $(document).ready(function () {
             selectReferenceJS({
                 elem            : $('#emp_id'),

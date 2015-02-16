@@ -24,6 +24,9 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('values', $values);
 
 		// Get table service_packages data
+		$serpkgIdList 	= array();
+		$pkgIdList 		= array();
+		$pkgAmountList  = array();
 		$valuesPkg = array();
 		$sql = "SELECT 		s.serpkg_id, 
 							p.pkg_id, 
@@ -36,9 +39,39 @@ if(!$_REQUEST['ajaxCall']) {
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($valuesPkg, mysql_fetch_assoc($result));
+			$record = mysql_fetch_assoc($result);
+			array_push($valuesPkg, $record);
+			array_push($serpkgIdList, $record['serpkg_id']);
+			array_push($pkgIdList, $record['pkg_id']);
+			$pkgAmountList[$record['pkg_id']] = $record['serpkg_amount'];
 		}
 		$smarty->assign('valuesPkg', $valuesPkg);
+
+		// Get service_list total rice of packages
+		$realPkgSvlTotalPriceList = array();
+		$pkgsvlRef = array();
+		if(count($pkgIdList) > 0) {
+			$pkgIdList = wrapSingleQuote($pkgIdList);
+			$sql = "SELECT 		p.pkg_id,
+								ps.pkgsvl_id, 
+								s.svl_id,
+								s.svl_price 
+					FROM 		packages p, package_service_lists ps, service_lists s  
+					WHERE 		p.pkg_id = ps.pkg_id AND 
+								ps.svl_id = s.svl_id AND 
+								p.pkg_id IN (".implode(',', $pkgIdList).")";echo $sql;
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$amount = $pkgAmountList[$record['pkg_id']];
+				$realPkgSvlTotalPriceList[$record['pkgsvl_id']] = $record['svl_price'] * $amount;
+				$pkgsvlRef[$record['pkgsvl_id']] = array(
+					'pkg_id' => $record['pkg_id'],
+					'svl_id' => $record['svl_id']
+				);
+			}
+		}
 
 		// Get table service_service_lists data
 		$sersvlIdList 	= array();
@@ -64,48 +97,75 @@ if(!$_REQUEST['ajaxCall']) {
 			$realSvlTotalPriceList[$record['svl_id']] = $record['sersvl_total_price'];
 		}
 		$smarty->assign('valuesSvl', $valuesSvl);
-		print_r($realSvlTotalPriceList);
 
-		// Get service_service_list_promotions data
+		// sersvl_total_price deduct promotion price
 		$svlIdList  	= wrapSingleQuote($svlIdList);
 		$valuesSvlPrmDtl = array();
-		$sql = "SELECT 		sd.svl_id, 
-							sp.sersvlprm_discout_total 
-				FROM 		service_service_list_promotions sp, 
-							service_list_promotion_details sd   
-				WHERE 		sp.svlprmdtl_id = sd.svlprmdtl_id AND 
-							sp.ser_id = '$code' AND 
-							sd.svl_id IN (".implode(',', $svlIdList).")";
-		$result = mysql_query($sql, $dbConn);
-		$rows 	= mysql_num_rows($result);
-		for($i=0; $i<$rows; $i++) {
-			$record = mysql_fetch_assoc($result);
-			if(isset($realSvlTotalPriceList[$record['svl_id']])) {
-				$realSvlTotalPriceList[$record['svl_id']] -= $record['sersvlprm_discout_total'];
+		if(count($svlIdList) > 0) {
+			$sql = "SELECT 		sd.svl_id, 
+								sp.sersvlprm_discout_total 
+					FROM 		service_service_list_promotions sp, 
+								service_list_promotion_details sd   
+					WHERE 		sp.svlprmdtl_id = sd.svlprmdtl_id AND 
+								sp.ser_id = '$code' AND 
+								sd.svl_id IN (".implode(',', $svlIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				if(isset($realSvlTotalPriceList[$record['svl_id']])) {
+					$realSvlTotalPriceList[$record['svl_id']] -= $record['sersvlprm_discout_total'];
+				}
 			}
 		}
-		print_r($realSvlTotalPriceList);
+		
 
 		// Get table service_list_detail data
 		$sersvlIdList = wrapSingleQuote($sersvlIdList);
 		$valuesSvlDtl = array();
-		$sql = "SELECT 		svldtl_id,
-							svl_id, 
+		if(count($sersvlIdList) > 0) {
+			$sql = "SELECT 		svldtl_id,
+								svl_id, 
+								emp_id,
+								svldtl_com 
+					FROM 		service_list_details  
+					WHERE 		sersvl_id IN (".implode(',', $sersvlIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record 		= mysql_fetch_assoc($result);
+				$com_per 		= 20;
+				$initPrice 		= $realSvlTotalPriceList[$record['svl_id']] * $com_per / 100;
+				$svldtl_com 	= $record['svldtl_com'];
+				$record['com_rate'] = $svldtl_com / $initPrice * 100;
+				array_push($valuesSvlDtl, $record);
+			}
+		}
+		
+		$smarty->assign('valuesSvlDtl', $valuesSvlDtl);
+
+		// Get table package_detail data
+		$serpkgIdList = wrapSingleQuote($serpkgIdList);
+		$valuesPkgDtl = array();
+		$sql = "SELECT 		pkgdtl_id,
+							pkgsvl_id, 
 							emp_id,
-							svldtl_com 
-				FROM 		service_list_details  
-				WHERE 		sersvl_id IN (".implode(',', $sersvlIdList).")";
+							pkgdtl_com 
+				FROM 		package_details  
+				WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";echo $sql;
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
 			$record 		= mysql_fetch_assoc($result);
 			$com_per 		= 20;
-			$initPrice 		= $realSvlTotalPriceList[$record['svl_id']] * $com_per / 100;
-			$svldtl_com 	= $record['svldtl_com'];
-			$record['com_rate'] = $svldtl_com / $initPrice * 100;
-			array_push($valuesSvlDtl, $record);
+			$initPrice 		= $realPkgSvlTotalPriceList[$record['pkgsvl_id']] * $com_per / 100;
+			$pkgdtl_com 	= $record['pkgdtl_com'];
+			$record['com_rate'] = $pkgdtl_com / $initPrice * 100;
+			$record['pkg_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['pkg_id'];
+			$record['svl_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['svl_id'];
+			array_push($valuesPkgDtl, $record);
 		}
-		$smarty->assign('valuesSvlDtl', $valuesSvlDtl);
+		$smarty->assign('valuesPkgDtl', $valuesPkgDtl);
 
 	} else if($action == 'VIEW_DETAIL') {
 		// Get table services data

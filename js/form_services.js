@@ -47,6 +47,18 @@ function addItemForEdit() {
             });
            
         }
+
+        for(i in valuesPkgDtl) {
+            addPkgCommission({
+                defaultValue    : true,
+                pkgdtl_id       : valuesPkgDtl[i].pkgdtl_id,
+                pkg_id          : valuesPkgDtl[i].pkg_id,
+                svl_id          : valuesPkgDtl[i].svl_id,
+                emp_id          : valuesPkgDtl[i].emp_id,
+                com_rate        : valuesPkgDtl[i].com_rate
+            });
+           
+        }
 	}
 }
 
@@ -241,12 +253,17 @@ function addPackage(data) {
             });
         },
         success         : 
-        function() {
+        function(defaultKey) {
             $('input[name="' + inputKeyId + '"]').attr('name', 'pkg_id[]');
             setAllSerDetailAmount();
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
+            addServiceListOfPackage({
+                pkg_id          : defaultKey,
+                parentRandNum   : randNum,
+                addPkgCom       : false
+            });
         },
         group           : 'packages'
     });
@@ -286,6 +303,7 @@ function removePackage(randNum) {
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#packagePrmRow_' + randNum).remove();
+                    $('#packagePkgSvlRow_' + randNum).remove();
                     setAllSerDetailAmount();
                     calSummary();
                 }
@@ -305,10 +323,13 @@ function removePackage(randNum) {
 }
 
 function addServiceListOfPackage(data) {
-    //$('#packagePkgSvlRow_' + data.randNum).
-    var svlPkgTd    = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
+    var addPkgCom = true;
+    var svlPkgTd  = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
     var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-down"></i> ซ่อนพนักงานที่ให้บริการ</span>'
                     + '<div class="pkgsvl-list-container"></div>';
+    if(typeof(data.addPkgCom) != 'undefined') {
+        addPkgCom = data.addPkgCom;
+    }
     svlPkgTd.html(initHTML);
     svlPkgTd.find('.com-list-title').click(function() {
         var stat = $(this).attr('data-status');
@@ -333,22 +354,25 @@ function addServiceListOfPackage(data) {
         } while($('#addPkgComBtn_' + addPkgComBtnRandNum).length > 0);
         var pkgsvlHTML= '<div class="pkgsvl-list">'
                       + '   ' + no + '. ' + svl_name
+                      + '   <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
                       + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
                       + '   <div class="pkgsvlCom-list-container-body"></div>'
                       + '</div>'
                       + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                       + '</div>';
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
-        addPkgCommission({
-            pkg_id          : data.pkg_id,
-            svl_id          : svl_id,
-            parentRandNum   : data.parentRandNum
-        });
+
+        if(addPkgCom) {
+            addPkgCommission({
+                pkg_id          : data.pkg_id,
+                svl_id          : svl_id,
+            });
+        }
+        
         $('#addPkgComBtn_' + addPkgComBtnRandNum).click(function() {
             addPkgCommission({
                 pkg_id          : data.pkg_id,
                 svl_id          : $(this).attr('data-svlId'),
-                parentRandNum   : data.parentRandNum
             });
         });
     }
@@ -384,9 +408,15 @@ function addPkgCommission(data) {
 
     pkgsvlComHtml    += '                   %&nbsp;&nbsp;&nbsp;'
                       + '                   <button id="removeSvlComBtn_' + inputKeyId + '" class="removeSvlComBtn button button-icon button-icon-delete">ลบ</button>'
-                      + '               </td>'
-                      + '               <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + data.svl_id + '">'
-                      + '               <input type="hidden" class="emp_id" name="pkgCom_'+ data.pkg_id + '_' + data.svl_id + '_emp_id[]" value="">'
+                      + '               </td>';
+
+    // add service package id for update
+    if(action == 'EDIT' && typeof(data.pkgdtl_id) != 'undefined') {
+        pkgsvlComHtml  += ' <input name="pkgdtl_id[]" type="hidden" value="' + data.pkgdtl_id + '">'
+                        + ' <input type="hidden" name="pkgCom_' + data.pkg_id + '_' + data.svl_id + '_pkgdtl_id[]" value="' + data.pkgdtl_id + '">';
+    }
+
+    pkgsvlComHtml    += '               <input type="hidden" class="emp_id" name="pkgCom_'+ data.pkg_id + '_' + data.svl_id + '_emp_id[]" value="">'
                       + '               <input id="com_rate_' + inputKeyId + '" type="hidden" class="com_rate" name="pkgCom_' + data.pkg_id + '_' + data.svl_id + '_com_rate[]" value="' + comRate + '">'
                       + '           </tr>'
                       + '       </tbody>'
@@ -410,7 +440,7 @@ function addPkgCommission(data) {
             var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
             $('#' + inputKeyId).parent().parent().parent().parent().parent().find('.emp_id').val(empId);
         },
-        group           : 'employeePkg_' + data.parentRandNum + '_' + data.svl_id
+        group           : 'employeePkg_' + data.pkg_id + '_' + data.svl_id
     });
 
     $('#removeSvlComBtn_' + inputKeyId).click(function() {
@@ -458,6 +488,9 @@ function addPkgCommission(data) {
                 boxWidth: 400
             });
         }
+    });
+    $('#' + inputComRateId).change(function() {
+        $('#com_rate_' + inputKeyId).val($(this).val());
     });
 }
 
@@ -858,50 +891,53 @@ function addPkgPrmSale(pkg_id) {
         return;
     }
 
-    for(pkgID in pkgPromotions[custype_id]) {
-        if(pkgID == pkg_id) {
-            var prm         = pkgPromotions[custype_id][pkgID];
+    if(pkgPromotions != null) {
+        for(pkgID in pkgPromotions[custype_id]) {
+            if(pkgID == pkg_id) {
+                var prm         = pkgPromotions[custype_id][pkgID];
 
-            // add first amount
-            removePrm(tdPrm.find('.prmSale'));
-            var pkgRow 		= getPkgRow(pkg_id);
-            var unitPrice   = parseFloat(pkgRow.pkg_price);
-            var discout     = parseFloat(prm.pkgprmdtl_discout);
-            if(prm.pkgprmdtl_discout_type == '%') {
-                discout = parseFloat(unitPrice * discout / 100);
+                // add first amount
+                removePrm(tdPrm.find('.prmSale'));
+                var pkgRow      = getPkgRow(pkg_id);
+                var unitPrice   = parseFloat(pkgRow.pkg_price);
+                var discout     = parseFloat(prm.pkgprmdtl_discout);
+                if(prm.pkgprmdtl_discout_type == '%') {
+                    discout = parseFloat(unitPrice * discout / 100);
+                }
+                var sumDiscout  = parseFloat(amount * discout);
+                var prmHTML     = '<div class="prmSale prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/package_promotions/' + prm.pkgprm_pic + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.pkgprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ลดราคา ' + prm.pkgprmdtl_discout + ' ' + prm.pkgprmdtl_discout_type + '</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                + '         <td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_serpkgprm_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_serpkgprm_discout_total" value="' + sumDiscout + '">'
+                                + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
+                                + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
+                                + '</div>';
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
+                return;
             }
-            var sumDiscout  = parseFloat(amount * discout);
-            var prmHTML     = '<div class="prmSale prm-list">'
-                            + ' <div class="prm-thumb" style="background-image:url(\'../img/package_promotions/' + prm.pkgprm_pic + '\');"></div>'
-                            + ' <table>'
-                            + '     <tr>'
-                            + '         <td class="prm-name-col">'
-                            + '             <span class="prm-name">' + prm.pkgprm_name + '</span><br>'
-                            + '             <span class="discout-rate">ลดราคา ' + prm.pkgprmdtl_discout + ' ' + prm.pkgprmdtl_discout_type + '</span>'
-                            + '         </td>'
-                            + '         <td class="amount-col">'
-                            + '             <span class="prm-amount">' + amount + '</span>' 
-                            + '         </td>'
-                            + '         <td class="discout-col">'
-                            + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
-                            + '         </td>'
-                            + '     </tr>'
-                            + ' </table>'
-                            + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
-                            + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_serpkgprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_serpkgprm_discout_total" value="' + sumDiscout + '">'
-                            + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
-                            + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
-                            + '</div>';
-            if(tdPrm.find('.prm-list-container').length <= 0) {
-                var prmCont     = '<div class="prm-list-container"></div>';
-                tdPrm.append(prmCont);
-            }                
-            tdPrm.find('.prm-list-container').append(prmHTML);
-            return;
-        }
+        }   
     }
+    
     removePrm(tdPrm.find('.prmSale'));
 }
 
@@ -919,47 +955,50 @@ function addSvlPrmSale(svl_id) {
         removePrm(tdPrm.find('.prmSale'));
         return;
     }
-    for(svlID in svlPromotions[custype_id]) {
-        if(svlID == svl_id) {
-            var prm         = svlPromotions[custype_id][svlID];
-            // add first amount
-            removePrm(tdPrm.find('.prmSale'));
-            var svlRow 		= getSvlRow(svl_id);
-            var unitPrice   = parseFloat(svlRow.svl_price);
-            var discout     = parseFloat(prm.svlprmdtl_discout);
-            if(prm.svlprmdtl_discout_type == '%') {
-                discout = parseFloat(unitPrice * discout / 100);
+
+    if(svlPromotions != null) {
+        for(svlID in svlPromotions[custype_id]) {
+            if(svlID == svl_id) {
+                var prm         = svlPromotions[custype_id][svlID];
+                // add first amount
+                removePrm(tdPrm.find('.prmSale'));
+                var svlRow      = getSvlRow(svl_id);
+                var unitPrice   = parseFloat(svlRow.svl_price);
+                var discout     = parseFloat(prm.svlprmdtl_discout);
+                if(prm.svlprmdtl_discout_type == '%') {
+                    discout = parseFloat(unitPrice * discout / 100);
+                }
+                var sumDiscout  = parseFloat(amount * discout);
+                var prmHTML     = '<div class="prmSale prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/service_list_promotions/' + prm.svlprm_pic + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.svlprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ลดราคา ' + prm.svlprmdtl_discout + ' ' + prm.svlprmdtl_discout_type + '</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                + '         <td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_sersvlprm_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_sersvlprm_discout_total" value="' + sumDiscout + '">'
+                                + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
+                                + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
+                                + '</div>';
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
+                return;
             }
-            var sumDiscout  = parseFloat(amount * discout);
-            var prmHTML     = '<div class="prmSale prm-list">'
-                            + ' <div class="prm-thumb" style="background-image:url(\'../img/service_list_promotions/' + prm.svlprm_pic + '\');"></div>'
-                            + ' <table>'
-                            + '     <tr>'
-                            + '         <td class="prm-name-col">'
-                            + '             <span class="prm-name">' + prm.svlprm_name + '</span><br>'
-                            + '             <span class="discout-rate">ลดราคา ' + prm.svlprmdtl_discout + ' ' + prm.svlprmdtl_discout_type + '</span>'
-                            + '         </td>'
-                            + '         <td class="amount-col">'
-                            + '             <span class="prm-amount">' + amount + '</span>' 
-                            + '         </td>'
-                            + '         <td class="discout-col">'
-                            + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
-                            + '         </td>'
-                            + '     </tr>'
-                            + ' </table>'
-                            + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
-                            + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_sersvlprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_sersvlprm_discout_total" value="' + sumDiscout + '">'
-                            + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
-                            + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
-                            + '</div>';
-            if(tdPrm.find('.prm-list-container').length <= 0) {
-                var prmCont     = '<div class="prm-list-container"></div>';
-                tdPrm.append(prmCont);
-            }                
-            tdPrm.find('.prm-list-container').append(prmHTML);
-            return;
         }
     }
     removePrm(tdPrm.find('.prmSale'));
