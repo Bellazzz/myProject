@@ -582,6 +582,7 @@ function addServiceList(data) {
                 });
             } else {
                 var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+                svlComTr.find('.svlCom_hidden_svldtl_id').remove();
                 svlComTr.find('.emp_id').attr('name', 'svlCom_' + empId + '_emp_id[]');
                 svlComTr.find('.com_rate').attr('name', 'svlCom_' + empId + '_com_rate[]');
             }
@@ -649,8 +650,8 @@ function addServiceListCommission(data) {
 
     // add service package id for update
     if(action == 'EDIT' && typeof(data.svldtl_id) != 'undefined') {
-        commissionHTML     += ' <input name="svldtl_id[]" type="hidden" value="' + data.svldtl_id + '">'
-                            + ' <input type="hidden" name="svlCom_' + data.svl_id + '_svldtl_id[]" value="' + data.svldtl_id + '">';
+        commissionHTML     += ' <input name="svldtl_id[]" type="hidden" class="svlCom_hidden_svldtl_id" value="' + data.svldtl_id + '">'
+                            + ' <input type="hidden" class="svlCom_hidden_svldtl_id" name="svlCom_' + data.svl_id + '_svldtl_id[]" value="' + data.svldtl_id + '">';
     }
 
     commissionHTML          += ' <input type="hidden" class="emp_id" name="svlCom_' + data.svl_id + '_emp_id[]" value="">'

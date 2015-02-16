@@ -59,7 +59,7 @@ if(!$_REQUEST['ajaxCall']) {
 					FROM 		packages p, package_service_lists ps, service_lists s  
 					WHERE 		p.pkg_id = ps.pkg_id AND 
 								ps.svl_id = s.svl_id AND 
-								p.pkg_id IN (".implode(',', $pkgIdList).")";echo $sql;
+								p.pkg_id IN (".implode(',', $pkgIdList).")";
 			$result = mysql_query($sql, $dbConn);
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {
@@ -152,7 +152,7 @@ if(!$_REQUEST['ajaxCall']) {
 							emp_id,
 							pkgdtl_com 
 				FROM 		package_details  
-				WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";echo $sql;
+				WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
@@ -671,6 +671,24 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
+		// Get pkgsvl_id and real_pkgsvl_total_price list
+		$realPkgSvlTotalPriceList = array();
+		$pkgsvlIdList = array();
+		$sql = "SELECT 		p.pkg_id,
+							ps.pkgsvl_id, 
+							s.svl_id,
+							s.svl_price 
+				FROM 		packages p, package_service_lists ps, service_lists s  
+				WHERE 		p.pkg_id = ps.pkg_id AND 
+							ps.svl_id = s.svl_id";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$realPkgSvlTotalPriceList[$record['pkg_id']][$record['svl_id']] = $record['svl_price'];
+			$pkgsvlIdList[$record['pkg_id']][$record['svl_id']] = $record['pkgsvl_id'];
+		}
+
 		// Update Services
 		if(!$tableRecord->commit()) {
 			$updateResult = false;
@@ -678,13 +696,15 @@ if(!$_REQUEST['ajaxCall']) {
 			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 
-		### Update service_packages & service_package_promotions
+		### Update service_packages & service_package_promotions & package_details
 		// Delete service_packages if delete old service_packages
 		$oldServicePkgList = array();
 		$newServicePkgList = array();
 		$oldPkgPrmDtlList = array();
 		$newPkgPrmDtlList = array();
 		$oldSerPkgPrmList = array();
+		$oldPkgDtlList 		= array();
+		$newPkgDtlList 		= array();
 		// Find old service_packages
 		$sql = "SELECT serpkg_id FROM service_packages WHERE ser_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
@@ -716,8 +736,37 @@ if(!$_REQUEST['ajaxCall']) {
 				}
 			}
 		}
+		// Find old package_details
+		$sql = "SELECT 		pd.pkgdtl_id 
+				FROM 		package_details pd,
+							service_packages sp 
+				WHERE 		pd.serpkg_id = sp.serpkg_id AND 
+							sp.ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($oldPkgDtlList, $record['pkgdtl_id']);
+		}
+		// Find new package_details
+		if(isset($formData['pkgdtl_id']) && is_array($formData['pkgdtl_id'])) {
+			foreach ($formData['pkgdtl_id'] as $key => $newpkgdtl_id) {
+				array_push($newPkgDtlList, $newpkgdtl_id);
+			}
+		}
 		
-		
+		// Check for delete package_details
+		foreach ($oldPkgDtlList as $key => $oldpkgdtl_id) {
+			if(!in_array($oldpkgdtl_id, $newPkgDtlList)) {
+				// Delete service_service_lists
+				$pkgDtlRecord 	= new TableSpa('package_details', $oldpkgdtl_id);
+				if(!$pkgDtlRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_PACKAGE_DETAILS[$oldpkgdtl_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
 
 		// Check for delete service_packages
 		foreach ($oldServicePkgList as $key => $oldserpkg_id) {
@@ -756,8 +805,6 @@ if(!$_REQUEST['ajaxCall']) {
 					// Update service_packages
 					$serpkg_id = $formData['serpkg_id'][$key];
 					$servicePkgRecord 	= new TableSpa('service_packages', $serpkg_id);
-					$old_pkg_id 		= $servicePkgRecord->getFieldValue('pkg_id');
-					$old_serpkg_amount = $servicePkgRecord->getFieldValue('serpkg_amount');
 					$servicePkgRecord->setFieldValue('pkg_id', $pkg_id);
 					$servicePkgRecord->setFieldValue('serpkg_amount', $serpkg_amount);
 					$servicePkgRecord->setFieldValue('serpkg_total_price', $serpkg_total_price);
@@ -775,6 +822,7 @@ if(!$_REQUEST['ajaxCall']) {
 						$errTxt .= 'ADD_SERVICE_PACKAGES['.($key+1).']_FAIL\n';
 						$errTxt .= mysql_error($dbConn).'\n\n';
 					}
+					$serpkg_id = $servicePkgRecord->getKey();
 				}
 
 				if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
@@ -804,9 +852,44 @@ if(!$_REQUEST['ajaxCall']) {
 						}
 					}
 				}
+
+				// Update or Add package_details
+				if(isset($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
+					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
+							$com_per 			= 20; // Percent
+							$realPkgSvlTotalPrice 	= $realPkgSvlTotalPriceList[$pkg_id][$svl_id] * $serpkg_amount;
+							$initCom 			= $realPkgSvlTotalPrice * $com_per / 100;
+							$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$comKey];
+							$pkgdtl_com 		= $initCom * $com_rate / 100;
+							if(isset($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_pkgdtl_id'][$comKey])) {
+								// Update package_details
+								$pkgdtl_id 	= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_pkgdtl_id'][$comKey];
+								$pkgDtlRecord 	= new TableSpa('package_details', $pkgdtl_id);
+								$pkgDtlRecord->setFieldValue('emp_id', $comEmp_id);
+								$pkgDtlRecord->setFieldValue('pkgdtl_com', $pkgdtl_com);
+								if(!$pkgDtlRecord->commit()) {
+									$updateResult = false;
+									$errTxt .= 'EDIT_PACKAGE_DETAILS['.($comKey+1).']_FAIL\n';
+									$errTxt .= mysql_error($dbConn).'\n\n';
+								}
+							} else {
+								// Add package_details
+								$pkgsvl_id 			= $pkgsvlIdList[$pkg_id][$svl_id];
+								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $comEmp_id, $pkgdtl_com);
+								$pkgDtlRecord 		= new TableSpa('package_details', $pkgdtlValues);
+								if(!$pkgDtlRecord->insertSuccess()) {
+									$updateResult = false;
+									$errTxt .= 'ADD_PACKAGE_DETAILS['.($comKey+1).']_FAIL\n';
+									$errTxt .= mysql_error($dbConn).'\n\n';
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-		### End update service_packages & service_package_promotions
+		### End update service_packages & service_package_promotions & package_details
 
 
 		### Update service_service_lists & service_service_list_promotions
@@ -816,7 +899,6 @@ if(!$_REQUEST['ajaxCall']) {
 		$oldSvlPrmDtlList 	= array();
 		$newSvlPrmDtlList 	= array();
 		$oldSerSvlPrmList 	= array();
-		$oldSerDtlList 		= array();
 		$oldSvlDtlList 		= array();
 		$newSvlDtlList 		= array();
 		// Find old service_service_lists
@@ -849,7 +931,7 @@ if(!$_REQUEST['ajaxCall']) {
 				}
 			}
 		}
-		// Find old service_detail
+		// Find old service_list_detail
 		$sql = "SELECT 		sd.svldtl_id 
 				FROM 		service_list_details sd,
 							service_service_lists ss 
@@ -861,14 +943,14 @@ if(!$_REQUEST['ajaxCall']) {
 			$record = mysql_fetch_assoc($result);
 			array_push($oldSvlDtlList, $record['svldtl_id']);
 		}
-		// Find new service_detail
+		// Find new service_list_detail
 		if(isset($formData['svldtl_id']) && is_array($formData['svldtl_id'])) {
 			foreach ($formData['svldtl_id'] as $key => $newsvldtl_id) {
 				array_push($newSvlDtlList, $newsvldtl_id);
 			}
 		}
 		
-		// Check for delete service_details
+		// Check for delete service_list_detail
 		foreach ($oldSvlDtlList as $key => $oldsvldtl_id) {
 			if(!in_array($oldsvldtl_id, $newSvlDtlList)) {
 				// Delete service_service_lists
