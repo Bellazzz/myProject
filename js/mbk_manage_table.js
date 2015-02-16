@@ -839,6 +839,14 @@ function openPrintReceipt(saleId) {
     });
 }
 
+function openPrintServiceReceipt(serId) {
+    var src = 'printServiceReceiptContainer.php?ser_id=' + serId + '&hideBackButton=true';
+    openManageBox({
+        formSrc     : src,
+        widthSize   : 'full'
+    });
+}
+
 function showTableTooltip(top, left, text) {
 	var htmlTooltip = '<div class="table-tooltip">' + text + '</div>';
 	$('body').append(htmlTooltip);

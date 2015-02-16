@@ -32,6 +32,10 @@
 				    <a id="printReceipt-btn" href="printReceiptBOF.php?sale_id={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
 				    </a>
+				    {elseif $tableName == 'services'}
+				    <a id="printServiceReceipt-btn" href="printServiceReceiptContainer.php?ser_id={$code}">
+					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
+				    </a>
 				    {/if}
 				    
 				    {if !$hideEditButton}

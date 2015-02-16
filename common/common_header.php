@@ -38,24 +38,31 @@
 	 * Get Privileges
 	 */
 	$emp_privileges = array(
-		'view_withdraws' 		=> false,
-		'insert_withdraws' 		=> false,
-		'update_withdraws' 		=> false,
-		'delete_withdraws' 		=> false,
+		'view_withdraws' 			=> false,
+		'insert_withdraws' 			=> false,
+		'update_withdraws' 			=> false,
+		'delete_withdraws' 			=> false,
 
-		'view_sales' 			=> false,
-		'insert_sales' 			=> false,
-		'update_sales' 			=> false,
-		'delete_sales' 			=> false,
+		'view_sales' 				=> false,
+		'insert_sales' 				=> false,
+		'update_sales' 				=> false,
+		'delete_sales' 				=> false,
+		'print_sales_receipt'		=> false,
 
-		'view_orders' 			=> false,
-		'insert_orders' 		=> false,
-		'update_orders' 		=> false,
-		'delete_orders' 		=> false,
-		'print_purchase_orders' => false,
+		'view_orders' 				=> false,
+		'insert_orders' 			=> false,
+		'update_orders' 			=> false,
+		'delete_orders' 			=> false,
+		'print_purchase_orders' 	=> false,
 
-		'manage_standard_tables'=> false,
-		'point_of_sale'			=> false
+		'manage_standard_tables'	=> false,
+		'point_of_sale'				=> false,
+
+		'view_services' 			=> false,
+		'insert_services' 			=> false,
+		'update_services' 			=> false,
+		'delete_services' 			=> false,
+		'print_services_receipt'	=> false
 	);
 	if(isset($session_emp_id)) {
 		$sql = "SELECT  	p.privlg_name 

@@ -288,36 +288,42 @@
                 </td>
             </tr>
             <tr>
-                <td>ประเภทการชำระเงิน :</td>
-                <td><div id="paytyp_id" class="selectReferenceJS text"></div></td>
-            </tr>
-            <tr>
-                <td>เตียงนวด :</td>
-                <td><div id="bed_id" class="selectReferenceJS text"></div></td>
-            </tr>
-            <tr>
-                <td>รหัสการจอง :</td>
-                <td>{$values.bkg_id}</td>
+                <td>พนักงานที่รับเงิน :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
             </tr>
             <tr>
                 <td>วันที่ใช้บริการ :</td>
-                <td>{$values.ser_date }</td>
+                <td>{$values.ser_date_th}</td>
             </tr>
             <tr>
                 <td>เวลาที่ใช้บริการ :</td>
                 <td>{$values.ser_time} น.</td>
             </tr>
             <tr>
-                <td>ราคารวมทั้งหมด :</td>
+                <td>อ้างอิงรหัสการจอง :</td>
+                <td>
+                    {if $values.bkg_id}
+                        {$values.bkg_id}
+                    {else}
+                        ไม่ได้ระบุ
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เตียงนวด :</td>
+                <td><div id="bed_id" class="selectReferenceJS text"></div></td>
+            </tr>
+            <tr>
+                <td>ราคาสุทธิ :</td>
                 <td>{$values.ser_total_price|number_format:2:".":","} บาท</td>
             </tr>
-           <tr>
-                <td>พนักงานที่บันทึก :</td>
-                <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-                        </a>
-                </td>
+            <tr>
+                <td>ประเภทการชำระเงิน :</td>
+                <td><div id="paytyp_id" class="selectReferenceJS text"></div></td>
             </tr>
         </tbody> 
     </table> 

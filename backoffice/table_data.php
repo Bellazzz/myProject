@@ -343,9 +343,9 @@ switch ($tableName) {
 				s.ser_time,
 				CONCAT(c.cus_name, '  ', c.cus_surname) cus_id,
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
+				s.ser_date,
 				p.paytyp_name paytyp_id,
 				b.bed_name bed_id,
-				s.ser_date,
 				s.ser_total_price 
 				FROM services s, customers c, employees e, pay_types p, beds b 
 				$where 
@@ -793,6 +793,15 @@ switch ($tableName) {
 		if(!$emp_privileges['delete_sales'])
 			$displayDeleteBtn = false;
 		break;
+
+	case 'services':
+		if(!$emp_privileges['insert_services'])
+			$displayAddBtn = false;
+		if(!$emp_privileges['update_services'])
+			$displayEditBtn = false;
+		if(!$emp_privileges['delete_services'])
+			$displayDeleteBtn = false;
+		break;
 }
 
 if($rows > 0){
@@ -821,6 +830,12 @@ if($rows > 0){
 						?>
 						<a title="ดูใบเสร็จ">
 							<i class="fa fa-file-text-o" onclick="openPrintReceipt('<?=$code?>')"></i>
+						</a>
+						<?
+					} else if($tableName == 'services' && $emp_privileges["print_services_receipt"]) {
+						?>
+						<a title="ดูใบเสร็จ">
+							<i class="fa fa-file-text-o" onclick="openPrintServiceReceipt('<?=$code?>')"></i>
 						</a>
 						<?
 					}

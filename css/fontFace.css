@@ -1,0 +1,25 @@
+@font-face {
+    font-family: FontAwesome;
+    src: url('../inc/font-awesome/fonts/fontawesome-webfont.eot');
+    src: url('../inc/font-awesome/fonts/fontawesome-webfont.eot?') format('embedded-opentype'),
+         url('../inc/font-awesome/fonts/fontawesome-webfont.woff') format('woff'),
+         url('../inc/font-awesome/fonts/fontawesome-webfont.ttf') format('truetype');
+}
+@font-face {
+    font-family: ThaiSansNeue-Regular;
+    src: url('../font/ThaiSansNeue-Regular.eot');
+    src: url('../font/ThaiSansNeue-Regular.eot?') format('embedded-opentype'),
+         url('../font/ThaiSansNeue-Regular.woff') format('woff'),
+         url('../font/ThaiSansNeue-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: ThaiSansNeue-Bold;
+    src: url('../font/ThaiSansNeue-Bold.eot');
+    src: url('../font/ThaiSansNeue-Bold.eot?') format('embedded-opentype'),
+         url('../font/ThaiSansNeue-Bold.woff') format('woff'),
+         url('../font/ThaiSansNeue-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}

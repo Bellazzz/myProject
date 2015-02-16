@@ -175,8 +175,7 @@ if(!$_REQUEST['ajaxCall']) {
 			$values[$field] = $tableRecord->getFieldValue($field);
 		}
 		// Date thai format
-		$values['ord_date_th']  	= dateThaiFormat($values['ord_date']);
-		$values['ord_snd_date_th'] 	= dateThaiFormat($values['ord_snd_date']);
+		$values['ser_date_th'] = dateThaiFormat($values['ser_date']);
 		$smarty->assign('values', $values);
 		
 		// Get detail of services

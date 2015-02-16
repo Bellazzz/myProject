@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="utf-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
+    <style type="text/css">
+    	#printReceiptFrame {
+    		position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			padding-top: 135px;
+			padding-left: 20px;
+    	}
+    </style>
+	<script>
+		$(document).ready(function() {
+			$('#print-btn').click(function() {
+				printReceipt();
+			});
+			$('#cancel-btn').click(function() {
+				parent.closeManageBox();
+			});
+			$('#back-btn').click(function() {
+				history.back();
+			});
+		});
+
+		function printReceipt() {
+		 	window.frames["printReceiptFrame"].focus();
+			window.frames["printReceiptFrame"].print();
+		}
+	</script>
+
+	{/literal}
+</head>
+<body>
+<div class="ftb-header">
+	<div class="title-container">
+		<h1 id="ftb-title">ใบเสร็จการใช้บริการ (เลขที่ {$ser_id})</h1>
+	</div>
+    <div class="toolbar-container clearfix">
+	    <ul class="toolbar-menu">
+			<li>
+				{if !$hideBackButton}
+				<a id="back-btn">
+				    <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+			    </a>
+			    {/if}
+			    <a id="print-btn">
+				    <i class="fa fa-print"></i> พิมพ์
+			    </a>
+			    <a id="cancel-btn">
+				    <i class="fa fa-times"></i> ปิด
+			    </a>
+			</li>
+		</ul>
+    </div>
+</div>
+<div class="ftb-body">
+	<iframe id="printReceiptFrame" name="printReceiptFrame" src="printServiceReceipt.php?ser_id={$ser_id}&printImmediately=0" frameborder="0"></iframe>
+</div>
+</body>
+</html>

@@ -707,9 +707,9 @@ function dbClose() {
 				'keyLength'		=> 15,
 				'fieldNameList'	=> array(
 						'ser_id'	  		  => 'รหัสการใช้บริการ',
-						'cus_id'	          => 'ชื่อ-นามสกุลผู้ใช้บริการ',
-						'emp_id' 		      => 'ชื่อ-นามสกุลพนักงานที่รับเงิน',
-						'paytyp_id'			  => 'รหัสประเภทการชำระเงิน',
+						'cus_id'	          => 'ผู้ใช้บริการ',
+						'emp_id' 		      => 'พนักงานที่รับเงิน',
+						'paytyp_id'			  => 'ประเภทการชำระเงิน',
 						'bed_id'      		  => 'รหัสเตียงนวด',
 						'bkg_id'	  		  => 'รหัสการจอง',
 						'ser_date'	          => 'วันที่ใช้บริการ',
@@ -718,7 +718,7 @@ function dbClose() {
 						'ser_total_price' 	  => 'ราคาสุทธิ(บาท)',
 						'ser_pay_price'		  => 'จำนวนเงินที่รับมา'
 				),
-				'hiddenFields'	=> array('emp_id','bed_id','bkg_id','ser_time','ser_total_price'),
+				'hiddenFields'	=> array('bed_id','bkg_id','ser_time'),
 				'defaultNull' 	=> array('bkg_id'),
 				'searchFields'	=> array('ser_id','cus_id','ser_date','ser_time'),
 				'deleteTxtField'		=> array('cus_id','ser_date'),

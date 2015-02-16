@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Receipt</title>
+	<meta charset="utf-8">
+	{literal}
+	<link rel="stylesheet" type="text/css" href="../css/fontFace.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+	<style type="text/css" media = "print">
+		@page{
+			size:auto;
+			margin: 0 0 0 0mm;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+		}
+
+		body{
+			size:auto;
+			margin: 0 0 0 0px;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+			font-family: Arial, sans-serif;
+		}
+	</style>
+	<style type="text/css">
+		.listOfService{
+			width: 100%;
+		}
+		.listOfService tbody td {
+			vertical-align: top;
+			padding: 6px 20px 6px 20px;
+			border-bottom: 1px dotted black;
+		}
+		.listOfService thead th {
+			text-align: center;
+			padding: 10px 0;
+			border-top: 2px solid black;
+			border-bottom: 2px solid black;
+			border-right: 2px solid black;
+		}
+		.listOfService tfoot td {
+			padding: 6px 20px 6px 20px;
+			text-align: right;
+		}
+		.listOfService thead th:first-child {
+			border-left: none;
+		}
+		.listOfService thead th:last-child {
+			border-right: none;
+		}
+
+		.serviceName-col{
+		}
+		.serviceAmount-col {
+			text-align: center;
+			width: 100px;
+		}
+		.serviceName{
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		.spa-name {
+			font-family: ThaiSansNeue-Bold;
+			font-size: 25px;
+		}
+		.receipt-title {
+			font-family: ThaiSansNeue-Bold;
+			font-size: 30px;
+		}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#ser_date_th').text(realDateToThaiDate('{/literal}{$serData.ser_date}{literal}'));
+			$('#total_price_text').text('{/literal}{$serData.ser_total_price_text}{literal}');
+		});
+	</script>
+	{/literal}
+</head>
+{if $printImmediately}
+<body onload="window.print();">
+{else}
+<body>
+{/if}
+<center>
+	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:100px; height:100px;" ><br>
+	<span class="receipt-title">ใบเสร็จรับเงิน</span><br>
+	<span class="spa-name">{$spaData.spa_name}</span><p></p>
+	<span id="ser_date_th"></span><br><br>
+</center>
+<table style="margin-bottom:0.5em;">
+	<tr>
+		<td>ผู้ใช้บริการ :</td>
+		<td>{$serData.cus_fullName}</td>
+	</tr>
+</table>
+<table class="listOfService" cellpadding="0" cellspacing="0">
+	<thead>
+		<tr>
+			<th>รายการ</th>
+			<th class="serviceAmount-col">จำนวน(ครั้ง)</th>
+			<th>ครั้งละ(บาท)</th>
+			<th>ส่วนลด(บาท)</th>
+			<th>ราคารวม(บาท)</th>
+		</tr>
+	</thead>
+	<tbody>
+		{foreach from=$serpkgData key=i item=serpkg}
+		<tr>
+			<td class = "serviceName-col"><span class="serviceName">{$serpkg.pkg_name}</span></td>
+			<td class="serviceAmount-col">{$serpkg.serpkg_amount}&nbsp;&nbsp;&nbsp;</td>
+			<td style="text-align:right;">{$serpkg.pkg_price}</td>
+			<td style="text-align:right;border-right:2px solid black;">{$serpkg.serpkg_discout|number_format:2:".":","}</td>
+			<td style="text-align:right;">{$serpkg.serpkg_total_price}</td>
+		</tr>
+		{/foreach}
+		{foreach from=$sersvlData key=i item=sersvl}
+		<tbody>
+		<tr>
+			<td class = "serviceName-col"><span class="serviceName">{$sersvl.svl_name}</span></td>
+			<td class="serviceAmount-col">{$sersvl.sersvl_amount}&nbsp;&nbsp;&nbsp;</td>
+			<td style="text-align:right;">{$sersvl.svl_price}</td>
+			<td style="text-align:right;border-right:2px solid black;">{$sersvl.sersvl_discout|number_format:2:".":","}</td>
+			<td style="text-align:right;">{$sersvl.sersvl_total_price}</td>
+		</tr>
+		{/foreach}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="3" style="text-align:center">(<span id="total_price_text"></span>)</td>
+			<td style="border-right: 2px solid black;"><b>ราคาสุทธิ</b></td>	
+			<td style="border-bottom: 2px solid black;"><b>{$serData.ser_total_price}</b></td>
+		</tr>
+		<tr>
+			<td colspan="3"></td>
+			<td>รับเงินมา</td>	
+			<td style="border-bottom: 1px dotted black;">{$serData.ser_pay_price}</td>
+		</tr>
+		<tr>
+			<td colspan="3"></td>
+			<td>ทอน</td>	
+			<td style="border-bottom: 1px dotted black;">{$change}</td>
+		</tr>
+	</tfoot>
+</table>
+<span style="color:white;">
+	.<br>
+	.<br>
+	.<br>
+</span>
+<!-- .<br>
+.<br>
+.<br> -->
+<!-- <span style="color:white;">
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+</span> -->
+
+</body>
+</html>
