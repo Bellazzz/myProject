@@ -19,7 +19,7 @@ $(document).ready(function () {
 	    		saveRecord();
 	    	}
 	    } else {
-	    	if(parent.$('.action-dialog').length == 0) {
+	    	if(parent.$('.action-dialog').length == 0 && table.name != 'orders') {
 	    		parent.showActionDialog({
 			        title: 'ข้อมูลไม่ถูกต้อง',
 			        message: 'คุณป้อนข้อมูลไม่ครบ หรือรูปแบบข้อมูลไม่ถูกต้อง '
