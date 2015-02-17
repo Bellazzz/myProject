@@ -132,6 +132,11 @@
         .pkgsvlCom.com-list {
             padding-top: 15px;
         }
+        .custype_text_container {
+            margin-top: -12px;
+            margin-bottom: 15px;
+            display: none;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -216,6 +221,11 @@
                 data            : {/literal}{$referenceData["customer_types"]|@json_encode}{literal},
                 beforeShow      : allowChangeCusTypeId,
                 defaultValue    : '{/literal}{$values.custype_id}{literal}',
+                clearBtnText    : '-',
+                onOptionSelect  : function() {
+                    $('#custype_text').text($('#custype_id').find('.selectReferenceJS-text').text());
+                    $('.custype_text_container').css('display', 'block');
+                },
                 success         : 
                 function() {
                     {/literal}{if $values.cus_id}{literal}
@@ -342,17 +352,15 @@
                 <td colspan="2">
                     <label class="input-required">ผู้ใช้บริการ</label>
                     <div id="cus_id" class="selectReferenceJS form-input full" require></div>
+                    <span class="custype_text_container">
+                        (ประเภทผู้ใช้บริการ: <span id="custype_text"></span>)
+                    </span>
+                    <div id="custype_id" class="selectReferenceJS form-input full text" style="display:none;"></div>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td colspan="2">
                     <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการ</span>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <label>ประเภทผู้ใช้บริการ</label>
-                    <div id="custype_id" class="selectReferenceJS form-input full readonly"></div>
                 </td>
             </tr>
             <tr>
