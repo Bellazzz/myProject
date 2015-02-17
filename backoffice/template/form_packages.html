@@ -406,7 +406,14 @@
                 	</a>
                 </td>
                 <td align="left" class="txtLong-col">{$pkgsvl.svl_name}</td>
-                <td align="left">{$pkgsvl.svl_hr} ชั่วโมง {$pkgsvl.svl_min} นาที</td>
+                <td align="left">
+                    {if $pkgsvl.svl_hr || $pkgsvl.svl_min}
+                        {if $pkgsvl.svl_hr}{$pkgsvl.svl_hr} ชั่วโมง {/if}
+                        {if $pkgsvl.svl_min}{$pkgsvl.svl_min} นาที{/if}
+                    {else}
+                        -
+                    {/if}
+                </td>
             </tr>
             {/foreach}
         </tbody>

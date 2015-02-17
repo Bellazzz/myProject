@@ -67,7 +67,14 @@
 			</tr>
 			<tr>
 				<td>เวลาที่ใช้ :</td>
-				<td>{$values.svl_hr} ชั่วโมง {$values.svl_min} นาที</td>
+				<td>
+					{if $values.svl_hr || $values.svl_min}
+                        {if $values.svl_hr}{$values.svl_hr} ชั่วโมง {/if}
+                        {if $values.svl_min}{$values.svl_min} นาที{/if}
+                    {else}
+                        -
+                    {/if}
+				</td>
 			</tr>
 			<tr>
 				<td>ราคา :</td>
