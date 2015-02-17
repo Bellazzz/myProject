@@ -103,6 +103,12 @@
         .com-list-title:hover {
             color: #8AC007;
         }
+        .paymentDetail {
+            display: none;
+        }
+        #addPaymentDetailBtn {
+            margin-bottom: 50px;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -215,13 +221,18 @@
                 },
                 timepicker:false
             });
-             $('#bkg_time').datetimepicker({
+            $('#bkg_time').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-              $('#bkg_transfer_time').datetimepicker({
+            $('#bkg_transfer_time').datetimepicker({
                 datepicker:false,
                 format:'H:i'
+            });
+
+            $('#addPaymentDetailBtn').click(function() {
+                $(this).css('display', 'none');
+                $('.paymentDetail').css('display', 'table');
             });
         });
     </script>
@@ -340,6 +351,12 @@
             </tr>
             <tr>
                 <td colspan="2">
+                    <label class="input-required">พนักงานที่รับการจอง</label>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
                     <label>ประเภทผู้ใช้บริการ</label>
                     <div id="custype_id" class="selectReferenceJS form-input full readonly"></div>
                 </td>
@@ -363,11 +380,22 @@
                 </td>
             </tr>
             <tr>
-            <td colspan="2">
-                <label class="input-required">ราคาสุทธิ(บาท)</label>
-                <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
-            </td>
-        </tr>
+                <td colspan="2">
+                    <label class="input-required">ราคาสุทธิ(บาท)</label>
+                    <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
+                </td>
+            </tr>
+            <tr>          
+                <td colspan="2">
+                    <label class="input-required">สถานะการจอง</label>
+                    <div id="status_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-status_id-require" class="errInputMsg err-status_id">โปรดเลือกสถานการจอง</span>
+                </td>
+            </tr>
 	    </tbody>
     </table>
 
@@ -402,34 +430,12 @@
         </tbody>
     </table>
     <button id="addServiceListBtn" class="button button-icon button-icon-add">เพิ่มรายการบริการ</button>
-        <tr class="errMsgRow">
-            <td colspan="2">
-                <span id="err-bkg_total_price-require" class="errInputMsg err-bkg_total_price">โปรดป้อนราคาสุทธิ</span>
-                <span id="err-bkg_total_price-money" class="errInputMsg err-bkg_total_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-            </td>
-        </tr>
-<!-- Detail of payment money -->
-    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="margin-top: 40px;">
-        <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+
+    <!-- Detail of payment money -->
+    <label class="article-title" style="margin-top: 40px;">ข้อมูลการชำระเงิน</label>
+    <button id="addPaymentDetailBtn" class="button button-icon button-icon-add">เพิ่มข้อมูลการชำระเงิน</button>
+    <table class="mbk-form-input-normal paymentDetail" cellpadding="0" cellspacing="0">
         <tbody>
-        <label class="article-title">ข้อมูลการชำระเงิน</label>
-            <tr>
-                <td colspan="2">
-                    <label class="input-required">พนักงานที่รับการจอง</label>
-                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
-                </td>
-            </tr>
-            <tr>          
-                <td colspan="2">
-                    <label class="input-required">สถานะการจอง</label>
-                    <div id="status_id" class="selectReferenceJS form-input full" require></div>
-                </td>
-            </tr>
-            <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-status_id-require" class="errInputMsg err-status_id">โปรดเลือกสถานการจอง</span>
-                </td>
-            </tr>
             <tr>
                 <td colspan="2">
                     <label>บัญชีธนาคาร</label>

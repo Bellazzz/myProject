@@ -873,7 +873,7 @@ function remindProductMinAmount() {
                     actionList: [
                         {
                             id: 'ok',
-                            name: 'สั้งซื้อผลิตภัณฑ์',
+                            name: 'สั่งซื้อผลิตภัณฑ์',
                             desc: 'เปิดฟอร์มการสั่งซื้อ',
                             func:
                             function() {
