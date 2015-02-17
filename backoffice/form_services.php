@@ -177,24 +177,99 @@ if(!$_REQUEST['ajaxCall']) {
 		// Date thai format
 		$values['ser_date_th'] = dateThaiFormat($values['ser_date']);
 		$smarty->assign('values', $values);
-		
-		// Get detail of services
-		$orderDetailList = array();
-		$sql 	= "	SELECT o.serpkg_amount,
-					p.pkg_id,
-					p.prd_name,
-					p.prd_price,
-					u.unit_name 
-					FROM service_packages o, products p, units u 
-					WHERE o.pkg_id = p.pkg_id AND p.unit_id = u.unit_id 
-					AND o.ser_id = '$code'";
+
+		// Get service_packages data
+		$serpkgData = array();
+		$sql = "SELECT 	sp.pkg_id,
+		 				p.pkg_name,
+		 				p.pkg_price,
+		 				FORMAT(sp.serpkg_amount, 0) serpkg_amount,
+		 				sp.serpkg_total_price 
+				FROM 	service_packages sp, packages p 
+				WHERE 	sp.pkg_id = p.pkg_id 
+				AND 	sp.ser_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($orderDetailList, mysql_fetch_assoc($result));
-			$orderDetailList[$i]['no'] = $i+1;
+			$record = mysql_fetch_assoc($result);
+			$serpkgData[$record['pkg_id']] = array(
+				'no' 					=> $i + 1,
+				'pkg_id' 				=> $record['pkg_id'],
+				'pkg_name' 				=> $record['pkg_name'],
+				'pkg_price' 			=> number_format($record['pkg_price'], 2),
+				'serpkg_amount' 		=> $record['serpkg_amount'],
+				'serpkg_discout' 		=> number_format(0.00, 2),
+				'serpkg_total_price' 	=> $record['serpkg_total_price']
+			);
+			$subtotal		+= $record['serpkg_total_price'];
+			$totalAmount 	+= $record['serpkg_amount'];
 		}
-		$smarty->assign('orderDetailList', $orderDetailList);
+		
+		// Get service_service_lists data
+		$sersvlData = array();
+		$allSvl = 0;
+		$sql = "SELECT 	ss.svl_id,
+		 				s.svl_name,
+		 				s.svl_price,
+		 				FORMAT(ss.sersvl_amount, 0) sersvl_amount,
+		 				ss.sersvl_total_price 
+				FROM 	service_service_lists ss, service_lists s 
+				WHERE 	ss.svl_id = s.svl_id 
+				AND 	ss.ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$sersvlData[$record['svl_id']] = array(
+				'no' 					=> $i + 1,
+				'svl_id' 				=> $record['svl_id'],
+				'svl_name' 				=> $record['svl_name'],
+				'svl_price' 			=> number_format($record['svl_price'], 2),
+				'sersvl_amount' 		=> $record['sersvl_amount'],
+				'sersvl_discout' 		=> number_format(0.00, 2),
+				'sersvl_total_price' 	=> $record['sersvl_total_price']
+			);
+			$subtotal		+= $record['sersvl_total_price'];
+			$totalAmount 	+= $record['sersvl_amount'];
+		}
+
+		// Get service package promotions data
+		$sql = "SELECT 	p.pkg_id,
+		 				pp.serpkgprm_discout_total 
+				FROM 	service_package_promotions pp,
+						package_promotion_details pd, 
+						packages p 
+				WHERE 	pp.pkgprmdtl_id = pd.pkgprmdtl_id AND 
+						pd.pkg_id = p.pkg_id AND 
+						pp.ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$serpkgData[$record['pkg_id']]['serpkg_discout'] 	 += $record['serpkgprm_discout_total']; 
+			$serpkgData[$record['pkg_id']]['serpkg_total_price'] -= $record['serpkgprm_discout_total']; 
+		}
+
+		// Get service service_list promotions data
+		$sql = "SELECT 	s.svl_id,
+		 				sp.sersvlprm_discout_total 
+				FROM 	service_service_list_promotions sp,
+						service_list_promotion_details sd, 
+						service_lists s 
+				WHERE 	sp.svlprmdtl_id = sd.svlprmdtl_id AND 
+						sd.svl_id = s.svl_id AND 
+						sp.ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$sersvlData[$record['svl_id']]['sersvl_discout'] 	 += $record['sersvlprm_discout_total']; 
+			$sersvlData[$record['svl_id']]['sersvl_total_price'] -= $record['sersvlprm_discout_total']; 
+		}
+		
+
+		$smarty->assign('viewSerpkgData', $serpkgData);
+		$smarty->assign('viewSersvlData', $sersvlData);
 	}
 
 	// Get reference data for selectReferenceJS

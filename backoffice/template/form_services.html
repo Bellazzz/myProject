@@ -153,6 +153,8 @@
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
         var pkgsvlData      = {/literal}{$pkgsvlData|@json_encode}{literal};
         var curCustypeId    = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
+        var viewSerpkgData  = {/literal}{$viewSerpkgData|@json_encode}{literal};
+        var viewSersvlData  = {/literal}{$viewSersvlData|@json_encode}{literal};
 
         // Set valuesDetail
         {/literal}
@@ -336,7 +338,79 @@
                 <td><div id="paytyp_id" class="selectReferenceJS text"></div></td>
             </tr>
         </tbody> 
-    </table> 
+    </table>
+        <!--Service package Data-->
+        {if $viewSerpkgData|@count > 0}
+        <label class="article-title">แพ็คเกจที่ใช้บริการ</label>
+        ทั้งหมด <span>{$viewSerpkgData|@count}</span> รายการ
+        <table class="view-detail-reference" style="margin-top:5px;">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">ลำดับ</th>
+                    <th>รหัสแพ็คเกจ</th>
+                    <th class="txtLong-col">ชื่อแพ็คเกจ</th>
+                    <th>ครั่งละ(บาท)</th>
+                    <th>จำนวน(ครั้ง)</th>
+                    <th>ส่วนลด(บาท)</th>
+                    <th>ราคารวม(บาท)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach from=$viewSerpkgData key=i item=serpkg}
+                <tr>
+                    <td align="center">{$serpkg.no}</td>
+                    <td align="left">
+                        <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$serpkg.pkg_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            {$serpkg.pkg_id}
+                        </a>
+                    </td>
+                    <td align="left" class="txtLong-col">{$serpkg.pkg_name}</td>
+                    <td align="right">{$serpkg.pkg_price}</td>
+                    <td align="right">{$serpkg.serpkg_amount}</td>
+                    <td align="right">{$serpkg.serpkg_discout|number_format:2:".":","}</td>
+                    <td align="right">{$serpkg.serpkg_total_price|number_format:2:".":","}</td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+        <br><br>
+        {/if}
+
+        <!--Service service list Data-->
+        {if $viewSersvlData|@count > 0}
+        <label class="article-title">รายการบริการที่ใช้บริการ</label>
+        ทั้งหมด <span>{$viewSersvlData|@count}</span> รายการ
+        <table class="view-detail-reference" style="margin-top:5px;">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">ลำดับ</th>
+                    <th>รหัสรายการบริการ</th>
+                    <th class="txtLong-col">ชื่อรายการบริการ</th>
+                    <th>ครั่งละ(บาท)</th>
+                    <th>จำนวน(ครั้ง)</th>
+                    <th>ส่วนลด(บาท)</th>
+                    <th>ราคารวม(บาท)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach from=$viewSersvlData key=i item=sersvl}
+                <tr>
+                    <td align="center">{$sersvl.no}</td>
+                    <td align="left">
+                        <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$sersvl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            {$sersvl.svl_id}
+                        </a>
+                    </td>
+                    <td align="left" class="txtLong-col">{$sersvl.svl_name}</td>
+                    <td align="right">{$sersvl.svl_price}</td>
+                    <td align="right">{$sersvl.sersvl_amount}</td>
+                    <td align="right">{$sersvl.sersvl_discout|number_format:2:".":","}</td>
+                    <td align="right">{$sersvl.sersvl_total_price|number_format:2:".":","}</td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+        {/if}
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">

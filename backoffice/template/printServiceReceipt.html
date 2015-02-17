@@ -112,7 +112,7 @@
 			<td class="serviceAmount-col">{$serpkg.serpkg_amount}&nbsp;&nbsp;&nbsp;</td>
 			<td style="text-align:right;">{$serpkg.pkg_price}</td>
 			<td style="text-align:right;border-right:2px solid black;">{$serpkg.serpkg_discout|number_format:2:".":","}</td>
-			<td style="text-align:right;">{$serpkg.serpkg_total_price}</td>
+			<td style="text-align:right;">{$serpkg.serpkg_total_price|number_format:2:".":","}</td>
 		</tr>
 		{/foreach}
 		{foreach from=$sersvlData key=i item=sersvl}
@@ -122,7 +122,7 @@
 			<td class="serviceAmount-col">{$sersvl.sersvl_amount}&nbsp;&nbsp;&nbsp;</td>
 			<td style="text-align:right;">{$sersvl.svl_price}</td>
 			<td style="text-align:right;border-right:2px solid black;">{$sersvl.sersvl_discout|number_format:2:".":","}</td>
-			<td style="text-align:right;">{$sersvl.sersvl_total_price}</td>
+			<td style="text-align:right;">{$sersvl.sersvl_total_price|number_format:2:".":","}</td>
 		</tr>
 		{/foreach}
 	</tbody>

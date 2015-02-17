@@ -83,7 +83,7 @@ if(hasValue($ser_id)) {
 			'pkg_price' 			=> number_format($record['pkg_price'], 2),
 			'serpkg_amount' 		=> $record['serpkg_amount'],
 			'serpkg_discout' 		=> number_format(0.00, 2),
-			'serpkg_total_price' 	=> number_format($record['serpkg_total_price'], 2)
+			'serpkg_total_price' 	=> $record['serpkg_total_price']
 		);
 		$subtotal		+= $record['serpkg_total_price'];
 		$totalAmount 	+= $record['serpkg_amount'];
@@ -109,7 +109,7 @@ if(hasValue($ser_id)) {
 			'svl_price' 			=> number_format($record['svl_price'], 2),
 			'sersvl_amount' 		=> $record['sersvl_amount'],
 			'sersvl_discout' 		=> number_format(0.00, 2),
-			'sersvl_total_price' 	=> number_format($record['sersvl_total_price'], 2)
+			'sersvl_total_price' 	=> $record['sersvl_total_price']
 		);
 		$subtotal		+= $record['sersvl_total_price'];
 		$totalAmount 	+= $record['sersvl_amount'];
@@ -129,6 +129,7 @@ if(hasValue($ser_id)) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$serpkgData[$record['pkg_id']]['serpkg_discout'] += $record['serpkgprm_discout_total']; 
+		$serpkgData[$record['pkg_id']]['serpkg_total_price'] -= $record['serpkgprm_discout_total']; 
 	}
 
 	// Get service service_list promotions data
@@ -145,6 +146,7 @@ if(hasValue($ser_id)) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$sersvlData[$record['svl_id']]['sersvl_discout'] += $record['sersvlprm_discout_total']; 
+		$sersvlData[$record['svl_id']]['sersvl_total_price'] -= $record['sersvlprm_discout_total']; 
 	}
 	
 
