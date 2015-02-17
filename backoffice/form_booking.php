@@ -383,7 +383,7 @@ if(!$_REQUEST['ajaxCall']) {
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
 				$bkgpkg_persons 	= $formData['pkg_qty'][$key];
-				$bkgpkg_total_price 		= $formData['bkgpkg_total_price'][$key];
+				$bkgpkg_total_price = $formData['bkgpkg_total_price'][$key];
 				$bkgpkgValues 		= array($bkg_id, $pkg_id, $bkgpkg_persons, $bkgpkg_total_price);
 				$bkgpkgRecord 	= new TableSpa('booking_packages', $bkgpkgValues);
 				if(!$bkgpkgRecord->insertSuccess()) {

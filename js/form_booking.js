@@ -346,7 +346,31 @@ function addServiceList(data) {
                     + '</tr>'
                     + '<tr id="serviceListPrmRow_' + randNum + '" class="service-list-prm-row">'
                     + '     <td colspan="6"></td>'
-                    + '</tr>';
+                    + '</tr>'
+                    + '<tr id="serviceListDtlRow_' + randNum + '" class="service-list-dtl-row">'
+                    + '     <td colspan="6">'
+                    + '         <span class="com-list-title" data-status="1">'
+                    + '             <i class="fa fa-chevron-down"></i> ซ่อนรายละเอียด'
+                    + '         </span>'
+                    + '         <div class="svldtl-container">'
+                    + '             <table cellpadding="0" cellspacing="0">'
+                    + '                 <thead>'
+                    + '                     <tr>'
+                    + '                         <th>วันทีใช้บริการ</th>'
+                    + '                         <th>เวลาที่ใช้บริการ</th>'
+                    + '                         <th>จำนวนผู้ใช้บริการ</th>'
+                    + '                     </tr>'
+                    + '                 </thead>'
+                    + '                 <tbody>'
+                    + '                     <tr>'
+                    + '                         <td>'
+                    + '                             '
+                    + '                         </td>'
+                    + '                     </tr>'
+                    + '                 </tbody>'
+                    + '             </table>'
+                    + '         </div>'
+                    + '     </td>';
     $('#booking-service-list-table > tbody').append(svlRowHTML);
 
     // Create select reference

@@ -873,7 +873,20 @@ function remindProductMinAmount() {
                     actionList: [
                         {
                             id: 'ok',
-                            name: 'ตกลง',
+                            name: 'สั้งซื้อผลิตภัณฑ์',
+                            desc: 'เปิดฟอร์มการสั่งซื้อ',
+                            func:
+                            function() {
+                                hideActionDialog();
+                                $('#tn-orders').parent().parent().parent().find('.tree-view-root').click();
+                                $('#tn-orders').click();
+                                $('#add-record-btn').click();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ปิด',
+                            desc: 'ปิดหน้าต่างนี้',
                             func:
                             function() {
                                 hideActionDialog();
