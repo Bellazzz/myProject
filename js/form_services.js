@@ -259,11 +259,13 @@ function addPackage(data) {
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
-            addServiceListOfPackage({
-                pkg_id          : defaultKey,
-                parentRandNum   : randNum,
-                addPkgCom       : false
-            });
+            if(typeof(defaultKey) != 'undefined') {
+                addServiceListOfPackage({
+                    pkg_id          : defaultKey,
+                    parentRandNum   : randNum,
+                    addPkgCom       : false
+                });
+            }
         },
         group           : 'packages'
     });
