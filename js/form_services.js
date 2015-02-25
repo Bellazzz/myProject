@@ -636,11 +636,11 @@ function addServiceListCommission(data) {
 
     // add input commisstion rate
     if(data.defaultValue) {
-        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
         selectRefDefault = data.emp_id;
         comRate          = data.com_rate;
     } else {
-        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
     commissionHTML         += '         %&nbsp;&nbsp;&nbsp;'
@@ -723,6 +723,7 @@ function addServiceListCommission(data) {
                         function() {
                             parent.hideActionDialog();
                             svlcomList.remove();
+                            checkAllowChangeSvlComRate(svlcomConn.parent());
                         }
                     },
                     {
@@ -756,6 +757,28 @@ function addServiceListCommission(data) {
     });
     $('#' + inputComRateId).change(function() {
         $('#com_rate_' + inputKeyId).val($(this).val());
+    });
+
+    checkAllowChangeSvlComRate(tdCom);
+}
+
+function checkAllowChangeSvlComRate(tdCom) {
+    var comRateInputs   = tdCom.find('.com_rate_input');
+    var disable         = false;
+    if(comRateInputs.length == 1) {
+        // Disable
+        disable = true;
+        comRateInputs.each(function() {
+            $(this).val(100);
+        });
+    } else if(comRateInputs.length == 2) {
+        comRateInputs.each(function() {
+            $(this).val(50);
+        });
+    }
+
+    comRateInputs.each(function() {
+        $(this).prop('disabled', disable);
     });
 }
 
