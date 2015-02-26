@@ -102,7 +102,8 @@
         .com-list-title:hover {
             color: #8AC007;
         }
-        #service-service-list-table .service-list-row:not(:first-child) > td {
+        #service-service-list-table .service-list-row:not(:first-child) > td,
+        #service-package-table .package-row:not(:first-child) > td {
             border-top: 1px solid #c4c4c4;
             padding-top: 21px;
         }
@@ -136,6 +137,13 @@
             margin-top: -12px;
             margin-bottom: 15px;
             display: none;
+        }
+        .qty-column {
+            display: none;
+        }
+        .com-err {
+            display: none;
+            padding-top: 10px;
         }
     </style>
     <script type="text/javascript">
@@ -482,7 +490,7 @@
             <tr class="headTable-row">
                 <td><label class="input-required"><b>แพ็คเกจ</b></label></td>
                 <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
-                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td style="padding-left:40px;" class="qty-column"><label class="input-required"><b>จำนวน</b></label></td>
                 <td align="right"><label>ส่วนลด</label></td>
                 <td align="right"><label>ราคารวม</label></td>
             </tr>
@@ -499,7 +507,7 @@
             <tr class="headTable-row">
                 <td><label class="input-required"><b>รายการบริการ</b></label></td>
                 <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
-                <td style="padding-left:40px;"><label class="input-required"><b>จำนวน</b></label></td>
+                <td style="padding-left:40px;" class="qty-column"><label class="input-required"><b>จำนวน</b></label></td>
                 <td align="right"><label>ส่วนลด</label></td>
                 <td align="right"><label>ราคารวม</label></td>
             </tr>
