@@ -64,37 +64,40 @@ var checkTimer;
 $(document).ready(function() {
 	// Add event MBK dtp thai
 	$('.mbk-dtp-th').each(function() {
-		var dtp = $(this);
-		// Convert date default
-		if(dtp.val() != '' && !isDateThaiFormat(dtp)) {
-			realDateToThaiDate(dtp);
-		}
-		// Convert when select date
-		dtp.focusout(function() {
-			//Unconvert before convert
-			if(isDateThaiFormat(dtp)) {
-				unconvertThaiDate(dtp);
-			}
-			setTimeout(function() {
-				convertThaiDate(dtp);
-			}, 1);
-		});
-		// for hilight selected date
-		dtp.click(function() {
-			if(dtp.val() != '') {
-				unconvertThaiDate(dtp);
-			}
-		});
-		dtp.change(function() {
-			clearTimeout(checkTimer);
-			checkTimer = setTimeout(function() {
-				if(dtp.val() != '' && !isDateThaiFormat(dtp)) {
-					convertThaiDate(dtp);
-				}
-			}, 5);
-		});
+		addEventDtpTh($(this));
 	});
 });
+
+function addEventDtpTh(dtp) {
+	// Convert date default
+	if(dtp.val() != '' && !isDateThaiFormat(dtp)) {
+		realDateToThaiDate(dtp);
+	}
+	// Convert when select date
+	dtp.focusout(function() {
+		//Unconvert before convert
+		if(isDateThaiFormat(dtp)) {
+			unconvertThaiDate(dtp);
+		}
+		setTimeout(function() {
+			convertThaiDate(dtp);
+		}, 1);
+	});
+	// for hilight selected date
+	dtp.click(function() {
+		if(dtp.val() != '') {
+			unconvertThaiDate(dtp);
+		}
+	});
+	dtp.change(function() {
+		clearTimeout(checkTimer);
+		checkTimer = setTimeout(function() {
+			if(dtp.val() != '' && !isDateThaiFormat(dtp)) {
+				convertThaiDate(dtp);
+			}
+		}, 5);
+	});
+}
 
 function isDateThaiFormat(input) {
 	var value = typeof(input) == 'string' ? input : input.val();
