@@ -80,6 +80,10 @@ function showActionDialog(dialog) {
     
     // Display
     $('.action-dialog-container').css('visibility', 'visible');
+
+    if(typeof(dialog.success) == 'function') {
+        dialog.success();
+    }
 }
 
 function hideActionDialog() {

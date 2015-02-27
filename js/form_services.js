@@ -186,7 +186,7 @@ function addPackage(data) {
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                     + '     </td>'
                     + '		<td align="right" style="padding-right:20px;"><span class="pkg_unit_price">' + unitPrice + '</span>'
-                    + '     <td style="padding-left:40px;">';
+                    + '     <td style="padding-left:40px;" class="qty-column">';
 
     // add input package amount
     if(data.defaultValue) {
@@ -360,6 +360,11 @@ function addServiceListOfPackage(data) {
                       + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
                       + '   <div class="pkgsvlCom-list-container-body"></div>'
                       + '</div>'
+                      + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
+                      + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
+                      + '<span class="errInputMsg com-err-zero com-err">ค่าคอมมิชชั่นไม่สามารถเป็น 0 ได้</span>'
+                      + '<span class="errInputMsg com-err-over com-err">ค่าคอมมิชชั่นเกิน 100%</span>'
+                      + '<span class="errInputMsg com-err-less com-err">ค่าคอมมิชชั่นไม่ครบ 100%</span>'
                       + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                       + '</div>';
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
@@ -401,11 +406,11 @@ function addPkgCommission(data) {
 
     // add input commisstion rate
     if(data.defaultValue) {
-        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
         selectRefDefault = data.emp_id;
         comRate          = data.com_rate;
     } else {
-        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+        pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
     pkgsvlComHtml    += '                   %&nbsp;&nbsp;&nbsp;'
@@ -426,6 +431,7 @@ function addPkgCommission(data) {
                       + '</div>';
 
     $('#pkgsvl-list-com-container_' + data.pkg_id + '_' + data.svl_id).find('.pkgsvlCom-list-container-body').append(pkgsvlComHtml);
+    var comListConn = $('#removeSvlComBtn_' + inputKeyId).parent().parent().parent().parent().parent().parent();
 
     // Create select reference
     selectReferenceJS({
@@ -460,6 +466,11 @@ function addPkgCommission(data) {
                         function() {
                             parent.hideActionDialog();
                             pkgsvlList.remove();
+                            checkAllowChangeComRate(pkgsvlCont.parent());
+                            validateComRate({
+                                tdCom: pkgsvlCont.parent(),
+                                inputComRate: $('#' + inputComRateId)
+                            });
                         }
                     },
                     {
@@ -493,6 +504,17 @@ function addPkgCommission(data) {
     });
     $('#' + inputComRateId).change(function() {
         $('#com_rate_' + inputKeyId).val($(this).val());
+        var pkgcomConn = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
+        validateComRate({
+            tdCom: pkgcomConn,
+            inputComRate: $('#' + inputComRateId)
+        });
+    });
+
+    checkAllowChangeComRate(comListConn);
+    validateComRate({
+        tdCom: comListConn,
+        inputComRate: $('#' + inputComRateId)
     });
 }
 
@@ -515,7 +537,7 @@ function addServiceList(data) {
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                     + '     </td>'
                     + '		<td align="right" style="padding-right:20px;"><span class="svl_unit_price">' + unitPrice + '</span>'
-                    + '     <td style="padding-left:40px;">';
+                    + '     <td style="padding-left:40px;" class="qty-column">';
 
     // add input package amount
     if(data.defaultValue) {
@@ -636,11 +658,11 @@ function addServiceListCommission(data) {
 
     // add input commisstion rate
     if(data.defaultValue) {
-        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="' + data.com_rate + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
         selectRefDefault = data.emp_id;
         comRate          = data.com_rate;
     } else {
-        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+        commissionHTML += '         <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
     commissionHTML         += '         %&nbsp;&nbsp;&nbsp;'
@@ -665,6 +687,11 @@ function addServiceListCommission(data) {
                         + '</span>'
                         + '<div class="com-list-container">'
                         + '     <div class="com-list-container-body"></div>'
+                        + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
+                        + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
+                        + '<span class="errInputMsg com-err-zero com-err">ค่าคอมมิชชั่นไม่สามารถเป็น 0 ได้</span>'
+                        + '<span class="errInputMsg com-err-over com-err">ค่าคอมมิชชั่นเกิน 100%</span>'
+                        + '<span class="errInputMsg com-err-less com-err">ค่าคอมมิชชั่นไม่ครบ 100%</span>'
                         + '<button class="addSvlComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                         + '</div>';
         tdCom.append(comCont);
@@ -723,6 +750,11 @@ function addServiceListCommission(data) {
                         function() {
                             parent.hideActionDialog();
                             svlcomList.remove();
+                            checkAllowChangeComRate(svlcomConn.parent());
+                            validateComRate({
+                                tdCom: svlcomConn.parent(),
+                                inputComRate: $('#' + inputComRateId)
+                            });
                         }
                     },
                     {
@@ -756,6 +788,117 @@ function addServiceListCommission(data) {
     });
     $('#' + inputComRateId).change(function() {
         $('#com_rate_' + inputKeyId).val($(this).val());
+        var svlcomConn = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
+        validateComRate({
+            tdCom: svlcomConn,
+            inputComRate: $('#' + inputComRateId)
+        });
+    });
+
+    checkAllowChangeComRate(tdCom);
+    validateComRate({
+        tdCom: tdCom,
+        inputComRate: $('#' + inputComRateId)
+    });
+}
+
+function validateComRate(data) {
+    var comRateInputs = data.tdCom.find('.com_rate_input');
+    var total = 0;
+    var empty = 0;
+    var zero  = 0;
+    var notNum = 0;
+    var pass  = true;
+    var notNumInputs = Array();
+    var emptyInputs = Array();
+    var zeroInputs  = Array();
+
+    // fill auto
+    if(comRateInputs.length == 2) {
+        comRateInputs.each(function() {
+            if($(this).attr('id') != data.inputComRate.attr('id')) {
+                var enterVal = parseFloat(data.inputComRate.val());
+                if(enterVal <= 100) {
+                    $(this).val(100 - enterVal);
+                }
+            }
+        });
+    }
+
+    comRateInputs.each(function() {
+        if($(this).val() == '') {
+            empty++;
+            emptyInputs.push($(this));
+        } else if(!validateNumber($(this).val())) {
+            notNum++;
+            notNumInputs.push($(this));
+        } else {
+            if($(this).val() == '0') {
+                zero++;
+                zeroInputs.push($(this));
+            }
+            total += parseFloat($(this).val());
+        }
+        // Clear error
+        $(this).removeClass('required');
+    });
+
+    // Clear error
+    data.tdCom.find('.com-err').css('display', 'none');
+
+    // Add error
+    if(empty > 0) {
+        data.tdCom.find('.com-err-empty').css('display', 'block');
+        pass = false; 
+        for(i in emptyInputs) {
+            emptyInputs[i].addClass('required');
+        }
+    } else if(notNum > 0) {
+        data.tdCom.find('.com-err-notNum').css('display', 'block');
+        pass = false; 
+        for(i in notNumInputs) {
+            notNumInputs[i].addClass('required');
+        }
+    } else if(zero > 0) {
+        data.tdCom.find('.com-err-zero').css('display', 'block');
+        pass = false;
+        for(i in zeroInputs) {
+            zeroInputs[i].addClass('required');
+        }
+    } else if(total > 100) {
+        data.tdCom.find('.com-err-over').css('display', 'block');
+        pass = false;
+        comRateInputs.each(function() {
+            $(this).addClass('required');
+        });
+    } else if(total < 100) {
+        data.tdCom.find('.com-err-less').css('display', 'block');
+        pass = false;
+        comRateInputs.each(function() {
+            $(this).addClass('required');
+        });
+    }
+
+    return pass;
+}
+
+function checkAllowChangeComRate(tdCom) {
+    var comRateInputs   = tdCom.find('.com_rate_input');
+    var disable         = false;
+    if(comRateInputs.length == 1) {
+        // Disable
+        disable = true;
+        comRateInputs.each(function() {
+            $(this).val(100);
+        });
+    } else if(comRateInputs.length == 2) {
+        comRateInputs.each(function() {
+            $(this).val(50);
+        });
+    }
+
+    comRateInputs.each(function() {
+        $(this).prop('disabled', disable);
     });
 }
 

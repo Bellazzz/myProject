@@ -196,7 +196,7 @@ function addPackage(data) {
                     + '		<td></td>'
                     + '     <td>'
                     + '         <span id="err-' + inputQtyId + '-require" class="errInputMsg half err-' + inputQtyId + '">'
-                    + '             โปรดกรอกจำนวนที่ใช้บริการ'
+                    + '             โปรดกรอกจำนวนผู้ใช้บริการ'
                     + '         </span>'
                     + '         <span id="err-' + inputQtyId + '-numberMoreThanZero" class="errInputMsg half err-' + inputQtyId + '">'
                     + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็มตั้งแต่ 1 ขึ้นไป'
@@ -292,6 +292,8 @@ function addServiceList(data) {
     } while($('#svl_id_' + randNum).length > 0);
     var inputKeyId  = 'svl_id_' + randNum;
     var inputQtyId  = 'svl_qty_' + randNum;
+    var inputDateId = 'svl_date_' + randNum;
+    var inputTimeId = 'svl_time_' + randNum;
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
     }
@@ -337,7 +339,7 @@ function addServiceList(data) {
                     + '		<td></td>'
                     + '     <td>'
                     + '         <span id="err-' + inputQtyId + '-require" class="errInputMsg half err-' + inputQtyId + '">'
-                    + '             โปรดกรอกจำนวนที่ใช้บริการ'
+                    + '             โปรดกรอกจำนวนผู้ใช้บริการ'
                     + '         </span>'
                     + '         <span id="err-' + inputQtyId + '-numberMoreThanZero" class="errInputMsg half err-' + inputQtyId + '">'
                     + '             โปรดกรอกจำนวนเป็นตัวเลขจำนวนเต็มตั้งแต่ 1 ขึ้นไป'
@@ -350,25 +352,11 @@ function addServiceList(data) {
                     + '<tr id="serviceListDtlRow_' + randNum + '" class="service-list-dtl-row">'
                     + '     <td colspan="6">'
                     + '         <span class="com-list-title" data-status="1">'
-                    + '             <i class="fa fa-chevron-down"></i> ซ่อนรายละเอียด'
+                    + '             <i class="fa fa-chevron-down"></i> ซ่อนวันที่มาใช้บริการ'
                     + '         </span>'
                     + '         <div class="svldtl-container">'
-                    + '             <table cellpadding="0" cellspacing="0">'
-                    + '                 <thead>'
-                    + '                     <tr>'
-                    + '                         <th>วันทีใช้บริการ</th>'
-                    + '                         <th>เวลาที่ใช้บริการ</th>'
-                    + '                         <th>จำนวนผู้ใช้บริการ</th>'
-                    + '                     </tr>'
-                    + '                 </thead>'
-                    + '                 <tbody>'
-                    + '                     <tr>'
-                    + '                         <td>'
-                    + '                             '
-                    + '                         </td>'
-                    + '                     </tr>'
-                    + '                 </tbody>'
-                    + '             </table>'
+                    + '             วันที่ <input id="' + inputDateId + '" name="svl_date[]" type="text" class="mbk-dtp-th form-input half" require>'
+                    + '             &nbsp;เวลา <input id="' + inputTimeId + '" name="svl_time[]" type="text" class="mbk-dtp-th form-input half" require style="width:80px;">'
                     + '         </div>'
                     + '     </td>';
     $('#booking-service-list-table > tbody').append(svlRowHTML);
@@ -394,6 +382,36 @@ function addServiceList(data) {
         },
         group           : 'service_lists'
     });
+    $('#' + inputDateId).datetimepicker({
+        lang                : 'th',
+        format              : 'Y/m/d',
+        timepicker          :false,
+        closeOnDateSelect   :true,
+        scrollInput         :false,
+        yearOffset          :543,
+        onSelectDate: 
+        function(){
+          $('#' + inputDateId).blur();
+        },
+        timepicker:false
+    });
+    $('#' + inputTimeId).datetimepicker({
+        datepicker:false,
+        format:'H:i'
+    });
+    $('#' + inputDateId).parent().parent().find('.com-list-title').click(function() {
+        var stat = $(this).attr('data-status');
+        if(stat == "1") {
+            $(this).parent().find('.svldtl-container').css('display', 'none');
+            $(this).attr('data-status', '0');
+            $(this).html('<i class="fa fa-chevron-right"></i> แสดงวันที่มาใช้บริการ');
+        } else {
+            $(this).parent().find('.svldtl-container').css('display', 'block');
+            $(this).attr('data-status', '1');
+            $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนวันที่มาใช้บริการ');
+        }
+    });
+    addEventDtpTh($('#' + inputDateId));
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
     // Calculate sum price
