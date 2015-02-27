@@ -32,7 +32,7 @@
         }
 
         .package-prm-row > td, .service-list-prm-row > td,
-        .service-list-dtl-row > td {
+        .service-list-dtl-row > td, .package-svl-row > td {
             padding-left: 100px;
         }
         .prm-list-container {
@@ -109,6 +109,22 @@
         #addPaymentDetailBtn {
             margin-bottom: 50px;
         }
+        .pkgsvl-list {
+            padding: 10px 10px 10px 0;
+            border-top: 1px solid #ddd;
+            width: 440px;
+        }
+        .pkgsvlCom-list-container {
+            padding-top: 15px;
+        }
+        #booking-service-list-table .service-list-row:not(:first-child) > td, #booking-package-table .package-row:not(:first-child) > td {
+            border-top: 1px solid #c4c4c4;
+            padding-top: 21px;
+        }
+        .svldtl-container td {
+            padding-left: 20px;
+            color: #666;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -122,7 +138,9 @@
         var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
         var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
+        var pkgsvlData      = {/literal}{$pkgsvlData|@json_encode}{literal};
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
+        var nowDate       = '{/literal}{$nowDate}{literal}';
 
         // Set valuesDetail
         {/literal}

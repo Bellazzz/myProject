@@ -256,6 +256,35 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('svlPromotions', $svlPromotions);
 	}
 
+	// Get package_service_lists data
+	$pkgsvlData = array();
+	$sql = "SELECT 		pkg.pkg_id,
+						s.svl_id,
+						s.svl_name 
+			FROM 		packages pkg,
+						package_service_lists pkgsvl,
+						service_lists s  
+			WHERE 		pkg.pkg_id = pkgsvl.pkg_id AND 
+						pkgsvl.svl_id = s.svl_id";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		for($i=0; $i<$rows; $i++) {
+			$record	= mysql_fetch_assoc($result);
+
+			if(!isset($pkgsvlData[$record['pkg_id']])) {
+				$pkgsvlData[$record['pkg_id']] = array();
+			}
+
+			$pkgsvlValues = array(
+				'svl_id' 	=> $record['svl_id'],
+				'svl_name' 	=> $record['svl_name']
+			);
+			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
+		}
+		$smarty->assign('pkgsvlData', $pkgsvlData);
+	}
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
@@ -370,6 +399,25 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
+		// Get package_service_list
+		$pkgSvlIdList = array();
+		$sql = "SELECT 		ps.pkgsvl_id,
+							p.pkg_id, 
+							s.svl_id 
+				FROM 		packages p, 
+							package_service_lists ps,
+							service_lists s 
+				WHERE 		p.pkg_id = ps.pkg_id AND 
+							s.svl_id = ps.svl_id";
+		$result 	= mysql_query($sql, $dbConn);
+		$rows 		= mysql_num_rows($result);
+		if($rows > 0) {
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$pkgSvlIdList[$record['pkg_id']][$record['svl_id']] = $record['pkgsvl_id'];
+			}
+		}
+
 		// Insert booking
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if(!$tableRecord->insertSuccess()) {
@@ -384,12 +432,21 @@ if(!$_REQUEST['ajaxCall']) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
 				$bkgpkg_persons 	= $formData['pkg_qty'][$key];
 				$bkgpkg_total_price = $formData['bkgpkg_total_price'][$key];
-				$bkgpkgValues 		= array($bkg_id, $pkg_id, $bkgpkg_persons, $bkgpkg_total_price);
-				$bkgpkgRecord 	= new TableSpa('booking_packages', $bkgpkgValues);
-				if(!$bkgpkgRecord->insertSuccess()) {
-					$insertResult = false;
-					$errTxt .= 'INSERT_BOOKING_PACKAGES['.($key+1).']_FAIL\n';
-					$errTxt .= mysql_error($dbConn).'\n\n';
+				// Find more data
+				if(hasValue($formData['pkgSvl_'.$pkg_id.'_svl_id']) && is_array($formData['pkgSvl_'.$pkg_id.'_svl_id'])) {
+					foreach ($formData['pkgSvl_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						$bkgpkg_date 	= $formData['pkgSvl_'.$pkg_id.'_bkgpkg_date'];
+						$bkgpkg_time 	= $formData['pkgSvl_'.$pkg_id.'_bkgpkg_time'];
+						$pkgsvl_id 		= $pkgSvlIdList[$pkg_id][$svl_id];
+						$bkgpkgValues 	= array($pkgsvl_id, $bkg_id, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+						$bkgpkgRecord 	= new TableSpa('booking_packages', $bkgpkgValues);
+
+						if(!$bkgpkgRecord->insertSuccess()) {
+							$insertResult = false;
+							$errTxt .= 'INSERT_BOOKING_PACKAGES['.($key+1).']_FAIL\n';
+							$errTxt .= mysql_error($dbConn).'\n\n';
+						}
+					}
 				}
 			}
 		}
@@ -398,10 +455,12 @@ if(!$_REQUEST['ajaxCall']) {
 		// Insert booking service_list
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$bkgsvl_date 		= $formData['svl_date'][$key];
+				$bkgsvl_time 		= $formData['svl_time'][$key];
 				$bkgsvl_persons 	= $formData['svl_qty'][$key];
-				$bkgsvl_total_price 		= $formData['bkgsvl_total_price'][$key];
-				$bkgsvlValues 		= array($bkg_id, $svl_id, $bkgsvl_persons, $bkgsvl_total_price);
-				$bkgsvlRecord 	= new TableSpa('booking_service_lists', $bkgsvlValues);
+				$bkgsvl_total_price = $formData['bkgsvl_total_price'][$key];
+				$bkgsvlValues 		= array($svl_id, $bkg_id, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+				$bkgsvlRecord 		= new TableSpa('booking_service_lists', $bkgsvlValues);
 				if(!$bkgsvlRecord->insertSuccess()) {
 					$insertResult = false;
 					$errTxt .= 'INSERT_BOOKING_SERVICE_LISTS['.($key+1).']_FAIL\n';

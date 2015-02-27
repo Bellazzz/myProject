@@ -205,6 +205,9 @@ function addPackage(data) {
                     + '</tr>'
                     + '<tr id="packagePrmRow_' + randNum + '" class="package-prm-row">'
                     + '     <td colspan="6"></td>'
+                    + '</tr>'
+                    + '<tr id="packagePkgSvlRow_' + randNum + '" class="package-svl-row">'
+                    + '     <td colspan="6"></td>'
                     + '</tr>';
     $('#booking-package-table > tbody').append(pkgRowHTML);
 
@@ -215,17 +218,29 @@ function addPackage(data) {
         defaultValue    : selectRefDefault,
         onOptionSelect  :
         function() {
+            var curPkgId = $('#' + inputKeyId).find('input[name="pkg_id[]"]').val();
             pullPkgUnitPrice(inputKeyId);
-            addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
+            addPkgPrmSale(curPkgId);
             calSummary();
+            addServiceListOfPackage({
+                pkg_id          : curPkgId,
+                parentRandNum   : randNum
+            });
         },
         success         : 
-        function() {
+        function(defaultKey) {
             $('input[name="' + inputKeyId + '"]').attr('name', 'pkg_id[]');
             setAllBkgDetailAmount();
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
+            if(typeof(defaultKey) != 'undefined') {
+                addServiceListOfPackage({
+                    pkg_id          : defaultKey,
+                    parentRandNum   : randNum,
+                    addPkgCom       : false
+                });
+            }
         },
         group           : 'packages'
     });
@@ -238,6 +253,79 @@ function addPackage(data) {
         addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
         calSummary();
     });
+}
+
+function addServiceListOfPackage(data) {
+    var addPkgCom = true;
+    var svlPkgTd  = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
+    var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-down"></i> ซ่อนวันเวลาที่มาใช้บริการ</span>'
+                    + '<div class="pkgsvl-list-container"></div>';
+    if(typeof(data.addPkgCom) != 'undefined') {
+        addPkgCom = data.addPkgCom;
+    }
+    svlPkgTd.html(initHTML);
+    svlPkgTd.find('.com-list-title').click(function() {
+        var stat = $(this).attr('data-status');
+        if(stat == "1") {
+            $(this).parent().find('.pkgsvl-list-container').css('display', 'none');
+            $(this).attr('data-status', '0');
+            $(this).html('<i class="fa fa-chevron-right"></i> แสดงวันเวลาที่มาใช้บริการ');
+        } else {
+            $(this).parent().find('.pkgsvl-list-container').css('display', 'block');
+            $(this).attr('data-status', '1');
+            $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนวันเวลาที่มาใช้บริการ');
+        }
+    });
+
+    for(i in pkgsvlData[data.pkg_id]) {
+        var no        = parseInt(i) + 1;
+        var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
+        var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var randNum;
+        var inputDateId = 'pkg_svl_date_';
+        var inputTimeId = 'pkg_svl_time_';
+        do {
+            randNum = parseInt(Math.random()*1000);
+            inputDateId = 'pkg_svl_date_' + randNum;
+            inputTimeId = 'pkg_svl_time_' + randNum;
+        } while($('#' + inputDateId).length > 0);
+        var pkgsvlHTML= '<div class="pkgsvl-list">'
+                      + '   ' + no + '. ' + svl_name
+                      + '   <input type="hidden" class="svl_id" name="pkgSvl_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
+                      + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
+                      + '   <div class="pkgsvlCom-list-container-body">'
+                      + '&nbsp;&nbsp;&nbsp;&nbsp;วันที่ <input id="' + inputDateId + '" name="pkgSvl_' + data.pkg_id + '_bkgpkg_date" type="text" class="mbk-dtp-th form-input half" require value="' + nowDate + '">'
+                      + '       &nbsp;เวลา <input id="' + inputTimeId + '" name="pkgSvl_' + data.pkg_id + '_bkgpkg_time" type="text" class="form-input half" require style="width:80px;">'
+                      + '   </div>'
+                      + '</div>'
+                      + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
+                      + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
+                      + '<span class="errInputMsg com-err-zero com-err">ค่าคอมมิชชั่นไม่สามารถเป็น 0 ได้</span>'
+                      + '<span class="errInputMsg com-err-over com-err">ค่าคอมมิชชั่นเกิน 100%</span>'
+                      + '<span class="errInputMsg com-err-less com-err">ค่าคอมมิชชั่นไม่ครบ 100%</span>'
+                      + '</div>';
+        svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
+
+        // Add event
+        $('#' + inputDateId).datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#' + inputDateId).blur();
+            },
+            timepicker:false
+        });
+        $('#' + inputTimeId).datetimepicker({
+            datepicker:false,
+            format:'H:i'
+        });
+        addEventDtpTh($('#' + inputDateId));
+    }
 }
 
 function removePackage(randNum) {
@@ -265,6 +353,7 @@ function removePackage(randNum) {
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#packagePrmRow_' + randNum).remove();
+                    $('#packagePkgSvlRow_' + randNum).remove();
                     setAllBkgDetailAmount();
                     calSummary();
                 }
@@ -352,11 +441,29 @@ function addServiceList(data) {
                     + '<tr id="serviceListDtlRow_' + randNum + '" class="service-list-dtl-row">'
                     + '     <td colspan="6">'
                     + '         <span class="com-list-title" data-status="1">'
-                    + '             <i class="fa fa-chevron-down"></i> ซ่อนวันที่มาใช้บริการ'
+                    + '             <i class="fa fa-chevron-down"></i> ซ่อนวันเวลาที่มาใช้บริการ'
                     + '         </span>'
                     + '         <div class="svldtl-container">'
-                    + '             วันที่ <input id="' + inputDateId + '" name="svl_date[]" type="text" class="mbk-dtp-th form-input half" require>'
-                    + '             &nbsp;เวลา <input id="' + inputTimeId + '" name="svl_time[]" type="text" class="mbk-dtp-th form-input half" require style="width:80px;">'
+                    + '             <table>'
+                    + '             <tbody>'
+                    + '                 <tr>'
+                    + '                     <td>'
+                    + '                         วันที่ <input id="' + inputDateId + '" name="svl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + nowDate + '">'
+                    + '                     </td>'
+                    + '                     <td>'
+                    + '                         เวลา <input id="' + inputTimeId + '" name="svl_time[]" type="text" class="form-input half" require style="width:80px;">'
+                    + '                     </td>'
+                    + '                 </tr>'
+                    + '                 <tr>'
+                    + '                     <td>'
+                    + '                         <span id="err-' + inputDateId + '-require" class="errInputMsg err-'+ inputDateId + '">โปรดป้อนวันที่มาใช้บริการ</span>'
+                    + '                     </td>'
+                    + '                     <td>'
+                    + '                         <span id="err-' + inputTimeId + '-require" class="errInputMsg err-'+ inputTimeId + '">โปรดป้อนเวลาที่มาใช้บริการ</span>'
+                    + '                     </td>'
+                    + '                 </tr>'
+                    + '             </tbody>'
+                    + '             </table>'
                     + '         </div>'
                     + '     </td>';
     $('#booking-service-list-table > tbody').append(svlRowHTML);
@@ -399,16 +506,18 @@ function addServiceList(data) {
         datepicker:false,
         format:'H:i'
     });
-    $('#' + inputDateId).parent().parent().find('.com-list-title').click(function() {
+    $('#' + inputDateId).focusout(validateInput);
+    $('#' + inputTimeId).focusout(validateInput);
+    $('#' + inputDateId).parent().parent().parent().parent().parent().parent().find('.com-list-title').click(function() {
         var stat = $(this).attr('data-status');
         if(stat == "1") {
             $(this).parent().find('.svldtl-container').css('display', 'none');
             $(this).attr('data-status', '0');
-            $(this).html('<i class="fa fa-chevron-right"></i> แสดงวันที่มาใช้บริการ');
+            $(this).html('<i class="fa fa-chevron-right"></i> แสดงวันเวลาที่มาใช้บริการ');
         } else {
             $(this).parent().find('.svldtl-container').css('display', 'block');
             $(this).attr('data-status', '1');
-            $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนวันที่มาใช้บริการ');
+            $(this).html('<i class="fa fa-chevron-down"></i> ซ่อนวันเวลาที่มาใช้บริการ');
         }
     });
     addEventDtpTh($('#' + inputDateId));
@@ -448,6 +557,7 @@ function removeServiceList(randNum) {
                     tr.remove();
                     $('#errMsgRow_' + randNum).remove();
                     $('#serviceListPrmRow_' + randNum).remove();
+                    $('#serviceListDtlRow_' + randNum).remove();
                     setAllBkgDetailAmount();
                     calSummary();
                 }
