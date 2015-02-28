@@ -19,10 +19,10 @@ function addItemForEdit() {
 		for(i in valuesPkg) {
              addPackage({
                 defaultValue : true,
-                bkgpkg_id   : valuesPkg[i].bkgpkg_id,
                 pkg_id      : valuesPkg[i].pkg_id,
                 pkg_qty     : valuesPkg[i].bkgpkg_persons,
-                unitPrice   : valuesPkg[i].pkg_price
+                unitPrice   : valuesPkg[i].pkg_price,
+                svlDetail   : valuesPkg[i].svlDetail
             });
         }
         for(i in valuesSvl) {
@@ -30,6 +30,8 @@ function addItemForEdit() {
                 defaultValue : true,
                 bkgsvl_id   : valuesSvl[i].bkgsvl_id,
                 svl_id      : valuesSvl[i].svl_id,
+                bkgsvl_date : valuesSvl[i].bkgsvl_date,
+                bkgsvl_time : valuesSvl[i].bkgsvl_time,
                 svl_qty     : valuesSvl[i].bkgsvl_persons,
                 unitPrice   : valuesSvl[i].svl_price
             });
@@ -171,10 +173,6 @@ function addPackage(data) {
         pkgRowHTML += '         <input id="' + inputQtyId + '" name="pkg_qty[]" type="text" class="form-input half" value="1" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
-    // add booking package id for update
-    if(action == 'EDIT' && typeof(data.bkgpkg_id) != 'undefined') {
-        pkgRowHTML += '         <input name="bkgpkg_id[]" type="hidden" value="' + data.bkgpkg_id + '">';
-    }
         pkgRowHTML += ' 	</td>'
         			+ '     <td>'
                     + '         <span class="pkg_sumPrm_price">0.00</span>'
@@ -238,7 +236,7 @@ function addPackage(data) {
                 addServiceListOfPackage({
                     pkg_id          : defaultKey,
                     parentRandNum   : randNum,
-                    addPkgCom       : false
+                    defaultValue    : true
                 });
             }
         },
@@ -256,12 +254,12 @@ function addPackage(data) {
 }
 
 function addServiceListOfPackage(data) {
-    var addPkgCom = true;
+    var defaultValue = false;
     var svlPkgTd  = $('#packagePkgSvlRow_' + data.parentRandNum + ' > td');
     var initHTML  = '<span class="com-list-title" data-status="1"><i class="fa fa-chevron-down"></i> ซ่อนวันเวลาที่มาใช้บริการ</span>'
                     + '<div class="pkgsvl-list-container"></div>';
-    if(typeof(data.addPkgCom) != 'undefined') {
-        addPkgCom = data.addPkgCom;
+    if(typeof(data.defaultValue) != 'undefined') {
+        defaultValue = data.defaultValue;
     }
     svlPkgTd.html(initHTML);
     svlPkgTd.find('.com-list-title').click(function() {
@@ -281,22 +279,58 @@ function addServiceListOfPackage(data) {
         var no        = parseInt(i) + 1;
         var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
         var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var bkgpkg_date = '';
+        var bkgpkg_time = '';
         var randNum;
         var inputDateId = 'pkg_svl_date_';
         var inputTimeId = 'pkg_svl_time_';
+        // set default value
+        if(defaultValue) {
+            bkgpkg_date = valuesPkg[data.pkg_id]['svlDetail'][svl_id]['bkgpkg_date'];
+            bkgpkg_time = valuesPkg[data.pkg_id]['svlDetail'][svl_id]['bkgpkg_time'];
+        } else {
+            bkgpkg_date = nowDate;
+        }
+        // Gen id
         do {
             randNum = parseInt(Math.random()*1000);
             inputDateId = 'pkg_svl_date_' + randNum;
             inputTimeId = 'pkg_svl_time_' + randNum;
         } while($('#' + inputDateId).length > 0);
+        // Create HTML
         var pkgsvlHTML= '<div class="pkgsvl-list">'
                       + '   ' + no + '. ' + svl_name
                       + '   <input type="hidden" class="svl_id" name="pkgSvl_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
                       + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
                       + '   <div class="pkgsvlCom-list-container-body">'
-                      + '&nbsp;&nbsp;&nbsp;&nbsp;วันที่ <input id="' + inputDateId + '" name="pkgSvl_' + data.pkg_id + '_bkgpkg_date" type="text" class="mbk-dtp-th form-input half" require value="' + nowDate + '">'
-                      + '       &nbsp;เวลา <input id="' + inputTimeId + '" name="pkgSvl_' + data.pkg_id + '_bkgpkg_time" type="text" class="form-input half" require style="width:80px;">'
-                      + '   </div>'
+                      + '       <table>'
+                      + '           <tbody>'
+                      + '               <tr>'
+                      + '                   <td>'
+                      + '                       วันที่ <input id="' + inputDateId + '" name="pkgSvl_' + data.pkg_id + '_' + svl_id + '_bkgpkg_date" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
+                      + '                   </td>'
+                      + '                   <td>'
+                      + '                       เวลา <input id="' + inputTimeId + '" name="pkgSvl_' + data.pkg_id + '_' + svl_id + '_bkgpkg_time" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
+                      + '                   </td>'
+                      + '               </tr>'
+                      + '               <tr>'
+                      + '                   <td>'
+                      + '                       <span id="err-' + inputDateId + '-require" class="errInputMsg err-'+ inputDateId + '">โปรดป้อนวันที่มาใช้บริการ</span>'
+                      + '                   </td>'
+                      + '                   <td>'
+                      + '                       <span id="err-' + inputTimeId + '-require" class="errInputMsg err-'+ inputTimeId + '">โปรดป้อนเวลาที่มาใช้บริการ</span>'
+                      + '                   </td>'
+                      + '               </tr>'
+                      + '           </tbody>'
+                      + '       </table>';
+
+        // add booking package id for update
+        if(action == 'EDIT' && defaultValue) {
+            var bkgpkg_id = valuesPkg[data.pkg_id]['svlDetail'][svl_id]['bkgpkg_id'];
+            pkgsvlHTML += '     <input name="pkgSvl_' + data.pkg_id + '_bkgpkg_id[]" type="hidden" value="' + bkgpkg_id + '">';
+        }
+
+        pkgsvlHTML   += '   </div>'
                       + '</div>'
                       + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
                       + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
@@ -325,6 +359,8 @@ function addServiceListOfPackage(data) {
             format:'H:i'
         });
         addEventDtpTh($('#' + inputDateId));
+        $('#' + inputDateId).focusout(validateInput);
+        $('#' + inputTimeId).focusout(validateInput);
     }
 }
 
@@ -376,6 +412,8 @@ function addServiceList(data) {
     var randNum;
     var selectRefDefault = '';
     var unitPrice = '0.00';
+    var bkgsvl_date = nowDate;
+    var bkgsvl_time = '';
     do {
         randNum     = parseInt(Math.random()*1000);
     } while($('#svl_id_' + randNum).length > 0);
@@ -385,6 +423,12 @@ function addServiceList(data) {
     var inputTimeId = 'svl_time_' + randNum;
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
+    }
+    if(typeof(data.bkgsvl_date) != 'undefined' && data.bkgsvl_date != '') {
+        bkgsvl_date = data.bkgsvl_date;
+    }
+    if(typeof(data.bkgsvl_time) != 'undefined' && data.bkgsvl_time != '') {
+        bkgsvl_time = data.bkgsvl_time;
     }
 
     // Create HTML and append
@@ -448,10 +492,10 @@ function addServiceList(data) {
                     + '             <tbody>'
                     + '                 <tr>'
                     + '                     <td>'
-                    + '                         วันที่ <input id="' + inputDateId + '" name="svl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + nowDate + '">'
+                    + '                         วันที่ <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         เวลา <input id="' + inputTimeId + '" name="svl_time[]" type="text" class="form-input half" require style="width:80px;">'
+                    + '                         เวลา <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'
@@ -666,49 +710,50 @@ function addPkgPrmSale(pkg_id) {
         removePrm(tdPrm.find('.prmSale'));
         return;
     }
+    if(pkgPromotions != null) {
+        for(pkgID in pkgPromotions[custype_id]) {
+            if(pkgID == pkg_id) {
+                var prm         = pkgPromotions[custype_id][pkgID];
 
-    for(pkgID in pkgPromotions[custype_id]) {
-        if(pkgID == pkg_id) {
-            var prm         = pkgPromotions[custype_id][pkgID];
-
-            // add first amount
-            removePrm(tdPrm.find('.prmSale'));
-            var pkgRow 		= getPkgRow(pkg_id);
-            var unitPrice   = parseFloat(pkgRow.pkg_price);
-            var discout     = parseFloat(prm.pkgprmdtl_discout);
-            if(prm.pkgprmdtl_discout_type == '%') {
-                discout = parseFloat(unitPrice * discout / 100);
+                // add first amount
+                removePrm(tdPrm.find('.prmSale'));
+                var pkgRow 		= getPkgRow(pkg_id);
+                var unitPrice   = parseFloat(pkgRow.pkg_price);
+                var discout     = parseFloat(prm.pkgprmdtl_discout);
+                if(prm.pkgprmdtl_discout_type == '%') {
+                    discout = parseFloat(unitPrice * discout / 100);
+                }
+                var sumDiscout  = parseFloat(amount * discout);
+                var prmHTML     = '<div class="prmSale prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/package_promotions/' + prm.pkgprm_pic + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.pkgprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ลดราคา ' + prm.pkgprmdtl_discout + ' ' + prm.pkgprmdtl_discout_type + '</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                + '         <td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_bkgpkgprm_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_bkgpkgprm_discout_total" value="' + sumDiscout + '">'
+                                + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
+                                + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
+                                + '</div>';
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
+                return;
             }
-            var sumDiscout  = parseFloat(amount * discout);
-            var prmHTML     = '<div class="prmSale prm-list">'
-                            + ' <div class="prm-thumb" style="background-image:url(\'../img/package_promotions/' + prm.pkgprm_pic + '\');"></div>'
-                            + ' <table>'
-                            + '     <tr>'
-                            + '         <td class="prm-name-col">'
-                            + '             <span class="prm-name">' + prm.pkgprm_name + '</span><br>'
-                            + '             <span class="discout-rate">ลดราคา ' + prm.pkgprmdtl_discout + ' ' + prm.pkgprmdtl_discout_type + '</span>'
-                            + '         </td>'
-                            + '         <td class="amount-col">'
-                            + '             <span class="prm-amount">' + amount + '</span>' 
-                            + '         </td>'
-                            + '         <td class="discout-col">'
-                            + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
-                            + '         </td>'
-                            + '     </tr>'
-                            + ' </table>'
-                            + ' <input type="hidden" class="prm_id" name="prmSale_' + pkg_id + '_pkgprmdtl_id" value="' + prm.pkgprmdtl_id + '">'
-                            + ' <input type="hidden" class="prm_name" name="prmSale_' + pkg_id + '_pkgprm_name" value="' + prm.pkgprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + pkg_id + '_bkgpkgprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + pkg_id + '_bkgpkgprm_discout_total" value="' + sumDiscout + '">'
-                            + ' <input type="hidden" class="prm_discout" name="prmSale_' + pkg_id + '_discout" value="' + prm.pkgprmdtl_discout + '">'
-                            + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + pkg_id + '_discout_type" value="' + prm.pkgprmdtl_discout_type + '">'
-                            + '</div>';
-            if(tdPrm.find('.prm-list-container').length <= 0) {
-                var prmCont     = '<div class="prm-list-container"></div>';
-                tdPrm.append(prmCont);
-            }                
-            tdPrm.find('.prm-list-container').append(prmHTML);
-            return;
         }
     }
     removePrm(tdPrm.find('.prmSale'));
@@ -728,47 +773,49 @@ function addSvlPrmSale(svl_id) {
         removePrm(tdPrm.find('.prmSale'));
         return;
     }
-    for(svlID in svlPromotions[custype_id]) {
-        if(svlID == svl_id) {
-            var prm         = svlPromotions[custype_id][svlID];
-            // add first amount
-            removePrm(tdPrm.find('.prmSale'));
-            var svlRow 		= getSvlRow(svl_id);
-            var unitPrice   = parseFloat(svlRow.svl_price);
-            var discout     = parseFloat(prm.svlprmdtl_discout);
-            if(prm.svlprmdtl_discout_type == '%') {
-                discout = parseFloat(unitPrice * discout / 100);
+    if(svlPromotions != null) {
+        for(svlID in svlPromotions[custype_id]) {
+            if(svlID == svl_id) {
+                var prm         = svlPromotions[custype_id][svlID];
+                // add first amount
+                removePrm(tdPrm.find('.prmSale'));
+                var svlRow 		= getSvlRow(svl_id);
+                var unitPrice   = parseFloat(svlRow.svl_price);
+                var discout     = parseFloat(prm.svlprmdtl_discout);
+                if(prm.svlprmdtl_discout_type == '%') {
+                    discout = parseFloat(unitPrice * discout / 100);
+                }
+                var sumDiscout  = parseFloat(amount * discout);
+                var prmHTML     = '<div class="prmSale prm-list">'
+                                + ' <div class="prm-thumb" style="background-image:url(\'../img/service_list_promotions/' + prm.svlprm_pic + '\');"></div>'
+                                + ' <table>'
+                                + '     <tr>'
+                                + '         <td class="prm-name-col">'
+                                + '             <span class="prm-name">' + prm.svlprm_name + '</span><br>'
+                                + '             <span class="discout-rate">ลดราคา ' + prm.svlprmdtl_discout + ' ' + prm.svlprmdtl_discout_type + '</span>'
+                                + '         </td>'
+                                + '         <td class="amount-col">'
+                                + '             <span class="prm-amount">' + amount + '</span>' 
+                                + '         </td>'
+                                + '         <td class="discout-col">'
+                                + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
+                                + '         </td>'
+                                + '     </tr>'
+                                + ' </table>'
+                                + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
+                                + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
+                                + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_bkgsvlprm_amount" value="' + amount + '">'
+                                + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_bkgsvlprm_discout_total" value="' + sumDiscout + '">'
+                                + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
+                                + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
+                                + '</div>';
+                if(tdPrm.find('.prm-list-container').length <= 0) {
+                    var prmCont     = '<div class="prm-list-container"></div>';
+                    tdPrm.append(prmCont);
+                }                
+                tdPrm.find('.prm-list-container').append(prmHTML);
+                return;
             }
-            var sumDiscout  = parseFloat(amount * discout);
-            var prmHTML     = '<div class="prmSale prm-list">'
-                            + ' <div class="prm-thumb" style="background-image:url(\'../img/service_list_promotions/' + prm.svlprm_pic + '\');"></div>'
-                            + ' <table>'
-                            + '     <tr>'
-                            + '         <td class="prm-name-col">'
-                            + '             <span class="prm-name">' + prm.svlprm_name + '</span><br>'
-                            + '             <span class="discout-rate">ลดราคา ' + prm.svlprmdtl_discout + ' ' + prm.svlprmdtl_discout_type + '</span>'
-                            + '         </td>'
-                            + '         <td class="amount-col">'
-                            + '             <span class="prm-amount">' + amount + '</span>' 
-                            + '         </td>'
-                            + '         <td class="discout-col">'
-                            + '             <span class="prm-discout">' + sumDiscout.formatMoney(2, '.', ',') + '</span>' 
-                            + '         </td>'
-                            + '     </tr>'
-                            + ' </table>'
-                            + ' <input type="hidden" class="prm_id" name="prmSale_' + svl_id + '_svlprmdtl_id" value="' + prm.svlprmdtl_id + '">'
-                            + ' <input type="hidden" class="prm_name" name="prmSale_' + svl_id + '_svlprm_name" value="' + prm.svlprm_name + '">'
-                            + ' <input type="hidden" class="prm_amount" name="prmSale_' + svl_id + '_bkgsvlprm_amount" value="' + amount + '">'
-                            + ' <input type="hidden" class="prm_sumDiscout" name="prmSale_' + svl_id + '_bkgsvlprm_discout_total" value="' + sumDiscout + '">'
-                            + ' <input type="hidden" class="prm_discout" name="prmSale_' + svl_id + '_discout" value="' + prm.svlprmdtl_discout + '">'
-                            + ' <input type="hidden" class="prm_discoutType" name="prmSale_' + svl_id + '_discout_type" value="' + prm.svlprmdtl_discout_type + '">'
-                            + '</div>';
-            if(tdPrm.find('.prm-list-container').length <= 0) {
-                var prmCont     = '<div class="prm-list-container"></div>';
-                tdPrm.append(prmCont);
-            }                
-            tdPrm.find('.prm-list-container').append(prmHTML);
-            return;
         }
     }
     removePrm(tdPrm.find('.prmSale'));

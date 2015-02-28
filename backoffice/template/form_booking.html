@@ -112,7 +112,7 @@
         .pkgsvl-list {
             padding: 10px 10px 10px 0;
             border-top: 1px solid #ddd;
-            width: 440px;
+            width: 550px;
         }
         .pkgsvlCom-list-container {
             padding-top: 15px;
@@ -121,7 +121,7 @@
             border-top: 1px solid #c4c4c4;
             padding-top: 21px;
         }
-        .svldtl-container td {
+        .svldtl-container td, .pkgsvlCom-list-container td {
             padding-left: 20px;
             color: #666;
         }
@@ -193,11 +193,11 @@
                     addItemForEdit();
                 }
             });
-            selectReferenceJS({
-                elem            : $('#status_id'),
-                data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.status_id}{literal}'
-            });
+            // selectReferenceJS({
+            //     elem            : $('#status_id'),
+            //     data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
+            //     defaultValue    : '{/literal}{$values.status_id}{literal}'
+            // });
             selectReferenceJS({
                 elem            : $('#bnkacc_id'),
                 data            : {/literal}{$referenceData["bank_accounts"]|@json_encode}{literal},
@@ -353,7 +353,7 @@
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">
-    <input type="hidden" name="requiredFields" value="cus_id,emp_id,status_id,bkg_total_price,bkg_date,bkg_time">
+    <input type="hidden" name="requiredFields" value="cus_id,emp_id,bkg_total_price,bkg_date,bkg_time">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
@@ -403,12 +403,12 @@
                     <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
                 </td>
             </tr>
-            <tr>          
+            <!-- <tr>          
                 <td colspan="2">
                     <label class="input-required">สถานะการจอง</label>
                     <div id="status_id" class="selectReferenceJS form-input full" require></div>
                 </td>
-            </tr>
+            </tr> -->
             <tr class="errMsgRow">
                 <td colspan="2">
                     <span id="err-status_id-require" class="errInputMsg err-status_id">โปรดเลือกสถานการจอง</span>
