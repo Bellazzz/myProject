@@ -183,7 +183,29 @@
 
         function beforeSaveRecord() {
             // Not check time cover
-            if(action == 'ADD' || $('#pkgprm_startdate').val() == '') {
+            if(hasInputError()) {
+                if(parent.$('.action-dialog').length == 0) {
+                    parent.showActionDialog({
+                        title: 'ข้อมูลไม่ถูกต้อง',
+                        message: 'คุณป้อนข้อมูลไม่ครบ หรือรูปแบบข้อมูลไม่ถูกต้อง '
+                                +'โปรดตรวจสอบข้อความแจ้งเตือนและแก้ไขให้ถูกต้องด้วยค่ะ',
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                func:
+                                function() { 
+                                    parent.hideActionDialog();
+                                }
+                            }
+                        ],
+                        boxWidth: 450
+                    });
+                }
+                return false;
+            }
+            
+            if($('#pkgprm_startdate').val() == '') {
                 return false;
             }
 
@@ -227,10 +249,10 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'COVER') {
-                        if(action == 'EDIT') {
-                            if(!hasInputError()) {
-                                confirmSaveRecord();
-                            }
+                        if(action == 'ADD') {
+                            saveRecord();
+                        } else if(action == 'EDIT') {
+                            confirmSaveRecord();
                         }
                     } else {
                         alert(response.status);
