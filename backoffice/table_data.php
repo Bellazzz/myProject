@@ -130,7 +130,6 @@ switch ($tableName) {
 			$sql = "SELECT b.bkg_id,
 					CONCAT(c.cus_name, ' ', c.cus_surname) cus_id,
 					CONCAT(e.emp_name, ' ', e.emp_surname) emp_id,
-					s.bkgstat_name status_id,
 					a.bnkacc_no bnkacc_id,
 					b.bkg_transfer_date,
 					b.bkg_transfer_time,
@@ -138,6 +137,7 @@ switch ($tableName) {
 					b.bkg_total_price,
 					b.bkg_date,
 					b.bkg_time,
+					s.bkgstat_name status_id,
 					b.bkg_transfer_money 
 					FROM booking b, booking_status s, employees e, bank_accounts a, customers c 
 					$where 

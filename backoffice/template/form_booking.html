@@ -193,11 +193,15 @@
                     addItemForEdit();
                 }
             });
-            // selectReferenceJS({
-            //     elem            : $('#status_id'),
-            //     data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
-            //     defaultValue    : '{/literal}{$values.status_id}{literal}'
-            // });
+
+            if(action == 'VIEW_DETAIL') {
+                selectReferenceJS({
+                    elem            : $('#status_id'),
+                    data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
+                    defaultValue    : '{/literal}{$values.status_id}{literal}'
+                });
+            }
+            
             selectReferenceJS({
                 elem            : $('#bnkacc_id'),
                 data            : {/literal}{$referenceData["bank_accounts"]|@json_encode}{literal},
@@ -252,6 +256,10 @@
                 $(this).css('display', 'none');
                 $('.paymentDetail').css('display', 'table');
             });
+
+            {/literal}{if $displayPaymentForm}{literal}
+            $('#addPaymentDetailBtn').click();
+            {/literal}{/if}{literal}
         });
     </script>
     {/literal}
@@ -263,6 +271,7 @@
     <div class="ftb-body">
     {if $action == 'VIEW_DETAIL'}
     <!-- VIEW_DETAIL -->
+    <label class="article-title">ข้อมูลการจอง</label>
     <table class="table-view-detail">
         <tbody>
             <tr>
@@ -278,20 +287,20 @@
                 </td>
             </tr>
             <tr>
-                <td>วันที่จอง :</td>
+                <td>พนักงานที่รับการจอง :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>วันที่ทำจอง :</td>
                 <td>{$values.bkg_date}</td>
             </tr>
             <tr>
-                <td>เวลาที่จอง :</td>
+                <td>เวลาที่ทำจอง :</td>
                 <td>{$values.bkg_time} น.</td>
-            </tr>
-            <tr>
-                <td>แพ็คเกจที่จอง</td>
-                <td>{$refPkgData}</td>
-            </tr>
-            <tr>
-                <td>รายการบริการที่จอง</td>
-                <td>{$refSvlData}</td>
             </tr>
             <tr>
                 <td>ราคารวมการจองทั้งหมด :</td>
@@ -303,19 +312,15 @@
                     {/if}
                 </td>
             </tr>
-            <label class="article-title">ข้อมูลการชำระเงิน</label>
-            <tr>
-                <td>พนักงานที่รับการจอง :</td>
-                <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-                        </a>
-                </td>
-            </tr>
             <tr>
                 <td>สถานะการจอง :</td>
                 <td><div id="status_id" class="selectReferenceJS text"></div></td>
             </tr>
+        </tbody>
+    </table>
+    <label class="article-title" style="margin-top:30px;">ข้อมูลการชำระเงิน</label>
+    <table class="table-view-detail">
+        <tbody>
             <tr>
                 <td>บัญชีธนาคาร :</td>
                 <td><div id="bnkacc_id" class="selectReferenceJS text"></div></td>
@@ -344,12 +349,20 @@
                     {/if}
                 </td>
             </tr>
+            <tr>
+                <td>รูปภาพหลักฐานการโอนเงิน :</td>
+                <td>
+                    {if $values.bkg_transfer_evidence != '-'}
+                    <div class="table-view-detail-image full">
+                        <img src="../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}">
+                    </div>
+                    {else}
+                    -
+                    {/if}
+                </td>
+            </tr>
         </tbody>
     </table>
-    <label>รูปภาพหลักฐานการโอนเงิน</label>
-    <div class="table-view-detail-image full">
-        <img src="{if $values.bkg_transfer_evidence != '-'}../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
-    </div>
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">

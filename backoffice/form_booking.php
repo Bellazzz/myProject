@@ -19,9 +19,22 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
-			$values[$field] = $tableRecord->getFieldValue($field);
+			$colFieldType = $tableRecord->getFieldType($field);
+			if($colFieldType == 'time'){
+				$tmpTime = $tableRecord->getFieldValue($field);//get time from database
+				$newTmpTime = substr($tmpTime, 0, 5);
+				$values[$field] = $newTmpTime;
+			}else{
+				$values[$field] = $tableRecord->getFieldValue($field);
+			}
 		}
 		$smarty->assign('values', $values);
+
+		// Display payment form
+		if($values['bnkacc_id'] != '' || $values['bkg_transfer_date'] != '' ||
+		$values['bkg_transfer_time'] != '' || $values['bkg_transfer_evidence'] != '') {
+			$smarty->assign('displayPaymentForm', true);
+		}
 
 		// Get table booking_packages data
 		$valuesPkg = array();
@@ -84,11 +97,23 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
-			$values[$field] = $tableRecord->getFieldValue($field);
+			$colFieldType = $tableRecord->getFieldType($field);
+			if($colFieldType == 'time'){
+				$tmpTime = $tableRecord->getFieldValue($field);//get time from database
+				$newTmpTime = substr($tmpTime, 0, 5);
+				$values[$field] = $newTmpTime;
+			}else{
+				$values[$field] = $tableRecord->getFieldValue($field);
+			}
+
+			if(hasValue($values[$field])) {
+				if($colFieldType == 'date' || $colFieldType == 'datetime') {
+					$values[$field] = dateThaiFormat($values[$field]);
+				}
+			} else {
+				$values[$field] = '-';
+			}
 		}
-		// Date thai format
-		$values['bkg_transfer_date_th']  	= dateThaiFormat($values['bkg_transfer_date']);
-		$values['bkg_date_th'] 	= dateThaiFormat($values['bkg_date']);
 		$smarty->assign('values', $values);
 		
 		// Get detail of booking
