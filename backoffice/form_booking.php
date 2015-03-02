@@ -116,23 +116,72 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 		$smarty->assign('values', $values);
 		
-		// Get detail of booking
-		$orderDetailList = array();
-		$sql 	= "	SELECT o.bkgpkg_persons,
-					p.pkg_id,
-					p.prd_name,
-					p.prd_price,
-					u.unit_name 
-					FROM booking_packages o, products p, units u 
-					WHERE o.pkg_id = p.pkg_id AND p.unit_id = u.unit_id 
-					AND o.bkg_id = '$code'";
+		// Get booking packages
+		$viewBkgpkgData = array();
+		$pkgNo = 0;
+		$sql 	= "	SELECT 	bp.bkgpkg_date,
+							DATE_FORMAT(bp.bkgpkg_time,'%H:%i') bkgpkg_time,
+							bp.bkgpkg_persons,
+							bp.bkgpkg_status,
+							s.svl_id,
+							s.svl_name,
+							p.pkg_id,
+							p.pkg_name 
+					FROM 	booking_packages bp, 
+							package_service_lists ps,
+							packages p,
+							service_lists s 
+					WHERE 	bp.pkgsvl_id = ps.pkgsvl_id AND 
+							ps.pkg_id = p.pkg_id AND 
+							ps.svl_id = s.svl_id AND 
+					 		bp.bkg_id = '$code' 
+					ORDER BY bp.bkgpkg_id";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($orderDetailList, mysql_fetch_assoc($result));
-			$orderDetailList[$i]['no'] = $i+1;
+			$record = mysql_fetch_assoc($result);
+			$record['bkgpkg_date'] = dateThaiFormat($record['bkgpkg_date']);
+			if(!isset($viewBkgpkgData[$record['pkg_id']])) {
+				$viewBkgpkgData[$record['pkg_id']] = array(
+					'no' 		=> ++$pkgNo,
+					'pkg_name' 	=> $record['pkg_name'],
+					'svlDetail' => array(),
+					'svlCount' 	=> 1
+				);
+			}
+
+			$viewBkgpkgData[$record['pkg_id']]['svlCount']++;
+			array_push($viewBkgpkgData[$record['pkg_id']]['svlDetail'], array(
+				'svl_id' 			=> $record['svl_id'],
+				'svl_name' 			=> $record['svl_name'],
+				'bkgpkg_date' 		=> $record['bkgpkg_date'],
+				'bkgpkg_time' 		=> $record['bkgpkg_time'],
+				'bkgpkg_persons' 	=> $record['bkgpkg_persons'],
+				'bkgpkg_status' 	=> $record['bkgpkg_status']
+			));
 		}
-		$smarty->assign('orderDetailList', $orderDetailList);
+		$smarty->assign('viewBkgpkgData', $viewBkgpkgData);
+
+		// Get booking service_lists
+		$viewBkgsvlData = array();
+		$sql 	= "	SELECT 	bs.bkgsvl_date,
+							DATE_FORMAT(bs.bkgsvl_time,'%H:%i') bkgsvl_time,
+							bs.bkgsvl_persons,
+							bs.bkgsvl_status,
+							s.svl_id,
+							s.svl_name 
+					FROM 	booking_service_lists bs, service_lists s 
+					WHERE 	bs.svl_id = s.svl_id AND 
+					 		bs.bkg_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$record['bkgsvl_date'] = dateThaiFormat($record['bkgsvl_date']);
+			array_push($viewBkgsvlData, $record);
+			$viewBkgsvlData[$i]['no'] = $i+1;
+		}
+		$smarty->assign('viewBkgsvlData', $viewBkgsvlData);
 	}
 
 	// Get reference data for selectReferenceJS
@@ -282,7 +331,7 @@ if(!$_REQUEST['ajaxCall']) {
 						(
 							svlprmdtl.svlprmdtl_enddate IS NULL OR
 							svlprmdtl.svlprmdtl_enddate >= '$nowDate'
-						)";echo $sql;
+						)";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
 	if($rows > 0) {

@@ -295,15 +295,15 @@
                 </td>
             </tr>
             <tr>
-                <td>วันที่ทำจอง :</td>
+                <td>วันที่ทำการจอง :</td>
                 <td>{$values.bkg_date}</td>
             </tr>
             <tr>
-                <td>เวลาที่ทำจอง :</td>
+                <td>เวลาที่ทำการจอง :</td>
                 <td>{$values.bkg_time} น.</td>
             </tr>
             <tr>
-                <td>ราคารวมการจองทั้งหมด :</td>
+                <td>ราคาสุทธิ :</td>
                 <td>
                     {if $values.bkg_total_price != '-'}
                         {$values.bkg_total_price|number_format:2:".":","} บาท
@@ -363,6 +363,110 @@
             </tr>
         </tbody>
     </table>
+
+    <!--Service package Data-->
+    {if $viewBkgpkgData|@count > 0}
+    <label class="article-title">แพ็คเกจที่จอง</label>
+    ทั้งหมด <span>{$viewBkgpkgData|@count}</span> รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th>แพ็คเกจ</th>
+                <th class="txtLong-col">รายการบริการที่จัดแพ็คเกจ</th>
+                <th>ผู้ใช้บริการ(คน)</th>
+                <th>วันที่มาใช้บริการ</th>
+                <th>เวลาที่มาใช้บริการ</th>
+                <th>สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$viewBkgpkgData key=pkgId item=bkgpkg}
+            <tr>
+                <td align="center" rowspan="{$bkgpkg.svlCount}">{$bkgpkg.no}</td>
+                <td align="left" rowspan="{$bkgpkg.svlCount}">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$pkgId}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$bkgpkg.pkg_name}
+                    </a>
+                </td>
+            </tr>
+                {foreach from=$bkgpkg.svlDetail key=j item=svlDtl}
+                    <tr>
+                        <td align="left" class="txtLong-col">
+                            <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$svlDtl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                                {$svlDtl.svl_name}
+                            </a>
+                        </td>
+                        <td align="right">{$svlDtl.bkgpkg_persons}</td>
+                        <td align="left">{$svlDtl.bkgpkg_date}</td>
+                        <td align="left">{$svlDtl.bkgpkg_time} น.</td>
+                        <td align="left">
+                            {if $svlDtl.bkgpkg_status}
+                                <span style="color: #64B932">
+                                    <i class="fa fa-check-square-o"></i> 
+                                    ใช้บริการแล้ว
+                                </span>
+                            {else}
+                                <span style="color: red">
+                                    <i class="fa fa-square-o"></i> 
+                                    ยังไม่ได้ใช้บริการ
+                                </span>
+                            {/if}
+                        </td>
+                    </tr>
+                {/foreach}
+            {/foreach}
+        </tbody>
+    </table><br><br>
+    {/if}
+
+    <!--Service service list Data-->
+    {if $viewBkgsvlData|@count > 0}
+    <label class="article-title">รายการบริการที่จอง</label>
+    ทั้งหมด <span>{$viewBkgsvlData|@count}</span> รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th>รหัสรายการบริการ</th>
+                <th class="txtLong-col">ชื่อรายการบริการ</th>
+                <th>ผู้ใช้บริการ(คน)</th>
+                <th>วันที่มาใช้บริการ</th>
+                <th>เวลาที่มาใช้บริการ</th>
+                <th>สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$viewBkgsvlData key=i item=bkgsvl}
+            <tr>
+                <td align="center">{$bkgsvl.no}</td>
+                <td align="left">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$bkgsvl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$bkgsvl.svl_id}
+                    </a>
+                </td>
+                <td align="left" class="txtLong-col">{$bkgsvl.svl_name}</td>
+                <td align="right">{$bkgsvl.bkgsvl_persons}</td>
+                <td align="left">{$bkgsvl.bkgsvl_date}</td>
+                <td align="left">{$bkgsvl.bkgsvl_time} น.</td>
+                <td align="left">
+                    {if $bkgsvl.bkgsvl_status}
+                        <span style="color: #64B932">
+                            <i class="fa fa-check-square-o"></i> 
+                            ใช้บริการแล้ว
+                        </span>
+                    {else}
+                        <span style="color: red">
+                            <i class="fa fa-square-o"></i> 
+                            ยังไม่ได้ใช้บริการ
+                        </span>
+                    {/if}
+                </td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    {/if}
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">
