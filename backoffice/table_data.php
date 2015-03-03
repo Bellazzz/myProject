@@ -78,6 +78,10 @@ switch ($tableName) {
 	case 'promotion_products':
 		header("location:table_data_promotion_products.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
 		break;
+
+	case 'booking':
+		header("location:table_data_booking.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
+		break;
 }
 
 // Query table data (table need join)
