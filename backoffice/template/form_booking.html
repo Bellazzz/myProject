@@ -32,7 +32,7 @@
         }
 
         .package-prm-row > td, .service-list-prm-row > td,
-        .service-list-dtl-row > td {
+        .service-list-dtl-row > td, .package-svl-row > td {
             padding-left: 100px;
         }
         .prm-list-container {
@@ -109,6 +109,22 @@
         #addPaymentDetailBtn {
             margin-bottom: 50px;
         }
+        .pkgsvl-list {
+            padding: 10px 10px 10px 0;
+            border-top: 1px solid #ddd;
+            width: 550px;
+        }
+        .pkgsvlCom-list-container {
+            padding-top: 15px;
+        }
+        #booking-service-list-table .service-list-row:not(:first-child) > td, #booking-package-table .package-row:not(:first-child) > td {
+            border-top: 1px solid #c4c4c4;
+            padding-top: 21px;
+        }
+        .svldtl-container td, .pkgsvlCom-list-container td {
+            padding-left: 20px;
+            color: #666;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -122,7 +138,9 @@
         var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
         var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
+        var pkgsvlData      = {/literal}{$pkgsvlData|@json_encode}{literal};
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
+        var nowDate       = '{/literal}{$nowDate}{literal}';
 
         // Set valuesDetail
         {/literal}
@@ -175,11 +193,15 @@
                     addItemForEdit();
                 }
             });
-            selectReferenceJS({
-                elem            : $('#status_id'),
-                data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.status_id}{literal}'
-            });
+
+            if(action == 'VIEW_DETAIL') {
+                selectReferenceJS({
+                    elem            : $('#status_id'),
+                    data            : {/literal}{$referenceData["booking_status"]|@json_encode}{literal},
+                    defaultValue    : '{/literal}{$values.status_id}{literal}'
+                });
+            }
+            
             selectReferenceJS({
                 elem            : $('#bnkacc_id'),
                 data            : {/literal}{$referenceData["bank_accounts"]|@json_encode}{literal},
@@ -234,6 +256,10 @@
                 $(this).css('display', 'none');
                 $('.paymentDetail').css('display', 'table');
             });
+
+            {/literal}{if $displayPaymentForm}{literal}
+            $('#addPaymentDetailBtn').click();
+            {/literal}{/if}{literal}
         });
     </script>
     {/literal}
@@ -245,6 +271,7 @@
     <div class="ftb-body">
     {if $action == 'VIEW_DETAIL'}
     <!-- VIEW_DETAIL -->
+    <label class="article-title">ข้อมูลการจอง</label>
     <table class="table-view-detail">
         <tbody>
             <tr>
@@ -260,33 +287,6 @@
                 </td>
             </tr>
             <tr>
-                <td>วันที่จอง :</td>
-                <td>{$values.bkg_date}</td>
-            </tr>
-            <tr>
-                <td>เวลาที่จอง :</td>
-                <td>{$values.bkg_time} น.</td>
-            </tr>
-            <tr>
-                <td>แพ็คเกจที่จอง</td>
-                <td>{$refPkgData}</td>
-            </tr>
-            <tr>
-                <td>รายการบริการที่จอง</td>
-                <td>{$refSvlData}</td>
-            </tr>
-            <tr>
-                <td>ราคารวมการจองทั้งหมด :</td>
-                <td>
-                    {if $values.bkg_total_price != '-'}
-                        {$values.bkg_total_price|number_format:2:".":","} บาท
-                    {else}
-                        -
-                    {/if}
-                </td>
-            </tr>
-            <label class="article-title">ข้อมูลการชำระเงิน</label>
-            <tr>
                 <td>พนักงานที่รับการจอง :</td>
                 <td>
                     <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
@@ -295,9 +295,32 @@
                 </td>
             </tr>
             <tr>
+                <td>วันที่ทำการจอง :</td>
+                <td>{$values.bkg_date}</td>
+            </tr>
+            <tr>
+                <td>เวลาที่ทำการจอง :</td>
+                <td>{$values.bkg_time} น.</td>
+            </tr>
+            <tr>
+                <td>ราคาสุทธิ :</td>
+                <td>
+                    {if $values.bkg_total_price != '-'}
+                        {$values.bkg_total_price|number_format:2:".":","} บาท
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
                 <td>สถานะการจอง :</td>
                 <td><div id="status_id" class="selectReferenceJS text"></div></td>
             </tr>
+        </tbody>
+    </table>
+    <label class="article-title" style="margin-top:30px;">ข้อมูลการชำระเงิน</label>
+    <table class="table-view-detail">
+        <tbody>
             <tr>
                 <td>บัญชีธนาคาร :</td>
                 <td><div id="bnkacc_id" class="selectReferenceJS text"></div></td>
@@ -326,16 +349,128 @@
                     {/if}
                 </td>
             </tr>
+            <tr>
+                <td>รูปภาพหลักฐานการโอนเงิน :</td>
+                <td>
+                    {if $values.bkg_transfer_evidence != '-'}
+                    <div class="table-view-detail-image full">
+                        <img src="../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}">
+                    </div>
+                    {else}
+                    -
+                    {/if}
+                </td>
+            </tr>
         </tbody>
     </table>
-    <label>รูปภาพหลักฐานการโอนเงิน</label>
-    <div class="table-view-detail-image full">
-        <img src="{if $values.bkg_transfer_evidence != '-'}../img/booking/{$values.bkg_transfer_evidence}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
-    </div>
+
+    <!--Service package Data-->
+    {if $viewBkgpkgData|@count > 0}
+    <label class="article-title">แพ็คเกจที่จอง</label>
+    ทั้งหมด <span>{$viewBkgpkgData|@count}</span> รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th>แพ็คเกจ</th>
+                <th class="txtLong-col">รายการบริการที่จัดแพ็คเกจ</th>
+                <th>ผู้ใช้บริการ(คน)</th>
+                <th>วันที่มาใช้บริการ</th>
+                <th>เวลาที่มาใช้บริการ</th>
+                <th>สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$viewBkgpkgData key=pkgId item=bkgpkg}
+            <tr>
+                <td align="center" rowspan="{$bkgpkg.svlCount}">{$bkgpkg.no}</td>
+                <td align="left" rowspan="{$bkgpkg.svlCount}">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$pkgId}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$bkgpkg.pkg_name}
+                    </a>
+                </td>
+            </tr>
+                {foreach from=$bkgpkg.svlDetail key=j item=svlDtl}
+                    <tr>
+                        <td align="left" class="txtLong-col">
+                            <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$svlDtl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                                {$svlDtl.svl_name}
+                            </a>
+                        </td>
+                        <td align="right">{$svlDtl.bkgpkg_persons}</td>
+                        <td align="left">{$svlDtl.bkgpkg_date}</td>
+                        <td align="left">{$svlDtl.bkgpkg_time} น.</td>
+                        <td align="left">
+                            {if $svlDtl.bkgpkg_status}
+                                <span style="color: #64B932">
+                                    <i class="fa fa-check-square-o"></i> 
+                                    ใช้บริการแล้ว
+                                </span>
+                            {else}
+                                <span style="color: red">
+                                    <i class="fa fa-square-o"></i> 
+                                    ยังไม่ได้ใช้บริการ
+                                </span>
+                            {/if}
+                        </td>
+                    </tr>
+                {/foreach}
+            {/foreach}
+        </tbody>
+    </table><br><br>
+    {/if}
+
+    <!--Service service list Data-->
+    {if $viewBkgsvlData|@count > 0}
+    <label class="article-title">รายการบริการที่จอง</label>
+    ทั้งหมด <span>{$viewBkgsvlData|@count}</span> รายการ
+    <table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th>รหัสรายการบริการ</th>
+                <th class="txtLong-col">ชื่อรายการบริการ</th>
+                <th>ผู้ใช้บริการ(คน)</th>
+                <th>วันที่มาใช้บริการ</th>
+                <th>เวลาที่มาใช้บริการ</th>
+                <th>สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$viewBkgsvlData key=i item=bkgsvl}
+            <tr>
+                <td align="center">{$bkgsvl.no}</td>
+                <td align="left">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$bkgsvl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$bkgsvl.svl_id}
+                    </a>
+                </td>
+                <td align="left" class="txtLong-col">{$bkgsvl.svl_name}</td>
+                <td align="right">{$bkgsvl.bkgsvl_persons}</td>
+                <td align="left">{$bkgsvl.bkgsvl_date}</td>
+                <td align="left">{$bkgsvl.bkgsvl_time} น.</td>
+                <td align="left">
+                    {if $bkgsvl.bkgsvl_status}
+                        <span style="color: #64B932">
+                            <i class="fa fa-check-square-o"></i> 
+                            ใช้บริการแล้ว
+                        </span>
+                    {else}
+                        <span style="color: red">
+                            <i class="fa fa-square-o"></i> 
+                            ยังไม่ได้ใช้บริการ
+                        </span>
+                    {/if}
+                </td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    {/if}
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">
-    <input type="hidden" name="requiredFields" value="cus_id,emp_id,status_id,bkg_total_price,bkg_date,bkg_time">
+    <input type="hidden" name="requiredFields" value="cus_id,emp_id,bkg_total_price,bkg_date,bkg_time">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
@@ -385,12 +520,12 @@
                     <input id="bkg_total_price" name="bkg_total_price" type="text" class="form-input full readonly" value="{if $values.bkg_total_price}{$values.bkg_total_price}{else}0.00{/if}" valuepattern="money" require readonly>
                 </td>
             </tr>
-            <tr>          
+            <!-- <tr>          
                 <td colspan="2">
                     <label class="input-required">สถานะการจอง</label>
                     <div id="status_id" class="selectReferenceJS form-input full" require></div>
                 </td>
-            </tr>
+            </tr> -->
             <tr class="errMsgRow">
                 <td colspan="2">
                     <span id="err-status_id-require" class="errInputMsg err-status_id">โปรดเลือกสถานการจอง</span>

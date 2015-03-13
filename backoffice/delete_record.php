@@ -298,6 +298,26 @@ if($tableName == 'packages') {
 			exit();
 		}
 	}
+} else if($tableName == 'booking') {
+	foreach($keySelected as $index => $bkg_id) {
+		// Delete booking_service_lists
+		$sql 	= "DELETE FROM booking_service_lists WHERE bkg_id = '$bkg_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_BOOKING_SERVICE_LISTS : $err";
+			exit();
+		}
+
+		// Delete booking_packages
+		$sql 	= "DELETE FROM booking_packages WHERE bkg_id = '$bkg_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_BOOKING_PACKAGES : $err";
+			exit();
+		}
+	}
 }
 
 

@@ -566,6 +566,17 @@ function refreshFilterQuery() {
                                 + '     <option value="FORWARD">จัดล่วงหน้า</option>'
                                 + '     <option value="EXPIRED">หมดอายุ</option>'
                                 + '</select>';
+    } else if(this.table.name == 'booking') {
+        filterRecordQueryHTML   = 'ดูการจองที่มีสถานะ '
+                                + '<select id="query-record-filter" class="mbk-select">'
+                                + '     <option value="PENDING_CHECK">รอตรวจสอบ</option>'
+                                + '     <option value="PENDING_PAYMENT">รอชำระเงิน</option>'
+                                + '     <option value="PENDING_SERVICE">รอใช้บริการ</option>'
+                                + '     <option value="REMAIN_SERVICE">กำลังใช้บริการ</option>'
+                                + '     <option value="COMPLETED">ใช้บริการครบแล้ว</option>'
+                                + '     <option value="CANCEL">ยกเลิกการจอง</option>'
+                                + '     <option value="FIXED_COMPLETED">กำหนดให้ใช้บริการครบ</option>'
+                                + '</select>';
     }
 
     if(allowFilterRetroact.indexOf(this.table.name) != -1) {

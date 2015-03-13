@@ -25,7 +25,8 @@ $(document).ready(function () {
 	    		parent.table.name != 'promotion_discout_sales' && 
 	    		parent.table.name != 'product_promotions' && 
 	    		parent.table.name != 'promotion_products' && 
-	    		parent.table.name != 'withdraws') {
+	    		parent.table.name != 'withdraws' &&
+	    		parent.table.name != 'package_promotions') {
 	    		parent.showActionDialog({
 			        title: 'ข้อมูลไม่ถูกต้อง',
 			        message: 'คุณป้อนข้อมูลไม่ครบ หรือรูปแบบข้อมูลไม่ถูกต้อง '
@@ -126,29 +127,29 @@ function saveRecord() {
 		},
 		success:
 		function (responseJSON) {
-			//alert(responseJSON);
-			var response = $.parseJSON(responseJSON);
-			if (response.status == 'ADD_PASS') {
-				// Add record success
-				parent.closeFormTable();
-				parent.refreshTable();
-			} else if (response.status == 'EDIT_PASS') {
-				// Edit record success
-				parent.closeFormTable();
-				parent.refreshTable();
-			} else if (response.status == 'REQURIED_VALUE') {
-				// Add required
-				$('#' + response.text).addClass('required');
-				$('#' + response.text).focus();
-			} else if(response.status== 'UNIQUE_VALUE') {
-				// Add required
-				$('#' + response.text).addClass('required');
-				$('.err-' + response.text).css('display', 'none');
-				$('#err-' + response.text + '-unique').css('display', 'block');
-				$('#' + response.text).focus();
-			} else {
-				alert(response.status + "\n" + response.text);
-			}
+			alert(responseJSON);
+			// var response = $.parseJSON(responseJSON);
+			// if (response.status == 'ADD_PASS') {
+			// 	// Add record success
+			// 	parent.closeFormTable();
+			// 	parent.refreshTable();
+			// } else if (response.status == 'EDIT_PASS') {
+			// 	// Edit record success
+			// 	parent.closeFormTable();
+			// 	parent.refreshTable();
+			// } else if (response.status == 'REQURIED_VALUE') {
+			// 	// Add required
+			// 	$('#' + response.text).addClass('required');
+			// 	$('#' + response.text).focus();
+			// } else if(response.status== 'UNIQUE_VALUE') {
+			// 	// Add required
+			// 	$('#' + response.text).addClass('required');
+			// 	$('.err-' + response.text).css('display', 'none');
+			// 	$('#err-' + response.text + '-unique').css('display', 'block');
+			// 	$('#' + response.text).focus();
+			// } else {
+			// 	alert(response.status + "\n" + response.text);
+			// }
 		}
 	});
 }
