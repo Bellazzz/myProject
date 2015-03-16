@@ -69,6 +69,7 @@ if($page >= $allPage) {
 }
 
 $pkgList = array();
+$pkgIds  = array();
 $sql = "SELECT 		pkg_id,
 					pkg_name,
 					pkg_start,
@@ -84,10 +85,18 @@ if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$pkgList[$record['pkg_id']] = $record;
+		array_push($pkgIds, $record['pkg_id']);
 	}
 }
 
+// Find end page
+if($rows > 1) {
+	$endPage = $startPage + $rows;
+	$smarty->assign('endPage', $endPage);
+}
+
 // Get package promotion detail data
+$pkgIds = wrapSingleQuote($pkgIds);
 $sql = "SELECT 		pkgprmdtl.pkg_id,
 					pkgprmdtl.pkgprmdtl_discout,
 					pkgprmdtl.pkgprmdtl_discout_type 
@@ -99,7 +108,7 @@ $sql = "SELECT 		pkgprmdtl.pkg_id,
 						pkgprmdtl.pkgprmdtl_enddate IS NULL OR
 						pkgprmdtl.pkgprmdtl_enddate >= '$nowDate'
 					) AND 
-					pkgprm.custype_id = 'CT3'";
+					pkgprmdtl.pkg_id IN (".implode(',', $pkgIds).")";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -118,12 +127,6 @@ if($rows > 0) {
 		$pkgList[$pkg_id]['discoutText'] = $discoutText;
 		$pkgList[$pkg_id]['pkg_prmPrice'] = $pkgList[$pkg_id]['pkg_price'] - $discoutPrice;
 	}
-}
-
-// Find end page
-if($rows > 1) {
-	$endPage = $startPage + $rows;
-	$smarty->assign('endPage', $endPage);
 }
 
 $smarty->assign('pkgList', $pkgList);

@@ -69,6 +69,7 @@ if($page >= $allPage) {
 }
 
 $svlList = array();
+$svlIds  = array();
 $sql = "SELECT 		svl_id,
 					svl_name,
 					svl_min,
@@ -84,10 +85,18 @@ if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$svlList[$record['svl_id']] = $record;
+		array_push($svlIds, $record['svl_id']);
 	}
 }
 
+// Find end page
+if($rows > 1) {
+	$endPage = $startPage + $rows;
+	$smarty->assign('endPage', $endPage);
+}
+
 // Get service_list promotion detail data
+$svlIds = wrapSingleQuote($svlIds);
 $sql = "SELECT 		svlprmdtl.svl_id,
 					svlprmdtl.svlprmdtl_discout,
 					svlprmdtl.svlprmdtl_discout_type 
@@ -99,7 +108,7 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 						svlprmdtl.svlprmdtl_enddate IS NULL OR
 						svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 					) AND 
-					svlprm.custype_id = 'CT3'";
+					svlprmdtl.svl_id IN (".implode(',', $svlIds).")";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -118,12 +127,6 @@ if($rows > 0) {
 		$svlList[$svl_id]['discoutText'] = $discoutText;
 		$svlList[$svl_id]['svl_prmPrice'] = $svlList[$svl_id]['svl_price'] - $discoutPrice;
 	}
-}
-
-// Find end page
-if($rows > 1) {
-	$endPage = $startPage + $rows;
-	$smarty->assign('endPage', $endPage);
 }
 
 $smarty->assign('svlList', $svlList);
