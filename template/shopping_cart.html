@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abhaibhubajhr Day Spa</title>
+	<meta charset="utf8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{literal}
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="inc/Flat-UI-master/dist/css/flat-ui.css">
+    <link rel="stylesheet" type="text/css" href="inc/datetimepicker/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="css/fontFace.css">
+    <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/spaMain.css">
+    {/literal}
+</head>
+<body>
+{include file="_header.html"}
+<div class="page-wrapper">
+	<div class="container headerOffset">
+		<div class="row">
+			<div class="breadcrumbDiv col-md-12 col-lg-12">
+				<ul class="breadcrumb">
+			        <li><a href="index.php"><span class="fui-home"></span> หน้าแรก</a></li>
+			        <li class="active">ตระกร้าสินค้า</li>
+			     </ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-9 col-md-9">
+		    	<h1 class="section-title-inner">
+		    		<span><i class="fa fa-shopping-cart"></i> ตระกร้าสินค้า </span>
+		    	</h1>
+		    </div>
+		    <div class="col-lg-3 col-md-3 rightSidebar">
+		    	<h4 class="caps">
+		    		<a href="index.php"><i class="fa fa-chevron-left"></i> กลับไปจองต่อ</a>
+		    	</h4>
+		    </div>
+		</div>
+		<!-- Begin cart -->
+		<div class="row">
+			<div class="col-lg-9 col-md-9">
+		    	<div class="row userInfo">
+		    		<div class="col-xs-12 col-sm-12">
+		    			{if $svlList || $pkgList}
+		    			<div class="cartContent w100">
+			            	<table class="cartTable table-responsive" style="width:100%">
+			              		<tbody>
+			              
+			                		<tr class="CartProduct cartTableHeader">
+			                  			<td style="width:15%">รายการ</td>
+			                  			<td style="width:40%">รายละเอียด</td>
+			                  			<td style="width:5%" class="edit">&nbsp;</td>
+			                  			<td style="width:10%">จำนวนผู้ใช้บริการ</td>
+			                  			<td style="width:10%">ส่วนลด</td>
+			                  			<td style="width:15%">ราคารวม</td>
+			                  			<td style="width:5%" class="delete">&nbsp;</td>
+			                		</tr>
+			                		<!-- Package Session -->
+			                		{foreach from=$pkgList key=pkg_id item=pkg}
+			                		<tr class="CartProduct">
+			                  			<td class="CartProductThumb">
+			                  				<div class="CartProductThumb-image">
+			                  					<a href="product_detail_pkg.php?id={$pkg.pkg_id}">
+			                  						<img src="img/packages/{$pkg.pkg_picture}" alt="img">
+			                  					</a>
+			                  				</div>
+			                  				<div class="CartDescription CartProductThumb-desc">
+			                  					<div class="controlBtn">
+			                  						<a title="แก้ไข" href="product_detail_pkg.php?id={$pkg.pkg_id}&edit=true"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;
+			                  						<a href="removeFromCart.php?id={$pkg.pkg_id}" title="ลบ" class="deleteBtn" data-name="{$pkg.pkg_name}"><i class="fa fa-trash-o"></i></a>
+			                  					</div>
+			                  					<h4> 
+			                      					<a href="product_detail_pkg.php?id={$pkg.pkg_id}">{$pkg.pkg_name}</a>
+			                      				</h4>
+			                      				<div>
+			                      					<span>รายการละ {$pkg.pkg_price|number_format:2:".":","} บาท</span>
+			                      				</div>
+			                      				<div>
+			                      					<span>วันที่จอง {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
+			                      				</div>
+			                  				</div>
+			                  			</td>
+			                  			<td class="mainDesc-col">
+			                  				<div class="CartDescription disable-xs disable-sm">
+			                      				<h4> 
+			                      					<a href="product_detail_pkg.php?id={$pkg.pkg_id}">{$pkg.pkg_name}</a>
+			                      				</h4>
+			                      				<div>
+			                      					<span>รายการละ {$pkg.pkg_price|number_format:2:".":","} บาท</span>
+			                      				</div>
+			                      				<div>
+			                      					<span>วันที่จอง {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
+			                      				</div>
+			                    			</div>
+			                    		</td>
+			                  			<td class="edit">
+			                  				<a title="แก้ไข" href="product_detail_pkg.php?id={$pkg.pkg_id}&edit=true"><i class="fa fa-pencil"></i>&nbsp;</a>
+			                  			</td>
+			                  			<td>
+			                  				<div class="input-group bootstrap-touchspin">
+			                  					<span class="input-group-btn">
+			                  						<button class="btn btn-link bootstrap-touchspin-down" type="button">
+			                  							<i class="fa fa-minus"></i>
+			                  						</button>
+			                  					</span>
+			                  					<span class="input-group-addon bootstrap-touchspin-prefix" data-id="{$pkg.pkg_id}"></span>
+			                  					<input class="quanitySniper form-control" type="text" value="{$pkg.persons}" name="persons[]" data-id="{$pkg.pkg_id}">
+			                  					<input class="inputPrice" type="hidden" value="{$pkg.pkg_price}" />
+			                  					<input class="inputRealPrice" type="hidden" value="{$pkg.pkg_realPrice}" />
+			                  					<input class="inputDiscoutPrice" type="hidden" value="{$pkg.discout_price}" />
+			                  					<span class="input-group-addon bootstrap-touchspin-postfix" data-id="{$pkg.pkg_id}"></span>
+			                  					<span class="input-group-btn">
+			                  						<button class="btn btn-link bootstrap-touchspin-up" type="button">
+			                  							<i class="fa fa-plus"></i>
+			                  						</button>
+			                  					</span>
+			                  				</div>
+			                  			</td>
+			                  			<td class="discout">
+			                  				<span class="disable-sm disable-xs visible-md visible-lg"><span class="sumDiscoutPrice"></span></span>
+			                  				<span class="visible-sm visible-xs disable-md diable-lg">ส่วนลด <span class="sumDiscoutPrice"></span> บาท</span>
+			                  			</td>
+			                  			<td class="price">
+			                  				<span class="disable-sm disable-xs visible-md visible-lg"><span class="sumPrice"></span></span>
+			                  				<span class="visible-sm visible-xs disable-md diable-lg">ราคารวม <span class="sumPrice"></span> บาท</span>
+			                  			</td>
+			                  			<td class="delete">
+			                  				<a href="removeFromCart.php?id={$pkg.pkg_id}" title="ลบ" class="deleteBtn" data-name="{$pkg.pkg_name}"><i class="fa fa-trash-o"></i></a>
+			                  			</td>
+			                		</tr>
+			                		{/foreach}
+
+
+			                		<!-- Service list Session -->
+			                		{foreach from=$svlList key=svl_id item=svl}
+			                		<tr class="CartProduct">
+			                  			<td class="CartProductThumb">
+			                  				<div class="CartProductThumb-image">
+			                  					<a href="product_detail_svl.php?id={$svl.svl_id}">
+			                  						<img src="img/service_lists/{$svl.svl_picture}" alt="img">
+			                  					</a>
+			                  				</div>
+			                  				<div class="CartDescription CartProductThumb-desc">
+			                  					<div class="controlBtn">
+			                  						<a title="แก้ไข" href="product_detail_svl.php?id={$svl.svl_id}&edit=true"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;
+			                  						<a href="removeFromCart.php?id={$svl.svl_id}" title="ลบ" class="deleteBtn" data-name="{$svl.svl_name}"><i class="fa fa-trash-o"></i></a>
+			                  					</div>
+			                  					<h4> 
+			                      					<a href="product_detail_svl.php?id={$svl.svl_id}">{$svl.svl_name}</a>
+			                      				</h4>
+			                      				<div>
+			                      					<span>รายการละ {$svl.svl_price|number_format:2:".":","} บาท</span>
+			                      				</div>
+			                      				<div>
+			                      					<span>วันที่จอง {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
+			                      				</div>
+			                  				</div>
+			                  			</td>
+			                  			<td class="mainDesc-col">
+			                  				<div class="CartDescription disable-xs disable-sm">
+			                      				<h4> 
+			                      					<a href="product_detail_svl.php?id={$svl.svl_id}">{$svl.svl_name}</a>
+			                      				</h4>
+			                      				<div>
+			                      					<span>รายการละ {$svl.svl_price|number_format:2:".":","} บาท</span>
+			                      				</div>
+			                      				<div>
+			                      					<span>วันที่จอง {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
+			                      				</div>
+			                    			</div>
+			                    		</td>
+			                  			<td class="edit">
+			                  				<a title="แก้ไข" href="product_detail_svl.php?id={$svl.svl_id}&edit=true"><i class="fa fa-pencil"></i>&nbsp;</a>
+			                  			</td>
+			                  			<td>
+			                  				<div class="input-group bootstrap-touchspin">
+			                  					<span class="input-group-btn">
+			                  						<button class="btn btn-link bootstrap-touchspin-down" type="button">
+			                  							<i class="fa fa-minus"></i>
+			                  						</button>
+			                  					</span>
+			                  					<span class="input-group-addon bootstrap-touchspin-prefix" data-id="{$svl.svl_id}"></span>
+			                  					<input class="quanitySniper form-control" type="text" value="{$svl.persons}" name="persons[]" data-id="{$svl.svl_id}">
+			                  					<input class="inputPrice" type="hidden" value="{$svl.svl_price}" />
+			                  					<input class="inputRealPrice" type="hidden" value="{$svl.svl_realPrice}" />
+			                  					<input class="inputDiscoutPrice" type="hidden" value="{$svl.discout_price}" />
+			                  					<span class="input-group-addon bootstrap-touchspin-postfix" data-id="{$svl.svl_id}"></span>
+			                  					<span class="input-group-btn">
+			                  						<button class="btn btn-link bootstrap-touchspin-up" type="button">
+			                  							<i class="fa fa-plus"></i>
+			                  						</button>
+			                  					</span>
+			                  				</div>
+			                  			</td>
+			                  			<td class="discout">
+			                  				<span class="disable-sm disable-xs visible-md visible-lg"><span class="sumDiscoutPrice"></span></span>
+			                  				<span class="visible-sm visible-xs disable-md diable-lg">ส่วนลด <span class="sumDiscoutPrice"></span> บาท</span>
+			                  			</td>
+			                  			<td class="price">
+			                  				<span class="disable-sm disable-xs visible-md visible-lg"><span class="sumPrice"></span></span>
+			                  				<span class="visible-sm visible-xs disable-md diable-lg">ราคารวม <span class="sumPrice"></span> บาท</span>
+			                  			</td>
+			                  			<td class="delete">
+			                  				<a href="removeFromCart.php?id={$svl.svl_id}" title="ลบ" class="deleteBtn" data-name="{$svl.svl_name}"><i class="fa fa-trash-o"></i></a>
+			                  			</td>
+			                		</tr>
+			                		{/foreach}			           
+			              		</tbody>
+			            	</table>
+		          		</div>
+		          		<!--cartContent-->
+
+				        <div class="cartFooter w100">
+				        	<div class="box-footer">
+				            	<div class="pull-left"> <a href="index.php" class="btn btn-default"> <i class="fa fa-arrow-left"></i> &nbsp; ทำการจองต่อ </a> </div>
+				            </div>
+				        </div> <!--/ cartFooter --> 
+				        {else}
+				        คุณยังไม่ได้จองรายการสักกะรายการเลย <a href="index.php">คลิกที่นี่</a> เพื่อไปจอง
+				        {/if}
+				    </div>
+		      	</div>
+		      	<!--/row end--> 
+		      
+		    </div>
+		    <div class="col-lg-3 col-md-3 rightSidebar">
+		      <div class="contentBox">
+		        <div class="w100 costDetails">
+		          <div class="table-block" id="order-detail-content"> <a class="btn btn-primary btn-lg btn-block " title="checkout" href="checkout-0.html" style="margin-bottom:20px">ยืนยันการจอง &nbsp; <i class="fa fa-arrow-right"></i> </a>
+		            <div class="w100 cartMiniTable">
+		              <table id="cart-summary" class="std table">
+		                <tbody>
+		                  <tr>
+		                    <td>ราคาทั้งหมด</td>
+		                    <td class="price"><span id="total-price"></span> บาท</td>
+		                  </tr>
+		                  <tr>
+		                    <td>ส่วนลด</td>
+		                    <td class="price"><span id="total-discout"></span> บาท</td>
+		                  </tr>
+		                  <tr>
+		                    <td>ราคาสุทธิ</td>
+		                    <td class="site-color total-realPrice price"><span id="total-realPrice">216.51</span> บาท</td>
+		                  </tr>
+		                </tbody>
+		                <tbody>
+		                </tbody>
+		              </table>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+		      <!-- End popular --> 
+		      
+		    </div>
+		    <!--/rightSidebar--> 
+		    
+		  </div>
+		<!-- End cart -->
+	</div>
+</div>
+{include file="_footer.html"}
+{literal}
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="inc/datetimepicker/jquery.datetimepicker.js"></script>
+<script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+<script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+<script src="js/mbk_common_function.js"></script>
+<script src="js/shopping_cart.js"></script>
+<script type="text/javascript">
+	var svlList = {/literal}{$svlList|@json_encode}{literal};
+</script>
+{/literal}
+</body>

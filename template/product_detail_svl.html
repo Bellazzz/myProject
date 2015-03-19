@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abhaibhubajhr Day Spa</title>
+	<meta charset="utf8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{literal}
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="inc/Flat-UI-master/dist/css/flat-ui.css">
+    <link rel="stylesheet" type="text/css" href="inc/datetimepicker/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="css/fontFace.css">
+    <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/spaMain.css">
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+    <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/shop.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    	$('#bkg_date').datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#bkg_date').blur();
+            },
+            onShow:function( ct ){
+                this.setOptions({
+                    minDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                })
+            },
+            timepicker:false
+        });
+        $('#addToCartBtn').click(function() {
+        	$.ajax({
+        		url: 'addSvlToCart.php',
+        		type: 'POST',
+        		data: {
+        			svl_id: $('#svl_id').val(),
+        			persons: $('#persons').val(),
+        			bkg_date: getRealDate($('#bkg_date').val()),
+        			bkg_time: $('#bkg_time').val(),
+        		},
+        		success:
+        		function(response) {
+        			if(response == 'PASS') {
+        				$('#persons_text').text($('#persons').val() + ' คน');
+        				$('#bkg_date_text').text($('#bkg_date').val());
+        				$('#bkg_time_text').text($('#bkg_time').val() + ' น.');
+        				$('.sectionContainer').fadeOut(500);
+        				$('.action-control').fadeOut(500);
+        				setTimeout(function() {
+        					$('.addCartSuccess').slideDown(500);
+        				}, 500);
+        			} else if(response == 'FAIL') {
+        				alert('เกิดข้อผิดพลาด!');
+        			} else {
+        				alert(response);
+        			}
+        		}
+        	});
+        });
+    })
+    </script>
+    {/literal}
+</head>
+<body>
+{include file="_header.html"}
+<div class="page-wrapper">
+	<div class="container headerOffset">
+		<div class="row">
+			<div class="breadcrumbDiv col-md-12 col-lg-12">
+				<ul class="breadcrumb">
+			        <li><a href="index.php"><span class="fui-home"></span> หน้าแรก</a></li>
+			        <li><a href="shop_service_lists.php">รายการบริการ</a></li>
+			        <li class="active">{$prdData.svl_name}</li>
+			     </ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-md-6">
+				<div class="product-image">
+					<img src="img/service_lists/{$prdData.svl_picture}" class="img-responsive" alt="{$prdData.svl_name}">
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 col-md-6">
+				<h1 class="product-title">{$prdData.svl_name}</h1>
+				<h3 class="product-type">ประเภท : {$prdData.svltyp_name}</h3>
+				<div class="product-price"> 
+					{if $prdData.svl_prmPrice}
+						<span class="price-sales">{$prdData.svl_prmPrice|number_format:2:".":","} บาท</span> 
+			        	<span class="price-standard">{$prdData.svl_price|number_format:2:".":","} บาท</span> 
+					{else}
+						<span class="price-sales">{$prdData.svl_price|number_format:2:".":","} บาท</span> 
+					{/if}
+			    </div>
+			    <div class="product-time">
+			    	<i class="fa fa-clock-o"></i> 
+			    	{if $prdData.svl_hr > 0 || $prdData.svl_min > 0}
+			    		{if $prdData.svl_hr > 0}
+			    			{$prdData.svl_hr} ชั่วโมง
+			    		{/if}
+			    		{if $prdData.svl_min > 0}
+			    			{$prdData.svl_min} นาที
+			    		{/if}
+			    	{else}
+			    	-
+			    	{/if}
+			    </div>
+			    <div class="product-desc">
+			    	<p>{$prdData.svl_desc}</p>
+			    </div>
+			    <div class="sectionContainer">
+			    	<div class="row">
+			    		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			    			<div class="form-group">
+			    				<input type="hidden" id="svl_id" name="svl_id" value="{$prdData.svl_id}" />
+				            	<input type="text" id="persons" name="persons" placeholder="จำนวนผู้ใช้บริการ" class="form-control" value="{$persons}">
+				        	</div>
+			    		</div>
+			    		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			    			<div class="form-group">
+				            	<input id="bkg_date" name="bkg_date" type="text" placeholder="วันที่จอง" class="form-control mbk-dtp-th" value="{$bkg_date}">
+				        	</div>
+			    		</div>
+			    		<div class="col-xs-12 col-sm-3 col-md-4 col-lg-4">
+			    			<div class="form-group">
+				            	<select id="bkg_time" class="form-control select select-primary" data-toggle="select" name="bkg_time" value="{$bkg_time}">
+				            		<option value="">เวลาที่จอง</option>
+					            	{foreach from=$times key=i item=time}
+					            		{if $time == $bkg_time}
+					            		<option value="{$time}" selected>{$time} น.</option>
+					            		{else}
+					            		<option value="{$time}">{$time} น.</option>
+					            		{/if}
+					            	{/foreach}
+					            </select>
+				        	</div>
+			    		</div>
+			    	</div>
+			    </div>
+			    <div class="action-control">
+			    	{if $edit}
+			    	<button id="addToCartBtn" class="btn btn-inverse" type="submit">
+			    		<span class="add2cart">
+	            			<i class="fa fa-check"></i>&nbsp;&nbsp;บันทึกการจอง
+	            		</span>
+			    	</button>
+			    	&nbsp;
+			    	<a href="shopping_cart.php" class="btn btn-default">
+			    		<i class="fa fa-times"></i>&nbsp;&nbsp;ยกเลิก
+			    	</a>
+			    	{else}
+			    	<button id="addToCartBtn" class="btn btn-primary" type="submit">
+			    		<span class="add2cart">
+	            			<i class="fa fa-calendar"></i>&nbsp;&nbsp;จองรายการนี้
+	            		</span>
+			    	</button>
+			    	{/if}
+	            </div>
+	            <div class="addCartSuccess clearfix">
+	            	<div class="col-xs-12">
+	            		<span class="title">
+	            			<i class="fa fa-info-circle"></i> 
+	            			{if $edit}
+	            			แก้ไขการจองรายการนี้เรียบร้อยแล้วค่ะ
+	            			{else}
+	            			เพิ่มรายการนี้ลงในการจองของคุณเรียบร้อยแล้วค่ะ
+	            			{/if}
+	            		</span>
+	            		<table>
+	            			<tr>
+	            				<td>รายการบริการ</td>
+	            				<td>{$prdData.svl_name}</td>
+	            			</tr>
+	            			<tr>
+	            				<td>จำนวนผู้ใช้บริการ</td>
+	            				<td><span id="persons_text"></span></td>
+	            			</tr>
+	            			<tr>
+	            				<td>วันที่จอง</td>
+	            				<td><span id="bkg_date_text"></span></td>
+	            			</tr>
+	            			<tr>
+	            				<td>เวลาที่จอง</td>
+	            				<td><span id="bkg_time_text"></span></td>
+	            			</tr>
+	            		</table>
+	            	</div>
+	            	<div class="col-xs-6">
+	            		<a href="shop_service_lists.php">
+	            			<button class="btn btn-primary" type="button">ทำการจองต่อ</button>
+	            		</a>
+	            	</div>
+	            	<div class="col-xs-6">
+	            		<a href="shopping_cart.php">
+	            			<button class="btn btn-primary" type="button">ดูตระกร้าสินค้า</button>
+	            		</a>
+	            	</div>
+	            </div>
+			</div>
+		</div>
+	</div>
+</div>
+{include file="_footer.html"}
+</body>
+</script>

@@ -39,7 +39,7 @@ if($sort == 'POPULAR') {
 }
 
 // Find all record
-$sql = "SELECT COUNT(*) AS allRecord FROM packages";
+$sql = "SELECT COUNT(*) AS allRecord FROM packages WHERE pkg_stop IS NULL OR pkg_stop >= '$nowDate'";
 $result = mysql_query($sql, $dbConn);
 $record = mysql_fetch_assoc($result);
 $allRecord = $record['allRecord'];
@@ -78,6 +78,8 @@ $sql = "SELECT 		pkg_id,
 					pkg_desc,
 					pkg_picture 
 		FROM 		packages 
+		WHERE 		pkg_stop IS NULL OR 
+					pkg_stop >= '$nowDate' 
 		$order";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
@@ -85,7 +87,13 @@ if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$pkgList[$record['pkg_id']] = $record;
+		$pkgList[$record['pkg_id']]['svlList'] = array();
 		array_push($pkgIds, $record['pkg_id']);
+
+		$pkgList[$record['pkg_id']]['pkg_start'] = dateThaiFormat($pkgList[$record['pkg_id']]['pkg_start']);
+		if($record['pkg_stop'] != null) {
+			$pkgList[$record['pkg_id']]['pkg_stop'] = dateThaiFormat($pkgList[$record['pkg_id']]['pkg_stop']);
+		}
 	}
 }
 
@@ -126,6 +134,53 @@ if($rows > 0) {
 		}
 		$pkgList[$pkg_id]['discoutText'] = $discoutText;
 		$pkgList[$pkg_id]['pkg_prmPrice'] = $pkgList[$pkg_id]['pkg_price'] - $discoutPrice;
+	}
+}
+
+// Get package sum time
+$sql = "SELECT 		ps.pkg_id,
+					SUM(s.svl_hr) AS pkg_hr,
+					SUM(s.svl_min) AS pkg_min 
+		FROM 		package_service_lists ps,
+					service_lists s 
+		WHERE 		ps.svl_id = s.svl_id AND 
+					ps.pkg_id IN (".implode(',', $pkgIds).") 
+		GROUP BY 	ps.pkg_id";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$pkg_id = $record['pkg_id'];
+		$sumHr  = $record['pkg_hr'];
+		$sumMin = $record['pkg_min'];
+
+		for($j=$sumMin; $j>=60; $j-=60) {
+			$sumHr++;
+			$sumMin-=60;
+		}
+		$pkgList[$pkg_id]['pkg_hr'] = $sumHr;
+		$pkgList[$pkg_id]['pkg_min'] = $sumMin;
+	}
+}
+
+// Get service list of promotion
+$sql = "SELECT 		ps.pkg_id,
+					s.svl_name 
+		FROM 		package_service_lists ps,
+					service_lists s 
+		WHERE 		ps.svl_id = s.svl_id AND 
+					ps.pkg_id IN (".implode(',', $pkgIds).") 
+		ORDER BY 	ps.pkgsvl_id";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$pkg_id = $record['pkg_id'];
+		$svl_name = $record['svl_name'];
+
+		array_push($pkgList[$pkg_id]['svlList'], $svl_name);
 	}
 }
 

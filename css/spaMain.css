@@ -259,7 +259,7 @@ text-decoration: line-through;
   visibility: inherit;
   background-color: rgba(0, 0, 0, 0);
   background-size: cover;
-  background-position: 0% 0%;
+  background-position: center;
   background-repeat: no-repeat;
   margin-bottom: 20px;
 }
@@ -550,10 +550,17 @@ color: #777;
   font-weight: lighter;
   padding: 3px 5px;
 }
-.description p {
+.description p, .description ul, .description label {
   color: #7F8C8D;
   font-size: 14px;
   line-height: 18px;
+}
+.expired {
+  color: #E74C3C !important;
+}
+.grid-description .expired {
+  margin-bottom: 15px;
+  min-height: 1.2em;
 }
 .item:not(.list-view) .description .grid-description p {
   min-height: 3.6em;
@@ -641,9 +648,13 @@ min-height: 260px;
 }
 .item.list-view .list-description {
   display: block;
+  padding-left: 195px;
 }
 .item.list-view .price, .item.list-view .fullPrice {
   text-align: right;
+}
+.item.list-view .pkg-time {
+  display: none;
 }
 .item.list-view .action-control {
   text-align: right;
@@ -654,4 +665,299 @@ min-height: 260px;
   .item.list-view .description p {
     text-align: center;
   }
+  .list-description ul {
+    text-align: left;
+  }
 }
+@media (max-width: 480px) {
+  .grid-description {
+    display: none;
+  }
+  .list-description {
+    display: block;
+  }
+  .pkg-time {
+    display: none;
+  }
+}
+
+
+/*==============================*/
+/* Product detail
+/*==============================*/
+.product-title {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  line-height: 1;
+  margin-top: 0;
+  text-transform: uppercase;
+  font-family: ThaiSansNeue-Bold;
+}
+.product-type {
+  font-family: oswald, Helvetica Neue, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: lighter;
+  letter-spacing: 1px;
+  margin: 0 0 5px;
+  padding: 0;
+  text-transform: uppercase;
+}
+.product-image {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.product-image img {
+  max-width: 100%;
+  height: auto;
+}
+.product-price {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 10px;
+  font-family: ThaiSansNeue-Bold;
+}
+.product-time {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-family: ThaiSansNeue-Bold;
+}
+.price-standard {
+  color: #c9253c;
+  font-size: 20px;
+  text-decoration: line-through;
+}
+.product-desc p {
+  font-size: 14px;
+}
+.sectionContainer {
+  border-bottom: 1px solid #DDDDDD;
+  border-top: 1px solid #DDDDDD;
+  clear: both;
+  display: block;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  margin-top: 20px;
+}
+.form-group .select {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+.addCartSuccess {
+  padding: 10px;
+  background: #EFF0F2;
+  color: #34495E;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+}
+.addCartSuccess .fa {
+  font-size: 25px;
+}
+.addCartSuccess .btn {
+  width: 100%;
+}
+.addCartSuccess .title {
+  font-family: ThaiSansNeue-Bold;
+  font-size: 22px;
+}
+.addCartSuccess table {
+  margin: 10px 0;
+}
+.addCartSuccess table td {
+  line-height: 25px;
+}
+.addCartSuccess table td:first-child {
+  color: #718293;
+}
+.addCartSuccess table td:last-child {
+  padding-left: 50px;
+}
+
+/*==============================*/
+/* Shopping cart
+/*==============================*/
+.section-title-inner {
+  font-family: ThaiSansNeue-Bold;
+  font-size: 35px;
+  margin-top: 0;
+}
+.caps {
+  border-top: 0 none;
+  font-weight: normal;
+  line-height: 30px;
+  margin: 0 0 16px;
+  overflow: hidden;
+  padding: 0 0 16px;
+  text-align: right;
+  text-transform: uppercase;
+  font-family: ThaiSansNeue-Bold;
+  font-size: 25px;
+}
+.caps i {
+  font-size: 16px;
+}
+.cartTable {
+  border-top: solid 1px #EBEDEF;
+}
+.cartTable .price {
+  font-size: 20px;
+}
+@media (max-width: 768px) {
+  .cartTable {
+    margin-bottom: 20px;
+  }
+}
+tr.CartProduct {
+  border-bottom: 1px solid #E7E9EC;
+}
+.cartTableHeader {
+  font-family: ThaiSansNeue-Bold;
+  font-weight: bold;
+  font-size: 20px;
+  background: #EBEDEF;
+}
+@media (max-width: 768px) {
+  .cartTableHeader {
+    display: none;
+  }
+}
+tr.CartProduct td, tr.CartProduct th {
+  padding: 10px 0;
+}
+tr.CartProduct td, tr.CartProduct th {
+  text-align: center;
+}
+@media (max-width: 768px) {
+  tr.CartProduct td {
+    display: block;
+    text-align: left;
+  }
+  tr.CartProduct td.mainDesc-col {
+    display: none;
+  }
+}
+tr.CartProduct td:nth-child(2) {
+  text-align: left;
+}
+.CartProductThumb a img, .CartProductThumb a img {
+  width: 86px;
+  max-width: 100%;
+}
+.CartProductThumb-desc {
+  display: none;
+}
+.CartProductThumb-desc .controlBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 25px;
+}
+@media (max-width: 480px) {
+  .CartProductThumb-desc .controlBtn {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .CartProductThumb-image {
+    float: left;
+    padding-right: 20px;
+  }
+  .CartProductThumb a img {
+    width: auto;
+    max-width: 200px;
+    max-height: 260px;
+  }
+  .CartProductThumb-desc {
+    display: block;
+    position: relative;
+  }
+}
+@media (max-width: 480px) {
+  .CartProductThumb-image {
+    float: none;
+    text-align: center;
+  }
+}
+.CartDescription {
+  color: #666;
+}
+.CartDescription h4 {
+  font-size: 16px;
+  margin: 5px 0;
+}
+.cartTable .edit, .cartTable .delete {
+  font-size: 25px;
+}
+@media (max-width: 768px) {
+  .cartTable td.discout, .cartTable td.price {
+    text-align: right;
+    padding: 0;
+  }
+  .cartTable td.price {
+    padding-bottom: 20px;
+  }
+  .cartTable .edit, .cartTable .delete {
+    display: none;
+  }
+}
+
+
+
+.cartFooter {
+  padding: 20px;
+  border-top: solid 1px #eee;
+  background: #EBEDEF;
+  display: inline-block;
+  width: 100%;
+}
+@media (max-width: 480px) {
+  .cartFooter .box-footer div {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+}
+
+.cartMiniTable {
+  border: 1px solid #DDDDDD;
+  padding: 10px;
+}
+.rightSidebar #cart-summary tr:first-child td {
+  border: none;
+}
+.quanitySniper {
+  text-align: center;
+}
+.bootstrap-touchspin {
+  width: 130px;
+}
+@media (max-width: 480px) {
+  .bootstrap-touchspin {
+    margin: 0 auto;
+  }
+}
+.bootstrap-touchspin-prefix, .bootstrap-touchspin-postfix {
+  display: none;
+}
+#cart-summary td {
+  vertical-align: middle;
+}
+#cart-summary tr td:nth-child(2) {
+  text-align: right;
+}
+#cart-summary .price {
+  font-size: 22px;
+}
+#cart-summary .total-realPrice {
+  font-size: 25px;
+  font-weight: bold;
+  color: #4ec67f;
+}
+

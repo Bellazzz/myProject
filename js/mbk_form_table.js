@@ -128,29 +128,29 @@ function saveRecord() {
 		},
 		success:
 		function (responseJSON) {
-			alert(responseJSON);
-			// var response = $.parseJSON(responseJSON);
-			// if (response.status == 'ADD_PASS') {
-			// 	// Add record success
-			// 	parent.closeFormTable();
-			// 	parent.refreshTable();
-			// } else if (response.status == 'EDIT_PASS') {
-			// 	// Edit record success
-			// 	parent.closeFormTable();
-			// 	parent.refreshTable();
-			// } else if (response.status == 'REQURIED_VALUE') {
-			// 	// Add required
-			// 	$('#' + response.text).addClass('required');
-			// 	$('#' + response.text).focus();
-			// } else if(response.status== 'UNIQUE_VALUE') {
-			// 	// Add required
-			// 	$('#' + response.text).addClass('required');
-			// 	$('.err-' + response.text).css('display', 'none');
-			// 	$('#err-' + response.text + '-unique').css('display', 'block');
-			// 	$('#' + response.text).focus();
-			// } else {
-			// 	alert(response.status + "\n" + response.text);
-			// }
+			// alert(responseJSON);
+			var response = $.parseJSON(responseJSON);
+			if (response.status == 'ADD_PASS') {
+				// Add record success
+				parent.closeFormTable();
+				parent.refreshTable();
+			} else if (response.status == 'EDIT_PASS') {
+				// Edit record success
+				parent.closeFormTable();
+				parent.refreshTable();
+			} else if (response.status == 'REQURIED_VALUE') {
+				// Add required
+				$('#' + response.text).addClass('required');
+				$('#' + response.text).focus();
+			} else if(response.status== 'UNIQUE_VALUE') {
+				// Add required
+				$('#' + response.text).addClass('required');
+				$('.err-' + response.text).css('display', 'none');
+				$('#err-' + response.text + '-unique').css('display', 'block');
+				$('#' + response.text).focus();
+			} else {
+				alert(response.status + "\n" + response.text);
+			}
 		}
 	});
 }

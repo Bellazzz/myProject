@@ -26,12 +26,6 @@
 			        <li class="active">แพ็คเกจ </li>
 			     </ul>
 			</div>
-			<!-- <div class="col-md-12 col-lg-12">
-				<div class="categoryImage">
-					<h2>รายการบริการ</h2>
-					<img src="img/packages/SL001.jpeg" class="img-responsive" alt="img">
-				</div>
-			</div> -->
 		</div>
 		<div class="row">
 			<div class="col-lg-12 col-md-12 col-sm-12">
@@ -80,7 +74,7 @@
 			<div class="item col-sm-4 col-lg-3 col-md-3 col-xs-12">
 				<div class="product">
 		            <div class="image">  
-		          		<a href="product-details.html">
+		          		<a href="product_detail_pkg.php?id={$pkg.pkg_id}">
 		          			<img class="img-responsive" alt="img" src="img/{if $pkg.pkg_picture != ''}packages/{$pkg.pkg_picture}{else}shopItemDefault.png{/if}">
 		          		</a>
 		          		{if $pkg.discoutText}
@@ -91,15 +85,49 @@
 		            </div>
 		            <div class="description">
 		              <h4>
-		              	<a href="product-details.html">{$pkg.pkg_name}</a>
+		              	<a href="product_detail_pkg.php?id={$pkg.pkg_id}">{$pkg.pkg_name}</a>
 		              </h4>
 		              <div class="grid-description">
 		                <p>{$pkg.pkg_desc}</p>
+		                <label class="expired">
+		                	{if $pkg.pkg_stop != ''}
+		                	วันที่สิ้นสุด: {$pkg.pkg_stop}
+		                	{else}
+		                	วันที่สิ้นสุด: ไม่มีกำหนด
+		                	{/if}
+		                </label>
 		              </div>
 		              <div class="list-description">
 		                <p>{$pkg.pkg_desc}</p>
+		                <span>
+			              	<i class="fa fa-clock-o"></i> 
+			              	{if $pkg.pkg_hr != 0 || $pkg.pkg_min != 0}
+			              		{if $pkg.pkg_hr != 0}
+				              		{$pkg.pkg_hr} ชั่วโมง
+				              	{/if}
+				              	{if $pkg.pkg_min != 0}
+				              		{$pkg.pkg_min} นาที
+				              	{/if}
+			              	{else}
+			              	-
+			              	{/if}
+			            </span>
+			            <br /><br />
+			            <label><b>รายการบริการที่จัดแพ็คเกจ</b></label>
+		                <ul>
+		                	{foreach from=$pkg.svlList key=i item=svl_name}
+		                	<li>{$svl_name}</li>
+		                	{/foreach}
+		                </ul>
+		                <label class="expired">
+		                	{if $pkg.pkg_stop != ''}
+		                	วันที่สิ้นสุด: {$pkg.pkg_stop}
+		                	{else}
+		                	วันที่สิ้นสุด: ไม่มีกำหนด
+		                	{/if}
+		                </label>
 		              </div>
-		              <span class="time">
+		              <span class="pkg-time">
 		              	<i class="fa fa-clock-o"></i> 
 		              	{if $pkg.pkg_hr != 0 || $pkg.pkg_min != 0}
 		              		{if $pkg.pkg_hr != 0}
@@ -129,9 +157,9 @@
 			            </div>
 		            {/if}
 		            <div class="action-control">
-		            	<a class="btn btn-primary">
+		            	<a class="btn btn-primary" href="product_detail_pkg.php?id={$pkg.pkg_id}">
 		            		<span class="add2cart">
-		            			<i class="fa fa-shopping-cart"> </i> หยิบใส่ตระกร้า
+		            			<i class="fa fa-calendar"></i>&nbsp;&nbsp;จองรายการนี้
 		            		</span>
 		            	</a>
 		            </div>
