@@ -125,6 +125,24 @@
             padding-left: 20px;
             color: #666;
         }
+        .status-waiting, .status-complete {
+            display: inline;
+            padding: .3em .5em;
+            font-size: 90%;
+            font-weight: bold;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25em;
+        }
+        .status-waiting {
+            background-color: #777;
+        }
+        .status-complete {
+            background-color: #5CB85C;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -372,8 +390,8 @@
         <thead>
             <tr>
                 <th style="text-align:center;">ลำดับ</th>
-                <th>แพ็คเกจ</th>
-                <th class="txtLong-col">รายการบริการที่จัดแพ็คเกจ</th>
+                <th>รหัสแพ็คเกจ</th>
+                <th class="txtLong-col">ชื่อแพ็คเกจ</th>
                 <th>ผู้ใช้บริการ(คน)</th>
                 <th>วันที่มาใช้บริการ</th>
                 <th>เวลาที่มาใช้บริการ</th>
@@ -381,40 +399,26 @@
             </tr>
         </thead>
         <tbody>
-            {foreach from=$viewBkgpkgData key=pkgId item=bkgpkg}
+            {foreach from=$viewBkgpkgData key=i item=bkgpkg}
             <tr>
-                <td align="center" rowspan="{$bkgpkg.svlCount}">{$bkgpkg.no}</td>
-                <td align="left" rowspan="{$bkgpkg.svlCount}">
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$pkgId}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                        {$bkgpkg.pkg_name}
+                <td align="center">{$bkgpkg.no}</td>
+                <td align="left">
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$bkgpkg.pkg_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                        {$bkgpkg.pkg_id}
                     </a>
                 </td>
+                <td align="left" class="txtLong-col">{$bkgpkg.pkg_name}</td>
+                <td align="right">{$bkgpkg.bkgpkg_persons}</td>
+                <td align="left">{$bkgpkg.bkgpkg_date}</td>
+                <td align="left">{$bkgpkg.bkgpkg_time} น.</td>
+                <td align="left">
+                    {if $bkgpkg.bkgpkg_status}
+                        <span class="status-complete">ใช้บริการแล้ว</span>
+                    {else}
+                        <span class="status-waiting">ยังไม่ได้ใช้บริการ</span>
+                    {/if}
+                </td>
             </tr>
-                {foreach from=$bkgpkg.svlDetail key=j item=svlDtl}
-                    <tr>
-                        <td align="left" class="txtLong-col">
-                            <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$svlDtl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                                {$svlDtl.svl_name}
-                            </a>
-                        </td>
-                        <td align="right">{$svlDtl.bkgpkg_persons}</td>
-                        <td align="left">{$svlDtl.bkgpkg_date}</td>
-                        <td align="left">{$svlDtl.bkgpkg_time} น.</td>
-                        <td align="left">
-                            {if $svlDtl.bkgpkg_status}
-                                <span style="color: #64B932">
-                                    <i class="fa fa-check-square-o"></i> 
-                                    ใช้บริการแล้ว
-                                </span>
-                            {else}
-                                <span style="color: red">
-                                    <i class="fa fa-square-o"></i> 
-                                    ยังไม่ได้ใช้บริการ
-                                </span>
-                            {/if}
-                        </td>
-                    </tr>
-                {/foreach}
             {/foreach}
         </tbody>
     </table><br><br>
@@ -451,15 +455,9 @@
                 <td align="left">{$bkgsvl.bkgsvl_time} น.</td>
                 <td align="left">
                     {if $bkgsvl.bkgsvl_status}
-                        <span style="color: #64B932">
-                            <i class="fa fa-check-square-o"></i> 
-                            ใช้บริการแล้ว
-                        </span>
+                        <span class="status-complete">ใช้บริการแล้ว</span>
                     {else}
-                        <span style="color: red">
-                            <i class="fa fa-square-o"></i> 
-                            ยังไม่ได้ใช้บริการ
-                        </span>
+                        <span class="status-waiting">ยังไม่ได้ใช้บริการ</span>
                     {/if}
                 </td>
             </tr>
