@@ -1,0 +1,46 @@
+<div id="header">
+	<div id="header-logo">
+		<img src="../img/backoffice/logo-back-office.png">
+	</div>
+	<ul class="nav">
+		<li>
+            <a href="manage_table.php" {if $tplName == 'manage_table.html'}class="selected"{/if}>
+                <img src="../img/backoffice/nav-manage-table.png"><br>
+                จัดการข้อมูล
+            </a>
+        </li>
+        {if $emp_privileges.point_of_sale}
+		<li>
+            <a href="../pos/select_shops.php">
+                <img src="../img/backoffice/nav-cacher.png"><br>
+                แคชเชียร์
+            </a>
+        </li>
+        {/if}
+        <li>
+            <a href="#">
+                <img src="../img/backoffice/nav-web.png"><br>
+                จัดการเว็บไซต์
+            </a>
+        </li>
+		<li>
+            <a href="report.php" {if $tplName == 'report.html'}class="selected"{/if}>
+                <img src="../img/backoffice/nav-authen.png"><br>
+                ออกรายงาน
+            </a>
+        </li>
+		
+	</ul>
+	<ul id="header-tool">
+		<li>
+            <div id="account-box">
+                {if $session_loggedin}
+                <b>คุณ{$session_emp_name} {$session_emp_surname}</b>
+                <a href="logout.php" class="normal-link" style="color: rgb(60, 60, 60);">ออกจากระบบ</a>
+                {else}
+                <a href="login.php">เข้าสู่ระบบ</a>
+                {/if}
+            </div>
+        </li>
+	</ul>
+</div>
