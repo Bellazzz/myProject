@@ -294,7 +294,10 @@
         <tbody>
             <tr>
                 <td>รหัสการจอง :</td>
-                <td>{$code}</td>
+                <td>
+                    {$code}
+                    <input type="hidden" name="pkg_id" value="{$code}" />
+                </td>
             </tr>
             <tr>
                 <td>ผู้ใช้บริการที่ทำการจอง :</td>

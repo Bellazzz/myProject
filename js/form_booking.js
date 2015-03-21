@@ -11,8 +11,88 @@ $(document).ready(function(){
 
 	setAllBkgDetailAmount();
 
-	
+    // Change Booking Status
+	$('#changeBpkgStatus-pending_check-btn').click(function(){
+        var title = 'เปลี่ยนสถานะเป็นรอชำระเงิน';
+        var msg   = 'คุณได้ตรวจสอบการจองครั้งนี้ และพบว่าลูกค้าสามารถมาใช้บริการในวันเวลาดังกล่าวได้ และต้องการเปลี่ยนสถานะการจองเป็น รอชำระเงิน เพื่อแจ้งให้ลูกค้าทำการชำระเงินใช่หรือไม่?';
+        changeBkgStatus(title, msg, 'S02');
+    });
+    $('#changeBpkgStatus-pending_service-btn').click(function(){
+        var title = 'เปลี่ยนสถานะเป็นรอใช้บริการ';
+        var msg   = 'หลักฐานการชำระเงินของลูกค้าถูกต้อง และต้องการเปลี่ยนสถานะการจองเป็น รอใช้บริการ เพื่อแจ้งให้ลูกค้าเข้ามาใช้บริการที่สปาใช่หรือไม่?';
+        changeBkgStatus(title, msg, 'S03');
+    });
+    $('#changeBpkgStatus-remain_service-btn').click(function(){
+        var title = 'ใช้บริการไม่ครบตามที่จอง';
+        var msg   = 'ลูกค้ามาใช้บริการไม่ครบตามที่ได้จองไว้ และคุณต้องการเปลี่ยนสถานะการจองเป็น ใช้บริการไม่ครบตามที่จอง ใช่หรือไม่?';
+        changeBkgStatus(title, msg, 'S07');
+    });
+    $('#changeBpkgStatus-cancel-btn').click(function(){
+        var title = 'เปลี่ยนสถานะเป็นยกเลิกการจอง';
+        var msg   = 'คุณต้องการเปลี่ยนสถานะการจองเป็น ยกเลิกการจอง ใช่หรือไม่?';
+        changeBkgStatus(title, msg, 'S06');
+    });
 });
+
+function changeBkgStatus(title, msg, status_id) {
+    parent.showActionDialog({
+        title: title,
+        message: msg,
+        actionList: [
+            {
+                id: 'change',
+                name: 'ตกลง',
+                desc: 'สถานะการจองครั้งนี้จะถูกเปลี่ยน',
+                func:
+                function() {
+                    parent.hideActionDialog();
+                    $.ajax({
+                        url: '../common/ajaxChangeBkgStatus.php',
+                        type: 'POST',
+                        data: {
+                            bkg_id: $('input[name="pkg_id"]').val(),
+                            status_id: status_id
+                        },
+                        success:
+                        function(response) {
+                            if(response == 'PASS') {
+                                 parent.confirmCloseFormTable(action);
+                                 parent.pullTable(false);
+                            } else if(response == 'FAIL') {
+                                parent.showActionDialog({
+                                    title: 'เกิดข้อผิดพลาด',
+                                    message: 'ไม่สามารถเปลี่ยนสถานะการจองได้เนื่องจากเกิดข้อผิดพลาดบางประการ',
+                                    actionList: [
+                                        {
+                                            id: 'ok',
+                                            name: 'ตกลง',
+                                            func:
+                                            function() {
+                                                parent.hideActionDialog();
+                                            }
+                                        }
+                                    ]
+                                });
+                            } else {
+                                alert(response);
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                id: 'cancel',
+                name: 'ยกเลิก',
+                desc: 'ยกเลิกการเปลี่ยนสถานะการจอง',
+                func:
+                function() {
+                    parent.hideActionDialog();
+                }
+            }
+        ],
+        boxWidth: 500
+    });
+}
 
 function addItemForEdit() {
 	if(action == 'EDIT') {

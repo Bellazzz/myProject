@@ -2,7 +2,7 @@
 	<div class="title-container">
 		<h1 id="ftb-title"></h1>
 	</div>
-    <div class="toolbar-container clearfix">
+    <div class="toolbar-container-left clearfix">
 	    <ul class="toolbar-menu">
 		    <li>
 		    	{if $action == 'ADD'}
@@ -56,4 +56,21 @@
 		    </li>
 	    </ul>
     </div>
+    <div class="toolbar-container-right clearfix">
+	    <ul class="toolbar-menu">
+	    {if $action == 'VIEW_DETAIL'}
+	    	{if $tableName == 'booking' && $values.status_id == 'S01'}
+	    	<li><a id="changeBpkgStatus-pending_check-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรอชำระเงิน</a></li>
+	    	{elseif $tableName == 'booking' && $values.status_id == 'S02'}
+	    	<li><a id="changeBpkgStatus-pending_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรอใช้บริการ</a></li>
+	    	{elseif $tableName == 'booking' && $values.status_id == 'S03' || $values.status_id == 'S04'}
+	    	<li><a id="changeBpkgStatus-remain_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นใช้บริการไม่ครบตามที่จอง</a></li>
+	    	{/if}
+
+	    	{if $tableName == 'booking' && $values.status_id == 'S01' || $values.status_id == 'S02'}
+	    	<li><a id="changeBpkgStatus-cancel-btn"><i class="fa fa-trash-o"></i> ยกเลิกการจอง</a></li>
+	    	{/if}
+	    {/if}
+		</ul>
+	</div>
 </div>

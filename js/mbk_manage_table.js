@@ -572,10 +572,10 @@ function refreshFilterQuery() {
                                 + '     <option value="PENDING_CHECK">รอตรวจสอบ</option>'
                                 + '     <option value="PENDING_PAYMENT">รอชำระเงิน</option>'
                                 + '     <option value="PENDING_SERVICE">รอใช้บริการ</option>'
-                                + '     <option value="REMAIN_SERVICE">กำลังใช้บริการ</option>'
+                                + '     <option value="REMAIN_SERVICE">ยังใช้บริการไม่ครบ</option>'
                                 + '     <option value="COMPLETED">ใช้บริการครบแล้ว</option>'
+                                + '     <option value="FIXED_COMPLETED">ใช้บริการไม่ครบตามที่จอง</option>'
                                 + '     <option value="CANCEL">ยกเลิกการจอง</option>'
-                                + '     <option value="FIXED_COMPLETED">กำหนดให้ใช้บริการครบ</option>'
                                 + '</select>';
     }
 

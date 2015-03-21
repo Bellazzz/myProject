@@ -160,12 +160,12 @@ if($rows > 0){
 					<input type="checkbox" value="<?=$code?>" name="table-record[]" class="mbk-checkbox" onclick="checkRecord(this)">
 				</td>
 				<td class="action-col">
-					<?php if($displayEditBtn) { ?>
+					<?php if($displayEditBtn && $filter == 'PENDING_CHECK') { ?>
 					<a title="แก้ไข">
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 					</a>
 					<?php } ?>
-					<?php if($displayDeleteBtn) { ?>
+					<?php if($displayDeleteBtn && $filter == 'PENDING_CHECK') { ?>
 					<a title="ลบ">
 						<i class="fa fa-times" onclick="delteCurrentRecord('<?=$code?>')"></i>
 					</a>
