@@ -348,6 +348,12 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('pkgsvlData', $pkgsvlData);
 	}
 
+	// Hide edit button from status
+	if($values['status_id'] != 'S01') {
+		$hideEditButton = 'true';
+	}
+
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
