@@ -86,6 +86,12 @@ body {
 #header-logo img {
 	height: 100%;
 }
+.mainContainer {
+    padding: 80px 20px 50px 20px;
+}
+.mainContainer h1{
+    font-family: ThaiSansNeue-Bold;
+}
 .nav{
 	margin: 0px;
 	padding: 0px;
@@ -1512,6 +1518,12 @@ label.article-title {
 .button-icon-unlock:before {
     content: "\f09c";
 }
+.button-icon-report:before {
+    content: "\f0ce";
+}
+.button-icon-back:before {
+    content: "\f112";
+}
 
 /*
  * Tool tip
@@ -1661,4 +1673,56 @@ datetimepicker
 #pagingContainer a.selected, #pagingContainer a.selected:hover {
     background: #666;
     color: white;
+}
+
+/*
+ * Report
+ */
+.report-top-table {
+    min-width: 800px;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.report-top-table tr {
+    border-bottom: 1px solid #E7E9EC;
+}
+.report-top-table thead tr {
+    font-family: ThaiSansNeue-Bold;
+    font-weight: bold;
+    font-size: 20px;
+    background: #7C7C7C;
+    color: white;
+}
+.report-top-table tbody tr:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+.report-top-table td, .report-top-table th {
+    padding: 8px 5px;
+    border:1px solid #999;
+}
+.report-top-table .space-column {
+    border: 1px solid #fff;
+    border-right: none;
+}
+.report-top-table .total-column {
+    font-weight: bold;
+    border:1px solid #999;
+}
+.listLi {
+    padding-left: 80px;
+}
+.listLi li{
+    font-family: ThaiSansNeue-Bold;
+    font-size: 26px;
+}
+.listLi li a {
+    text-decoration: none;
+    color: #333;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+.listLi li a:hover {
+    color: #8AC007;
 }

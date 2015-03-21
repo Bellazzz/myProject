@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="utf-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <script type="text/javascript">
+    
+    $(document).ready(function() {
+        $('#startDate').datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#startDate').blur();
+            },
+            timepicker:false
+        });
+        $('#endDate').datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#endDate').blur();
+            },
+            timepicker:false
+        });
+
+        $('#submit').click(function() {
+            // Convert thai date to real date
+            $('.mbk-dtp-th').each(function() {
+                if($(this).val() != '') {
+                    if(isDateThaiFormat($(this))) {
+                        getRealDate($(this));
+                    } else {
+                        convertThaiDate($(this));
+                        getRealDate($(this));
+                    }
+                }
+            });
+        });
+    });
+    </script>
+	{/literal}
+</head>
+<body>
+<div id="page">
+	<div id="wrapper">
+		{include file="_manage_table_header.html"}
+        <div class="mainContainer">
+            <h1><i class="fa fa-bar-chart-o"></i> รายงานยอดขายผลิตภัณฑ์</h1>
+            <br><br>
+            
+            <form method="post" action="report_top_product.php" class="mbk-form-input-normal">
+                <table>
+                    <tr>
+                        <td>เริ่มวันที่</td>
+                        <td>สิ้นสุดวันที่</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="startDate" name="startDate" type="text" class="mbk-dtp-th form-input half" value="{if $startDate}{$startDate}{else}{$nowDate}{/if}">
+                        </td>
+                        <td>
+                            <input id="endDate" name="endDate" type="text" class="mbk-dtp-th form-input half" value="{if $endDate}{$endDate}{else}{$nowDate}{/if}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <b>เลือกประเภทผลิตภัณฑ์ที่ต้องการออกรายงาน</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-left:20px;padding-bottom:20px;">
+                            {foreach from=$prdtyps key=i item=prdtyp}
+                            <label>
+                                <input type="checkbox" name="prdtypSelected[]" value="{$prdtyp.prdtyp_id}" {if $prdtyp.checked}checked{/if}> 
+                                {$prdtyp.prdtyp_name}
+                            </label>
+                            {/foreach}
+                        </td>
+                    </tr>
+                </table>
+                <input  type="hidden" name="submit" value="ออกรายงาน">
+                <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
+            </form>
+            
+            <center>
+            {if $report}
+            <div class="printArea">
+                <h3>รายงานยอดขายผลิตภัณฑ์</h3>
+                <br />
+                เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                สิ้นสุดวันที่: {$endDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                วันที่พิมพ์รายงาน: {$nowDate_th}
+                <table class="report-top-table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ประเภท</th>
+                            <th>ชื่อผลิตภัณฑ์</th>
+                            <th>ราคาต่อหน่วย</th>
+                            <th>จำนวน</th>
+                            <th>ราคารวม</th>
+                            <th>ส่วนลดรวม</th>
+                            <th>ราคาสุทธิ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach from=$report key=i item=prd}
+                        <tr>
+                            <td align="center" width="100px">{$prd.no}</td>
+                            {if $prd.rowspan}
+                            <td rowspan="{$prd.rowspan}">{$prd.prdtyp_name}</td>
+                            {/if}
+                            <td>{$prd.prd_name}</td>
+                            <td align="right">{$prd.prd_price}</td>
+                            <td align="right">{$prd.sumAmount}</td>
+                            <td align="right">{$prd.sumPrice}</td>
+                            <td align="right">{$prd.sumDiscout}</td>
+                            <td align="right">{$prd.sumRealPrice}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td align="right" class="total-column">รวม</td>
+                            <td align="right" class="total-column">{$totalAmount}</td>
+                            <td align="right" class="total-column">{$totalPrice}</td>
+                            <td align="right" class="total-column">{$totalDiscout}</td>
+                            <td align="right" class="total-column">{$totalRealPrice}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {else}
+            ไม่พบข้อมูลเพื่อออกรายงานในช่วงเวลาดังกล่าว
+            {/if}
+            </center>
+            <br><br>
+            <center>
+            <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
+            </center>
+        </div>
+	</div>
+</div>
+
+<!-- end page-->
+</body>
+</html>

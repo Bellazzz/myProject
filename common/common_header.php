@@ -12,6 +12,7 @@
 	$nowTime 		= date('H:i');
 	$nowTimeFull 	= date('H:i:s');
 	$smarty->assign('nowDate', date('Y/m/d'));
+	$smarty->assign('nowDate_th', dateThaiFormat(date('Y/m/d')));
 	$smarty->assign('nowTime', date('H:i'));
 	$smarty->assign('nowTimeFull', date('H:i:s'));
 
