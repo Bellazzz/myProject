@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spa - Backoffice</title>
+    <meta charset="utf-8"/>
+    {literal}
+    <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <script type="text/javascript">
+    
+    $(document).ready(function() {
+        $('#chooseDate').datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#chooseDate').blur();
+            },
+            timepicker:false
+        });
+
+        $('#submit').click(function() {
+            // Convert thai date to real date
+            $('.mbk-dtp-th').each(function() {
+                if($(this).val() != '') {
+                    if(isDateThaiFormat($(this))) {
+                        getRealDate($(this));
+                    } else {
+                        convertThaiDate($(this));
+                        getRealDate($(this));
+                    }
+                }
+            });
+        });
+    });
+    </script>
+    {/literal}
+</head>
+<body>
+<div id="page">
+    <div id="wrapper">
+        {include file="_manage_table_header.html"}
+        <div class="mainContainer">
+            <h1><i class="fa fa-bar-chart-o"></i> รายงานรสุปยอดการเบิกผลิตภัณฑ์</h1>
+            <br><br>
+            
+            <form method="post" action="report_top_withdraw.php" class="mbk-form-input-normal">
+                <table>
+                    <tr>
+                        <td>เลือกวันที่ออกรายงาน </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="chooseDate" name="chooseDate" type="text" class="mbk-dtp-th form-input half" value="{if $chooseDate}{$chooseDate}{else}{$nowDate}{/if}">
+                        </td>
+                        <td>
+                            <input  type="hidden" name="submit" value="ออกรายงาน">
+                            <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
+                        </td>
+                    </tr>
+                </table>
+                
+            </form>
+            
+            <center>
+            {if $report}
+            <div class="printArea">
+                <h3>รายงานสรุปยอดการเบิกผลิตภัณฑ์</h3>
+                <br />
+                ประจำวันที่: {$chooseDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                วันที่พิมพ์รายงาน: {$nowDate_th}
+                <table class="report-top-table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ประเภทการเบิก</th>
+                            <th>ชื่อผลิตภัณฑ์</th>
+                            <th>จำนวน</th>
+                            <th>ชื่อผู้เบิก</th>
+                            <th>ชื่อผู้ให้เบิก</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach from=$report key=i item=wdw}
+                        <tr>
+                            <td align="center" width="100px">{$wdw.no}</td>
+                            {if $wdw.rowspan}
+                            <td rowspan="{$wdw.rowspan}">{$wdw.wdwtyp_name}</td>
+                            {/if}
+                            <td>{$wdw.prd_name}</td>
+                            <td align="right">{$wdw.wdwdtl_amount} {$wdw.unit_name} </td>
+                            <td>{$wdw.empFullname}</td>
+                            <td>{$wdw.empGiveFullname}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            {else}
+            ไม่พบข้อมูลเพื่อออกรายงานในช่วงเวลาดังกล่าว
+            {/if}
+            </center>
+            <br><br>
+            <center>
+            <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
+            </center>
+        </div>
+    </div>
+</div>
+
+<!-- end page-->
+</body>
+</html>

@@ -64,14 +64,14 @@
 	<div id="wrapper">
 		{include file="_manage_table_header.html"}
         <div class="mainContainer">
-            <h1><i class="fa fa-bar-chart-o"></i> รายงานแพ็คเกจเรียงลำดับตามความนิยม</h1>
+            <h1><i class="fa fa-bar-chart-o"></i> รายงานสรุปยอดการใช้บริการ</h1>
             <br><br>
             
-            <form method="post" action="report_top_package.php" class="mbk-form-input-normal">
+            <form method="post" action="report_top_massage.php" class="mbk-form-input-normal">
                 <table>
                     <tr>
-                        <td>เลือกวันที่เริ่มต้น </td>
-                        <td>เลือกวันที่สิ้นสุด </td>
+                        <td>เริ่มวันที่</td>
+                        <td>สิ้นสุดวันที่</td>
                     </tr>
                     <tr>
                         <td>
@@ -80,44 +80,87 @@
                         <td>
                             <input id="endDate" name="endDate" type="text" class="mbk-dtp-th form-input half" value="{if $endDate}{$endDate}{else}{$nowDate}{/if}">
                         </td>
-                        <td>
-                            <input  type="hidden" name="submit" value="ออกรายงาน">
-                            <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
-                        </td>
                     </tr>
                 </table>
+                <input  type="hidden" name="submit" value="ออกรายงาน">
+                <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
             </form>
             
             <center>
-            {if $report}
+            {if $reportServiceList || $reportPackage}
             <div class="printArea">
-                <h3>รายงานแพ็คเกจเรียงลำดับตามความนิยม</h3>
+                <h3>รายงานสรุปยอดการใช้บริการ</h3>
                 <br />
                 เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
                 สิ้นสุดวันที่: {$endDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
                 วันที่พิมพ์รายงาน: {$nowDate_th}
-                <table class="report-top-table" cellpadding="0" cellspacing="0">
+                <table class="report-top-table report-massage" cellpadding="0" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ลำดับ</th>
-                            <th>ชื่อแพ็คเกจ</th>
-                            <th>จำนวนครั้งที่ใช้บริการ</th>
+                            <!-- <th>ลำดับ</th> -->
+                            <th>ชื่อรายการบริการ/แพ็คเกจ</th>
+                            <th>เวลา</th>
+                            <th>ราคาต่อหน่วย</th>
+                            <th>จำนวนการใช้บริการ</th>
+                            <th>ราคารวม</th>
+                            <th>ส่วนลดรวม</th>
+                            <th>ราคาสุทธิ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$report key=i item=pkg}
+                        {foreach from=$reportServiceList key=i item=svl}
+                        {if $svl.type}
+                            <tr class="type-col">
+                                <td colspan="7">{$svl.svltyp_name}</td>
+                            </tr>
+                        {/if}
                         <tr>
-                            <td align="center" width="100px">{$pkg.no}</td>
-                            <td>{$pkg.pkg_name}</td>
-                            <td align="center">{$pkg.amount}</td>
+                            <td>{$svl.svl_name}</td>
+                            <td align="right">
+                                {if $svl.svl_hr || $svl.svl_min}
+                                {if $svl.svl_hr}{$svl.svl_hr} ชั่วโมง {/if}
+                                {if $svl.svl_min}{$svl.svl_min} นาที{/if}
+                                {else}
+                                -
+                                {/if}
+                            </td>
+                            <td align="right">{$svl.svl_price}</td>
+                            <td align="right">{$svl.sumAmount}</td>
+                            <td align="right">{$svl.sumPrice}</td>
+                            <td align="right">{$svl.discout}</td>
+                            <td align="right">{$svl.sumTotal}</td>
                         </tr>
+                        {/foreach}
+
+                        {foreach from=$reportPackage key=i item=pkg}
+                        <tr>
+                            <td>{$pkg.pkg_name}</td>
+                            <td align="right">
+                                {if $pkg.pkg_hr || $pkg.pkg_min}
+                                {if $pkg.pkg_hr}{$pkg.pkg_hr} ชั่วโมง {/if}
+                                {if $pkg.pkg_min}{$pkg.pkg_min} นาที{/if}
+                                {else}
+                                -
+                                {/if}
+                            </td>
+                            <td align="right">{$pkg.pkg_price}</td>
+                            <td align="right">{$pkg.sumAmount}</td>
+                            <td align="right">{$pkg.sumPrice}</td>
+                            <td align="right">{$pkg.sumDiscout}</td>
+                            <td align="right">{$pkg.sumTotal}</td>
+                        </tr>
+                        
                         {/foreach}
                     </tbody>
                     <tfoot>
                         <tr>
                             <td class="space-column"></td>
+                            <td class="space-column"></td>
                             <td align="right" class="total-column">รวม</td>
-                            <td align="center" class="total-column">{$totalAmount}</td>
+                            <td align="right" class="total-column">{$totalAmount}</td>
+                            <td align="right" class="total-column">{$totalPrice}</td>
+                            <td align="right" class="total-column">{$totalDiscout}</td>
+                            <td align="right" class="total-column">{$totalRealPrice}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -126,12 +169,12 @@
             ไม่พบข้อมูลเพื่อออกรายงานในช่วงเวลาดังกล่าว
             {/if}
             </center>
+            <br><br>
+            <center>
+            <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
+            </center>
         </div>
 	</div>
-    <br><br>
-    <center>
-    <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
-    </center>
 </div>
 
 <!-- end page-->

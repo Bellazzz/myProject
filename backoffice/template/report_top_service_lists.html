@@ -67,12 +67,24 @@
             <br><br>
             
             <form method="post" action="report_top_service_lists.php" class="mbk-form-input-normal">
-                <input id="startDate" name="startDate" type="text" class="mbk-dtp-th form-input half" value="{if $startDate}{$startDate}{else}{$nowDate}{/if}">
-
-                <input id="endDate" name="endDate" type="text" class="mbk-dtp-th form-input half" value="{if $endDate}{$endDate}{else}{$nowDate}{/if}">
-
-                <input  type="hidden" name="submit" value="ออกรายงาน">
-                <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
+                <table>
+                    <tr>
+                        <td>เลือกวันที่เริ่มต้น </td>
+                        <td>เลือกวันที่สิ้นสุด </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="startDate" name="startDate" type="text" class="mbk-dtp-th form-input half" value="{if $startDate}{$startDate}{else}{$nowDate}{/if}">
+                        </td>
+                        <td>
+                            <input id="endDate" name="endDate" type="text" class="mbk-dtp-th form-input half" value="{if $endDate}{$endDate}{else}{$nowDate}{/if}">
+                        </td>
+                        <td>
+                            <input  type="hidden" name="submit" value="ออกรายงาน">
+                            <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
+                        </td>
+                    </tr>
+                </table>
             </form>
             
             <center>
