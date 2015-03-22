@@ -10,13 +10,17 @@
     <link rel="stylesheet" type="text/css" href="inc/datetimepicker/jquery.datetimepicker.css">
     <link rel="stylesheet" href="css/fontFace.css">
     <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="css/spaMain.css">
+    <link rel="stylesheet" href="css/header-v5.css">
     <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="inc/datetimepicker/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
     <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/spaMain.js"></script>
     <script src="js/shop.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
@@ -47,6 +51,9 @@
         			persons: $('#persons').val(),
         			bkg_date: getRealDate($('#bkg_date').val()),
         			bkg_time: $('#bkg_time').val(),
+        			pkg_picture: '{/literal}{$prdData.pkg_picture}{literal}',
+        			pkg_name: '{/literal}{$prdData.pkg_name}{literal}',
+        			pkg_price: $('input[name="realPrice"]').val()
         		},
         		success:
         		function(response) {
@@ -71,7 +78,7 @@
     </script>
     {/literal}
 </head>
-<body>
+<body class="header-fixed">
 {include file="_header.html"}
 <div class="page-wrapper">
 	<div class="container headerOffset">
@@ -96,8 +103,10 @@
 					{if $prdData.pkg_prmPrice}
 						<span class="price-sales">{$prdData.pkg_prmPrice|number_format:2:".":","} บาท</span> 
 			        	<span class="price-standard">{$prdData.pkg_price|number_format:2:".":","} บาท</span> 
+			        	<input type="hidden" name="realPrice" value="{$prdData.pkg_prmPrice}">
 					{else}
 						<span class="price-sales">{$prdData.pkg_price|number_format:2:".":","} บาท</span> 
+						<input type="hidden" name="realPrice" value="{$prdData.pkg_price}">
 					{/if}
 			    </div>
 			    <div class="product-time">

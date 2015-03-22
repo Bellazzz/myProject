@@ -1,204 +1,313 @@
-<header class="spa-header">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-3">
-				<div class="header-left clearfix">
-					<!-- logo -->
-					<div class="logo">
-						<a href="index.html"><img id="logo" src="img/spaLogo.png" alt="Abhaibhubajhr Day Spa" style="height:70px;"></a>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-7">
-				<nav class="navbar navbar-default" role="navigation">
-					<div class="container-fluid">
+<div class="header-v5 header-static">
+        <!-- Topbar v3 -->
+        <div class="topbar-v3">
+            <div class="search-open">
+                <div class="container">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <div class="search-close"><i class="icon-close"></i></div>
+                </div>    
+            </div>
 
-						<!-- Toggle get grouped for better mobile display -->
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="true">
-								<span class="sr-only">Toggle navigation</span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-						</div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="list-inline right-topbar pull-right">
+                            <li><a href="#">บัญชีของฉัน</a></li>
+                            <li><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
+                            <li><i class="search fa fa-search search-button"></i></li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!--/container-->
+        </div>
+        <!-- End Topbar v3 -->
 
-						<!-- Collect the nav links, forms, and other content for toggling -->
-						<div class="navbar-collapse collapse in" id="navbar-collapse-1" aria-expanded="true">
-							<ul class="nav navbar-nav">
-								<li {if $tplName == 'index.html'}class="active"{/if}>
-									<a href="index.php">หน้าแรก</a>
-								</li>
-								<li class="dropdown{if $tplName == 'shop_service_lists.html' || $tplName == 'shop_packages.html'} active{/if}">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">จอง <b class="caret"> </b></a>
-									<ul class="dropdown-menu">
-										<li>
-											<a href="shop_service_lists.php">รายการบริการ</a>
-										</li>
-										<li>
-											<a href="shop_packages.php">แพ็คเกจ</a>
-										</li>
-									</ul>
-								</li>													
-								<!-- mega-menu start -->
-								<li class="dropdown mega-menu" style="">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Pages <b class="caret"> </b></a>
-									<ul class="dropdown-menu">
-										<li>
-											<div class="row">
-												<div class="col-lg-4 col-md-3 hidden-sm">
-													<h4>Premium HTML5 Template</h4>
-													<p>iDea is perfectly suitable for corporate, business and company webpages.</p>
-													<img src="images/section-image-3.png" alt="iDea">
-												</div>
-												<div class="col-lg-8 col-md-9">
-													<h4>Pages</h4>
-													<div class="row">
-														<div class="col-sm-4">
-															<div class="divider"></div>
-															<ul class="menu">
-																<li><a href="page-about.html"><i class="icon-right-open"></i>About Us</a></li>
-																<li><a href="page-about-2.html"><i class="icon-right-open"></i>About Us 2</a></li>
-																<li><a href="page-about-3.html"><i class="icon-right-open"></i>About Us 3</a></li>
-																<li><a href="page-about-me.html"><i class="icon-right-open"></i>About Me</a></li>
-																<li><a href="page-team.html"><i class="icon-right-open"></i>Our Team - Options</a></li>
-																<li><a href="page-services.html"><i class="icon-right-open"></i>Services</a></li>
-															</ul>
-														</div>
-														<div class="col-sm-4">
-															<div class="divider"></div>
-															<ul class="menu">
-																<li><a href="page-contact.html"><i class="icon-right-open"></i>Contact</a></li>
-																<li><a href="page-contact-2.html"><i class="icon-right-open"></i>Contact 2</a></li>
-																<li><a href="page-coming-soon.html"><i class="icon-right-open"></i>Coming Soon Page</a></li>
-																<li><a href="page-404.html"><i class="icon-right-open"></i>404 error</a></li>
-																<li><a href="page-faq.html"><i class="icon-right-open"></i>FAQ page</a></li>
-																<li><a href="page-affix-sidebar.html"><i class="icon-right-open"></i>Sidebar - Affix Menu</a></li>
-															</ul>
-														</div>
-														<div class="col-sm-4">
-															<div class="divider"></div>
-															<ul class="menu">
-																<li><a href="page-left-sidebar.html"><i class="icon-right-open"></i>Left Sidebar</a></li>
-																<li><a href="page-right-sidebar.html"><i class="icon-right-open"></i>Right Sidebar</a></li>
-																<li><a href="page-two-sidebars.html"><i class="icon-right-open"></i>Two Sidebars</a></li>
-																<li><a href="page-no-sidebar.html"><i class="icon-right-open"></i>No Sidebars</a></li>
-																<li><a href="page-sitemap.html"><i class="icon-right-open"></i>Sitemap</a></li>
-																<li><a href="page-invoice.html"><i class="icon-right-open"></i>Invoice <span class="badge">v1.1</span></a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</li>
-								<!-- mega-menu end -->
-								<!-- mega-menu start -->
-								<li class="dropdown mega-menu" style="">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Components <b class="caret"> </b></a>
-									<ul class="dropdown-menu">
-										<li>
-											<div class="row">
-												<div class="col-sm-4 col-md-6">
-													<h4>iDea - Powerful Bootstrap Theme</h4>
-													<p>iDea is a Clean and Super Flexible Bootstrap Theme with many Features and Unlimited options.</p>
-													<img src="images/section-image-1.png" alt="image-1">
-												</div>
-												<div class="col-sm-8 col-md-6">
-													<h4>Components</h4>
-													<div class="row">
-														<div class="col-sm-6">
-															<div class="divider"></div>
-															<ul class="menu">
-																<li><a href="components-tabs-and-pills.html"><i class="icon-right-open"></i>Tabs &amp; Pills</a></li>
-																<li><a href="components-accordions.html"><i class="icon-right-open"></i>Accordions</a></li>
-																<li><a href="components-social-icons.html"><i class="icon-right-open"></i>Social Icons</a></li>
-																<li><a href="components-buttons.html"><i class="icon-right-open"></i>Buttons</a></li>
-																<li><a href="components-forms.html"><i class="icon-right-open"></i>Forms</a></li>
-																<li><a href="components-progress-bars.html"><i class="icon-right-open"></i>Progress bars</a></li>
-																<li><a href="components-alerts-and-callouts.html"><i class="icon-right-open"></i>Alerts &amp; Callouts</a></li>
-																<li><a href="components-content-sliders.html"><i class="icon-right-open"></i>Content Sliders</a></li>
-															</ul>
-														</div>
-														<div class="col-sm-6">
-															<div class="divider"></div>
-															<ul class="menu">
-																<li><a href="components-lightbox.html"><i class="icon-right-open"></i>Lightbox</a></li>
-																<li><a href="components-icon-boxes.html"><i class="icon-right-open"></i>Icon Boxes</a></li>
-																<li><a href="components-image-boxes.html"><i class="icon-right-open"></i>Image Boxes</a></li>
-																<li><a href="components-video-and-audio.html"><i class="icon-right-open"></i>Video &amp; Audio</a></li>
-																<li><a href="components-modals.html"><i class="icon-right-open"></i>Modals</a></li>
-																<li><a href="components-animations.html"><i class="icon-right-open"></i>Animations</a></li>
-																<li><a href="components-counters.html"><i class="icon-right-open"></i>Counters</a></li>
-																<li><a href="components-tables.html"><i class="icon-right-open"></i>Tables</a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</li>
-								<!-- mega-menu end -->
-								<li {if $tplName == 'about_us.html'}class="active"{/if}>
-									<a href="about_us.php">เกี่ยวกับเรา</a>
-								</li>
-							</ul>
-						</div>
+        <!-- Navbar -->
+        <div class="navbar navbar-default mega-menu" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html">
+                        <img id="logo-header" src="img/spaLogo.png" alt="Logo">
+                    </a>
+                </div>
 
-					</div>
-				</nav>
-
-			</div>
-			<div class="col-md-2">
-				<!-- <ul class="list-inline shop-badge badge-lists badge-icons pull-right visible-md visible-lg">
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="navbar-collapse navbar-responsive-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <!-- Shopping Cart -->
+                    <ul class="list-inline shop-badge badge-lists badge-icons pull-right">
                         <li>
                             <a href="#"><i class="fa fa-shopping-cart"></i></a>
-                            <span class="badge badge-sea rounded-x">3</span>
-                            <ul class="list-unstyled badge-open mCustomScrollbar _mCS_1 mCS-autoHide mCS_no_scrollbar" data-mcs-theme="minimal-dark" style="overflow: visible;"><div id="mCSB_1" class="mCustomScrollBox mCS-minimal-dark mCSB_vertical mCSB_outside" tabindex="0"><div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position: relative; top: 0px; left: 0px;" dir="ltr">
+                            <span class="badge badge-sea rounded-x">{$amountItemInCart}</span>
+                            <ul class="list-unstyled badge-open mCustomScrollbar" data-mcs-theme="minimal-dark">
+                                {foreach from=$session_bookingPkg key=i item=pkg}
                                 <li>
-                                    <img src="assets/img/thumb/05.jpg" alt="" class="mCS_img_loaded">
+                                    <img src="img/packages/{$pkg.pkg_picture}" alt="" class="mCS_img_loaded">
                                     <button type="button" class="close">×</button>
                                     <div class="overflow-h">
-                                        <span>Black Glasses</span>
-                                        <small>1 x $400.00</small>
+                                        <span>{$pkg.pkg_name}</span>
+                                        <small>{$pkg.persons} x {$pkg.pkg_price|number_format:2:".":","} บาท</small>
                                     </div>    
                                 </li>
+                                {/foreach}
+                                {foreach from=$session_bookingSvl key=i item=svl}
                                 <li>
-                                    <img src="assets/img/thumb/02.jpg" alt="" class="mCS_img_loaded">
+                                    <img src="img/service_lists/{$svl.svl_picture}" alt="" class="mCS_img_loaded">
                                     <button type="button" class="close">×</button>
                                     <div class="overflow-h">
-                                        <span>Black Glasses</span>
-                                        <small>1 x $400.00</small>
+                                        <span>{$svl.svl_name}</span>
+                                        <small>{$svl.persons} x {$svl.svl_price|number_format:2:".":","} บาท</small>
                                     </div>    
                                 </li>
-                                <li>
-                                    <img src="assets/img/thumb/03.jpg" alt="" class="mCS_img_loaded">
-                                    <button type="button" class="close">×</button>
-                                    <div class="overflow-h">
-                                        <span>Black Glasses</span>
-                                        <small>1 x $400.00</small>
-                                    </div>    
-                                </li>
+                                {/foreach}
                                 <li class="subtotal">
                                     <div class="overflow-h margin-bottom-10">
-                                        <span>Subtotal</span>
-                                        <span class="pull-right subtotal-cost">$1200.00</span>
+                                        <span>ราคาสุทธิ</span>
+                                        <span class="pull-right subtotal-cost">{$totalPriceInCart|number_format:2:".":","} บาท</span>
                                     </div>
                                     <div class="row">    
                                         <div class="col-xs-6">
-                                            <a href="shop-ui-inner.html" class="btn-u btn-brd btn-brd-hover btn-u-sea-shop btn-block">View Cart</a>
+                                            <a href="shopping_cart.php" class="btn-u btn-brd btn-brd-hover btn-u-sea-shop btn-block">ดูตระกร้าสินค้า</a>
                                         </div>
                                         <div class="col-xs-6">
-                                            <a href="shop-ui-add-to-cart.html" class="btn-u btn-u-sea-shop btn-block">Checkout</a>
+                                            <a href="shop-ui-add-to-cart.html" class="btn-u btn-u-sea-shop btn-block">ยืนยันการจอง</a>
                                         </div>
                                     </div>        
                                 </li>    
-                            </div></div><div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-minimal-dark mCSB_scrollTools_vertical" style="display: none;"><div class="mCSB_draggerContainer"><div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 50px; top: 0px; display: block; height: 298px; max-height: 364px;" oncontextmenu="return false;"><div class="mCSB_dragger_bar" style="line-height: 50px;"></div></div><div class="mCSB_draggerRail"></div></div></div></ul>
+                            </ul>
                         </li>
-                    </ul> -->
-			</div>
-		</div>
-	</div>
-</header>
+                    </ul>
+                    <!-- End Shopping Cart -->
+
+                    <!-- Nav Menu -->
+                    <ul class="nav navbar-nav">
+                        <!-- Pages -->
+                        <li class="active">
+                            <a href="index.php">
+                                หน้าแรก
+                            </a>
+                        </li>
+                        <!-- End Pages -->
+
+                        <!-- Promotion -->
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                จองรายการ
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="shop_service_lists.php">รายการบริการ</a>
+                                </li>
+                                <li>
+                                    <a href="shop_packages.php">แพ็คเกจ</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- End Promotion -->
+
+                        <!-- Gifts -->
+                        <li class="dropdown mega-menu-fullwidth">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">
+                                Gifts
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <div class="mega-menu-content">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-3 col-sm-12 col-xs-12 md-margin-bottom-30">
+                                                    <h3 class="mega-menu-heading">Pellentes que nec diam lectus</h3>
+                                                    <p>Proin pulvinar libero quis auctor pharet ra. Aenean fermentum met us orci, sedf eugiat augue pulvina r vitae. Nulla dolor nisl, molestie nec aliquam vitae, gravida sodals dolor...</p>
+                                                    <button type="button" class="btn-u btn-u-dark">Read More</button>
+                                                </div>
+                                                <div class="col-md-3 col-sm-4 col-xs-4 md-margin-bottom-30">
+                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/01.jpg" alt=""></a>
+                                                </div>
+                                                <div class="col-md-3 col-sm-4 col-xs-4 sm-margin-bottom-30">
+                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/02.jpg" alt=""></a>
+                                                </div>
+                                                <div class="col-md-3 col-sm-4 col-xs-4">
+                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/03.jpg" alt=""></a>
+                                                </div>
+                                            </div><!--/end row-->
+                                        </div><!--/end container-->
+                                    </div><!--/end mega menu content-->  
+                                </li>
+                            </ul><!--/end dropdown-menu-->
+                        </li>
+                        <!-- End Gifts -->
+
+                        <!-- Books -->
+                        <li class="dropdown mega-menu-fullwidth">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">
+                                Books
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <div class="mega-menu-content">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Clothe</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">New in</a></li>
+                                                        <li><a href="#">Coats &amp; Jackets</a></li>
+                                                        <li><a href="#">Jeans</a></li>
+                                                        <li><a href="#">Dresses</a></li>
+                                                        <li><a href="#">Shorts</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Skirts</a></li>
+                                                        <li><a href="#">T-Shirts</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Shoes</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Boots</a></li>
+                                                        <li><a href="#">FLats</a></li>
+                                                        <li><a href="#">Heels</a></li>
+                                                        <li><a href="#">Sandals</a></li>
+                                                        <li><a href="#">Sports</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Accessories</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">All accessories</a></li>
+                                                        <li><a href="#">Bags &amp; Purses</a></li>
+                                                        <li><a href="#">Scarvs &amp; Hats</a></li>
+                                                        <li><a href="#">Jewellery</a></li>
+                                                        <li><a href="#">Fragrance &amp; Beauty</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Lingerie</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Linger</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Slippers</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Nightwear</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Nightwear</a></li>
+                                                        <li><a href="#">Socks</a></li>
+                                                        <li><a href="#">Tights</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Mixed</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">New in</a></li>
+                                                        <li><a href="#">Coats &amp; Jackets</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Jeans</a></li>
+                                                        <li><a href="#">Dresses</a></li>
+                                                        <li><a href="#">Shorts</a></li>
+                                                        <li><a href="#">Skirts</a></li>
+                                                        <li><a href="#">T-shirts</a></li>
+                                                        <li><a href="#">Boots</a></li>
+                                                        <li><a href="#">Flats</a></li>
+                                                        <li><a href="#">Heels</a></li>
+                                                        <li><a href="#">Sandals</a></li>
+                                                        <li><a href="#">Sports</a></li>
+                                                        <li><a href="#">Socks</a></li>
+                                                        <li><a href="#">Tights</a></li>
+                                                    </ul>
+                                                </div>        
+
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Clothe</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">New in</a></li>
+                                                        <li><a href="#">Coats &amp; Jackets</a></li>
+                                                        <li><a href="#">Jeans</a></li>
+                                                        <li><a href="#">Dresses</a></li>
+                                                        <li><a href="#">Shorts</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Skirts</a></li>
+                                                        <li><a href="#">T-shirts</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Shoes</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Boots</a></li>
+                                                        <li><a href="#">Flats</a></li>
+                                                        <li><a href="#">Heels</a></li>
+                                                        <li><a href="#">Sandals</a></li>
+                                                        <li><a href="#">Sports</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Accessories</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">All accessories</a></li>
+                                                        <li><a href="#">Bags &amp; Purses</a></li>
+                                                        <li><a href="#">Scarvs &amp; Hats</a></li>
+                                                        <li><a href="#">Jewellery</a></li>
+                                                        <li><a href="#">Fragrance &amp; Beauty</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Lingerie</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Linger</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Slippers</a></li>
+                                                    </ul>
+                                                    <h3 class="mega-menu-heading">Nightwear</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">Nightwear</a></li>
+                                                        <li><a href="#">Socks</a></li>
+                                                        <li><a href="#">Tights</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="col-md-2 col-sm-6">
+                                                    <h3 class="mega-menu-heading">Mixed</h3>
+                                                    <ul class="list-unstyled style-list">
+                                                        <li><a href="#">New in</a></li>
+                                                        <li><a href="#">Coats &amp; Jackets</a> <span class="label label-danger-shop">New</span></li>
+                                                        <li><a href="#">Jeans</a></li>
+                                                        <li><a href="#">Dresses</a></li>
+                                                        <li><a href="#">Shorts</a></li>
+                                                        <li><a href="#">Skirts</a></li>
+                                                        <li><a href="#">T-shirts</a></li>
+                                                        <li><a href="#">Boots</a></li>
+                                                        <li><a href="#">Flats</a></li>
+                                                        <li><a href="#">Heels</a></li>
+                                                        <li><a href="#">Sandals</a></li>
+                                                        <li><a href="#">Sports</a></li>
+                                                        <li><a href="#">Socks</a></li>
+                                                        <li><a href="#">Tights</a> <span class="label label-danger-shop">New</span></li>
+                                                    </ul>
+                                                </div>
+                                            </div><!--/end row-->
+                                        </div><!--/end container-->
+                                    </div><!--/end mega menu content-->  
+                                </li>
+                            </ul><!--/end dropdown-menu-->
+                        </li>
+                        <!-- End Books -->
+
+                        <!-- Clothes -->
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" data-delay="1000">
+                                Clothes
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Jeans</a></li>
+                                <li><a href="#">T-shirts</a></li>
+                                <li><a href="#">Shorts</a></li>
+                            </ul>
+                        </li>
+                        <!-- End Clothes -->
+
+                        <!-- Main Demo -->
+                        <li><a href="../index.html">Main Demo</a></li>
+                        <!-- Main Demo -->
+                    </ul>
+                    <!-- End Nav Menu -->
+                </div>
+            </div>    
+        </div>            
+        <!-- End Navbar -->
+    </div>

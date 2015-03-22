@@ -16,7 +16,7 @@
 	$smarty->assign('nowTime', date('H:i'));
 	$smarty->assign('nowTimeFull', date('H:i:s'));
 
-	// Session
+	// Session login employee
 	if(isset($_SESSION['loggedin'])) {
 		$smarty->assign('session_loggedin', $_SESSION['loggedin']);
 	}
@@ -34,6 +34,20 @@
 		$smarty->assign('session_emp_surname', $_SESSION['emp_surname']);
 	}
 
+	// Session login customer
+	if(isset($_SESSION['cusLogin'])) {
+		$smarty->assign('session_cusLogin', $_SESSION['cusLogin']);
+	}
+	if(isset($_SESSION['cus_id'])) {
+		$session_cus_id = $_SESSION['cus_id'];
+		$smarty->assign('session_cus_id', $session_cus_id);
+	}
+	if(isset($_SESSION['cus_email'])) {
+		$smarty->assign('session_cus_email', $_SESSION['cus_email']);
+	}
+	if(isset($_SESSION['cus_fullname'])) {
+		$smarty->assign('session_cus_fullname', $_SESSION['cus_fullname']);
+	}
 
 	/*
 	 * Get Privileges
@@ -81,4 +95,25 @@
 			$smarty->assign("emp_privileges", $emp_privileges);
 		}
 	}
+
+	// Get session shopping cart
+	$amountItemInCart = 0;
+	$totalPriceInCart = 0;
+	if(isset($_SESSION['bookingPkg'])) {
+		$smarty->assign("session_bookingPkg", $_SESSION['bookingPkg']);
+		$amountItemInCart += count($_SESSION['bookingPkg']);
+		foreach ($_SESSION['bookingPkg'] as $key => $pkg) {
+			$totalPriceInCart += $pkg['persons'] * $pkg['pkg_price'];
+		}
+		
+	}
+	if(isset($_SESSION['bookingSvl'])) {
+		$smarty->assign("session_bookingSvl", $_SESSION['bookingSvl']);
+		$amountItemInCart += count($_SESSION['bookingSvl']);
+		foreach ($_SESSION['bookingSvl'] as $key => $svl) {
+			$totalPriceInCart += $svl['persons'] * $svl['svl_price'];
+		}
+	}
+	$smarty->assign('amountItemInCart', $amountItemInCart);
+	$smarty->assign('totalPriceInCart', $totalPriceInCart);
 ?>
