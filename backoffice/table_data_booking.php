@@ -227,6 +227,29 @@ if($rows > 0){
 						<td field="<?=$field?>"><?=$dateValue?></td>
 						<?
 					}
+					else if($field == 'status_id') {
+						$txtClass = 'statusHL-gray';
+						if($filter == 'PENDING_SERVICE') {
+							$txtClass = 'statusHL-blue';
+						} else if($filter == 'PENDING_PAYMENT') {
+							$txtClass = 'statusHL-darkYellow';
+						} else if($filter == 'REMAIN_SERVICE') {
+							$txtClass = 'statusHL-lightGreen';
+						} else if($filter == 'COMPLETED') {
+							$txtClass = 'statusHL-green';
+						} else if($filter == 'CANCEL') {
+							$txtClass = 'statusHL-red';
+						} else if($filter == 'FIXED_COMPLETED') {
+							$txtClass = 'statusHL-yellow';
+						}
+						?>
+						<td field="<?=$field?>">
+							<span class="statusHL <?php echo $txtClass; ?>">
+								<?=$value?>
+							</span>
+						</td>
+						<?
+					}
 					else {
 						?>
 						<td field="<?=$field?>"><?=$value?></td>

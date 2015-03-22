@@ -125,7 +125,7 @@
             padding-left: 20px;
             color: #666;
         }
-        .status-waiting, .status-complete {
+        .status-waiting, .status-complete, .status-remain {
             display: inline;
             padding: .3em .5em;
             font-size: 90%;
@@ -142,6 +142,9 @@
         }
         .status-complete {
             background-color: #5CB85C;
+        }
+        .status-remain {
+            background-color: #E79E1E;
         }
     </style>
     <script type="text/javascript">
@@ -335,7 +338,25 @@
             </tr>
             <tr>
                 <td>สถานะการจอง :</td>
-                <td><div id="status_id" class="selectReferenceJS text"></div></td>
+                <td>   
+                    {if $values.status_id == 'S02'}
+                    <span class="statusHL statusHL-darkYellow">
+                    {else if $values.status_id == 'S03'}
+                    <span class="statusHL statusHL-blue">
+                    {else if $values.status_id == 'S04'}
+                    <span class="statusHL statusHL-lightGreen">
+                    {else if $values.status_id == 'S05'}
+                    <span class="statusHL statusHL-green">
+                    {else if $values.status_id == 'S06'}
+                    <span class="statusHL statusHL-red">
+                    {else if $values.status_id == 'S07'}
+                    <span class="statusHL statusHL-yellow">
+                    {else}
+                    <span class="statusHL statusHL-gray">
+                    {/if}
+                        <div id="status_id" class="selectReferenceJS text"></div>
+                    </span>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -415,10 +436,12 @@
                 <td align="left">{$bkgpkg.bkgpkg_date}</td>
                 <td align="left">{$bkgpkg.bkgpkg_time} น.</td>
                 <td align="left">
-                    {if $bkgpkg.bkgpkg_status}
-                        <span class="status-complete">ใช้บริการแล้ว</span>
+                    {if $bkgpkg.bkgpkg_status == 2}
+                        <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+                    {else if $bkgpkg.bkgpkg_status == 1}
+                        <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
                     {else}
-                        <span class="status-waiting">ยังไม่ได้ใช้บริการ</span>
+                        <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
                     {/if}
                 </td>
             </tr>
@@ -457,10 +480,12 @@
                 <td align="left">{$bkgsvl.bkgsvl_date}</td>
                 <td align="left">{$bkgsvl.bkgsvl_time} น.</td>
                 <td align="left">
-                    {if $bkgsvl.bkgsvl_status}
-                        <span class="status-complete">ใช้บริการแล้ว</span>
+                    {if $bkgsvl.bkgsvl_status == 2}
+                        <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+                    {else if $bkgsvl.bkgsvl_status == 1}
+                        <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
                     {else}
-                        <span class="status-waiting">ยังไม่ได้ใช้บริการ</span>
+                        <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
                     {/if}
                 </td>
             </tr>

@@ -10,6 +10,7 @@ include('../config/config.php');
 $tplName = "form_$tableName.html";
 $subDir	 = WEB_ROOTDIR.'/backoffice/';
 include('../common/common_header.php');
+require('../common/function_form_services.php');
 $tableInfo = getTableInfo($tableName);
 
 if(!$_REQUEST['ajaxCall']) {
@@ -358,6 +359,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$sqlRefData = "	SELECT 		bkg_id refValue,
 												bkg_id refText 
 									FROM 		booking 
+									WHERE 		status_id IN ('S03','S04') 
 									ORDER BY 	refText DESC";
 					$refField 	= 'bkg_id';
 					break;
@@ -739,6 +741,14 @@ if(!$_REQUEST['ajaxCall']) {
 		// End service packages
 
 
+		// Update booking status
+		if($formData['bkg_id'] != '') {
+			if(!updateBookingStatus($formData['bkg_id'])) {
+				$insertResult = false;
+				$errTxt .= 'UPDATE_BOOKING_STATUS['.$formData['bkg_id'].']_FAIL\n';
+				$errTxt .= mysql_error($dbConn).'\n\n';
+			}
+		}
 
 		if($insertResult) {
 			$response['status'] = 'ADD_PASS';
@@ -1180,6 +1190,14 @@ if(!$_REQUEST['ajaxCall']) {
 		### End update service_service_lists & service_service_list_promotions & service_list_details
 
 		
+		// Update booking status
+		if($formData['bkg_id'] != '') {
+			if(!updateBookingStatus($formData['bkg_id'])) {
+				$insertResult = false;
+				$errTxt .= 'UPDATE_BOOKING_STATUS['.$formData['bkg_id'].']_FAIL\n';
+				$errTxt .= mysql_error($dbConn).'\n\n';
+			}
+		}
 
 		if($updateResult) {
 			$response['status'] = 'EDIT_PASS';

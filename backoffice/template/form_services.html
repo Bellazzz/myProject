@@ -266,7 +266,12 @@
                 showClearBtn    : true,
                 clearBtnText    : 'ไม่ระบุ',
                 success         :
-                function() {
+                function(defaultKey) {
+                    if(typeof(defaultKey) != 'undefined') {
+                        $('#addPackageBtn').css('display', 'none');
+                        $('#addServiceListBtn').css('display', 'none');
+                    }
+
                     $('#bkg_id').find('.clear-value-btn').click(function() {
                         $('#addPackageBtn').css('display', 'inline');
                         $('#addServiceListBtn').css('display', 'inline');

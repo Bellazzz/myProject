@@ -1640,6 +1640,49 @@ datetimepicker
 }
 
 /*
+ * ETC
+ */
+.statusHL {
+    display: inline;
+    padding: .3em .5em;
+    font-size: 90%;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+.statusHL.statusHL-gray {
+    background-color: #777777;
+}
+.statusHL.statusHL-yellow {
+    background-color: #E79E1E;
+}
+.statusHL.statusHL-darkYellow {
+    background-color: rgb(185, 189, 35);
+}
+.statusHL.statusHL-blue {
+    background-color: #428BCA;
+}
+.statusHL.statusHL-orange {
+    background-color: #E47422;
+}
+.statusHL.statusHL-red {
+    background-color: #D9534F;
+}
+.statusHL.statusHL-blueGreen {
+    background-color: #1ABC9C;
+}
+.statusHL.statusHL-lightGreen {
+    background-color: #9CC69C;
+}
+.statusHL.statusHL-green {
+    background-color: #5CB85C;
+}
+
+/*
  Paging
  */
  #pagingContainer {

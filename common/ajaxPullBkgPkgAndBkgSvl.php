@@ -21,7 +21,7 @@ $bkgDetails = array(
 $sql = "SELECT 		pkg_id 
 		FROM 		booking_packages 
 		WHERE 		bkg_id = '$bkg_id' AND 
-					bkgpkg_status = 0 AND 
+					bkgpkg_status != 2 AND 
 					bkgpkg_date = '$ser_date'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
@@ -36,7 +36,7 @@ if($rows > 0) {
 $sql = "SELECT 		svl_id 
 		FROM 		booking_service_lists 
 		WHERE 		bkg_id = '$bkg_id' AND 
-					bkgsvl_status = 0 AND 
+					bkgsvl_status != 2 AND 
 					bkgsvl_date = '$ser_date'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
