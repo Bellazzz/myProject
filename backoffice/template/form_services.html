@@ -156,6 +156,7 @@
         var refPkgData  = {/literal}{$referenceData["packages"]|@json_encode}{literal};
         var refSvlData  = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
         var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
+        var refBkgData  = {/literal}{$referenceData["booking"]|@json_encode}{literal};
         var refEmpData  = {/literal}{$referenceData["employees"]|@json_encode}{literal};
         var pkgPromotions   = {/literal}{$pkgPromotions|@json_encode}{literal};
         var svlPromotions   = {/literal}{$svlPromotions|@json_encode}{literal};
@@ -163,6 +164,7 @@
         var curCustypeId    = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
         var viewSerpkgData  = {/literal}{$viewSerpkgData|@json_encode}{literal};
         var viewSersvlData  = {/literal}{$viewSersvlData|@json_encode}{literal};
+        var nowDate = {/literal}{$nowDate}{literal};
 
         // Set valuesDetail
         {/literal}
@@ -257,9 +259,24 @@
             selectReferenceJS({
                 elem            : $('#bkg_id'),
                 data            : {/literal}{$referenceData["booking"]|@json_encode}{literal},
+                beforeShow      : allowChangeBookingId,
+                allowChangeOption   : saveOldBkgId,
+                onOptionSelect      : changeBkgId,
                 defaultValue    : '{/literal}{$values.bkg_id}{literal}',
                 showClearBtn    : true,
-                clearBtnText    : 'ไม่ระบุ'
+                clearBtnText    : 'ไม่ระบุ',
+                success         :
+                function(defaultKey) {
+                    if(typeof(defaultKey) != 'undefined') {
+                        $('#addPackageBtn').css('display', 'none');
+                        $('#addServiceListBtn').css('display', 'none');
+                    }
+
+                    $('#bkg_id').find('.clear-value-btn').click(function() {
+                        $('#addPackageBtn').css('display', 'inline');
+                        $('#addServiceListBtn').css('display', 'inline');
+                    });
+                }
             });
             $('#ser_date').datetimepicker({
                 lang                : 'th',
@@ -326,8 +343,8 @@
             <tr>
                 <td>อ้างอิงรหัสการจอง :</td>
                 <td>
-                    {if $values.bkg_id}
-                        {$values.bkg_id}
+                    {if $values.bkg_id != '-'}
+                        <a href="form_table.php?action=VIEW_DETAIL&tableName=booking&code={$values.bkg_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">{$values.bkg_id}</a>
                     {else}
                         ไม่ได้ระบุ
                     {/if}

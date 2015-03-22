@@ -1,6 +1,8 @@
 var oldCusId   = '';
 var oldCusName = '';
 var oldCusTypeId = '';
+var oldBkgId   = '';
+var oldBkgName = '';
 
 $(document).ready(function(){
 	$('#addPackageBtn').click(addPackage);
@@ -10,8 +12,6 @@ $(document).ready(function(){
     $('#ser_pay_price').change(calSummary);
 
 	setAllSerDetailAmount();
-
-	
 });
 
 function addItemForEdit() {
@@ -87,6 +87,30 @@ function getCusTypeId(cus_id) {
 	return '';
 }
 
+function saveOldBkgId() {
+    oldBkgId      = $('input[name="bkg_id"]').val();
+    oldBkgName    = $('#bkg_id').find('.selectReferenceJS-text').text();
+    return true;
+}
+
+function setBookingId(bkg_id) {
+    for(i in refBkgData) {
+        if(refBkgData[i].refValue == bkg_id) {
+            var bookingId = refBkgData[i].bkg_id;
+            $('#bkg_id_' + bookingId).click();
+        }
+    }
+}
+
+function getBookingId(bkg_id) {
+    for(i in refBkgData) {
+        if(refBkgData[i].refValue == bkg_id) {
+            return refBkgData[i].bkg_id;
+        }
+    }
+    return '';
+}
+
 function getPkgRow(pkg_id) {
 	for(i in refPkgData) {
 		if(refPkgData[i].refValue == pkg_id) {
@@ -123,6 +147,7 @@ function changeCusId() {
 	                function() {
 	                    $('#service-package-table tr:not(.headTable-row)').remove();
 	                    $('#service-service-list-table tr:not(.headTable-row)').remove();
+                        $('#bkg_id').find('.clear-value-btn').click();
 	                    setAllSerDetailAmount();
 	                    setCusTypeId(newCusId);
 	                    calSummary();
@@ -165,6 +190,136 @@ function allowChangeCusTypeId() {
         ],
         boxWidth: 500
     });
+}
+
+function allowChangeBookingId() {
+    var alert = false;
+    var title = '';
+    var msg = '';
+
+    if(action == 'EDIT') {
+        title = 'ไม่สามารถแก้ไขรหัสการจองได้';
+        msg = 'การใช้บริการที่บันทึกแล้วจะไม่สามารถแก้ไขรหัสการจองได้';
+        alert = true;
+    } else if($('input[name="cus_id"]').val() == '') {
+        title = 'กรุณาเลือกผู้ใช้บริการ';
+        msg = 'กรุณาเลือกผู้ใช้บริการก่อนจึงจะสามารถเลือกรหัสการจองได้';
+        alert = true;
+    } else {
+        return true;
+    }
+
+    if(alert) {
+        parent.showActionDialog({
+            title: title,
+            message: msg,
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        return false;
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+    }
+}
+
+function changeBkgId() {
+    newBkgId = $('input[name="bkg_id"]').val();
+    if(($('input[name="pkg_id[]"]').length > 0 || $('input[name="svl_id[]"]').length > 0) 
+        && getBookingId(oldCusId) != getBookingId(newBkgId)) {
+        var msg         = 'การเปลี่ยนรหัสการจองจำเป็นต้องเคลียร์ข้อมูลรายละเอียดการใช้บริการใหม่ '
+                        + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนรหัสการจอง?';
+        parent.showActionDialog({
+            title: 'เปลี่ยนรหัสการจอง',
+            message: msg,
+            actionList: [
+                {
+                    id: 'change',
+                    name: 'เปลี่ยน',
+                    desc: 'ข้อมูลรายละเอียดการใช้บริการจะถูกเคลียร์',
+                    func:
+                    function() {
+                        $('#service-package-table tr:not(.headTable-row)').remove();
+                        $('#service-service-list-table tr:not(.headTable-row)').remove();
+                        $('#addPackageBtn').css('display', 'none');
+                        $('#addServiceListBtn').css('display', 'none');
+                        setBookingId(newBkgId);
+                        pullBkgPkgAndBkgSvl(function() {
+                            setAllSerDetailAmount();
+                            calSummary();
+                        });
+                        parent.hideActionDialog();
+                    }
+                },
+                {
+                    id: 'cancel',
+                    name: 'ยกเลิก',
+                    desc: 'ยกเลิกการเปลี่ยนรหัสการจอง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        $('#bkg_id').find('.selectReferenceJS-input').val(oldBkgId);
+                        $('#bkg_id').find('.selectReferenceJS-text').text(oldBkgId);
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+    } else {
+        setBookingId(newBkgId);
+        if(newBkgId != '') {
+            pullBkgPkgAndBkgSvl();
+        }
+    }
+}
+
+function pullBkgPkgAndBkgSvl(success) {
+    var serDate = nowDate;
+    if($('#ser_date').val() != '') {
+        serDate = getRealDate($('#ser_date').val());
+    }
+
+    $.ajax({
+        url: '../common/ajaxPullBkgPkgAndBkgSvl.php',
+        type: 'POST',
+        data: {
+            bkg_id: $('input[name="bkg_id"]').val(),
+            ser_date: serDate
+        },
+        success:
+        function(responseJSON) {
+            var response = $.parseJSON(responseJSON);
+            for(i in response.pkg) {
+                addPackage({
+                    defaultValue    : true,
+                    pullPkg         : true,
+                    pkg_id          : response.pkg[i],
+                    pkg_qty         : 1
+                });
+            }
+            for(i in response.svl) {
+                addServiceList({
+                    defaultValue : true,
+                    pullSvl         : true,
+                    svl_id      : response.svl[i],
+                    svl_qty     : 1,
+                });
+            }
+
+            $('#addPackageBtn').css('display', 'none');
+            $('#addServiceListBtn').css('display', 'none');
+
+            if(typeof(success) == 'function') {
+                success();
+            }
+        }
+    })
 }
 
 function addPackage(data) {
@@ -241,6 +396,7 @@ function addPackage(data) {
         elem            : $('#' + inputKeyId),
         data            : refPkgData,
         defaultValue    : selectRefDefault,
+        beforeShow      : allowChangePackage,
         onOptionSelect  :
         function() {
             var curPkgId = $('#' + inputKeyId).find('input[name="pkg_id[]"]').val();
@@ -259,11 +415,17 @@ function addPackage(data) {
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
-            if(typeof(defaultKey) != 'undefined') {
+            if(typeof(defaultKey) != 'undefined' && typeof(data.serpkg_id) != 'undefined') {
                 addServiceListOfPackage({
                     pkg_id          : defaultKey,
                     parentRandNum   : randNum,
                     addPkgCom       : false
+                });
+            }
+            if(typeof(data.pullPkg) != 'undefined') {
+                addServiceListOfPackage({
+                    pkg_id          : defaultKey,
+                    parentRandNum   : randNum,
                 });
             }
         },
@@ -278,6 +440,29 @@ function addPackage(data) {
         addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
         calSummary();
     });
+
+    function allowChangePackage() {
+        if($('input[name="bkg_id"]') != '') {
+            parent.showActionDialog({
+                title: 'ไม่สามารถเปลี่ยนแพ็คเกจได้',
+                message: 'ไม่สามารถเลือกแพ็คเกจอื่นนอกเหนือจากแพ็คเกจที่ลูกค้าจองไว้',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            return false;
+                        }
+                    }
+                ],
+                boxWidth: 500
+            });
+        } else {
+            return true;
+        }
+    }
 }
 
 function removePackage(randNum) {
@@ -592,6 +777,7 @@ function addServiceList(data) {
         elem            : $('#' + inputKeyId),
         data            : refSvlData,
         defaultValue    : selectRefDefault,
+        beforeShow      : allowChangeServiceList,
         onOptionSelect  :
         function() {
             pullSvlUnitPrice(inputKeyId);
@@ -618,6 +804,21 @@ function addServiceList(data) {
             pullSvlUnitPrice(inputKeyId);
             addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
             calSummary();
+
+            if(typeof(data.pullSvl) != 'undefined') {
+                var svlComTr = $('#serviceListComRow_' + randNum);
+                if(svlComTr.find('.com-list-container').length == 0) {
+                    addServiceListCommission({
+                        svl_id: $('#' + inputKeyId).find('input[name="svl_id[]"]').val(),
+                        parentRandNum: randNum
+                    });
+                } else {
+                    var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+                    svlComTr.find('.svlCom_hidden_svldtl_id').remove();
+                    svlComTr.find('.emp_id').attr('name', 'svlCom_' + empId + '_emp_id[]');
+                    svlComTr.find('.com_rate').attr('name', 'svlCom_' + empId + '_com_rate[]');
+                } 
+            }
         },
         group           : 'service_lists'
     });
@@ -631,7 +832,28 @@ function addServiceList(data) {
         calSummary();
     });
 
-    
+    function allowChangeServiceList() {
+        if($('input[name="bkg_id"]') != '') {
+            parent.showActionDialog({
+                title: 'ไม่สามารถเปลี่ยนรายการบริการได้',
+                message: 'ไม่สามารถเลือกรายการบริการอื่นนอกเหนือจากรายการบริการที่ลูกค้าจองไว้',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            return false;
+                        }
+                    }
+                ],
+                boxWidth: 500
+            });
+        } else {
+            return true;
+        }
+    }
 }
 
 function addServiceListCommission(data) {

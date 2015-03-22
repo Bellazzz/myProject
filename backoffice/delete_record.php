@@ -297,6 +297,13 @@ if($tableName == 'packages') {
 			echo "DELETE_SERVICE_PACKAGES : $err";
 			exit();
 		}
+
+		// Update booking status
+		require('../common/function_form_services.php');
+		$serviceRecord = new TableSpa('services', $ser_id);
+		$bkg_id = $serviceRecord->getFieldValue('bkg_id');
+		updateBookingStatus($bkg_id);
+
 	}
 } else if($tableName == 'booking') {
 	foreach($keySelected as $index => $bkg_id) {
