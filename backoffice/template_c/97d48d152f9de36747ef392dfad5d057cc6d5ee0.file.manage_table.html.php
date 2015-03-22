@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2015-01-28 21:59:44
+<?php /* Smarty version Smarty-3.1.18, created on 2015-03-22 18:08:36
          compiled from "C:\AppServ\www\myProject\backoffice\template\manage_table.html" */ ?>
 <?php /*%%SmartyHeaderCode:918754c8f960514054-88705679%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '97d48d152f9de36747ef392dfad5d057cc6d5ee0' => 
     array (
       0 => 'C:\\AppServ\\www\\myProject\\backoffice\\template\\manage_table.html',
-      1 => 1421938872,
+      1 => 1426963875,
       2 => 'file',
     ),
   ),
@@ -15,15 +15,13 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   'function' => 
   array (
   ),
-  'variables' => 
-  array (
-    'session_loggedin' => 0,
-    'session_emp_name' => 0,
-    'session_emp_surname' => 0,
-  ),
-  'has_nocache_code' => false,
   'version' => 'Smarty-3.1.18',
   'unifunc' => 'content_54c8f9606211d8_50203271',
+  'variables' => 
+  array (
+    'emp_privileges' => 0,
+  ),
+  'has_nocache_code' => false,
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_54c8f9606211d8_50203271')) {function content_54c8f9606211d8_50203271($_smarty_tpl) {?>﻿<!DOCTYPE html>
 <html>
@@ -36,6 +34,14 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <script type="text/javascript">
+    /*
+     * Remind product min amount
+     */
+     <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['view_orders']&&$_smarty_tpl->tpl_vars['emp_privileges']->value['insert_orders']) {?>
+        // remindProductMinAmount();
+     <?php }?>
+    </script>
 	
 </head>
 <body>
@@ -49,53 +55,11 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     </div>
 <div id="page">
 	<div id="wrapper">
-		<div id="header">
-			<div id="header-logo">
-				<img src="../img/backoffice/logo-back-office.png">
-			</div>
-			<ul class="nav">
-				<li>
-                    <a href="#" class="selected">
-                        <img src="../img/backoffice/nav-manage-table.png"><br>
-                        จัดการข้อมูล
-                    </a>
-                </li>
-				<li>
-                    <a href="../pos/select_shops.php" class="selected">
-                        <img src="../img/backoffice/nav-cacher.png"><br>
-                        แคชเชียร์
-                    </a>
-                </li>
-				<li>
-                    <a href="#">
-                        <img src="../img/backoffice/nav-authen.png"><br>
-                        จัดการสิทธิ์
-                    </a>
-                </li>
-				<li>
-                    <a href="#">
-                        <img src="../img/backoffice/nav-web.png"><br>
-                        จัดการเว็บไซต์
-                    </a>
-                </li>
-			</ul>
-			<ul id="header-tool">
-				<li>
-                    <div id="account-box">
-                        <?php if ($_smarty_tpl->tpl_vars['session_loggedin']->value) {?>
-                        <b>คุณ<?php echo $_smarty_tpl->tpl_vars['session_emp_name']->value;?>
- <?php echo $_smarty_tpl->tpl_vars['session_emp_surname']->value;?>
-</b>
-                        <a href="logout.php" class="normal-link" style="color: rgb(60, 60, 60);">ออกจากระบบ</a>
-                        <?php } else { ?>
-                        <a href="login.php">เข้าสู่ระบบ</a>
-                        <?php }?>
-                    </div>
-                </li>
-			</ul>
-		</div>
+		<?php echo $_smarty_tpl->getSubTemplate ("_manage_table_header.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
 		<div class="sidebar" aria-expanded="true">
             <div class="sidebar-body">
+            <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['manage_standard_tables']) {?>
                 <div class="tree-view">
 			        <div class="tree-view-root">
                         <a>
@@ -210,6 +174,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 				        </ul>
 			        </div>
 		        </div>
+            <?php }?>
 		        <div class="tree-view">
 			        <div class="tree-view-root">
                         <a>
@@ -372,12 +337,14 @@ $_valid = $_smarty_tpl->decodeProperties(array (
                                     <span class="item-label">รายละเอียดโปรโมชั่นที่จอง</span>
                                 </a>
                             </li>-->
+                            <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['view_services']) {?>
 					        <li id="tn-services">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-services"></span>
                                     <span class="item-label">การใช้บริการ</span>
                                 </a>
 					        </li>
+                            <?php }?>
                             <!--<li id="tn-service_service_lists">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-service_service_lists"></span>
@@ -420,12 +387,14 @@ $_valid = $_smarty_tpl->decodeProperties(array (
                                     <span class="item-label">การตรวจธาตุ</span>
                                 </a>
 					        </li>
+                            <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['view_orders']) {?>
 					        <li id="tn-orders">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-orders"></span>
                                     <span class="item-label">การสั่งซื้อ</span>
                                 </a>
 					        </li>
+                            <?php }?>
                             <!--<li id="tn-order_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-order-details"></span>
@@ -442,26 +411,33 @@ $_valid = $_smarty_tpl->decodeProperties(array (
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-receive-details"></span>
                                     <span class="item-label">รายละเอียดการรับ</span>
-                                </a>-->
-                            </li>
+                                </a>
+                            </li>-->
+
+                            <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['view_withdraws']) {?>
                             <li id="tn-withdraws">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-withdraws"></span>
                                     <span class="item-label">การเบิก</span>
                                 </a>
                             </li>
+                            <?php }?>
+
                             <!--<li id="tn-withdraw_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-withdraw_details"></span>
                                     <span class="item-label">รายละเอียดการเบิก</span>
-                                </a>-->
-                            </li>
+                                </a>
+                            </li>-->
+
+                            <?php if ($_smarty_tpl->tpl_vars['emp_privileges']->value['view_sales']) {?>
 					        <li id="tn-sales">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-sales"></span>
                                     <span class="item-label">การขาย</span>
                                 </a>
 					        </li>
+                            <?php }?>
                              <!--<li id="tn-sale_details">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-sale_details"></span>
@@ -485,7 +461,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 						<h1>กำลังโหลด...</h1>
 					</div>
                     <div>
-                        <button id="add-record-btn" class="button large button-icon button-icon-add">เพิ่ม</button>
+                        <button id="add-record-btn" class="button button-icon button-icon-add">เพิ่ม</button>
 						<div class="search-container">
                             <select id="search-record-filter" class="mbk-select" name="search-record-filter">
                             </select>

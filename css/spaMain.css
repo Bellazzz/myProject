@@ -22,6 +22,16 @@ a {
   transition: all .2s ease-in;
   cursor: pointer;
 }
+h2 {
+  font-size: 24px;
+  line-height: 28px;
+}
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
 @media (min-width: 992px) {
   .headerOffset {
     padding-top: 30px;
@@ -961,3 +971,15 @@ tr.CartProduct td:nth-child(2) {
   color: #4ec67f;
 }
 
+/*
+ * Account Login
+ */
+h2.block-title-2, .formBox h3, .block-title-2 {
+  border-bottom: 1px solid #CECECE;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 0 15px;
+  padding: 10px 0 0;
+  position: relative;
+  text-transform: uppercase;
+}
