@@ -34,9 +34,12 @@ if($row > 0) {
 	$_SESSION['cus_fullname'] 	= $empRow['cus_name']." ".$empRow['cus_surname'];
 
 	// Remember me
-	if(isset($_POST['rememberMe'])) {
+	if(isset($formData['rememberMe'])) {
 		if(!isset($_COOKIE['cusRememberMe'])) {
-			setcookie("cusRememberMe", $cookie_value, time() + (2592000 * 30), "/"); // 86400 = 1 day
+			setcookie("cusRememberMe", true, time() + (86400 * 30), "/"); // 86400 = 1 day
+			setcookie("cus_id", $_SESSION['cus_id'], time() + (86400 * 30), "/"); 
+			setcookie("cus_email", $_SESSION['cus_email'], time() + (86400 * 30), "/");
+			setcookie("cus_fullname", $_SESSION['cus_fullname'], time() + (86400 * 30), "/");
 		}
 	}
 	

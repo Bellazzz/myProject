@@ -1,6 +1,5 @@
 <?php
 session_start();
-//require('check_session.php');
 include('config/config.php');
 include('common/common_header.php');
 

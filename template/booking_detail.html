@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abhaibhubajhr Day Spa</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="inc/Flat-UI-master/dist/css/flat-ui.css">
+    <link rel="stylesheet" href="css/fontFace.css">
+    <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="css/header-v5.css">
+    <link rel="stylesheet" href="css/spaMain.css">
+    <link rel="stylesheet" href="css/footable.css">
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+    <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/spaMain.js"></script>
+    <style type="text/css">
+    .table {
+      margin-bottom: 0 !important;
+    }
+    #cart-summary tr td:nth-child(2) {
+      text-align: left !important;
+      width: 100%;
+      padding-left: 20px;
+    }
+    </style>
+</head>
+<body class="header-fixed">
+{include file="_header.html"}
+<div class="page-wrapper">
+    <div class="container headerOffset">
+        <div class="row">
+          <div class="breadcrumbDiv col-md-12 col-lg-12">
+            <ul class="breadcrumb">
+                  <li><a href="index.php"><i class="fa fa-home"></i> หน้าแรก</a></li>
+                  <li><a href="myaccount.php">บัญชีของฉัน</a></li>
+                  <li><a href="booking_history.php">ประวัติการจอง</a></li>
+                  <li class="active">ข้อมูลการจอง</li>
+               </ul>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-9 col-md-9">
+              <h1 class="section-title-inner">
+                <span><i class="fa fa-list-alt"></i> ข้อมูลการจอง </span>
+              </h1>
+            </div>
+            <div class="col-lg-3 col-md-3 rightSidebar">
+              <h4 class="caps">
+                <a href="booking_history.php"><i class="fa fa-chevron-left"></i> ประวัติการจอง</a>
+              </h4>
+            </div>
+        </div>
+        {if $bkgData}
+        <!-- Begin cart -->
+        <div class="row">
+          <div class="{if $displayPayment}col-lg-8 col-md-8{else}col-lg-9 col-md-9{/if} rightSidebar">
+              <div class="row userInfo">
+                <div class="col-xs-12 col-sm-12">
+                  <h2 class="block-title-2"><span>ข้อมูลการจอง</span></h2>
+                  <div class="w100 cartMiniTable" style="margin-bottom:10px;">
+                    <table id="cart-summary" class="std table">
+                      <tbody>
+                        <tr>
+                          <td>รหัสการจอง</td>
+                          <td>{$bkgData.bkg_id}</td>
+                        </tr>
+                        <tr>
+                          <td>วันที่ทำการจอง</td>
+                          <td>{$bkgData.bkg_date_th}</td>
+                        </tr>
+                        <tr>
+                          <td>เวลาที่ทำการจอง</td>
+                          <td>{$bkgData.bkg_time} น.</td>
+                        </tr>
+                        <tr>
+                          <td>ราคาสุทธิ</td>
+                          <td>{$bkgData.bkg_total_price|number_format:2:".":","} บาท</td>
+                        </tr>
+                        <tr>
+                          <td>สถานะการจอง</td>
+                          <td>
+                            {if $bkgData.status_id == 'S02'}
+                              <span class="statusHL statusHL-darkYellow">{$bkgData.bkgstat_name}</span>
+                            {else if $bkgData.status_id == 'S03'}
+                              <span class="statusHL statusHL-blue">{$bkgData.bkgstat_name}</span>
+                            {else if $bkgData.status_id == 'S04'}
+                              <span class="statusHL statusHL-lightGreen">{$bkgData.bkgstat_name}</span>
+                            {else if $bkgData.status_id == 'S05'}
+                              <span class="statusHL statusHL-green">{$bkgData.bkgstat_name}</span>
+                            {else if $bkgData.status_id == 'S06'}
+                              <span class="statusHL statusHL-red">{$bkgData.bkgstat_name}</span>
+                            {else if $bkgData.status_id == 'S07'}
+                              <span class="statusHL statusHL-yellow">{$bkgData.bkgstat_name}</span>
+                            {else}
+                              <span class="statusHL statusHL-gray">{$bkgData.bkgstat_name}</span>
+                            {/if}
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="cartContent w100">
+                        <table class="cartTable table-responsive" style="width:100%">
+                            <tbody>
+                        
+                              <tr class="CartProduct cartTableHeader">
+                                  <td style="width:15%">รายการ</td>
+                                  <td style="width:25%"></td>
+                                  <td style="width:10%">ผู้ใช้บริการ</td>
+                                  <td style="width:25%">วันเวลาที่จอง</td>
+                                  <td style="width:25%">สถานะ</td>
+                              </tr>
+                              <!-- Package Session -->
+                              {foreach from=$pkgList key=pkg_id item=pkg}
+                              <tr class="CartProduct">
+                                  <td class="CartProductThumb">
+                                    <div class="CartProductThumb-image">
+                                      <a href="product_detail_pkg.php?id={$pkg.pkg_id}">
+                                        <img src="img/packages/{$pkg.pkg_picture}" alt="img">
+                                      </a>
+                                    </div>
+                                    <div class="CartDescription CartProductThumb-desc">
+                                      <h4> 
+                                          <a href="product_detail_pkg.php?id={$pkg.pkg_id}">{$pkg.pkg_name}</a>
+                                        </h4>
+                                        <div>
+                                          <span>รายการละ {$pkg.pkg_price|number_format:2:".":","} บาท</span>
+                                        </div>
+                                        <div>
+                                          <span>วันที่จอง {$pkg.bkgpkg_date_th} เวลา {$pkg.bkgpkg_time} น.</span>
+                                        </div>
+                                    </div>
+                                  </td>
+                                  <td class="mainDesc-col">
+                                    <a href="product_detail_pkg.php?id={$pkg.pkg_id}">
+                                      {$pkg.pkg_name}
+                                    </a>
+                                  </td>
+                                  <td class="mainDesc-col">{$pkg.bkgpkg_persons}</td>
+                                  <td class="mainDesc-col">{$pkg.bkgpkg_date_th} เวลา {$pkg.bkgpkg_time} น.</td>
+                                  <td style="text-align:right;">
+                                    {if $pkg.bkgpkg_status == 2}
+                                        <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+                                    {else if $pkg.bkgpkg_status == 1}
+                                        <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
+                                    {else}
+                                        <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
+                                    {/if}
+                                  </td>
+                              </tr>
+                              {/foreach}
+
+
+                              <!-- Service list Session -->
+                              {foreach from=$svlList key=svl_id item=svl}
+                              <tr class="CartProduct">
+                                  <td class="CartProductThumb">
+                                    <div class="CartProductThumb-image">
+                                      <a href="product_detail_svl.php?id={$svl.svl_id}">
+                                        <img src="img/service_lists/{$svl.svl_picture}" alt="img">
+                                      </a>
+                                    </div>
+                                    <div class="CartDescription CartProductThumb-desc">
+                                      <h4> 
+                                          <a href="product_detail_svl.php?id={$svl.svl_id}">{$svl.svl_name}</a>
+                                        </h4>
+                                        <div>
+                                          <span>รายการละ {$svl.svl_price|number_format:2:".":","} บาท</span>
+                                        </div>
+                                        <div>
+                                          <span>วันที่จอง {$svl.bkgsvl_date_th} เวลา {$svl.bkgsvl_time} น.</span>
+                                        </div>
+                                    </div>
+                                  </td>
+                                  <td class="mainDesc-col">
+                                    <a href="product_detail_svl.php?id={$svl.svl_id}">
+                                      {$svl.svl_name}
+                                    </a>
+                                  </td>
+                                  <td class="mainDesc-col">{$svl.bkgsvl_persons}</td>
+                                  <td class="mainDesc-col">{$svl.bkgsvl_date_th} เวลา {$svl.bkgsvl_time} น.</td>
+                                  <td style="text-align:right;">
+                                    {if $svl.bkgsvl_status == 2}
+                                        <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+                                    {else if $bkgsvl.bkgsvl_status == 1}
+                                        <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
+                                    {else}
+                                        <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
+                                    {/if}
+                                  </td>
+                              </tr>
+                              {/foreach}                 
+                            </tbody>
+                        </table>
+                      </div>
+                      <!--cartContent-->
+                </div>
+                </div>
+                <!--/row end--> 
+            </div>
+
+            {if $displayPayment}
+            <div class="col-lg-4 col-md-4 rightSidebar">
+              <h2 class="block-title-2"><span>ข้อมูลการชำระเงิน</span></h2>
+              <div class="contentBox">
+                <div class="w100 cartMiniTable">
+                  <table id="cart-summary" class="std table">
+                    <tbody>
+                      <tr>
+                        <td>บัญชีธนาคาร</td>
+                        <td>
+                          {if $bkgData.bnkacc_name != ''}
+                            {$bkgData.bnkacc_name}
+                          {else}
+                            -
+                          {/if}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>วันที่โอน</td>
+                        <td>
+                          {if $bkgData.bkg_transfer_date_th != ''}
+                            {$bkgData.bkg_transfer_date_th} 
+                          {else}
+                            -
+                          {/if}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>เวลาที่โอน</td>
+                        <td>
+                          {if $bkgData.bkg_transfer_time != ''}
+                            {$bkgData.bkg_transfer_time} น.
+                          {else}
+                            -
+                          {/if}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>จำนวนเงินที่โอน</td>
+                        <td>
+                          {if $bkgData.bkg_transfer_money != ''}
+                            {$bkgData.bkg_transfer_money|number_format:2:".":","} บาท
+                          {else}
+                            -
+                          {/if}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="vertical-align: top;">รูปภาพ</td>
+                        <td>
+                          {if $bkgData.bkg_transfer_evidence != ''}
+                          <img src="img/booking/{$bkgData.bkg_transfer_evidence}" style="max-width: 100%;">
+                          {else}
+                          -
+                          {/if}
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+                {if $displayBtnEditPayment}
+                <a class="btn btn-primary btn-lg btn-block " title="edit payment" href="edit_payment.php" style="margin-top:20px"><i class="fa fa-pencil"></i> &nbsp;แก้ไขข้อมูลการชำระเงิน</a>
+                {/if}
+              </div>
+              <!-- End popular --> 
+              
+            </div>
+            <!--/rightSidebar--> 
+            {/if}
+
+          </div>
+        <!-- End cart -->
+        {else}
+        ไม่พบข้อมูลการจองรหัสนี้ในประวัติการจองของคุณ
+        {/if}
+    </div>
+</div>
+{include file="_footer.html"}
+</body>
+</html>

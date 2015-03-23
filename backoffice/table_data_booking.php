@@ -13,8 +13,7 @@ $sortBy		= 'desc';
 $filter 		= $_REQUEST['filter'];
 $filterRetroact = $_REQUEST['filterRetroact'];
 $pathPic = '../img/booking/';
-$where		= 'WHERE b.cus_id = c.cus_id AND b.emp_id = e.emp_id AND '
-			. 'b.status_id = s.bkgstat_id ';
+$where		= 'WHERE ';
 $order		= $_REQUEST['order'];
 $tableInfo	= getTableInfo($tableName);
 $retroactDate 	= '';
@@ -47,35 +46,39 @@ if(hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) {
 		$like = str_replace('status_id', 'bs.bkgstat_name', $like);
 	}
 
-	$where		   .= ' AND '.$like;
+	$where		   .= ' '.$like;
 }
 
 // Generate filter
 if(hasValue($_REQUEST['filter'])) {
+	if($where != 'WHERE ') {
+		$where .= ' AND ';
+	}
+
 	$filter = $_REQUEST['filter'];
 	if($filter == 'PENDING_CHECK') {
-		$where .= " AND status_id = 'S01' ";
+		$where .= "status_id = 'S01' ";
 		$whereAllRecord = " WHERE status_id = 'S01' ";
 	} else if($filter == 'PENDING_PAYMENT') {
-		$where .= " AND status_id = 'S02' ";
+		$where .= "status_id = 'S02' ";
 		$whereAllRecord = " WHERE status_id = 'S02' ";
 	} else if($filter == 'PENDING_SERVICE') {
-		$where .= " AND status_id = 'S03' ";
+		$where .= "status_id = 'S03' ";
 		$whereAllRecord = " WHERE status_id = 'S03' ";
 	} else if($filter == 'REMAIN_SERVICE') {
-		$where .= " AND status_id = 'S04' ";
+		$where .= "status_id = 'S04' ";
 		$hideIconCol = true; // hide column action icon in thead
 		$whereAllRecord = " WHERE status_id = 'S04' ";
 	} else if($filter == 'COMPLETED') {
-		$where .= " AND status_id = 'S05' ";
+		$where .= "status_id = 'S05' ";
 		$hideIconCol = true; // hide column action icon in thead
 		$whereAllRecord = " WHERE status_id = 'S05' ";
 	} else if($filter == 'CANCEL') {
-		$where .= " AND status_id = 'S06' ";
+		$where .= "status_id = 'S06' ";
 		$hideIconCol = true; // hide column action icon in thead
 		$whereAllRecord = " WHERE status_id = 'S06' ";
 	} else if($filter == 'FIXED_COMPLETED') {
-		$where .= " AND status_id = 'S07' ";
+		$where .= "status_id = 'S07' ";
 		$hideIconCol = true; // hide column action icon in thead
 		$whereAllRecord = " WHERE status_id = 'S07' ";
 	}
@@ -96,8 +99,11 @@ $sql = "SELECT 	b.bkg_id,
 				CONCAT(c.cus_name, ' ', c.cus_surname) cus_id,
 				CONCAT(e.emp_name, ' ', e.emp_surname) emp_id,
 				b.bkg_date,
-				s.bkgstat_name status_id 
-		FROM booking b, booking_status s, employees e, customers c 
+				bs.bkgstat_name status_id 
+		FROM 	booking b 
+			 	LEFT JOIN 	employees e 		ON b.emp_id = e.emp_id 
+			 	JOIN 		booking_status bs 	ON b.status_id = bs.bkgstat_id  
+			 	JOIN 		customers c 		ON b.cus_id = c.cus_id 
 		$where 
 		$order";
 $result		= mysql_query($sql, $dbConn);

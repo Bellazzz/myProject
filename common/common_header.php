@@ -34,7 +34,20 @@
 		$smarty->assign('session_emp_surname', $_SESSION['emp_surname']);
 	}
 
-	// Session login customer
+	// Session & Cookie login customer
+	if(isset($_COOKIE['cusRememberMe'])) {
+		$_SESSION['cusLogin'] = $_COOKIE['cusRememberMe'];
+	}
+	if(isset($_COOKIE['cus_id'])) {
+		$_SESSION['cus_id'] = $_COOKIE['cus_id'];
+	}
+	if(isset($_COOKIE['cus_email'])) {
+		$_SESSION['cus_email'] = $_COOKIE['cus_email'];
+	}
+	if(isset($_COOKIE['cus_fullname'])) {
+		$_SESSION['cus_fullname'] = $_COOKIE['cus_fullname'];
+	}
+
 	if(isset($_SESSION['cusLogin'])) {
 		$smarty->assign('session_cusLogin', $_SESSION['cusLogin']);
 	}

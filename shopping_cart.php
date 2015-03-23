@@ -1,6 +1,5 @@
 <?php
 session_start();
-//require('check_session.php');
 include('config/config.php');
 $tplName = 'shopping_cart.html';
 $subDir	 = WEB_ROOTDIR.'/';
@@ -106,7 +105,7 @@ if(isset($_SESSION['bookingPkg']) && is_array($_SESSION['bookingPkg'])) {
 			}
 		}
 
-		// Get service_list promotion detail data
+		// Get packages promotion detail data
 		$sql = "SELECT 		pkgprmdtl.pkg_id,
 							pkgprmdtl.pkgprmdtl_discout,
 							pkgprmdtl.pkgprmdtl_discout_type 
@@ -130,7 +129,7 @@ if(isset($_SESSION['bookingPkg']) && is_array($_SESSION['bookingPkg'])) {
 				$discoutPrice = $record['pkgprmdtl_discout'];
 
 				if($record['pkgprmdtl_discout_type'] == '%') {
-					$discoutPrice = $pkgList[$record['pkg_id']]['svl_price'] * $record['pkgprmdtl_discout'] / 100;
+					$discoutPrice = $pkgList[$pkg_id]['pkg_price'] * $record['pkgprmdtl_discout'] / 100;
 					$discoutText .= '%';
 				} else {
 					$discoutText .= ' บาท';

@@ -12,6 +12,9 @@ body {
   position: relative;
   background: #fff;
 }
+p {
+  font-size: 14px;
+}
 a {
   color: #34495E;
   text-decoration: none;
@@ -917,6 +920,7 @@ tr.CartProduct td:nth-child(2) {
 }
 #cart-summary td {
   vertical-align: middle;
+  white-space: nowrap;
 }
 #cart-summary tr td:nth-child(2) {
   text-align: right;
@@ -941,4 +945,101 @@ h2.block-title-2, .formBox h3, .block-title-2 {
   padding: 10px 0 0;
   position: relative;
   text-transform: uppercase;
+}
+
+.pageBtnList {
+  padding-left: 0;
+  margin: 20px 0;
+  text-align: center;
+  list-style: none;
+  background: white;
+}
+.pageBtnList li > a, .pageBtnList li > span {
+  display: inline-block;
+  padding: 5px 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  color: #34495E;
+}
+.pageBtnList li > a:hover, .pageBtnList li > a:focus {
+  text-decoration: none;
+  background-color: #eee;
+  color: #18BA9B;
+}
+
+/*
+ * Booking history
+ */
+.bkgHistory-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: solid #ccc 1px;
+  border-radius: 0;
+  font-size: 14px;
+}
+.bkgHistory-table > tbody > tr > td, .bkgHistory-table > thead > tr > th {
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+.bkgHistory-table > thead > tr > th, .bkgHistory-table > thead > tr > td {
+  background-color: #EBEDED;
+  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  -moz-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  border-top: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+.bkgHistory-table > tbody > tr:hover {
+  background: #fbf8e9;
+}
+.bkgHistory-table > thead > tr > th:first-child, .bkgHistory-table > tbody > tr > td:first-child {
+  border-left: none;
+}
+
+
+/*
+ * ETC
+ */
+.statusHL {
+    display: inline;
+    padding: .3em .5em;
+    font-size: 90%;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+.statusHL.statusHL-gray {
+    background-color: #777777;
+}
+.statusHL.statusHL-yellow {
+    background-color: #E79E1E;
+}
+.statusHL.statusHL-darkYellow {
+    background-color: rgb(185, 189, 35);
+}
+.statusHL.statusHL-blue {
+    background-color: #428BCA;
+}
+.statusHL.statusHL-orange {
+    background-color: #E47422;
+}
+.statusHL.statusHL-red {
+    background-color: #D9534F;
+}
+.statusHL.statusHL-blueGreen {
+    background-color: #1ABC9C;
+}
+.statusHL.statusHL-lightGreen {
+    background-color: #9CC69C;
+}
+.statusHL.statusHL-green {
+    background-color: #5CB85C;
 }

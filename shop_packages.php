@@ -1,6 +1,5 @@
 <?php
 session_start();
-//require('check_session.php');
 include('config/config.php');
 $tplName = 'shop_packages.html';
 $subDir	 = WEB_ROOTDIR.'/';

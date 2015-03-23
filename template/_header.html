@@ -14,8 +14,12 @@
                     </div>
                     <div class="col-sm-6">
                         <ul class="list-inline right-topbar pull-right">
-                            <li><a href="#">บัญชีของฉัน</a></li>
-                            <li><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
+                            {if $session_cusLogin && $session_cus_id}
+                                <li><a href="myaccount.php">บัญชีของฉัน</a></li>
+                                <li><a href="myaccount.php"><i class="fa fa-user"></i> {$session_cus_fullname}</a> | <a href="account_logout.php">ออกจากระบบ</a></li>
+                            {else}
+                                <li><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
+                            {/if}
                             <li><i class="search fa fa-search search-button"></i></li>
                         </ul>
                     </div>
@@ -75,10 +79,10 @@
                                     </div>
                                     <div class="row">    
                                         <div class="col-xs-6">
-                                            <a href="shopping_cart.php" class="btn-u btn-brd btn-brd-hover btn-u-sea-shop btn-block">ดูตระกร้าสินค้า</a>
+                                            <a href="shopping_cart.php" class="btn btn-danger"><i class="fa fa-shopping-cart"></i> ดูตระกร้าสินค้า</a>
                                         </div>
                                         <div class="col-xs-6">
-                                            <a href="shop-ui-add-to-cart.html" class="btn-u btn-u-sea-shop btn-block">ยืนยันการจอง</a>
+                                            <a href="checkout.php" class="btn btn-primary">ยืนยันการจอง</a>
                                         </div>
                                     </div>        
                                 </li>    
@@ -302,7 +306,7 @@
                         <!-- End Clothes -->
 
                         <!-- Main Demo -->
-                        <li><a href="../index.html">Main Demo</a></li>
+                        <li><a href="about_us.php">เกี่ยวกับเรา</a></li>
                         <!-- Main Demo -->
                     </ul>
                     <!-- End Nav Menu -->
