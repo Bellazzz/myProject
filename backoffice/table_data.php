@@ -736,6 +736,34 @@ switch ($tableName) {
 		$sortBy = $sortBySpecial;
 		break;
 
+	case 'privileges':
+		$where = 'WHERE 1 ';
+		if(hasValue($like)) {
+			$where .= " AND $like";
+		}
+		$sql = "SELECT p.privlg_id, 
+				p.privlg_name_th 
+				FROM privileges p 
+				$where 
+				$order";
+		break;
+ 	 	 	 	
+	case 'grant_privileges':
+		$where = 'WHERE e.emp_id = g.emp_id ';
+		if(hasValue($like)) {
+			if($searchCol == 'emp_id') {
+				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
+			}
+			$where .= " AND $like";
+		}
+		$sql = "SELECT e.emp_id,CONCAT(e.emp_name, '  ', e.emp_surname) AS fullName, 
+				COUNT(g.grnprivlg_id) 
+				FROM grant_privileges g, employees e 
+				$where 
+				GROUP BY e.emp_id 
+				$order";
+		break;
+
 	default:
 		if(hasValue($like)) {
 			$where = "WHERE $like";
