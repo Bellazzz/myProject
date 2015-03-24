@@ -592,6 +592,38 @@ table.mbk .icon {
     width: 16px;
 }
 
+/*
+ * Table default
+ */
+.default-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: solid #ccc 1px;
+  border-radius: 0;
+  font-size: 14px;
+}
+.default-table > tbody > tr > td, .default-table > thead > tr > th {
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+.default-table > thead > tr > th, .default-table > thead > tr > td {
+  background-color: #EBEDED;
+  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  -moz-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+  border-top: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+.default-table > tbody > tr:hover {
+  background: #fbf8e9;
+}
+.default-table > thead > tr > th:first-child, .default-table > tbody > tr > td:first-child {
+  border-left: none;
+}
+
 
 
 /**
