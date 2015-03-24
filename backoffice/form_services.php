@@ -356,10 +356,29 @@ if(!$_REQUEST['ajaxCall']) {
 					break;
 
 				case 'booking':
-					$sqlRefData = "	SELECT 		bkg_id refValue,
-												bkg_id refText 
-									FROM 		booking 
-									WHERE 		status_id IN ('S03','S04') 
+					$sqlRefData = "	SELECT 		b.bkg_id refValue,
+												b.bkg_id refText,
+												countPkg, countSvl 
+									FROM 		booking b 
+									LEFT JOIN 	(
+													SELECT 	bkg_id, COUNT( bkgpkg_id ) AS countPkg 
+													FROM 	booking_packages 
+													WHERE 	bkgpkg_date =  '$nowDate' 
+													GROUP BY bkg_id 
+												) bp 
+												ON b.bkg_id = bp.bkg_id 
+									LEFT JOIN 	(
+													SELECT bkg_id, COUNT( bkgsvl_id ) AS countSvl 
+													FROM booking_service_lists 
+													WHERE bkgsvl_date =  '$nowDate' 
+													GROUP BY bkg_id 
+												) bs 
+												ON b.bkg_id = bs.bkg_id 
+									WHERE 		b.status_id IN ('S03',  'S04') AND 
+												(
+													countPkg IS NOT NULL OR 
+													countSvl IS NOT NULL
+												)
 									ORDER BY 	refText DESC";
 					$refField 	= 'bkg_id';
 					break;
