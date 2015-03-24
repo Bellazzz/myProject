@@ -293,24 +293,6 @@
                                     <span class="item-label">การจอง</span>
                                 </a>
 					        </li>
-                            <!--<li id="tn-booking_service_lists">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-booking_sevice_lists"></span>
-                                    <span class="item-label">รายละเอียดรายการบริการที่จอง</span>
-                                </a>
-                            </li>
-                            <li id="tn-booking_packages">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-booking_packages"></span>
-                                    <span class="item-label">รายละเอียดแพ็คเกจที่จอง</span>
-                                </a>
-                            </li>
-                            <li id="tn-booking_promotions">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-booking_promotions"></span>
-                                    <span class="item-label">รายละเอียดโปรโมชั่นที่จอง</span>
-                                </a>
-                            </li>-->
                             {if $emp_privileges.view_services}
 					        <li id="tn-services">
                                 <a class="tree-view-item">
@@ -319,41 +301,6 @@
                                 </a>
 					        </li>
                             {/if}
-                            <!--<li id="tn-service_service_lists">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-service_service_lists"></span>
-                                    <span class="item-label">รายละเอียดการใช้บริการรายการบริการ</span>
-                                </a>
-                            </li>
-                            <li id="tn-service_list_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-service_list_details"></span>
-                                    <span class="item-label">รายละเอียดรายการบริการ</span>
-                                </a>
-                            </li>
-                            <li id="tn-service_packages">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-service_packages"></span>
-                                    <span class="item-label">รายละเอียดการใช้บริการแพ็คเกจ</span>
-                                </a>
-                            </li>
-                            <li id="tn-package_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-package_details"></span>
-                                    <span class="item-label">รายละเอียดแพ็คเกจ</span>
-                                </a>
-                            </li>
-                            <li id="tn-service_promotions">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-service_promotions"></span>
-                                    <span class="item-label">รายละเอียดการใช้บริการโปรโมชั่น</span>
-                                </a>
-                            </li>
-                            <li id="tn-promotion_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-promotion_details"></span>
-                                    <span class="item-label">รายละเอียดโปรโมชั่น</span>
-                                </a>-->
                             </li>
 					        <li id="tn-element_checks">
                                 <a class="tree-view-item">
@@ -369,11 +316,6 @@
                                 </a>
 					        </li>
                             {/if}
-                            <!--<li id="tn-order_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-order-details"></span>
-                                    <span class="item-label">รายละเอียดการสั่งซื้อ</span>
-                                </a>-->
                             </li>
 					        <li id="tn-receives">
                                 <a class="tree-view-item">
@@ -381,13 +323,7 @@
                                     <span class="item-label">การรับ</span>
                                 </a>
 					        </li>
-                            <!--<li id="tn-receive_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-receive-details"></span>
-                                    <span class="item-label">รายละเอียดการรับ</span>
-                                </a>
-                            </li>-->
-
+                        
                             {if $emp_privileges.view_withdraws}
                             <li id="tn-withdraws">
                                 <a class="tree-view-item">
@@ -396,14 +332,6 @@
                                 </a>
                             </li>
                             {/if}
-
-                            <!--<li id="tn-withdraw_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-withdraw_details"></span>
-                                    <span class="item-label">รายละเอียดการเบิก</span>
-                                </a>
-                            </li>-->
-
                             {if $emp_privileges.view_sales}
 					        <li id="tn-sales">
                                 <a class="tree-view-item">
@@ -412,15 +340,33 @@
                                 </a>
 					        </li>
                             {/if}
-                             <!--<li id="tn-sale_details">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-sale_details"></span>
-                                    <span class="item-label">รายละเอียดการขาย</span>
-                                </a>
-                            </li>-->
 				        </ul>
 			        </div>
 		        </div>
+                <div class="tree-view">
+                    <div class="tree-view-root">
+                        <a>
+                            <span class="root-label">ข้อมูลการจัดการสิทธิ์(<span class="allTreeViewChild"></span>)</span>
+                            <span class="root-icon"></span>
+                        </a>
+                    </div>
+                    <div class="tree-view-child">
+                        <ul>
+                            <li id="tn-privileges">
+                                <a class="tree-view-item">
+                                    <span class="item-icon mbk-icon icon-privileges"></span>
+                                    <span class="item-label">สิทธิ์การใช้งาน</span>
+                                </a>
+                            </li>
+                            <li id="tn-grant_privileges">
+                                <a class="tree-view-item">
+                                    <span class="item-icon mbk-icon icon-grant_privileges"></span>
+                                    <span class="item-label">การมอบสิทธิ์การใช้งาน</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="sidebar-footer">
                 <div class="sidebar-footer-inner">

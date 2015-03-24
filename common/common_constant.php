@@ -1245,11 +1245,13 @@ function dbClose() {
 				'keyChar'		=> 'PV',
 				'keyLength'		=> 5,
 				'fieldNameList'	=> array(
-						'privlg_id'	  	=> 'รหัสสิทธิ์การใช้งาน',
-						'privlg_name'	=> 'ชื่อสิทธิ์การใช้งาน'
+						'privlg_id'	  		=> 'รหัสสิทธิ์การใช้งาน',
+						'privlg_name'		=> 'ชื่อสิทธิ์การใช้งาน',
+						'privlg_name_th'	=> 'ชื่อสิทธิ์การใช้งาน'
 				),
-				'searchFields'			=> array('privlg_name'),
-				'deleteTxtField'		=> array('privlg_name'),
+				// 'hiddenFields'			=> array('privlg_name'),
+				'searchFields'			=> array('privlg_name_th'),
+				'deleteTxtField'		=> array('privlg_name_th'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบสิทธิ์การใช้งาน %f1 ใช่หรือไม่?'
 			);
 			break;
@@ -1264,8 +1266,9 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'grnprivlg_id'	=> 'รหัสสิทธิ์การใช้งาน',
 						'privlg_id'		=> 'สิทธิ์การใช้งาน',
-						'emp_id' 		=> 'รหัสพนักงาน'
+						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงาน'
 				),
+				'hiddenFields'			=> array('privlg_id'),
 				'searchFields'			=> array('privlg_id', 'emp_id'),
 				'deleteTxtField'		=> array('privlg_id', 'emp_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการมอบสิทธิ์การใช้งาน %f1 ของ %f2 ใช่หรือไม่?'
