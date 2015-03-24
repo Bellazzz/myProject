@@ -39,7 +39,7 @@
                   <li><a href="index.php"><i class="fa fa-home"></i> หน้าแรก</a></li>
                   <li><a href="myaccount.php">บัญชีของฉัน</a></li>
                   <li><a href="booking_history.php">ประวัติการจอง</a></li>
-                  <li class="active">ข้อมูลการจอง</li>
+                  <li class="active">{$bkgData.bkg_id}</li>
                </ul>
           </div>
         </div>
@@ -270,7 +270,7 @@
                   </table>
                 </div>
                 {if $displayBtnEditPayment}
-                <a class="btn btn-primary btn-lg btn-block " title="edit payment" href="edit_payment.php" style="margin-top:20px"><i class="fa fa-pencil"></i> &nbsp;แก้ไขข้อมูลการชำระเงิน</a>
+                <a class="btn btn-primary btn-lg btn-block " title="edit payment" href="edit_payment.php?bkg_id={$bkgData.bkg_id}" style="margin-top:20px"><i class="fa fa-pencil"></i> &nbsp;แก้ไขข้อมูลการชำระเงิน</a>
                 {/if}
               </div>
               <!-- End popular --> 

@@ -740,7 +740,11 @@ function selectReferenceJS(select) {
 				if(xhr.upload){
 					// start upload
 					imgType	= file.type.replace("image/","");
-					xhr.open("POST", "../common/ajaxUploadTempImage.php?imgType=" + imgType);
+                    var pathAjax = '../common/ajaxUploadTempImage.php?imgType=';
+                    if(typeof(data.fromRoot) != 'undefined') {
+                        pathAjax = "common/ajaxUploadTempImage.php?imgType=";
+                    }
+					xhr.open("POST", pathAjax + imgType);
 					xhr.send(file);
 					xhr.onreadystatechange = function() {
 						if (xhr.readyState == 4) {

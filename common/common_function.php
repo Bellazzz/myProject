@@ -1,4 +1,47 @@
 <?php
+$monthsTH = array(
+  	'January'		=> 'มกราคม',
+  	'February'	=> 'กุมภาพันธ์',
+  	'March'		=> 'มีนาคม',
+  	'April'		=> 'เมษายน',
+  	'May'			=> 'พฤษภาคม',
+  	'June'		=> 'มิถุนายน',
+  	'July'		=> 'กรกฎาคม',
+  	'August'		=> 'สิงหาคม',
+  	'September'	=> 'กันยายน',
+  	'October'		=> 'ตุลาคม',
+  	'November'	=> 'พฤศจิกายน',
+  	'December'	=> 'ธันวาคม',
+);
+$monthsTHMin = array(
+  	'January'		=> 'ม.ค.',
+  	'February'	=> 'ก.พ.',
+  	'March'		=> 'มี.ค.',
+  	'April'		=> 'เม.ย.',
+  	'May'			=> 'พ.ค.',
+  	'June'		=> 'มิ.ย.',
+  	'July'		=> 'ก.ค.',
+  	'August'		=> 'ส.ค.',
+  	'September'	=> 'ก.ย.',
+  	'October'		=> 'ต.ค.',
+  	'November'	=> 'พ.ย.',
+  	'December'	=> 'ธ.ค.',
+);
+$monthsTH2 = array(
+	'0'			=> 'มกราคม',
+  	'1'			=> 'กุมภาพันธ์',
+  	'2'			=> 'มีนาคม',
+  	'3'			=> 'เมษายน',
+  	'4'			=> 'พฤษภาคม',
+  	'5'			=> 'มิถุนายน',
+  	'6'			=> 'กรกฎาคม',
+  	'7'			=> 'สิงหาคม',
+  	'8'			=> 'กันยายน',
+  	'9'			=> 'ตุลาคม',
+  	'10'		=> 'พฤศจิกายน',
+  	'11'		=> 'ธันวาคม'
+);
+
 function wrapSingleQuote($value) {
 	if(is_array($value)) {
 		foreach ($value as $key => $val) {
@@ -85,4 +128,24 @@ $convert .= 'สตางค์';
 } 
 return $convert; 
 } 
+
+function getRealDate($input) {
+	/*** Set date th to date eng ***/
+	global $monthsTH;
+	$dateTH = $input;
+	$i = 1;
+	foreach ($monthsTH as $key => $curMonthsTH) {
+	  	if(strpos($dateTH, $curMonthsTH) !== false) {
+	  		$dateEn = str_replace($curMonthsTH, $i, $dateTH);
+	  		//echo "replace $curMonthsTH in $dateTH";
+	  		$tmpDateEn = split(' ', $dateEn);
+	  		$tmpDateEn[2] -= 543;
+	  		$realDate = $tmpDateEn[2]."/".$tmpDateEn[1]."/".$tmpDateEn[0];
+	  		return $realDate;
+	  	}
+	  	$i++;
+	}
+
+	return "";
+}
 ?>

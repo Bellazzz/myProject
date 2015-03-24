@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abhaibhubajhr Day Spa</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    {literal}
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="inc/Flat-UI-master/dist/css/flat-ui.css">
+    <link rel="stylesheet" type="text/css" href="inc/datetimepicker/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="css/fontFace.css">
+    <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="css/spaMain.css">
+    <link rel="stylesheet" href="css/header-v5.css">
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+    <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/mbk_main.js"></script>
+    <script src="js/spaMain.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('#bkg_transfer_date').datetimepicker({
+          lang                : 'th',
+          format              : 'Y/m/d',
+          timepicker          :false,
+          closeOnDateSelect   :true,
+          scrollInput         :false,
+          yearOffset          :543,
+          onSelectDate: 
+          function(){
+            $('#bkg_transfer_date').blur();
+          },
+          onShow:function( ct ){
+              this.setOptions({
+                  minDate:realDateToTmpDate('{/literal}{$bkgData.bkg_date}{literal}')
+              })
+          },
+          timepicker:false
+      });
+
+     uploadImageInput({
+          area: $('#bkg_transfer_evidence'),
+          input: $('input[name="bkg_transfer_evidence"]'),
+          selector: $('#bkg_transfer_evidence_file'),
+          defaultValue: '{/literal}{if $bkgData.bkg_transfer_evidence}img/booking/{$bkgData.bkg_transfer_evidence}?rand={$randNum}{/if}{literal}',
+          fromRoot: true
+      });
+    })
+    </script>
+    {/literal}
+</head>
+<body class="header-fixed">
+{include file="_header.html"}
+<div class="page-wrapper">
+    <div class="container headerOffset">
+        <div class="row">
+          <div class="breadcrumbDiv col-md-12 col-lg-12">
+            <ul class="breadcrumb">
+                  <li><a href="index.php"><i class="fa fa-home"></i> หน้าแรก</a></li>
+                  <li><a href="myaccount.php">บัญชีของฉัน</a></li>
+                  <li><a href="booking_history.php">ประวัติการจอง</a></li>
+                  <li><a href="booking_detail.php?bkg_id={$bkgData.bkg_id}">{$bkgData.bkg_id}</a></li>
+                  <li class="active">แก้ไขข้อมูลการชำระเงิน</li>
+               </ul>
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+              <h1 class="section-title-inner"><span><i class="fa fa-list-alt"></i> แก้ไขข้อมูลการชำระเงิน </span></h1>
+                  {if !$editError}
+                  <div class="col-lg-12">
+                    <h2 class="block-title-2"> ข้อมูลการชำระเงิน  </h2>
+                  </div>
+                  
+                  <div class="col-xs-12 col-sm-12">
+                    <form method="post" action="edit_payment.php">
+                      <input type="hidden" name="bkg_id" value="{$bkgData.bkg_id}">
+
+                      <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                          <label for="bnkacc_id">บัญชีธนาคาร</label>
+                          <select id="bnkacc_id" class="form-control select select-primary" data-toggle="select" name="bnkacc_id">
+                            <option value="">-</option>
+                            {foreach from=$bnkaccList key=i item=bnkacc}
+                              {if $bnkacc.bnkacc_id == $bkgData.bnkacc_id}
+                              <option value="{$bnkacc.bnkacc_id}" selected>{$bnkacc.bnkacc_name}</option>
+                              {else}
+                              <option value="{$bnkacc.bnkacc_id}">{$bnkacc.bnkacc_name}</option>
+                              {/if}
+                            {/foreach}
+                          </select>
+                        </div>
+                        
+
+                      </div>
+
+                      <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                          <label for="bkg_transfer_money"> จำนวนเงินที่โอน</label>
+                          <input type="text" value="{$bkgData.bkg_transfer_money}" name="bkg_transfer_money" class="form-control" id="bkg_transfer_money" placeholder="จำนวนเงินที่โอน">
+                        </div>
+                      </div>
+
+                      <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                          <label for="bkg_transfer_date">วันที่โอน</label>
+                          <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" placeholder="วันที่โอน" class="form-control mbk-dtp-th" value="{$bkgData.bkg_transfer_date}">
+                        </div>
+                      </div>
+                      <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                          <label for="bkg_transfer_time"> เวลาที่โอน</label>
+                          <select id="bkg_transfer_time" class="form-control select select-primary" data-toggle="select" name="bkg_transfer_time">
+                            <option value="">-</option>
+                            {foreach from=$times key=i item=time}
+                              {if $time == $bkgData.bkg_transfer_time}
+                              <option value="{$time}" selected>{$time} น.</option>
+                              {else}
+                              <option value="{$time}">{$time} น.</option>
+                              {/if}
+                            {/foreach}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-xs-12" style="margin-bottom:20px;">
+                        <div id="bkg_transfer_evidence" class="uploadImageArea full"></div>
+                        <input type="hidden" name="bkg_transfer_evidence" value="{$bkgData.bkg_transfer_evidence}">
+                      </div>
+                      
+                      <div class="col-xs-12">
+                        <button type="submit" name="submit" value="submit" class="btn btn-primary"><i class="fa fa-save"></i> &nbsp; บันทึก </button>
+                      </div>
+                    </form>
+
+                    <form method="post" enctype="multipart/form-data">
+                      <input id="bkg_transfer_evidence_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+                  </form>
+                  </div>
+                  {else}
+                    <h2 class="block-title-2">แก้ไขข้อมูลล้มเหลว</h2>
+                  <p><font color="#C0392B"><i class="fa fa-exclamation-circle"></i> เกิดข้อผิดพลาดในการแก้ไขข้อมูลการชำระเงิน กรุณาแจ้งผู้ดูแลระบบ</font><br /><br /> <b>ข้อผิดพลาด:</b><br />{$errTxt}</p>
+                  {/if}
+                    
+                    <div class="col-xs-12 clearfix">
+                      <ul class="pageBtnList">
+                        <li class="next pull-left"><a href="booking_detail.php?bkg_id={$bkgData.bkg_id}"><i class="fa fa-long-arrow-left"></i> กลับไปดูข้อมูลการจอง</a></li>
+                        <li class="next pull-right"><a href="index.php"><i class="fa fa-home"></i> ทำการจองต่อ</a></li>
+                      </ul>
+                    </div>
+
+          </div>
+        </div>
+        <!--/row end--> 
+    </div>
+</div>
+{include file="_footer.html"}
+</body>
+</html>
