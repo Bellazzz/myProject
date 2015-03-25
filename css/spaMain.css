@@ -52,6 +52,7 @@ label {
   }
 }
 .header-v5 .navbar-nav > li > .dropdown-menu {
+  top: 66px;
   border-radius: 0;
   margin:0;
   min-width: 200px;
@@ -495,6 +496,13 @@ color: #777;
     font-size: 16px;
     margin: 0;
     color: #444;
+}
+
+/*
+datetimepicker
+*/
+.xdsoft_calendar thead {
+    display: none !important;
 }
 
 /* ======================== */
