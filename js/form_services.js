@@ -3,6 +3,7 @@ var oldCusName = '';
 var oldCusTypeId = '';
 var oldBkgId   = '';
 var oldBkgName = '';
+var oldSerDate = '';
 
 $(document).ready(function(){
 	$('#addPackageBtn').click(addPackage);
@@ -109,6 +110,19 @@ function getBookingId(bkg_id) {
         }
     }
     return '';
+}
+
+function saveSerDate() {
+    oldSerDate = $('input[name="ser_date"]').val();
+    return true;
+}
+
+function setSerDate(ser_date) {
+    $('#ser_date').val(ser_date);
+}
+
+function getSerDate(bkg_id) {
+    return $('#ser_date').val();;
 }
 
 function getPkgRow(pkg_id) {
@@ -277,6 +291,56 @@ function changeBkgId() {
             pullBkgPkgAndBkgSvl();
         }
     }
+}
+
+function changeSerDate() {
+    var newSerDate = $('input[name="ser_date"]').val();
+    if($('input[name="bkg_id"]').val() != '') {
+        var msg         = 'การเปลี่ยนวันที่ใช้บริการจำเป็นต้องเคลียร์ข้อมูลรหัสการจองใหม่ '
+                        + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนวันที่ใช้บริการ?';
+        parent.showActionDialog({
+            title: 'เปลี่ยนวันที่ใช้บริการ',
+            message: msg,
+            actionList: [
+                {
+                    id: 'change',
+                    name: 'เปลี่ยน',
+                    desc: 'ข้อมูลรหัสการจองจะถูกเคลียร์',
+                    func:
+                    function() {
+                        $('#bkg_id').find('.clear-value-btn').click();
+                        $('#addPackageBtn').css('display', 'inline');
+                        $('#addServiceListBtn').css('display', 'inline');
+                        setSerDate(newSerDate);
+                        $('#ser_date').blur();
+                        parent.hideActionDialog();
+                    }
+                },
+                {
+                    id: 'cancel',
+                    name: 'ยกเลิก',
+                    desc: 'ยกเลิกการเปลี่ยนวันที่ใช้บริการ',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        $('#ser_date').val(oldSerDate);
+                        $('#ser_date').blur();
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+    } else {
+        setSerDate(newSerDate);
+        if(newSerDate != '') {
+            //pullBkgPkgAndBkgSvl();
+        }
+    }
+
+    // pullBkgPkgAndBkgSvl(function() {
+    //     setAllSerDetailAmount();
+    //     calSummary();
+    // });
 }
 
 function pullBkgPkgAndBkgSvl(success) {

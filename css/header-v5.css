@@ -127,7 +127,7 @@
 .topbar-v3 .right-topbar li,
 .topbar-v3 .right-topbar li a {
 	color: #fff;
-	font-size: 12px;
+	font-size: 14px;
 	text-transform: uppercase;
 }
 
@@ -833,7 +833,7 @@
 }
 
 .header-fixed .header-v5.header-fixed-shrink .navbar-nav > li > .dropdown-menu {
-    margin-top: -8px;
+    /*margin-top: -8px;*/
 }
 
 /*Badge List*/

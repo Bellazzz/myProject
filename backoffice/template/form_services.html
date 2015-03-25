@@ -285,8 +285,13 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                onShow: 
+                function() {
+                    saveSerDate();
+                },
                 onSelectDate: 
                 function(){
+                  changeSerDate();
                   $('#ser_date').blur();
                 },
                 timepicker:false
