@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Receipt</title>
+	<meta charset="utf-8">
+	{literal}
+	<link rel="stylesheet" type="text/css" href="../css/fontFace.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+	<style type="text/css" media = "print">
+		@page{
+			size:auto;
+			margin: 0 0 0 0mm;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+		}
+
+		body{
+			size:auto;
+			margin: 0 0 0 0px;
+			font-size: 8px;
+			padding: 0 4mm 10mm 0mm;
+			font-family: Arial, sans-serif;
+		}
+	</style>
+	<style type="text/css">
+		.listOfService-container {
+			max-width: 950px;
+			margin: 0 auto;
+		}
+		.listOfService{
+			width: 100%;
+		}
+		.listOfService tbody td {
+			vertical-align: top;
+			padding: 10px 20px 10px 20px;
+			border-bottom: 1px dotted black;
+		}
+		.listOfService thead th {
+			text-align: center;
+			padding: 10px 0;
+			border-top: 2px solid black;
+			border-bottom: 2px solid black;
+			border-right: 2px solid black;
+		}
+		.listOfService tfoot td {
+			padding: 6px 20px 6px 20px;
+			text-align: right;
+		}
+		.listOfService thead th:first-child {
+			border-left: none;
+		}
+		.listOfService thead th:last-child {
+			border-right: none;
+		}
+
+		.serviceName-col{
+		}
+		.serviceAmount-col {
+			text-align: center;
+			width: 100px;
+		}
+		.spa-name {
+			font-family: ThaiSansNeue-Bold;
+			font-size: 25px;
+		}
+		.receipt-title {
+			font-family: ThaiSansNeue-Bold;
+			font-size: 30px;
+		}
+		.tableDetail {
+			max-width: 950px;
+			margin: 30px auto 20px auto;
+		}
+		.tableDetail:after {
+			width: 0;
+			content: "";
+			display: block;
+			height: 0;
+			clear: both;
+		}
+		.tableDetail .half {
+			width: 46.88%;
+			padding: 10px;
+			border: 1px solid black;
+		}
+		.tableDetail table {
+			border-collapse: collapse;
+			border-spacing: 0;
+			width: 100%
+		}
+		.tableDetail th {
+			padding-bottom: 10px;
+			text-align: center;
+			font-family: ThaiSansNeue-Bold;
+			font-size: 24px;
+		}
+		.tableDetail td {
+			padding: 8px;
+			line-height: 1.42857143;
+			vertical-align: center;
+			border-top: 1px solid black;
+			word-wrap:break-word;
+            table-layout: fixed;
+		}
+		.tableDetail tr:first-child td {
+			border-top: none;
+		}
+		.tableDetail tr td:first-child {
+			white-space: nowrap;
+		}
+		.tableDetail tr td:last-child {
+			width: 100%;
+			padding-left: 20px;
+		}
+		/*
+		 * ETC
+		 */
+		.statusHL {
+		    display: inline;
+		    padding: .3em .5em;
+		    font-size: 90%;
+		    font-weight: bold;
+		    line-height: 1;
+		    color: #fff;
+		    text-align: center;
+		    white-space: nowrap;
+		    vertical-align: baseline;
+		    border-radius: .25em;
+		}
+		.statusHL.statusHL-gray {
+		    background-color: #777777;
+		}
+		.statusHL.statusHL-yellow {
+		    background-color: #E79E1E;
+		}
+		.statusHL.statusHL-darkYellow {
+		    background-color: rgb(185, 189, 35);
+		}
+		.statusHL.statusHL-blue {
+		    background-color: #428BCA;
+		}
+		.statusHL.statusHL-orange {
+		    background-color: #E47422;
+		}
+		.statusHL.statusHL-red {
+		    background-color: #D9534F;
+		}
+		.statusHL.statusHL-blueGreen {
+		    background-color: #1ABC9C;
+		}
+		.statusHL.statusHL-lightGreen {
+		    background-color: #9CC69C;
+		}
+		.statusHL.statusHL-green {
+		    background-color: #5CB85C;
+		}
+		.total-price {
+			font-weight: bold;
+			font-size: 30px;
+			font-family: ThaiSansNeue-Bold;
+		}
+	</style>
+	{/literal}
+</head>
+{if $printImmediately}
+<body onload="window.print();">
+{else}
+<body>
+{/if}
+<center>
+	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:100px; height:100px;" ><br>
+	<span class="receipt-title">ใบแสดงข้อมูลการจอง</span><br>
+	<span class="spa-name">{$spaData.spa_name}</span><p></p>
+	<span>วันเวลาที่ทำการจอง : {$bkgData.bkg_date_th} &nbsp; เวลา {$bkgData.bkg_time} น.</span><br><br>
+</center>
+<div class="tableDetail">
+	<div class="half" style="float:left;">
+		<table>
+			<thead>
+				<th colspan="2">ข้อมูลการจอง</th>
+			</thead>
+			<tbody>
+			<tr>
+				<td>รหัสการจอง</td>
+				<td>{$bkgData.bkg_id}</td>
+			</tr>
+			<tr>
+				<td>ผู้จอง</td>
+				<td>{$bkgData.cus_fullName}</td>
+			</tr>
+			<tr>
+				<td>สถานะการจอง</td>
+				<td>
+					{if $bkgData.status_id == 'S02'}
+	                  <span class="statusHL statusHL-darkYellow">{$bkgData.bkgstat_name}</span>
+	                {else if $bkgData.status_id == 'S03'}
+	                  <span class="statusHL statusHL-blue">{$bkgData.bkgstat_name}</span>
+	                {else if $bkgData.status_id == 'S04'}
+	                  <span class="statusHL statusHL-lightGreen">{$bkgData.bkgstat_name}</span>
+	                {else if $bkgData.status_id == 'S05'}
+	                  <span class="statusHL statusHL-green">{$bkgData.bkgstat_name}</span>
+	                {else if $bkgData.status_id == 'S06'}
+	                  <span class="statusHL statusHL-red">{$bkgData.bkgstat_name}</span>
+	                {else if $bkgData.status_id == 'S07'}
+	                  <span class="statusHL statusHL-yellow">{$bkgData.bkgstat_name}</span>
+	                {else}
+	                  <span class="statusHL statusHL-gray">{$bkgData.bkgstat_name}</span>
+	                {/if}
+				</td>
+				<tr>
+				<td>ราคาสุทธิ</td>
+				<td><span class="total-price">{$bkgData.bkg_total_price|number_format:2:".":","} บาท</span></td>
+			</tr>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="half" style="float:right;">
+		<table>
+			<thead>
+				<th colspan="2">ข้อมูลการชำระเงิน</th>
+			</thead>
+			<tbody>
+			<tr>
+				<td>บัญชีธนาคาร</td>
+				<td>
+					{if $bkgData.bnkacc_name != ''}
+						{$bkgData.bnkacc_name}
+					{else}
+					-
+					{/if}
+				</td>
+			</tr>
+			<tr>
+				<td>วันที่โอน</td>
+				<td>
+					{if $bkgData.bkg_transfer_date_th}
+						{$bkgData.bkg_transfer_date_th}
+					{else}
+					-
+					{/if}
+				</td>
+			</tr>
+			<tr>
+				<td>เวลาที่โอน</td>
+				<td>
+					{if $bkgData.bkg_transfer_time != ''}
+						{$bkgData.bkg_transfer_time} น.
+					{else}
+					-
+					{/if}
+				</td>
+			</tr>
+			<tr>
+				<td>จำนวนเงินที่โอน</td>
+				<td><span class="total-price">{$bkgData.bkg_total_price|number_format:2:".":","} บาท</span></td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="listOfService-container">
+	<table class="listOfService" cellpadding="0" cellspacing="0">
+		<thead>
+			<tr>
+				<th style="max-width:350px;">รายการที่จอง</th>
+				<th class="serviceAmount-col">ผู้ใช้บริการ(คน)</th>
+				<th>วันที่ใช้บริการ</th>
+				<th>เวลาที่ใช้บริการ</th>
+				<th>สถานะ</th>
+			</tr>
+		</thead>
+		<tbody>
+			{foreach from=$pkgList key=i item=pkg}
+			<tr>
+				<td class = "serviceName-col"><span class="serviceName">{$pkg.pkg_name}</span></td>
+				<td class="serviceAmount-col">{$pkg.bkgpkg_persons}&nbsp;&nbsp;&nbsp;</td>
+				<td>{$pkg.bkgpkg_date_th}</td>
+				<td>{$pkg.bkgpkg_time} น.</td>
+				<td style="text-align:right;">
+	                {if $pkg.bkgpkg_status == 2}
+	                    <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+	                {else if $pkg.bkgpkg_status == 1}
+	                    <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
+	                {else}
+	                    <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
+	                {/if}
+	              </td>
+			</tr>
+			{/foreach}
+			{foreach from=$svlList key=i item=svl}
+			<tbody>
+			<tr>
+				<td class = "serviceName-col"><span class="serviceName">{$svl.svl_name}</span></td>
+				<td class="serviceAmount-col">{$svl.bkgsvl_persons}&nbsp;&nbsp;&nbsp;</td>
+				<td>{$svl.bkgsvl_date_th}</td>
+				<td>{$svl.bkgsvl_time} น.</td>
+				<td style="text-align:right;">
+	                {if $svl.bkgsvl_status == 2}
+	                    <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
+	                {else if $bkgsvl.bkgsvl_status == 1}
+	                    <span class="statusHL statusHL-lightGreen">ยังใช้บริการไม่ครบ</span>
+	                {else}
+	                    <span class="statusHL statusHL-gray">ยังไม่ได้ใช้บริการ</span>
+	                {/if}
+	              </td>
+			</tr>
+			{/foreach}
+		</tbody>
+	</table>
+</div>
+
+<span style="color:white;">
+	.<br>
+	.<br>
+	.<br>
+</span>
+<!-- .<br>
+.<br>
+.<br> -->
+<!-- <span style="color:white;">
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+	.<p>&nbsp;</p>
+</span> -->
+
+</body>
+</html>

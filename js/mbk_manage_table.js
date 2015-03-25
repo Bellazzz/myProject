@@ -858,6 +858,14 @@ function openPrintServiceReceipt(serId) {
     });
 }
 
+function openPrintBookingPaper(bkgId) {
+    var src = 'printBookingPaperContainer.php?bkg_id=' + bkgId + '&hideBackButton=true';
+    openManageBox({
+        formSrc     : src,
+        widthSize   : 'full'
+    });
+}
+
 function showTableTooltip(top, left, text) {
 	var htmlTooltip = '<div class="table-tooltip">' + text + '</div>';
 	$('body').append(htmlTooltip);

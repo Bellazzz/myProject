@@ -166,6 +166,9 @@ if($rows > 0){
 					<input type="checkbox" value="<?=$code?>" name="table-record[]" class="mbk-checkbox" onclick="checkRecord(this)">
 				</td>
 				<td class="action-col">
+					<a title="ใบแสดงข้อมูลการจอง">
+						<i class="fa fa-file-text-o" onclick="openPrintBookingPaper('<?=$code?>')"></i>
+					</a>
 					<?php if($displayEditBtn && ($filter == 'PENDING_CHECK' || $filter == 'PENDING_PAYMENT')) { ?>
 					<a title="แก้ไข">
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
