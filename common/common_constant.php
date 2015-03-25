@@ -1264,7 +1264,7 @@ function dbClose() {
 				'keyChar'		=> 'GP',
 				'keyLength'		=> 7,
 				'fieldNameList'	=> array(
-						'grnprivlg_id'	=> 'รหัสสิทธิ์การใช้งาน',
+						'grnprivlg_id'	=> 'รหัสการมอบสิทธิ์การใช้งาน',
 						'privlg_id'		=> 'สิทธิ์การใช้งาน',
 						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงาน'
 				),
