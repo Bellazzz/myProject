@@ -349,7 +349,7 @@ if(!$_REQUEST['ajaxCall']) {
 	}
 
 	// Hide edit button from status
-	if($values['status_id'] != 'S01') {
+	if($values['status_id'] != 'S01' && $values['status_id'] != 'S02') {
 		$hideEditButton = 'true';
 	}
 

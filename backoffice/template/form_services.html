@@ -145,6 +145,12 @@
             display: none;
             padding-top: 10px;
         }
+        .pullBkgId-loader {
+            height: 31px; 
+            position: absolute; 
+            margin-left: 10px;
+            display: none;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -468,23 +474,6 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
-                    <label>รหัสการจอง</label>
-                    <div id="bkg_id" class="selectReferenceJS form-input full"></div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <label class="input-required">เตียงนวด</label>
-                    <div id="bed_id" class="selectReferenceJS form-input full" require></div>
-                </td>
-            </tr>
-            <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-bed_id-require" class="errInputMsg err-bed_id">โปรดเลือกเตียงนวด</span>
-                </td>
-            </tr>
-            <tr>
                 <td>
                     <label class="input-required">วันที่ใช้บริการ</label>
                       <input id="ser_date" name="ser_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.ser_date}{$values.ser_date}{else}{$nowDate}{/if}" require>
@@ -500,6 +489,24 @@
                 </td>
                 <td>
                     <span id="err-ser_time-require" class="errInputMsg half err-ser_time">โปรดป้อนเวลาที่ใช้บริการ</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">เตียงนวด</label>
+                    <div id="bed_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-bed_id-require" class="errInputMsg err-bed_id">โปรดเลือกเตียงนวด</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รหัสการจอง</label>
+                    <div id="bkg_id" class="selectReferenceJS form-input full"></div>
+                    <img class="pullBkgId-loader" src="../img/loading.gif">
                 </td>
             </tr>
 	    </tbody>

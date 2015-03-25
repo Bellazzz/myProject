@@ -146,6 +146,15 @@
         .status-remain {
             background-color: #E79E1E;
         }
+        {/literal}
+        {if $values.status_id == 'S02' && $action == 'EDIT'}
+        {literal}
+            .hideOnEditPayment {
+                display: none !important;
+            }
+        {/literal}
+        {/if}
+        {literal}
     </style>
     <script type="text/javascript">
         // Global variables
@@ -189,11 +198,22 @@
         {literal}
 
         $(document).ready(function () {
-            selectReferenceJS({
-                elem            : $('#emp_id'),
-                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
-            });
+            if(action == 'VIEW_DETAIL') {
+                selectReferenceJS({
+                    elem            : $('#emp_id'),
+                    data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
+                    showClearBtn    : true,
+                    clearBtnText    : 'ไม่ระบุ'
+                });
+            } else {
+                selectReferenceJS({
+                    elem            : $('#emp_id'),
+                    data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
+                });
+            }
+            
             selectReferenceJS({
                 elem            : $('#cus_id'),
                 data            : refCusData,
@@ -289,7 +309,6 @@
 
 {include file="form_table_header.html"}
 <div class="ftb-body">
-    <div class="ftb-body">
     {if $action == 'VIEW_DETAIL'}
     <!-- VIEW_DETAIL -->
     <label class="article-title">ข้อมูลการจอง</label>
@@ -313,9 +332,13 @@
             <tr>
                 <td>พนักงานที่รับการจอง :</td>
                 <td>
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                    {if $action == 'VIEW_DETAIL'}
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                    {else}
+                        <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
                             <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
                         </a>
+                    {/if}
                 </td>
             </tr>
             <tr>
@@ -497,7 +520,7 @@
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">
     <input type="hidden" name="requiredFields" value="cus_id,emp_id,bkg_total_price,bkg_date,bkg_time">
-    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+    <table class="mbk-form-input-normal hideOnEditPayment" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
                 <td colspan="2">
@@ -560,9 +583,9 @@
 	    </tbody>
     </table>
 
-    <label class="article-title">รายละเอียดการจองแพ็คเกจ</label>
-    รายการแพ็คเกจทั้งหมด <span id="allPkg"></span> รายการ<br><br>
-    <table id="booking-package-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+    <label class="article-title hideOnEditPayment">รายละเอียดการจองแพ็คเกจ</label>
+    <span class="hideOnEditPayment">รายการแพ็คเกจทั้งหมด <span id="allPkg"></span> รายการ<br><br></span>
+    <table id="booking-package-table" class="mbk-form-input-normal hideOnEditPayment" cellpadding="0" cellspacing="0" style="width:100%;">
         <tbody>
             <tr class="headTable-row">
                 <td><label class="input-required"><b>แพ็คเกจ</b></label></td>
@@ -573,13 +596,11 @@
             </tr>
         </tbody>
     </table>
-    <button id="addPackageBtn" class="button button-icon button-icon-add">เพิ่มแพ็คเกจ</button>
-    <br>
-    <br>
-    <br>
-    <label class="article-title">รายละเอียดการจองรายการบริการ</label>
-    รายการบริการทั้งหมด <span id="allSvl"></span> รายการ<br><br>
-    <table id="booking-service-list-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:100%;">
+    <button id="addPackageBtn" class="button button-icon button-icon-add hideOnEditPayment">เพิ่มแพ็คเกจ</button>
+    <span class="hideOnEditPayment"><br><br><br></span>
+    <label class="article-title hideOnEditPayment">รายละเอียดการจองรายการบริการ</label>
+    <span class="hideOnEditPayment">รายการบริการทั้งหมด <span id="allSvl"></span> รายการ<br><br></span>
+    <table id="booking-service-list-table" class="mbk-form-input-normal hideOnEditPayment" cellpadding="0" cellspacing="0" style="width:100%;">
         <tbody>
             <tr class="headTable-row">
                 <td><label class="input-required"><b>รายการบริการ</b></label></td>
@@ -590,10 +611,10 @@
             </tr>
         </tbody>
     </table>
-    <button id="addServiceListBtn" class="button button-icon button-icon-add">เพิ่มรายการบริการ</button>
+    <button id="addServiceListBtn" class="button button-icon button-icon-add hideOnEditPayment" style="margin-bottom: 40px;">เพิ่มรายการบริการ</button>
 
     <!-- Detail of payment money -->
-    <label class="article-title" style="margin-top: 40px;">ข้อมูลการชำระเงิน</label>
+    <label class="article-title">ข้อมูลการชำระเงิน</label>
     <button id="addPaymentDetailBtn" class="button button-icon button-icon-add">เพิ่มข้อมูลการชำระเงิน</button>
     <table class="mbk-form-input-normal paymentDetail" cellpadding="0" cellspacing="0">
         <tbody>

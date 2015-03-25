@@ -166,7 +166,7 @@ if($rows > 0){
 					<input type="checkbox" value="<?=$code?>" name="table-record[]" class="mbk-checkbox" onclick="checkRecord(this)">
 				</td>
 				<td class="action-col">
-					<?php if($displayEditBtn && $filter == 'PENDING_CHECK') { ?>
+					<?php if($displayEditBtn && ($filter == 'PENDING_CHECK' || $filter == 'PENDING_PAYMENT')) { ?>
 					<a title="แก้ไข">
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 					</a>

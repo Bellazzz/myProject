@@ -585,15 +585,17 @@ function selectReferenceJS(select) {
             options = data;
         }
 
-        if(options.length > 0) {
-            for(i in options) {
-                resultHtml  += '<li id="' + options[i].refField + '_'+ options[i].refValue + '">'
-                            + '     <span class="text">' + options[i].refText + '</span>'
-                            + '     <span class="value">' + options[i].refValue + '</span>'
-                            + '</li>';
+        if(options != null) {
+            if(options.length > 0) {
+                for(i in options) {
+                    resultHtml  += '<li id="' + options[i].refField + '_'+ options[i].refValue + '">'
+                                + '     <span class="text">' + options[i].refText + '</span>'
+                                + '     <span class="value">' + options[i].refValue + '</span>'
+                                + '</li>';
+                }
+            } else {
+                resultHtml = '<div class="no-result">ไม่พบข้อมูลที่ค้นหา</div>';
             }
-        } else {
-            resultHtml = '<div class="no-result">ไม่พบข้อมูลที่ค้นหา</div>';
         }
 
         optionCon.html(resultHtml);
@@ -674,6 +676,30 @@ function selectReferenceJS(select) {
             select.success();
         }
     }
+}
+
+function addEventSelectReferenceJSLi(select) {
+    var selectRefCon = $(select.elem).children('.selectReferenceJS-container');
+    var optionCon = $(selectRefCon).children('.option-container');
+    var li = $(optionCon).children('li');
+
+    $(li).on('click', function (e) {
+        e.stopPropagation();
+        if(typeof(select.allowChangeOption) == 'function') {
+            if(!select.allowChangeOption($(this).children('.value').text())) {
+                hideAllPopup();
+                return;
+            }
+        }
+        $(this).parent().parent().parent().removeClass('required');
+        $('.err-' + select.elem.attr('id')).css('display', 'none');
+        selectRefCon.siblings('.selectReferenceJS-text').text($(this).children('.text').text());
+        selectRefCon.siblings('.selectReferenceJS-input').val($(this).children('.value').text());
+        hideAllPopup();
+        if(typeof(select.onOptionSelect) == 'function') {
+            select.onOptionSelect();
+        }
+    });
 }
 
 /*

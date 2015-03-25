@@ -219,6 +219,10 @@ function allowChangeBookingId() {
         title = 'กรุณาเลือกผู้ใช้บริการ';
         msg = 'กรุณาเลือกผู้ใช้บริการก่อนจึงจะสามารถเลือกรหัสการจองได้';
         alert = true;
+    } else if($('#ser_date').val() == '') {
+        title = 'กรุณาเลือกวันที่ใช้บริการ';
+        msg = 'กรุณาเลือกวันที่ใช้บริการก่อนจึงจะสามารถเลือกรหัสการจองได้';
+        alert = true;
     } else {
         return true;
     }
@@ -246,7 +250,7 @@ function allowChangeBookingId() {
 function changeBkgId() {
     newBkgId = $('input[name="bkg_id"]').val();
     if(($('input[name="pkg_id[]"]').length > 0 || $('input[name="svl_id[]"]').length > 0) 
-        && getBookingId(oldCusId) != getBookingId(newBkgId)) {
+        && oldBkgId != newBkgId) {
         var msg         = 'การเปลี่ยนรหัสการจองจำเป็นต้องเคลียร์ข้อมูลรายละเอียดการใช้บริการใหม่ '
                         + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนรหัสการจอง?';
         parent.showActionDialog({
@@ -312,8 +316,10 @@ function changeSerDate() {
                         $('#addPackageBtn').css('display', 'inline');
                         $('#addServiceListBtn').css('display', 'inline');
                         setSerDate(newSerDate);
+                        pullBkgId();
                         $('#ser_date').blur();
                         parent.hideActionDialog();
+                        
                     }
                 },
                 {
@@ -323,7 +329,7 @@ function changeSerDate() {
                     func:
                     function() {
                         parent.hideActionDialog();
-                        $('#ser_date').val(oldSerDate);
+                        setSerDate(oldSerDate);
                         $('#ser_date').blur();
                     }
                 }
@@ -332,15 +338,45 @@ function changeSerDate() {
         });
     } else {
         setSerDate(newSerDate);
-        if(newSerDate != '') {
-            //pullBkgPkgAndBkgSvl();
-        }
+        pullBkgId();
     }
+}
 
-    // pullBkgPkgAndBkgSvl(function() {
-    //     setAllSerDetailAmount();
-    //     calSummary();
-    // });
+function pullBkgId(success) {
+    var serDate = tmpDateToRealDate($('#ser_date').val());
+    $('.pullBkgId-loader').css('display', 'inline');
+
+    $.ajax({
+        url: '../common/ajaxPullBkgIdOfSerTable.php',
+        type: 'POST',
+        data: {
+            ser_date: serDate
+        },
+        success:
+        function(responseJSON) {
+            var response = $.parseJSON(responseJSON);
+            var bkgIdListHTML = '';
+            for(i in response) {
+                bkgIdListHTML  += '<li style="display: list-item;" id="bkg_id_' + response[i] + '">'
+                                + '     <span class="text">' + response[i] + '</span>'
+                                + '     <span class="value">' + response[i] + '</span>'
+                                + '</li>';
+            }
+            $('#bkg_id').find('.option-container').html(bkgIdListHTML);
+
+            addEventSelectReferenceJSLi({
+                elem            : $('#bkg_id'),
+                allowChangeOption   : saveOldBkgId,
+                onOptionSelect      : changeBkgId
+            });
+
+            if(typeof(success) == 'function') {
+                success();
+            }
+
+            $('.pullBkgId-loader').css('display', 'none');
+        }
+    });
 }
 
 function pullBkgPkgAndBkgSvl(success) {
@@ -383,7 +419,7 @@ function pullBkgPkgAndBkgSvl(success) {
                 success();
             }
         }
-    })
+    });
 }
 
 function addPackage(data) {
