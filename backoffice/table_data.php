@@ -754,10 +754,12 @@ switch ($tableName) {
 			if($searchCol == 'emp_id') {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			}
+			$like	= str_replace('grnprivlg_id', 'e.emp_id', $like);
 			$where .= " AND $like";
 		}
-		$sql = "SELECT e.emp_id,CONCAT(e.emp_name, '  ', e.emp_surname) AS fullName, 
-				COUNT(g.grnprivlg_id) 
+		$sql = "SELECT 	e.emp_id AS grnprivlg_id,
+						CONCAT(e.emp_name, '  ', e.emp_surname) AS emp_id, 
+						COUNT(g.grnprivlg_id) AS privlg_id  
 				FROM grant_privileges g, employees e 
 				$where 
 				GROUP BY e.emp_id 
@@ -834,6 +836,13 @@ switch ($tableName) {
 		if(!$emp_privileges['delete_services'])
 			$displayDeleteBtn = false;
 		break;
+}
+
+// Table that can't edit and delete
+if($tableName == 'privileges') {
+	$displayAddBtn = false;
+	$displayEditBtn = false;
+	$displayDeleteBtn = false;
 }
 
 if($rows > 0){
@@ -918,7 +927,7 @@ if($rows > 0){
 					}
 				}else {
 					if($field == $tableInfo['keyFieldName']) {
-						if(isset($tableInfo['hiddenFields'])) {
+						if(isset($tableInfo['hiddenFields']) || isset($tableInfo['fixedHiddenFields'])) {
 							// ถ้าตารางนี้มี hiddenFields แสดงว่าต้องมีหน้าแสดงรายละเอียด
 							?>
 							<td field="<?=$field?>"><a href="javascript:openFormTable('VIEW_DETAIL', '<?=$value?>');" class="normal-link" title="คลิกเพื่อดูรายละเอียด"><?=$value?></a></td>

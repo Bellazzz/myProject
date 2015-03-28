@@ -1264,14 +1264,14 @@ function dbClose() {
 				'keyChar'		=> 'GP',
 				'keyLength'		=> 7,
 				'fieldNameList'	=> array(
-						'grnprivlg_id'	=> 'รหัสการมอบสิทธิ์การใช้งาน',
-						'privlg_id'		=> 'สิทธิ์การใช้งาน',
-						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงาน'
+						'grnprivlg_id'	=> 'รหัสพนักงานที่ได้รับสิทธิ์',
+						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงานที่ได้รับสิทธิ์',
+						'privlg_id'		=> 'จำนวนสิทธิ์ที่ได้รับ'
 				),
-				'hiddenFields'			=> array('privlg_id'),
-				'searchFields'			=> array('privlg_id', 'emp_id'),
+				'fixedHiddenFields'		=> true,
+				'searchFields'			=> array('grnprivlg_id', 'emp_id'),
 				'deleteTxtField'		=> array('privlg_id', 'emp_id'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการมอบสิทธิ์การใช้งาน %f1 ของ %f2 ใช่หรือไม่?'
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบสิทธิ์การใช้งานทั้งหมดของ %f2 ใช่หรือไม่?'
 			);
 			break;
 
