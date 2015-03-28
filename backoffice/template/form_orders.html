@@ -41,6 +41,12 @@
         {literal}
 
         $(document).ready(function () {
+            $('#changeOrdStatus-remain_order-btn').click(function(){
+                var title = 'เปลี่ยนสถานะเป็นรับไม่ครบตามที่สั่งซื้อ';
+                var msg   = 'การสั่งซื้อครั้งนี้ได้รับสินค้าไม่ครบตามจำนวนที่ได้สั่งซื้อไว้ คุณต้องการเปลี่ยนสถานะการการสั่งซื้อนี้เป็น รับไม่ครบตามที่สั่งซื้อ ใช่หรือไม่?';
+                changeOrdStatus(title, msg, 'OS04');
+            });
+
             $('#addProjectBtn').click(addProduct);
 
             selectReferenceJS({
@@ -211,7 +217,67 @@
                 }
             }
         });
-        
+
+        function changeOrdStatus(title, msg, ordstat_id) {
+            parent.showActionDialog({
+                title: title,
+                message: msg,
+                actionList: [
+                    {
+                        id: 'change',
+                        name: 'ตกลง',
+                        desc: 'สถานะการสั่งซื้อครั้งนี้จะถูกเปลี่ยน',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            $.ajax({
+                                url: '../common/ajaxChangeOrdStatus.php',
+                                type: 'POST',
+                                data: {
+                                    ord_id: $('input[name="ord_id"]').val(),
+                                    ordstat_id: ordstat_id
+                                },
+                                success:
+                                function(response) {
+                                    if(response == 'PASS') {
+                                         parent.confirmCloseFormTable(action);
+                                         parent.pullTable(false);
+                                    } else if(response == 'FAIL') {
+                                        parent.showActionDialog({
+                                            title: 'เกิดข้อผิดพลาด',
+                                            message: 'ไม่สามารถเปลี่ยนสถานะการสั่งซื้อได้เนื่องจากเกิดข้อผิดพลาดบางประการ',
+                                            actionList: [
+                                                {
+                                                    id: 'ok',
+                                                    name: 'ตกลง',
+                                                    func:
+                                                    function() {
+                                                        parent.hideActionDialog();
+                                                    }
+                                                }
+                                            ]
+                                        });
+                                    } else {
+                                        alert(response);
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'ยกเลิกการเปลี่ยนสถานะการสั่งซื้อ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 500
+            });
+        }
+                
         function addProduct(data) {
             var randNum;
             var selectRefDefault = '';
@@ -482,6 +548,66 @@
 
             return returnVal;
         }
+
+        function changeOrdStatus(title, msg, ordstat_id) {
+            parent.showActionDialog({
+                title: title,
+                message: msg,
+                actionList: [
+                    {
+                        id: 'change',
+                        name: 'ตกลง',
+                        desc: 'สถานะการสั่งซื้อครั้งนี้จะถูกเปลี่ยน',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            $.ajax({
+                                url: '../common/ajaxChangeOrdStatus.php',
+                                type: 'POST',
+                                data: {
+                                    ord_id: $('input[name="ord_id"]').val(),
+                                    ordstat_id: ordstat_id
+                                },
+                                success:
+                                function(response) {
+                                    if(response == 'PASS') {
+                                         parent.confirmCloseFormTable(action);
+                                         parent.pullTable(false);
+                                    } else if(response == 'FAIL') {
+                                        parent.showActionDialog({
+                                            title: 'เกิดข้อผิดพลาด',
+                                            message: 'ไม่สามารถเปลี่ยนสถานะการสั่งซื้อได้เนื่องจากเกิดข้อผิดพลาดบางประการ',
+                                            actionList: [
+                                                {
+                                                    id: 'ok',
+                                                    name: 'ตกลง',
+                                                    func:
+                                                    function() {
+                                                        parent.hideActionDialog();
+                                                    }
+                                                }
+                                            ]
+                                        });
+                                    } else {
+                                        alert(response);
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'ยกเลิกการเปลี่ยนสถานะการสั่งซื้อ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 500
+            });
+        }
     </script>
     {/literal}
 </head>
@@ -497,7 +623,10 @@
         <tbody>
             <tr>
                 <td>รหัสการสั่งซื้อ :</td>
-                <td>{$code}</td>
+                <td>
+                    {$code}
+                    <input type="hidden" name="ord_id" value="{$code}" />
+                </td>
             </tr>
             <tr>
                 <td>พนักงานที่สั่งซื้อ :</td>
@@ -525,7 +654,19 @@
             </tr>
             <tr>
                 <td>สถานะการสั่งซื้อ :</td>
-                <td><div id="ordstat_id" class="selectReferenceJS text"></div></td>
+                <td>
+                    {if $values.ordstat_id == 'OS01'}
+                    <span class="statusHL statusHL-gray">
+                    {else if $values.ordstat_id == 'OS02'}
+                    <span class="statusHL statusHL-lightGreen">
+                    {else if $values.ordstat_id == 'OS03'}
+                    <span class="statusHL statusHL-green">
+                    {else if $values.ordstat_id == 'OS04'}
+                    <span class="statusHL statusHL-yellow">
+                    {/if}
+                        <div id="ordstat_id" class="selectReferenceJS text"></div>
+                    </span>
+                </td>
             </tr>
         </tbody>
     </table>

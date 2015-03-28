@@ -62,6 +62,10 @@ if(hasValue($_REQUEST['filter'])) {
 		$where .= " AND ordstat_id = 'OS03' ";
 		$hideIconCol = true; // hide column action icon in thead
 		$whereAllRecord = " WHERE ordstat_id = 'OS03' ";
+	} else if($filter == 'FIXED_COMPLETED') {
+		$where .= " AND ordstat_id = 'OS04' ";
+		$hideIconCol = true; // hide column action icon in thead
+		$whereAllRecord = " WHERE ordstat_id = 'OS04' ";
 	}
 }
 

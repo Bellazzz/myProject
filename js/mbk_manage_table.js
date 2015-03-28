@@ -551,13 +551,15 @@ function refreshFilterQuery() {
                                 + '<select id="query-record-filter" class="mbk-select">'
                                 + '     <option value="WAIT">ใบสั่งซื้อ</option>'
                                 + '     <option value="REMAIN">ค้างรับ</option>'
-                                + '     <option value="COMPLETED">รับเรียบร้อยแล้ว</option>'
+                                + '     <option value="COMPLETED">รับครบทั้งหมดแล้ว</option>'
+                                + '     <option value="FIXED_COMPLETED">รับไม่ครบตามที่สั่งซื้อ</option>'
                                 + '</select>';
     } else if(this.table.name == 'receives') {
         filterRecordQueryHTML   = 'ดูการรับที่มีสถานะ '
                                 + '<select id="query-record-filter" class="mbk-select">'
                                 + '     <option value="REMAIN">ค้างรับ</option>'
-                                + '     <option value="COMPLETED">เรียบร้อยแล้ว</option>'
+                                + '     <option value="COMPLETED">รับครบทั้งหมดแล้ว</option>'
+                                + '     <option value="FIXED_COMPLETED">รับไม่ครบตามที่สั่งซื้อ</option>'
                                 + '</select>';
     } else if(this.table.name == 'promotion_products') {
         filterRecordQueryHTML   = 'ดูโปรโมชั่นที่ '

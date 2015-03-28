@@ -65,6 +65,8 @@
 	    	<li><a id="changeBpkgStatus-pending_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรอใช้บริการ</a></li>
 	    	{elseif $tableName == 'booking' && $values.status_id == 'S03' || $values.status_id == 'S04'}
 	    	<li><a id="changeBpkgStatus-remain_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นใช้บริการไม่ครบตามที่จอง</a></li>
+	    	{elseif $tableName == 'orders' && $values.ordstat_id == 'OS02'}
+	    	<li><a id="changeOrdStatus-remain_order-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรับไม่ครบตามที่สั่งซื้อ</a></li>
 	    	{/if}
 
 	    	{if $tableName == 'booking' && $values.status_id == 'S01' || $values.status_id == 'S02'}

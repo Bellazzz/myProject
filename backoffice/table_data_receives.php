@@ -54,6 +54,11 @@ if(hasValue($_REQUEST['filter'])) {
 		$hideIconCol 	= true; // hide column icon in thead
 		$hideActionCol 	= true; // hide column action in thead
 		$whereAllRecord = " AND o.ordstat_id = 'OS03' ";
+	} else if($filter == 'FIXED_COMPLETED') {
+		$where 			.= " AND o.ordstat_id = 'OS04' ";
+		$hideIconCol 	= true; // hide column icon in thead
+		$hideActionCol 	= true; // hide column action in thead
+		$whereAllRecord = " AND o.ordstat_id = 'OS04' ";
 	}
 }
 

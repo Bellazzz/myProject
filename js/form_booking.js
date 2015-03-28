@@ -50,7 +50,7 @@ function changeBkgStatus(title, msg, status_id) {
                         url: '../common/ajaxChangeBkgStatus.php',
                         type: 'POST',
                         data: {
-                            bkg_id: $('input[name="pkg_id"]').val(),
+                            bkg_id: $('input[name="bkg_id"]').val(),
                             status_id: status_id
                         },
                         success:

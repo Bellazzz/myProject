@@ -23,5 +23,4 @@ if(hasValue($_POST['bkg_id']) && hasValue($_POST['status_id'])) {
 } else {
 	echo "FAIL";
 }
-
 ?>
