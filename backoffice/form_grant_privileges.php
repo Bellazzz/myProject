@@ -65,6 +65,80 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('emp_fullName', $emp_fullName);
 	}
 
+	// Get reference data for selectReferenceJS
+	if(is_array($tableInfo['referenceData']) && count($tableInfo['referenceData']) > 0) {
+		$sqlRefData 	= '';
+		$referenceData 	= array();
+
+		foreach ($tableInfo['referenceData'] as $key => $table) {
+			switch ($table) {
+				case 'employees':
+					$sqlRefData = "	SELECT 	* 
+									FROM 	(
+											SELECT 		e.emp_id refValue,
+														CONCAT(e.emp_name, ' ', e.emp_surname) refText,
+														COUNT(g.grnprivlg_id) AS amount 
+											FROM 		employees e 
+														LEFT JOIN 
+														grant_privileges g 
+														ON e.emp_id = g.emp_id 
+											GROUP BY 	e.emp_id 
+											ORDER BY 	refText ASC
+											) a
+									WHERE 	amount <= 0";
+					$refField 	= 'emp_id';
+					break;
+			}
+
+			if(hasValue($sqlRefData)) {
+				$resultRefData 	= mysql_query($sqlRefData);
+				$rowsRefData 	= mysql_num_rows($resultRefData);
+
+				if($rowsRefData > 0) {
+					$referenceData[$table] = array();
+					// push to referenc data
+					for($i=0; $i<$rowsRefData; $i++) {
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
+					}
+					
+				}
+			}
+		}
+		$smarty->assign('referenceData', $referenceData);
+	}
+
+	if($action != 'VIEW_DETAIL') {
+		$privlgList = array();
+		// Get all privileges data
+		$sql = "SELECT  	privlg_id,
+							privlg_name,
+							privlg_name_th 
+				FROM 		privileges 
+				ORDER BY 	privlg_name_th";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		if($rows > 0) {
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				$record['no'] = $i+1;
+				$privlgList[$record['privlg_id']]['no'] 			= number_format($record['no']);
+				$privlgList[$record['privlg_id']]['privlg_id'] 		= $record['privlg_id'];
+				$privlgList[$record['privlg_id']]['privlg_name']	= $record['privlg_name'];
+				$privlgList[$record['privlg_id']]['privlg_name_th'] = $record['privlg_name_th'];
+			}
+			$smarty->assign('privlgList', $privlgList);
+		}
+	}
+	
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);
@@ -136,31 +210,6 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['fieldName']  = array();
 		$values['fieldValue'] = array();
 
-		// Rename Image
-		if(strpos($formData['pkg_picture'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['pkg_picture'],"."));
-			$tmpRecord	= new TableSpa('grant_privileges', null);
-			$pkg_picture	= $tmpRecord->genKeyCharRunning().".$type";
-			$pkg_picture_path = '../img/grant_privileges/'.$pkg_picture;
-
-			// Delete Old Image
-			if(file_exists($pkg_picture_path)) {
-				if(!unlink($pkg_picture_path)) {
-					$response['status'] = 'DELETE_OLD_IMG_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-
-			if(rename('../img/temp/'.$formData['pkg_picture'], $pkg_picture_path)) {
-				$formData['pkg_picture'] = $pkg_picture;
-			} else {
-				$response['status'] = 'RENAME_FAIL';
-				echo json_encode($response);
-				exit();
-			}
-		}
-
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
 			if(in_array($fieldName, $fieldListEn)) {
@@ -176,33 +225,26 @@ if(!$_REQUEST['ajaxCall']) {
 				array_push($values['fieldValue'], $value);
 			}
 		}
-		
-		// Insert grant_privileges
-		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
-		if(!$tableRecord->insertSuccess()) {
-			$response['status'] = 'ADD_grant_privileges_FAIL';
-			echo json_encode($response);
-		}
 
-		// Insert grant_privileges service lists
-		$insertPkgsvlResult = true;
-		$insertPkgsvlError  = '';
-		$pkg_id = $tableRecord->getKey();
-		foreach ($formData['svl_id'] as $key => $svl_id) {
-			$pkgsvlValues 	= array($svl_id, $pkg_id);
-			$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvlValues);
-			if(!$pkgsvlRecord->insertSuccess()) {
-				$insertPkgsvlResult = false;
-				$insertPkgsvlError .= 'ADD_grant_privileges_SERVICE_LISTS['.($key+1).']_FAIL\n';
+		// Insert grant_privileges
+		$insertResult = true;
+		$insertError  = '';
+		foreach ($formData['privlg_id'] as $key => $privlg_id) {
+			$grnprivlgValues 	= array($privlg_id, $formData['emp_id']);
+			$grnprivlgRecord 	= new TableSpa('grant_privileges', $grnprivlgValues);
+			if(!$grnprivlgRecord->insertSuccess()) {
+				$insertResult = false;
+				$insertError .= 'ADD_GRANT_PRIVILEGES['.($key+1).']_FAIL\n';
+				$insertError .= mysql_error($dbConn)."\n\n".$privlg_id.",".$formData['emp_id'];
 			}
 		}
 
-		if($insertPkgsvlResult) {
-			// Add grant_privileges and grant_privileges_service_lists success
+		if($insertResult) {
+			// Add grant_privileges success
 			$response['status'] = 'ADD_PASS';
 			echo json_encode($response);
 		} else {
-			$response['status'] = $insertPkgsvlError;
+			$response['status'] = $insertError;
 			echo json_encode($response);
 		}
 	} else if($action == 'EDIT') {

@@ -325,6 +325,20 @@ if($tableName == 'packages') {
 			exit();
 		}
 	}
+} else if($tableName == 'grant_privileges') {
+	foreach($keySelected as $index => $emp_id) {
+		// Delete grant_privileges
+		$sql 	= "DELETE FROM grant_privileges WHERE emp_id = '$emp_id'";
+		$result = mysql_query($sql, $dbConn);
+		if(!$result) {
+			$err = mysql_error($dbConn);
+			echo "DELETE_GRANT_PRIVILEGES : $err";
+			exit();
+		}
+
+		echo "PASS";
+		exit();
+	}
 }
 
 

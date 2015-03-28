@@ -13,6 +13,23 @@
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
     <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <style type="text/css">
+    .privilegesTable {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        margin-top: 10px;
+    }
+    .privilegesTable td, .privilegesTable label {
+        cursor: pointer;
+    }
+    .privilegesTable th {
+        white-space: nowrap;
+        table-layout: fixed;
+    }
+    .privilegesTable tr.selected, .privilegesTable tr.selected:hover {
+        background: rgb(239, 255, 199);
+    }
+    </style>
     <script type="text/javascript">
         // Global variables
         var action      = '{/literal}{$action}{literal}';
@@ -33,24 +50,73 @@
         {literal}
 
 		$(document).ready(function() {
-			// Create service lists input
-            if(action == 'ADD') {
-                addServiceList({
-                    defaultValue : false
-                });
-            } else if(action == 'EDIT') {
-                for(i in valuesDetail) {
-                     addServiceList({
-                        defaultValue : true,
-                        pkgsvl_id   : valuesDetail[i].pkgsvl_id,
-                        svl_id      : valuesDetail[i].svl_id
-                    });
-                }
-            } else if(action == 'VIEW_DETAIL') {
-            	$('#allSvl').text('{/literal}{$pkgsvlDetailList|@count}{literal}');
-            }
+            setAllPrivlg();
 
+            selectReferenceJS({
+                elem            : $('#emp_id'),
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{/if}{literal}'
+            });
+
+            $('.privilegesTable td').click(function() {
+                var tr = $(this).parent();
+                tr.find('input[type="checkbox"]').click();
+            });
+            $('.privilegesTable label').click(function(e) {
+                e.stopPropagation();
+            });
+            $('input[name="privlg_id[]"]').click(function(e) {
+                e.stopPropagation();
+                var tr = $(this).parent().parent();
+                if(tr.hasClass('selected')) {
+                    tr.removeClass('selected');
+                } else {
+                    tr.addClass('selected');
+                } 
+                setAllPrivlg();
+            });
+
+            $('#selectAll').change(function() {
+                var flag = $(this).prop('checked');
+                $('input[name="privlg_id[]"]').prop('checked', flag);
+                if(flag) {
+                    $('.privilegesTable tr').addClass('selected');
+                } else {
+                    $('.privilegesTable tr').removeClass('selected');
+                }
+                setAllPrivlg();
+            });
 		});
+
+        function setAllPrivlg() {
+            $('#allPrivlg').text($('input[name="privlg_id[]"]:checked').length);
+        }
+
+        function beforeSaveRecord() {
+            // Check input required
+            var returnVal  = false;
+
+            // Not input booking
+            if(!hasInputError() && $('input[name="privlg_id[]"]:checked').length == 0) {
+                parent.showActionDialog({
+                    title   : 'คุณยังไม่ได้มอบสิทธิ์',
+                    message : 'กรุณาเลือกสิทธิ์ที่ต้องการมอบอย่างน้อย 1 สิทธิ์ค่ะ',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 500
+                });
+                returnVal = true;
+            }
+            return returnVal;
+        }
     </script>
     {/literal}
 </head>
@@ -99,66 +165,48 @@
 	{else}	 	
 	<!-- ADD, EDIT -->	 	 	 	 	 	 	 	 	
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="pkg_name,pkg_start,pkg_price">
+	<input type="hidden" name="requiredFields" value="emp_id">
 	<table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 		<tbody>
 			<tr>
-				<td colspan=2>
-					<label class="input-required">ชื่อแพ็คเกจ</label>
-					<input id="pkg_name" name="pkg_name" type="text" class="form-input full" value="{$values.pkg_name}" require>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<span id="err-pkg_name-require" class="errInputMsg err-pkg_name">โปรดป้อนชื่อแพ็คเกจ</span>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label class="input-required">วันที่เริ่มใช้</label>
-                	<input id="pkg_start" name="pkg_start" type="text" class="mbk-dtp-th form-input half" value="{if $values.pkg_start}{$values.pkg_start}{else}{$nowDate}{/if}" require>
+                <td colspan="2">
+                    <label class="input-required">พนักงานที่ได้รับสิทธิ์</label>
+                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
                 </td>
-                <td>
-					<label>วันที่สิ้นสุด</label>
-                	<input id="pkg_stop" name="pkg_stop" type="text" class="mbk-dtp-th form-input half" value="{$values.pkg_stop}">
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่ได้รับสิทธิ์</span>
                 </td>
-			</tr>
-			<tr>
-				<td>
-					<span id="err-pkg_start-require" class="errInputMsg err-pkg_start">โปรดป้อนวันที่เริ่มใช้</span>
-				</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td colspan=2>
-					<label class="input-required">ราคา (บาท)</label>
-					<input id="pkg_price" name="pkg_price" type="text" class="form-input full" value="{$values.pkg_price}" valuepattern="money" require style="text-align:right;">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<span id="err-pkg_price-require" class="errInputMsg err-pkg_price">โปรดป้อนราคา</span>
-					<span id="err-pkg_price-money" class="errInputMsg err-pkg_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-				</td>
-			</tr>
-			<tr>
-				<td colspan=2>
-					<label>คำอธิบาย</label>
-					<textarea id="pkg_desc" name="pkg_desc" class="form-input full" rows="6">{$values.pkg_desc}</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-                    <label>รูปภาพแพ็คเกจ</label>
-					<div id="pkg_picture" class="uploadImageArea full"></div>
-					<input type="hidden" name="pkg_picture" value="{$values.pkg_picture}">
-				</td>
-			</tr>
+            </tr>
 		</tbody>
     </table>
     
     <label class="article-title">รายการสิทธิ์ที่ได้รับ</label>
-	
+    <label>จำนวนสิทธิ์ที่ได้รับทั้งหมด <span id="allPrivlg"></span> สิทธิ์</label>
+	<table class="default-table privilegesTable">
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th>
+                    <label><input type="checkbox" id="selectAll"> เลือกทั้งหมด</label>
+                </th>
+                <th width="100%">ชื่อสิทธิ์</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$privlgList key=i item=privlg}
+            <tr>
+                <td style="text-align:center; width:80px;">{$privlg.no}</td>
+                <td style="text-align:center;">
+                    <input id="{$privlg.privlg_name}" type="checkbox" name="privlg_id[]" value="{$privlg.privlg_id}">
+                </td>
+                <td><label for="{$privlg.privlg_name}">{$privlg.privlg_name_th}</label></td>
+            </tr>
+            {/foreach}   
+        </tbody>
+        
+    </table>
     </form>
 	{/if}
 </div>

@@ -1265,13 +1265,14 @@ function dbClose() {
 				'keyLength'		=> 7,
 				'fieldNameList'	=> array(
 						'grnprivlg_id'	=> 'รหัสพนักงานที่ได้รับสิทธิ์',
-						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงานที่ได้รับสิทธิ์',
-						'privlg_id'		=> 'จำนวนสิทธิ์ที่ได้รับ'
+						'privlg_id'		=> 'จำนวนสิทธิ์ที่ได้รับ',
+						'emp_id' 		=> 'ชื่อ-นามสกุลพนักงานที่ได้รับสิทธิ์' 
 				),
 				'fixedHiddenFields'		=> true,
 				'searchFields'			=> array('grnprivlg_id', 'emp_id'),
 				'deleteTxtField'		=> array('privlg_id', 'emp_id'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบสิทธิ์การใช้งานทั้งหมดของ %f2 ใช่หรือไม่?'
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบสิทธิ์การใช้งานทั้งหมดของ %f2 ใช่หรือไม่?',
+				'referenceData'			=> array('employees')
 			);
 			break;
 
