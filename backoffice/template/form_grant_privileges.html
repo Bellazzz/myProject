@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_grant_privileges.php';
+        var valuesDetail    = '';
+        var vdtlAllSvl 	= 0;
+
+         // Set valuesDetail
+        {/literal}
+        {if $valuesDetail}
+        {literal}
+            valuesDetail= {/literal}{$valuesDetail|@json_encode}{literal};
+        {/literal}
+        {/if}
+        {literal}
+
+		$(document).ready(function() {
+			// Create service lists input
+            if(action == 'ADD') {
+                addServiceList({
+                    defaultValue : false
+                });
+            } else if(action == 'EDIT') {
+                for(i in valuesDetail) {
+                     addServiceList({
+                        defaultValue : true,
+                        pkgsvl_id   : valuesDetail[i].pkgsvl_id,
+                        svl_id      : valuesDetail[i].svl_id
+                    });
+                }
+            } else if(action == 'VIEW_DETAIL') {
+            	$('#allSvl').text('{/literal}{$pkgsvlDetailList|@count}{literal}');
+            }
+
+		});
+    </script>
+    {/literal}
+</head>
+<body>
+ 	 	 	 	 
+{include file="form_table_header.html"}
+<div class="ftb-body">
+	{if $action == 'VIEW_DETAIL'}
+	<!-- VIEW_DETAIL -->
+    <label class="article-title">ข้อมูลการมอบสิทธิ์การใช้งาน</label>
+	<table class="table-view-detail">
+		<tbody> 					
+			<tr>
+				<td>รหัสพนักงานที่ได้รับสิทธิ์ :</td>
+				<td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$code}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                    {$code}
+                    </a>
+                </td>
+			</tr>
+			<tr>
+                <td>ชื่อ-นามสกุลพนักงานที่ได้รับสิทธิ์ :</td>
+                <td>{$emp_fullName}</td>
+            </tr>
+		</tbody>
+	</table>
+	<!--Service list Data-->
+	<label class="article-title">รายการสิทธิ์ที่ได้รับ</label>
+	ทั้งหมด {$grnprivlgList|count} รายการ
+	<table class="view-detail-reference" style="margin-top:5px;">
+        <thead>
+            <tr>
+                <th style="text-align:center;">ลำดับ</th>
+                <th class="txtLong-col">ชื่อสิทธิ์</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach from=$grnprivlgList key=i item=grnprivlg}
+            <tr>
+                <td align="center">{$grnprivlg.no}</td>
+                <td align="left" class="txtLong-col">{$grnprivlg.privlg_name_th}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+	{else}	 	
+	<!-- ADD, EDIT -->	 	 	 	 	 	 	 	 	
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="pkg_name,pkg_start,pkg_price">
+	<table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<td colspan=2>
+					<label class="input-required">ชื่อแพ็คเกจ</label>
+					<input id="pkg_name" name="pkg_name" type="text" class="form-input full" value="{$values.pkg_name}" require>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<span id="err-pkg_name-require" class="errInputMsg err-pkg_name">โปรดป้อนชื่อแพ็คเกจ</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label class="input-required">วันที่เริ่มใช้</label>
+                	<input id="pkg_start" name="pkg_start" type="text" class="mbk-dtp-th form-input half" value="{if $values.pkg_start}{$values.pkg_start}{else}{$nowDate}{/if}" require>
+                </td>
+                <td>
+					<label>วันที่สิ้นสุด</label>
+                	<input id="pkg_stop" name="pkg_stop" type="text" class="mbk-dtp-th form-input half" value="{$values.pkg_stop}">
+                </td>
+			</tr>
+			<tr>
+				<td>
+					<span id="err-pkg_start-require" class="errInputMsg err-pkg_start">โปรดป้อนวันที่เริ่มใช้</span>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan=2>
+					<label class="input-required">ราคา (บาท)</label>
+					<input id="pkg_price" name="pkg_price" type="text" class="form-input full" value="{$values.pkg_price}" valuepattern="money" require style="text-align:right;">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<span id="err-pkg_price-require" class="errInputMsg err-pkg_price">โปรดป้อนราคา</span>
+					<span id="err-pkg_price-money" class="errInputMsg err-pkg_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=2>
+					<label>คำอธิบาย</label>
+					<textarea id="pkg_desc" name="pkg_desc" class="form-input full" rows="6">{$values.pkg_desc}</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+                    <label>รูปภาพแพ็คเกจ</label>
+					<div id="pkg_picture" class="uploadImageArea full"></div>
+					<input type="hidden" name="pkg_picture" value="{$values.pkg_picture}">
+				</td>
+			</tr>
+		</tbody>
+    </table>
+    
+    <label class="article-title">รายการสิทธิ์ที่ได้รับ</label>
+	
+    </form>
+	{/if}
+</div>
+</body>
+</html>
