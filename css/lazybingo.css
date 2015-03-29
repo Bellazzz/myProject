@@ -806,9 +806,13 @@ table.mbk .icon {
 }
 .mbk-icon.icon-product_types {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
-    background-position: -160px 0px;
+    background-position: -220px 0px;
 }
 .mbk-icon.icon-order_types {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: 0px -140px;
+}
+.mbk-icon.icon-withdraw_types {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: 0px 0px;
 }
@@ -825,6 +829,10 @@ table.mbk .icon {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -100px -40px;
 }
+.mbk-icon.icon-shops {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -140px -100px;
+}
 .mbk-icon.icon-employees {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -220px -20px;
@@ -836,6 +844,14 @@ table.mbk .icon {
 .mbk-icon.icon-service_lists {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -40px -40px;
+}
+.mbk-icon.icon-service_list_promotions {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -380px 0px;
+}
+.mbk-icon.icon-service_list_promotion_details {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -380px -60px;
 }
 .mbk-icon.icon-promotions {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
@@ -853,9 +869,37 @@ table.mbk .icon {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -140px -20px;
 }
+.mbk-icon.icon-product_promotion_groups {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -260px -20px;
+}
+.mbk-icon.icon-promotion_discout_sales {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -240px -20px;
+}
+.mbk-icon.icon-product_promotions {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -160px -100px;
+}
+.mbk-icon.icon-promotion_products {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -160px -120px;
+}
+.mbk-icon.icon-advertising {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -120px -140px;
+}
 .mbk-icon.icon-packages {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -180px -20px;
+}
+.mbk-icon.icon-package_promotions {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -80px -120px;
+}
+.mbk-icon.icon-package_promotion_details {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -100px -120px;
 }
 .mbk-icon.icon-package_service_lists {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
@@ -957,6 +1001,15 @@ table.mbk .icon {
 .mbk-icon.icon-order_status {
     background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
     background-position: -120px 0px;
+}
+/* Table Icon Privilege*/
+.mbk-icon.icon-privileges {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -60px -140px;
+}
+.mbk-icon.icon-grant_privileges {
+    background: url('../img/backoffice/mbk-icon-table.png') no-repeat;
+    background-position: -80px -140px;
 }
 
 .mbk-icon-16 {

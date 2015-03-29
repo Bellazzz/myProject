@@ -66,31 +66,39 @@
 	 * Get Privileges
 	 */
 	$emp_privileges = array(
-		'view_withdraws' 			=> false,
-		'insert_withdraws' 			=> false,
-		'update_withdraws' 			=> false,
-		'delete_withdraws' 			=> false,
+		'view_withdraws' 				=> false,
+		'insert_withdraws' 				=> false,
+		'update_withdraws' 				=> false,
+		'delete_withdraws' 				=> false,
 
-		'view_sales' 				=> false,
-		'insert_sales' 				=> false,
-		'update_sales' 				=> false,
-		'delete_sales' 				=> false,
-		'print_sales_receipt'		=> false,
+		'view_sales' 					=> false,
+		'insert_sales' 					=> false,
+		'update_sales' 					=> false,
+		'delete_sales' 					=> false,
+		'print_sales_receipt'			=> false,
 
-		'view_orders' 				=> false,
-		'insert_orders' 			=> false,
-		'update_orders' 			=> false,
-		'delete_orders' 			=> false,
-		'print_purchase_orders' 	=> false,
+		'manage_standard_tables'		=> false,
+		'point_of_sale'					=> false,
 
-		'manage_standard_tables'	=> false,
-		'point_of_sale'				=> false,
+		'manage_orders' 				=> false,
+		'manage_services' 				=> false,
+		'manage_booking' 				=> false,
+		'manage_employees' 				=> false,
+		'manage_customers' 				=> false,
+		'manage_spa' 					=> false,
+		'manage_shops' 					=> false,
+		'manage_packages' 				=> false,
+		'manage_service_lists' 			=> false,
+		'manage_companies'				=> false,
+		'manage_products' 				=> false,
+		'manage_promotion_discout_sales'=> false,
+		'manage_advertising' 			=> false,
+		'manage_time_attendances' 		=> false,
+		'manage_payrolls' 				=> false,
+		'manage_element_checks' 		=> false,
+		'manage_receives' 				=> false,
+		'view_report' 					=> false
 
-		'view_services' 			=> false,
-		'insert_services' 			=> false,
-		'update_services' 			=> false,
-		'delete_services' 			=> false,
-		'print_services_receipt'	=> false
 	);
 	if(isset($session_emp_id)) {
 		$sql = "SELECT  	p.privlg_name 
@@ -103,7 +111,7 @@
 		if($rows > 0) {
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
-				$emp_privileges[$record['privlg_name']] = true;
+				$emp_privileges[$record['privlg_name']] = false;
 			}
 			$smarty->assign("emp_privileges", $emp_privileges);
 		}
