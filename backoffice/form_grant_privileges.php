@@ -12,28 +12,22 @@ include('../common/common_header.php');
 $tableInfo = getTableInfo($tableName);
 
 if(!$_REQUEST['ajaxCall']) {
+	$checkedList = array();
+
 	//1. Display form
 	if($action == 'EDIT') {
-		$tableRecord = new TableSpa($tableName, $code);
-		$values      = array();
-		foreach($tableInfo['fieldNameList'] as $field => $value) {
-			$values[$field] = $tableRecord->getFieldValue($field);
-		}
-		$smarty->assign('values', $values);
+		$smarty->assign('code', $code);
 
-		// Get table order_details data
-		$valuesDetail = array();
-		$sql = "SELECT 		p.privlg_name_th  
-				FROM 		grant_privileges gp, privileges p 
-				WHERE 		gp.privlg_id = p.privlg_id 
-							AND gp.emp_id = '$code' 
-				ORDER BY 	p.privlg_name_th";
+		// Get grant privileges (checked)
+		$sql = "SELECT 		privlg_id 
+				FROM 		grant_privileges gp 
+				WHERE 		emp_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($valuesDetail, mysql_fetch_assoc($result));
+			$record = mysql_fetch_assoc($result);
+			$checkedList[$record['privlg_id']]['checked'] = true;
 		}
-		$smarty->assign('valuesDetail', $valuesDetail);
 
 	} else if($action == 'VIEW_DETAIL') {
 		// Get table grant_privileges data
@@ -73,19 +67,28 @@ if(!$_REQUEST['ajaxCall']) {
 		foreach ($tableInfo['referenceData'] as $key => $table) {
 			switch ($table) {
 				case 'employees':
-					$sqlRefData = "	SELECT 	* 
-									FROM 	(
-											SELECT 		e.emp_id refValue,
-														CONCAT(e.emp_name, ' ', e.emp_surname) refText,
-														COUNT(g.grnprivlg_id) AS amount 
-											FROM 		employees e 
-														LEFT JOIN 
-														grant_privileges g 
-														ON e.emp_id = g.emp_id 
-											GROUP BY 	e.emp_id 
-											ORDER BY 	refText ASC
-											) a
-									WHERE 	amount <= 0";
+					if($action == 'ADD') {
+						$sqlRefData = "	SELECT 	* 
+										FROM 	(
+												SELECT 		e.emp_id refValue,
+															CONCAT(e.emp_name, ' ', e.emp_surname) refText,
+															COUNT(g.grnprivlg_id) AS amount 
+												FROM 		employees e 
+															LEFT JOIN 
+															grant_privileges g 
+															ON e.emp_id = g.emp_id 
+												GROUP BY 	e.emp_id 
+												ORDER BY 	refText ASC
+												) a
+										WHERE 	amount <= 0";
+					} else {
+						$sqlRefData = " SELECT 	e.emp_id refValue,
+												CONCAT(e.emp_name, ' ', e.emp_surname) refText 
+										FROM 	employees e 
+										WHERE 	e.emp_id = '$code' 
+										ORDER BY 	refText ASC";
+					}
+					
 					$refField 	= 'emp_id';
 					break;
 			}
@@ -116,8 +119,8 @@ if(!$_REQUEST['ajaxCall']) {
 	}
 
 	if($action != 'VIEW_DETAIL') {
-		$privlgList = array();
 		// Get all privileges data
+		$privlgList = array();
 		$sql = "SELECT  	privlg_id,
 							privlg_name,
 							privlg_name_th 
@@ -133,6 +136,9 @@ if(!$_REQUEST['ajaxCall']) {
 				$privlgList[$record['privlg_id']]['privlg_id'] 		= $record['privlg_id'];
 				$privlgList[$record['privlg_id']]['privlg_name']	= $record['privlg_name'];
 				$privlgList[$record['privlg_id']]['privlg_name_th'] = $record['privlg_name_th'];
+				if(isset($checkedList[$record['privlg_id']])) {
+					$privlgList[$record['privlg_id']]['checked'] = true;
+				}
 			}
 			$smarty->assign('privlgList', $privlgList);
 		}
@@ -249,112 +255,67 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 	} else if($action == 'EDIT') {
 		//2.2 Update record
-		$tableRecord = new TableSpa($tableName, $code);
+		$updateResult = true;
+		$updateError = '';
 
-		// Rename Image
-		if(strpos($formData['pkg_picture'], 'temp_') !== FALSE) {
-			$type		= str_replace(".", "", strrchr($formData['pkg_picture'],"."));
-			$pkg_picture = $code.".$type";
-			$imgTmpPath = '../img/temp/'.$formData['pkg_picture'];
-			$imgNewPath = '../img/grant_privileges/'.$pkg_picture;
-
-			// Delete Old Image
-			if(file_exists($imgNewPath)) {
-				if(!unlink($imgNewPath)) {
-					$response['status'] = 'DELETE_OLD_IMG_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-			// Rename temp to new image
-			if(file_exists($imgTmpPath)) {
-				if(rename($imgTmpPath, $imgNewPath)) {
-					$formData['pkg_picture'] = $pkg_picture;
-				} else {
-					$response['status'] = 'RENAME_FAIL';
-					echo json_encode($response);
-					exit();
-				}
-			}
-		}
-
-		// Set all field value
-		foreach($formData as $fieldName => $value) {
-			if(in_array($fieldName, $fieldListEn)) {
-				// value is empty will set default is null
-				if($value == '' && in_array($fieldName, $tableInfo['defaultNull'])) {
-					$value = 'NULL';
-				}
-
-				$tableRecord->setFieldValue($fieldName, $value);
-			}
-		}
-
-		// Commit
-		if(!$tableRecord->commit()) {
-			$response['status'] = 'EDIT_FAIL';
-			echo json_encode($response);
-		}
-
-		// Delete package_service_lists if delete old package_service_lists
-		$oldPkgsvlList = array();
-		$newPkgsvlList = array();
-		// Find old package_service_lists
-		$sql = "SELECT pkgsvl_id FROM package_service_lists WHERE pkg_id = '$code'";
+		// Delete grant_privileges if delete old grant_privileges
+		$oldGrnprivlgList = array();
+		$newGrnprivlgList = array();
+		// Find old grant_privileges
+		$sql = "SELECT privlg_id FROM grant_privileges WHERE emp_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			$oldPkgsvlRecord = mysql_fetch_assoc($result);
-			array_push($oldPkgsvlList, $oldPkgsvlRecord['pkgsvl_id']);
+			$record = mysql_fetch_assoc($result);
+			array_push($oldGrnprivlgList, $record['privlg_id']);
 		}
-		// Find new package_service_lists
-		foreach ($formData['pkgsvl_id'] as $key => $newPkgsvl_id) {
-			array_push($newPkgsvlList, $newPkgsvl_id);
+		// Find new grant_privileges
+		foreach ($formData['privlg_id'] as $key => $newGrnprivlg_id) {
+			array_push($newGrnprivlgList, $newGrnprivlg_id);
 		}
-		// Check for delete 
-		foreach ($oldPkgsvlList as $key => $oldPkgsvl_id) {
-			if(!in_array($oldPkgsvl_id, $newPkgsvlList)) {
-				// Delete package_service_lists
-				$pkgsvlRecord 	= new TableSpa('package_service_lists', $oldPkgsvl_id);
-				if(!$pkgsvlRecord->delete()) {
-					$updatePkgsvlResult = false;
-					$updatePkgsvlError .= "DELETE_PAKAGE_SERVICE_LISTS[$oldPkgsvl_id]_FAIL\n";
+		
+		// Get for delete 
+		$grnprivlgIds_del = array();
+		foreach ($oldGrnprivlgList as $key => $oldGrnprivlg_id) {
+			$response['status'] .= "enter ($oldGrnprivlg_id)";
+			if(!in_array($oldGrnprivlg_id, $newGrnprivlgList)) {
+				array_push($grnprivlgIds_del, $oldGrnprivlg_id);
+			}
+		}
+
+		// Delete grant_privileges
+		if(count($grnprivlgIds_del) > 0) {
+			$grnprivlgIds_del = wrapSingleQuote($grnprivlgIds_del);
+			$sql = "DELETE FROM 	grant_privileges 
+					WHERE 			emp_id = '$code' AND 
+									privlg_id IN (".implode(',', $grnprivlgIds_del).")";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$updateResult = false;
+				$updateError .= "DELETE_GRANT_PRIVILEGES_FAIL\n";
+			}
+		}
+
+		// Add grant_privileges
+		foreach ($newGrnprivlgList as $key => $newGrnprivlg_id) {
+			if(!in_array($newGrnprivlg_id, $oldGrnprivlgList)) {
+				// Add new grant_privileges
+				$grnprivlgValues 	= array($newGrnprivlg_id, $code);
+				$grnprivlgRecord 	= new TableSpa('grant_privileges', $grnprivlgValues);
+				if(!$grnprivlgRecord->insertSuccess()) {
+					$updateResult = false;
+					$updateError .= 'ADD_GRANT_PRIVILEGES['.($key+1).']_FAIL\n';
 				}
 			}
 		}
 
-		// Update or Add package_service_lists
-		$updatePkgsvlResult = true;
-		$updatePkgsvlError  = '';
-
-		foreach ($formData['svl_id'] as $key => $svl_id) {
-			if(isset($formData['pkgsvl_id'][$key])) {
-				// Update package_service_lists
-				$pkgsvl_id 		= $formData['pkgsvl_id'][$key];
-				$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvl_id);
-				$pkgsvlRecord->setFieldValue('svl_id', $svl_id);
-				if(!$pkgsvlRecord->commit()) {
-					$updatePkgsvlResult = false;
-					$updatePkgsvlError .= 'EDIT_PAKAGE_SERVICE_LISTS['.($key+1).']_FAIL\n';
-				}
-			} else {
-				// Add new package_service_lists
-				$pkgsvlValues 	= array($svl_id, $code);
-				$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvlValues);
-				if(!$pkgsvlRecord->insertSuccess()) {
-					$updatePkgsvlResult = false;
-					$updatePkgsvlError .= 'ADD_PAKAGE_SERVICE_LISTS['.($key+1).']_FAIL\n';
-				}
-			}
-		}
-
-		if($updatePkgsvlResult) {
+		if($updateResult) {
 			// Edit package and package_service_lists success
 			$response['status'] = 'EDIT_PASS';
 			echo json_encode($response);
 		} else {
 			// Edit package_service_lists fail
-			$response['status'] = $updatePkgsvlError;
+			$response['status'] = $updateError;
 			echo json_encode($response);
 		}
 	}
