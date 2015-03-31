@@ -1,4 +1,5 @@
 <?php
+session_start();
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= 'service_lists';
 $code			= $_REQUEST['code'];

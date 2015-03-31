@@ -144,10 +144,19 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('hideBackButton', true);
 	}
 
+	// Employee privileges
+	$privileges = false;
+	if(($action == 'VIEW_DETAIL' && $emp_privileges['view_withdraws']) || 
+		($action == 'ADD' && $emp_privileges['insert_withdraws']) || 
+		($action == 'EDIT' && $emp_privileges['update_withdraws'])) {
+		$privileges = true;
+	}
+
 	$smarty->assign('action', $action);
 	$smarty->assign('tableName', $tableName);
 	$smarty->assign('tableNameTH', $tableInfo['tableNameTH']);
 	$smarty->assign('code', $code);
+	$smarty->assign('privileges', $privileges);
 	include('../common/common_footer.php');
 } else {
 	//2. Process record

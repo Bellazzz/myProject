@@ -120,12 +120,14 @@ for($i = 0; $i < $rows; $i++) {
  */
 
 // Hide if no privileges
+$viewPrivileges 	= true;
 $displayAddBtn 		= true;
 $displayEditBtn 	= true;
 $displayDeleteBtn 	= true;
 switch ($tableName) {
 	case 'orders':
 		if(!$emp_privileges['manage_orders']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -133,7 +135,7 @@ switch ($tableName) {
 		break;
 }
 
-if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
 	echo alertNoPrivlgTableData();
 } else if($rows > 0){
 //Has record will display table data

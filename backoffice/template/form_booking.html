@@ -308,6 +308,7 @@
 <body>
 
 {include file="form_table_header.html"}
+{if $emp_privileges.manage_booking}
 <div class="ftb-body">
     {if $action == 'VIEW_DETAIL'}
     <!-- VIEW_DETAIL -->
@@ -664,7 +665,14 @@
         <input id="bkg_transfer_evidence_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
     </form>
     {/if}
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
 </div>
+{/if}<!-- end if privileges -->
 </body>
 </html>
 <!--

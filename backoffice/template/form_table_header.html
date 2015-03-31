@@ -20,19 +20,19 @@
 				    </a>
 				    {/if}
 
-			    	{if $tableName == 'employees'}
+			    	{if $tableName == 'employees' && $emp_privileges.manage_employees}
 				    <a href="printEmployeeCard.php?empId={$code}">
 					    <i class="fa fa-credit-card"></i> บัตรพนักงาน
 				    </a>
-				    {elseif $tableName == 'orders'}
+				    {elseif $tableName == 'orders' && $emp_privileges.manage_orders}
 				    <a id="printPurchaseOrd-btn" href="printPurchaseOrder.php?ordId={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบสั่งซื้อ
 				    </a>
-				    {elseif $tableName == 'sales'}
+				    {elseif $tableName == 'sales' && $emp_privileges.print_sales_receipt}
 				    <a id="printReceipt-btn" href="printReceiptBOF.php?sale_id={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
 				    </a>
-				    {elseif $tableName == 'services'}
+				    {elseif $tableName == 'services' && $emp_privileges.manage_services}
 				    <a id="printServiceReceipt-btn" href="printServiceReceiptContainer.php?ser_id={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
 				    </a>
@@ -58,7 +58,7 @@
     </div>
     <div class="toolbar-container-right clearfix">
 	    <ul class="toolbar-menu">
-	    {if $action == 'VIEW_DETAIL'}
+	    {if $action == 'VIEW_DETAIL' && $emp_privileges.manage_booking}
 	    	{if $tableName == 'booking' && $values.status_id == 'S01'}
 	    	<li><a id="changeBpkgStatus-pending_check-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรอชำระเงิน</a></li>
 	    	{elseif $tableName == 'booking' && $values.status_id == 'S02'}

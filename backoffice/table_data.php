@@ -806,11 +806,14 @@ for($i = 0; $i < $rows; $i++) {
  */
 
 // Hide if no privileges
+$viewPrivileges 	= true;
 $displayAddBtn 		= true;
 $displayEditBtn 	= true;
 $displayDeleteBtn 	= true;
 switch ($tableName) {
 	case 'withdraws':
+		if(!$emp_privileges['view_withdraws'])
+			$viewPrivileges = false;
 		if(!$emp_privileges['insert_withdraws'])
 			$displayAddBtn = false;
 		if(!$emp_privileges['update_withdraws'])
@@ -820,6 +823,8 @@ switch ($tableName) {
 		break;
 
 	case 'sales':
+		if(!$emp_privileges['view_sales'])
+			$viewPrivileges = false;
 		if(!$emp_privileges['insert_sales'])
 			$displayAddBtn = false;
 		if(!$emp_privileges['update_sales'])
@@ -829,16 +834,17 @@ switch ($tableName) {
 		break;
 
 	case 'services':
-		if(!$emp_privileges['insert_services'])
+		if(!$emp_privileges['manage_services']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
-		if(!$emp_privileges['update_services'])
 			$displayEditBtn = false;
-		if(!$emp_privileges['delete_services'])
 			$displayDeleteBtn = false;
+		}
 		break;
 
 	case 'spa':
 		if(!$emp_privileges['manage_spa']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -847,6 +853,16 @@ switch ($tableName) {
 
 	case 'shops':
 		if(!$emp_privileges['manage_shops']) {
+			$viewPrivileges = false;
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'customers':
+		if(!$emp_privileges['manage_customers']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -855,6 +871,7 @@ switch ($tableName) {
 
 	case 'employees':
 		if(!$emp_privileges['manage_employees']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -863,6 +880,7 @@ switch ($tableName) {
 
 	case 'service_lists':
 		if(!$emp_privileges['manage_service_lists']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -871,6 +889,7 @@ switch ($tableName) {
 
 	case 'service_list_promotions':
 		if(!$emp_privileges['manage_service_lists']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -879,6 +898,7 @@ switch ($tableName) {
 
 	case 'service_list_promotion_details':
 		if(!$emp_privileges['manage_service_lists']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -887,6 +907,7 @@ switch ($tableName) {
 
 	case 'packages':
 		if(!$emp_privileges['manage_packages']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -895,6 +916,7 @@ switch ($tableName) {
 
 	case 'package_promotions':
 		if(!$emp_privileges['manage_packages']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -903,6 +925,7 @@ switch ($tableName) {
 
 	case 'package_promotion_details':
 		if(!$emp_privileges['manage_packages']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -911,6 +934,7 @@ switch ($tableName) {
 
 	case 'companies':
 		if(!$emp_privileges['manage_companies']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -919,6 +943,7 @@ switch ($tableName) {
 
 	case 'products':
 		if(!$emp_privileges['manage_products']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -927,6 +952,7 @@ switch ($tableName) {
 
 	case 'product_promotion_groups':
 		if(!$emp_privileges['manage_products']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -935,14 +961,7 @@ switch ($tableName) {
 
 	case 'product_promotions':
 		if(!$emp_privileges['manage_products']) {
-			$displayAddBtn = false;
-			$displayEditBtn = false;
-			$displayDeleteBtn = false;
-		}
-		break;
-
-	case 'promotion_products':
-		if(!$emp_privileges['manage_products']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -951,6 +970,7 @@ switch ($tableName) {
 
 	case 'promotion_discout_sales':
 		if(!$emp_privileges['manage_promotion_discout_sales']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -960,6 +980,7 @@ switch ($tableName) {
 
 	case 'advertising':
 		if(!$emp_privileges['manage_advertising']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -968,6 +989,7 @@ switch ($tableName) {
 
 	case 'time_attendances':
 		if(!$emp_privileges['manage_time_attendances']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -976,6 +998,7 @@ switch ($tableName) {
 
 	case 'payrolls':
 		if(!$emp_privileges['manage_payrolls']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -984,14 +1007,7 @@ switch ($tableName) {
 
 	case 'booking':
 		if(!$emp_privileges['manage_booking']) {
-			$displayAddBtn = false;
-			$displayEditBtn = false;
-			$displayDeleteBtn = false;
-		}
-		break;
-
-	case 'services':
-		if(!$emp_privileges['manage_services']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -1000,6 +1016,7 @@ switch ($tableName) {
 
 	case 'element_checks':
 		if(!$emp_privileges['manage_element_checks']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
@@ -1008,29 +1025,52 @@ switch ($tableName) {
 
 	case 'orders':
 		if(!$emp_privileges['manage_orders']) {
+			$viewPrivileges = false;
 			$displayAddBtn = false;
 			$displayEditBtn = false;
 			$displayDeleteBtn = false;
 		}
 		break;
+	default:
+		$standardtables = array(
+			'sex',
+			'titles',
+			'positions',
+			'units',
+			'bank_accounts',
+			'rooms',
+			'beds',
+			'order_status',
+			'booking_status',
+			'brands',
+			'pay_types',
+			'element_types',
+			'product_types',
+			'order_types',
+			'withdraw_types',
+			'service_list_types',
+			'customer_types'
 
-	case 'receives':
-		if(!$emp_privileges['manage_receives']) {
-			$displayAddBtn = false;
-			$displayEditBtn = false;
-			$displayDeleteBtn = false;
+		);
+		if(in_array($tableName, $standardtables)) {
+			if(!$emp_privileges['manage_standard_tables']) {
+				$viewPrivileges = false;
+				$displayAddBtn = false;
+				$displayEditBtn = false;
+				$displayDeleteBtn = false;
+			}
 		}
-		break;
+	break;
 }
 
-// Table that can't edit and delete
+// Table that can't add edit and delete
 if($tableName == 'privileges') {
 	$displayAddBtn = false;
 	$displayEditBtn = false;
 	$displayDeleteBtn = false;
 }
 
-if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
 	echo alertNoPrivlgTableData();
 } else if($rows > 0){
 //Has record will display table data

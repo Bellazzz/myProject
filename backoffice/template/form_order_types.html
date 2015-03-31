@@ -23,6 +23,7 @@
 <body>
  	 	 	 	 
 {include file="form_table_header.html"}
+{if $emp_privileges.manage_standard_tables}
 <div class="ftb-body">
     <form id="form-table" name="form-table" onsubmit="return false;">
 	<input type="hidden" name="requiredFields" value="ordtyp_name">
@@ -45,7 +46,14 @@
 	    </tbody>
     </table>
     </form>
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
 </div>
+{/if}<!-- end if privileges -->
 </body>
 </html>
 <!--

@@ -424,7 +424,7 @@
 <body>
  	 	 	 	 
 {include file="form_table_header.html"}
-<div class="ftb-body"> 
+{if $emp_privileges.manage_promotion_discout_sales}
 <div class="ftb-body">
 	{if $action == 'VIEW_DETAIL'}
 	<!-- VIEW_DETAIL -->
@@ -568,7 +568,14 @@
     <button id="addPrdtypBtn" class="button button-icon button-icon-add">เพิ่มประเภทผลิตภัณฑ์</button>
     </form>
 	{/if}
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
 </div>
+{/if}<!-- end if privileges -->
 </body>
 </html>
 <!--

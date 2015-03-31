@@ -1860,3 +1860,41 @@ datetimepicker
 .listLi li a:hover {
     color: #8AC007;
 }
+
+/*
+ * Privileges
+ */
+.noPrivilege-formTable-container {
+    height: 100%;
+    display: table;
+    min-height: 100%;
+    width: 100%;
+    padding: 0px 40px 20px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    color: #7D7D7D;
+}
+.noPrivilege-formTable-inner {
+    display: table-cell;
+    height: 100%;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+    font-family: ThaiSansNeue-Bold;
+    font-size: 25px;
+}
+.noPrivilege-formTable-inner i {
+    font-size: 150px;
+}
+
+.noPrivilege-tableData {
+    margin-top: 50px;
+    text-align: center;
+    font-family: ThaiSansNeue-Bold;
+    font-size: 25px;
+    color: #666;
+}
+.noPrivilege-tableData i {
+    font-size: 150px;
+}

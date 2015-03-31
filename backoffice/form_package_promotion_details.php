@@ -1,4 +1,5 @@
 <?php
+session_start();
 $action			= isset($_REQUEST['action']) ? $_REQUEST['action'] : 'ADD';
 $tableName		= 'package_promotion_details';
 $code			= $_REQUEST['code'];

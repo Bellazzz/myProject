@@ -392,6 +392,7 @@
 <body>
 
 {include file="form_table_header.html"}
+{if $privileges}
 <div class="ftb-body">
     {if $action == 'VIEW_DETAIL'}
     <!-- VIEW_DETAIL -->
@@ -427,18 +428,6 @@
                 <td>วันที่เบิก :</td>
                 <td>{if $values.wdw_date}{$values.wdw_date_th}{else}-{/if}</td>
             </tr>
-           <!--  <tr>
-                <td>อ้างอิงรหัสการใช้บริการ :</td>
-                <td>
-                    {if $values.ser_id}
-                    <a href="form_table.php?action=VIEW_DETAIL&tableName=services&code={$values.ser_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                            <div id="ser_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-                        </a>
-                    {else}
-                    <div id="ser_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
-                    {/if}
-                </td>
-            </tr> -->
         </tbody>
     </table>
     <!--Withdraw Details Data-->
@@ -520,12 +509,6 @@
                     <span id="err-wdwtyp_id-require" class="errInputMsg err-wdwtyp_id">โปรดเลือกประเภทการเบิก</span>
                 </td>
             </tr>
-            <!-- <tr>
-                <td colspan="2">
-                    <label>รหัสการใช้บริการ(ถ้ามี)</label>
-                    <div id="ser_id" class="selectReferenceJS form-input full"> </div>
-                </td>
-            </tr> -->
         </tbody>
     </table>
 
@@ -542,7 +525,14 @@
     <button id="addProjectBtn" class="button button-icon button-icon-add">เพิ่มผลิตภัณฑ์</button>
     </form>
     {/if}
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
 </div>
+{/if}<!-- end if privileges -->
 </body>
 </html>
 <!--
