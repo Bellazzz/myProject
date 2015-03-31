@@ -79,6 +79,7 @@
 
 		'manage_standard_tables'		=> false,
 		'point_of_sale'					=> false,
+		'manage_website' 				=> false,
 
 		'manage_orders' 				=> false,
 		'manage_services' 				=> false,
@@ -98,7 +99,6 @@
 		'manage_element_checks' 		=> false,
 		'manage_receives' 				=> false,
 		'view_report' 					=> false
-
 	);
 	if(isset($session_emp_id)) {
 		$sql = "SELECT  	p.privlg_name 
@@ -111,7 +111,7 @@
 		if($rows > 0) {
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
-				$emp_privileges[$record['privlg_name']] = false;
+				$emp_privileges[$record['privlg_name']] = true;
 			}
 			$smarty->assign("emp_privileges", $emp_privileges);
 		}

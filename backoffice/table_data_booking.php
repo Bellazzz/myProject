@@ -142,16 +142,17 @@ $displayEditBtn 	= true;
 $displayDeleteBtn 	= true;
 switch ($tableName) {
 	case 'booking':
-		if(!$emp_privileges['insert_booking'])
+		if(!$emp_privileges['manage_booking']) {
 			$displayAddBtn = false;
-		if(!$emp_privileges['update_booking'])
 			$displayEditBtn = false;
-		if(!$emp_privileges['delete_booking'])
 			$displayDeleteBtn = false;
+		}
 		break;
 }
 
-if($rows > 0){
+if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+	echo alertNoPrivlgTableData();
+} else if($rows > 0){
 //Has record will display table data
 ?>
 <table class="mbk mbk-table-sortable">

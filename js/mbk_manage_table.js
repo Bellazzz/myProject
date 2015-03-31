@@ -49,8 +49,15 @@ $(document).ready(function () {
 	});
     // find all tree view child
     $('.allTreeViewChild').each(function(){
-        var allChild = $(this).parent().parent().parent().parent().find('.tree-view-child li').length;
+        var root     = $(this).parent().parent().parent().parent();
+        var allChild = root.find('.tree-view-child li').length;
         $(this).text(allChild);
+
+        if(allChild > 0) {
+            root.css('display', 'block');
+        } else {
+            root.css('display', 'none');
+        }
     });
 
     /*

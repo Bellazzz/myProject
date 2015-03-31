@@ -17,19 +17,22 @@
             </a>
         </li>
         {/if}
+        {if $emp_privileges.manage_website}
         <li>
             <a href="#">
                 <img src="../img/backoffice/nav-web.png"><br>
                 จัดการเว็บไซต์
             </a>
         </li>
+        {/if}
+        {if $emp_privileges.view_report}
 		<li>
             <a href="report.php" {if $tplName == 'report.html'}class="selected"{/if}>
                 <img src="../img/backoffice/nav-authen.png"><br>
                 ออกรายงาน
             </a>
         </li>
-		
+        {/if}
 	</ul>
 	<ul id="header-tool">
 		<li>

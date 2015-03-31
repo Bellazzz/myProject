@@ -125,16 +125,17 @@ $displayEditBtn 	= true;
 $displayDeleteBtn 	= true;
 switch ($tableName) {
 	case 'orders':
-		if(!$emp_privileges['insert_orders'])
+		if(!$emp_privileges['manage_orders']) {
 			$displayAddBtn = false;
-		if(!$emp_privileges['update_orders'])
 			$displayEditBtn = false;
-		if(!$emp_privileges['delete_orders'])
 			$displayDeleteBtn = false;
+		}
 		break;
 }
 
-if($rows > 0){
+if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+	echo alertNoPrivlgTableData();
+} else if($rows > 0){
 //Has record will display table data
 ?>
 <table class="mbk mbk-table-sortable">

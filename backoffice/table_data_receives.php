@@ -110,7 +110,23 @@ for($i = 0; $i < $rows; $i++) {
  * Display Zone
  */
 
-if($rows > 0){
+// Hide if no privileges
+$displayAddBtn 		= true;
+$displayEditBtn 	= true;
+$displayDeleteBtn 	= true;
+switch ($tableName) {
+	case 'receives':
+		if(!$emp_privileges['manage_receives']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+}
+
+if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+	echo alertNoPrivlgTableData();
+} else if($rows > 0){
 //Has record will display table data
 ?>
 <table class="mbk mbk-table-sortable">

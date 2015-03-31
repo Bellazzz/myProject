@@ -158,30 +158,39 @@
 			        </div>
 			        <div class="tree-view-child">
 				        <ul>
+                            {if $emp_privileges.manage_spa}
 				            <li id="tn-spa">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-spa"></span>
                                     <span class="item-label">สปา</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_shops}
                             <li id="tn-shops">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-shops"></span>
                                     <span class="item-label">ร้านค้า</span>
                                 </a>
                             </li>
+                            {/if}
+                            {if $emp_privileges.manage_employees}
 					        <li id="tn-employees">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-employees"></span>
                                     <span class="item-label">พนักงาน</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_customer}
 					        <li id="tn-customers">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-customers"></span>
                                     <span class="item-label">ผู้ใช้บริการ</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_service_lists}
 					        <li id="tn-service_lists">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-service_lists"></span>
@@ -200,14 +209,14 @@
                                     <span class="item-label">รายการบริการที่จัดโปรโมชั่น</span>
                                 </a>
                             </li>
-
+                            {/if}
+                            {if $emp_privileges.manage_packages}
 					        <li id="tn-packages">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-packages"></span>
                                     <span class="item-label">แพ็คเกจ</span>
                                 </a>
 					        </li>
-                       
 					        <li id="tn-package_promotions">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-package_promotions"></span>
@@ -220,13 +229,16 @@
                                     <span class="item-label">แพ็คเกจที่จัดโปรโมชั่น</span>
                                 </a>
                             </li>
-                        
+                            {/if}
+                            {if $emp_privileges.manage_companies}
 					        <li id="tn-companies">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-companies"></span>
                                     <span class="item-label">บริษัทจำหน่ายผลิตภัณฑ์</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_products}
 					        <li id="tn-products">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-products"></span>
@@ -237,12 +249,6 @@
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-product_promotion_groups"></span>
                                     <span class="item-label">กลุ่มโปรโมชั่นผลิตภัณฑ์</span>
-                                </a>
-                            </li>
-                            <li id="tn-promotion_discout_sales">
-                                <a class="tree-view-item">
-                                    <span class="item-icon mbk-icon icon-promotion_discout_sales"></span>
-                                    <span class="item-label">โปรโมชั่นการขาย</span>
                                 </a>
                             </li>
                             <li id="tn-product_promotions">
@@ -257,12 +263,23 @@
                                     <span class="item-label">ผลิตภัณฑ์ที่จัดโปรโมชั่น</span>
                                 </a>
                             </li>
+                            {/if}
+                            {if $emp_privileges.manage_promotion_discout_sales}
+                            <li id="tn-promotion_discout_sales">
+                                <a class="tree-view-item">
+                                    <span class="item-icon mbk-icon icon-promotion_discout_sales"></span>
+                                    <span class="item-label">โปรโมชั่นการขาย</span>
+                                </a>
+                            </li>
+                            {/if}
+                            {if $emp_privileges.manage_advertising}
                             <li id="tn-advertising">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-advertising"></span>
                                     <span class="item-label">ประชาสัมพันธ์หน้าการเข้า-ออกงาน</span>
                                 </a>
                             </li>
+                            {/if}
 				        </ul>
 			        </div>
 			    </div>
@@ -275,25 +292,31 @@
 			        </div>
 			        <div class="tree-view-child">
 				        <ul>
-				         <li id="tn-time_attendances">
+                            {if $emp_privileges.manage_time_attendances}
+				            <li id="tn-time_attendances">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-time_attendances"></span>
                                     <span class="item-label">การเข้า-ออกงาน</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_payrolls}
 					        <li id="tn-payrolls">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-payrolls"></span>
                                     <span class="item-label">การจ่ายเงินเดือน</span>
                                 </a>
 					        </li>
+                            {/if}
+                            {if $emp_privileges.manage_booking}
 					        <li id="tn-booking">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-booking"></span>
                                     <span class="item-label">การจอง</span>
                                 </a>
 					        </li>
-                            {if $emp_privileges.view_services}
+                            {/if}
+                            {if $emp_privileges.manage_services}
 					        <li id="tn-services">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-services"></span>
@@ -301,6 +324,7 @@
                                 </a>
 					        </li>
                             {/if}
+                            {if $emp_privileges.manage_element_checks}
                             </li>
 					        <li id="tn-element_checks">
                                 <a class="tree-view-item">
@@ -308,7 +332,8 @@
                                     <span class="item-label">การตรวจธาตุ</span>
                                 </a>
 					        </li>
-                            {if $emp_privileges.view_orders}
+                            {/if}
+                            {if $emp_privileges.manage_orders}
 					        <li id="tn-orders">
                                 <a class="tree-view-item">
                                     <span class="item-icon mbk-icon icon-orders"></span>
@@ -316,6 +341,7 @@
                                 </a>
 					        </li>
                             {/if}
+                            {if $emp_privileges.manage_receives}
                             </li>
 					        <li id="tn-receives">
                                 <a class="tree-view-item">
@@ -323,7 +349,7 @@
                                     <span class="item-label">การรับ</span>
                                 </a>
 					        </li>
-                        
+                            {/if}
                             {if $emp_privileges.view_withdraws}
                             <li id="tn-withdraws">
                                 <a class="tree-view-item">

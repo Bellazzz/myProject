@@ -148,4 +148,10 @@ function getRealDate($input) {
 
 	return "";
 }
+
+function alertNoPrivlgTableData() {
+	echo '	<div style="margin-top:50px;">
+			<i class="fa fa-lock"></i> คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+			</div>';
+}
 ?>

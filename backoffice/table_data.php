@@ -836,6 +836,191 @@ switch ($tableName) {
 		if(!$emp_privileges['delete_services'])
 			$displayDeleteBtn = false;
 		break;
+
+	case 'spa':
+		if(!$emp_privileges['manage_spa']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'shops':
+		if(!$emp_privileges['manage_shops']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'employees':
+		if(!$emp_privileges['manage_employees']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'service_lists':
+		if(!$emp_privileges['manage_service_lists']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'service_list_promotions':
+		if(!$emp_privileges['manage_service_lists']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'service_list_promotion_details':
+		if(!$emp_privileges['manage_service_lists']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'packages':
+		if(!$emp_privileges['manage_packages']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'package_promotions':
+		if(!$emp_privileges['manage_packages']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'package_promotion_details':
+		if(!$emp_privileges['manage_packages']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'companies':
+		if(!$emp_privileges['manage_companies']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'products':
+		if(!$emp_privileges['manage_products']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'product_promotion_groups':
+		if(!$emp_privileges['manage_products']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'product_promotions':
+		if(!$emp_privileges['manage_products']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'promotion_products':
+		if(!$emp_privileges['manage_products']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'promotion_discout_sales':
+		if(!$emp_privileges['manage_promotion_discout_sales']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+
+	case 'advertising':
+		if(!$emp_privileges['manage_advertising']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'time_attendances':
+		if(!$emp_privileges['manage_time_attendances']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'payrolls':
+		if(!$emp_privileges['manage_payrolls']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'booking':
+		if(!$emp_privileges['manage_booking']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'services':
+		if(!$emp_privileges['manage_services']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'element_checks':
+		if(!$emp_privileges['manage_element_checks']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'orders':
+		if(!$emp_privileges['manage_orders']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
+
+	case 'receives':
+		if(!$emp_privileges['manage_receives']) {
+			$displayAddBtn = false;
+			$displayEditBtn = false;
+			$displayDeleteBtn = false;
+		}
+		break;
 }
 
 // Table that can't edit and delete
@@ -845,7 +1030,9 @@ if($tableName == 'privileges') {
 	$displayDeleteBtn = false;
 }
 
-if($rows > 0){
+if(!$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn) {
+	echo alertNoPrivlgTableData();
+} else if($rows > 0){
 //Has record will display table data
 ?>
 <table class="mbk mbk-table-sortable">
