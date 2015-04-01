@@ -36,6 +36,7 @@ if(isset($_POST['submit'])) {
 
 	// Query Report Services List
 	$reportServiceList = array();
+	$countRowSvlTyp = array();
 	$sql = "SELECT a.svltyp_name,a.svltyp_name, a.svl_name, a.svl_hr, a.svl_min, a.svl_price, 
 	 		a.sumAmount, a.sumPrice, IFNULL(b.discout,0) AS discout, a.sumPrice - IFNULL(b.discout,0) AS sumTotal
 		FROM 
@@ -83,14 +84,42 @@ if(isset($_POST['submit'])) {
 			$totalPrice 	+= $record['sumPrice'];
 			$totalDiscout 	+= $record['discout'];
 			$totalRealPrice += $record['sumTotal'];
+
+			if(!isset($countRowSvlTyp[$record['svltyp_name']])) {
+				$countRowSvlTyp[$record['svltyp_name']] = array(
+					'sumAmount' => 0,
+					'sumPrice' => 0,
+					'sumDiscout' => 0,
+					'sumRealPrice' => 0,
+					'afterRow' => 0
+				);
+			}
+
+			$countRowSvlTyp[$record['svltyp_name']]['sumAmount'] += $record['sumAmount'];
+			$countRowSvlTyp[$record['svltyp_name']]['sumPrice'] += $record['sumPrice'];
+			$countRowSvlTyp[$record['svltyp_name']]['sumDiscout'] += $record['discout'];
+			$countRowSvlTyp[$record['svltyp_name']]['sumRealPrice'] += $record['sumTotal'];
 		}
 
+		
 		$curSvlTypName = '';
+		$runNo = 0;
 		foreach ($reportServiceList as $key => $value) {
 			if($curSvlTypName != $value['svltyp_name']) {
 				$reportServiceList[$key]['type'] = $value['svltyp_name'];
 				$curSvlTypName = $value['svltyp_name'];
 			}
+			$countRowSvlTyp[$curSvlTypName]['afterRow'] = $runNo;
+			$runNo++;
+		}
+
+		foreach ($countRowSvlTyp as $key => $val) {
+			$reportServiceList[$val['afterRow']]['subtotal'] = array(
+				'sumAmount' => number_format($val['sumAmount']),
+				'sumPrice' => number_format($val['sumPrice'],2),
+				'sumDiscout' => number_format($val['sumDiscout'],2),
+				'sumRealPrice' => number_format($val['sumRealPrice'],2)
+			);
 		}
 			
 		$smarty->assign('reportServiceList', $reportServiceList);

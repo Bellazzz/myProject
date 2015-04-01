@@ -130,6 +130,13 @@
                             <td align="right">{$svl.discout}</td>
                             <td align="right">{$svl.sumTotal}</td>
                         </tr>
+                        {if $svl.subtotal}
+                            <td colspan="3" align="right">รวม</td>
+                            <td align="right">{$svl.subtotal.sumAmount}</td>
+                            <td align="right">{$svl.subtotal.sumPrice}</td>
+                            <td align="right">{$svl.subtotal.sumDiscout}</td>
+                            <td align="right">{$svl.subtotal.sumRealPrice}</td>
+                        {/if}
                         {/foreach}
 
                         {foreach from=$reportPackage key=i item=pkg}
@@ -156,7 +163,7 @@
                         <tr>
                             <td class="space-column"></td>
                             <td class="space-column"></td>
-                            <td align="right" class="total-column">รวม</td>
+                            <td align="right" class="total-column">รวมทั้งหมด</td>
                             <td align="right" class="total-column">{$totalAmount}</td>
                             <td align="right" class="total-column">{$totalPrice}</td>
                             <td align="right" class="total-column">{$totalDiscout}</td>
