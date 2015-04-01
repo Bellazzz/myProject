@@ -542,7 +542,7 @@ function addPackage(data) {
     });
 
     function allowChangePackage() {
-        if($('input[name="bkg_id"]') != '') {
+        if($('input[name="bkg_id"]').val() != '') {
             parent.showActionDialog({
                 title: 'ไม่สามารถเปลี่ยนแพ็คเกจได้',
                 message: 'ไม่สามารถเลือกแพ็คเกจอื่นนอกเหนือจากแพ็คเกจที่ลูกค้าจองไว้',
@@ -933,7 +933,7 @@ function addServiceList(data) {
     });
 
     function allowChangeServiceList() {
-        if($('input[name="bkg_id"]') != '') {
+        if($('input[name="bkg_id"]').val() != '') {
             parent.showActionDialog({
                 title: 'ไม่สามารถเปลี่ยนรายการบริการได้',
                 message: 'ไม่สามารถเลือกรายการบริการอื่นนอกเหนือจากรายการบริการที่ลูกค้าจองไว้',
