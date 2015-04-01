@@ -51,7 +51,7 @@
     <div id="wrapper">
         {include file="_manage_table_header.html"}
         <div class="mainContainer">
-            <h1><i class="fa fa-bar-chart-o"></i> รายงานรสุปยอดการเบิกผลิตภัณฑ์</h1>
+            <h1><i class="fa fa-cubes"></i> รายงานรสุปยอดการเบิกผลิตภัณฑ์</h1>
             <br><br>
             
             <form method="post" action="report_top_withdraw.php" class="mbk-form-input-normal">
@@ -79,24 +79,23 @@
                 <br />
                 ประจำวันที่: {$chooseDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
                 วันที่พิมพ์รายงาน: {$nowDate_th}
-                <table class="report-top-table" cellpadding="0" cellspacing="0">
+                <table class="report-top-table report-massage" cellpadding="0" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ลำดับ</th>
-                            <th>ประเภทการเบิก</th>
-                            <th>ชื่อผลิตภัณฑ์</th>
-                            <th>จำนวน</th>
+                            <th>ชื่อผลิตภัณฑ์ที่เบิก</th>
+                            <th>จำนวนที่เบิก</th>
                             <th>ชื่อผู้เบิก</th>
                             <th>ชื่อผู้ให้เบิก</th>                            
                         </tr>
                     </thead>
                     <tbody>
                         {foreach from=$report key=i item=wdw}
+                        {if $wdw.type}
+                            <tr class="type-col">
+                                <td colspan="7">{$wdw.wdwtyp_name}</td>
+                            </tr>
+                        {/if}
                         <tr>
-                            <td align="center" width="100px">{$wdw.no}</td>
-                            {if $wdw.rowspan}
-                            <td rowspan="{$wdw.rowspan}">{$wdw.wdwtyp_name}</td>
-                            {/if}
                             <td>{$wdw.prd_name}</td>
                             <td align="right">{$wdw.wdwdtl_amount} {$wdw.unit_name} </td>
                             <td>{$wdw.empFullname}</td>

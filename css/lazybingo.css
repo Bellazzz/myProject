@@ -1843,22 +1843,33 @@ datetimepicker
     border:1px solid #999;
 }
 .listLi {
-    padding-left: 80px;
+    padding: 0;
+    list-style: none;
+    width: 500px;
+    margin-left: 38px;
 }
 .listLi li{
     font-family: ThaiSansNeue-Bold;
     font-size: 26px;
+    cursor: pointer;
+    padding: 5px 5px 5px 15px;
+    color: #333;
+}
+.listLi li:hover, .listLi li:hover a {
+    background: #99D30C;
+    color: rgb(64, 89, 2);
+}
+.listLi li:before {
+    display: block;
+    width: 50px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    background: red;
 }
 .listLi li a {
     text-decoration: none;
     color: #333;
-    -webkit-transition: all .3s;
-    -moz-transition: all .3s;
-    -o-transition: all .3s;
-    transition: all .3s;
-}
-.listLi li a:hover {
-    color: #8AC007;
 }
 
 /*

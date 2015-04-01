@@ -63,10 +63,11 @@ if(isset($_POST['submit'])) {
 		$curWdwTypName = '';
 		foreach ($report as $key => $value) {
 			if($curWdwTypName != $value['wdwtyp_name']) {
-				$report[$key]['rowspan'] = $countWdwtyp[$value['wdwtyp_id']];
+				$report[$key]['type'] = $value['wdwtyp_name'];
 				$curWdwTypName = $value['wdwtyp_name'];
 			}
 		}
+
 			
 		$smarty->assign('report', $report);
 	}
