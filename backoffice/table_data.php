@@ -1049,7 +1049,8 @@ switch ($tableName) {
 			'order_types',
 			'withdraw_types',
 			'service_list_types',
-			'customer_types'
+			'customer_types',
+			'holidays'
 
 		);
 		if(in_array($tableName, $standardtables)) {

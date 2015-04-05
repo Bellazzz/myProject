@@ -1409,6 +1409,24 @@ function dbClose() {
 				)
 			);
 			break;
+
+		case 'holidays':
+			 return array(
+				'tableNameTH'	=> 'วันหยุดให้บริการสปา',
+				'keyFieldName'  => 'hld_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'HL',
+				'keyLength'		=> 6,
+				'fieldNameList'	=> array(
+						'hld_id'	  	  		=> 'รหัสวันหยุดให้บริการสปา',
+						'hld_name'	  			=> 'ชื่อวันหยุด',
+						'hld_date'	  			=> 'วันที่หยุด'
+				),
+				'searchFields'			=> array('hld_name','hld_date'),
+				'deleteTxtField'		=> array('hld_name','hld_date'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบวันหยุด %f1 (%f2) ใช่หรือไม่?'
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/

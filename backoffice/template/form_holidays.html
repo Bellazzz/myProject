@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function() {
+            $('#hld_date').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#hld_date').blur();
+                },
+                timepicker:false
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+{if $emp_privileges.manage_standard_tables}
+<div class="ftb-body">
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="hld_name,hld_date">
+    <input type="hidden" name="uniqueFields" value="hld_date">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+		    <tr>
+			    <td>
+				    <label class="input-required">ชื่อวันหยุด</label>
+				    <input id="hld_name" name="hld_name" type="text" class="form-input full" value="{$values.hld_name}" require>
+			    </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-hld_name-require" class="errInputMsg err-hld_name">โปรดป้อนชื่อวันหยุด</span>
+                    <span id="err-hld_name-unique" class="errInputMsg err-hld_name">ชื่อเพศซ้ำ โปรดป้อนชื่อเพศใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">วันที่หยุด</label>
+                      <input id="hld_date" name="hld_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.hld_date}{$values.hld_date}{/if}" require>
+                </td>
+            </tr>
+             <tr class="errMsgRow">
+                <td>
+                    <span id="err-hld_date-require" class="errInputMsg err-hld_date">โปรดป้อนวันที่หยุด</span>
+                    <span id="err-hld_date-unique" class="errInputMsg err-hld_date">วันที่หยุดซ้ำ โปรดป้อนวันที่หยุดใหม่</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
+</div>
+{/if}<!-- end if privileges -->
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->
