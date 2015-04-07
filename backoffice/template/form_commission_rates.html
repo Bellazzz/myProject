@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+        var cmr_day  = {/literal}{$optionData["cmr_day"]|@json_encode}{literal};
+
+        $(document).ready(function() {
+            selectReferenceJS({
+                elem            : $('#cmr_day'),
+                data            : cmr_day,
+                defaultValue    : '{/literal}{$values.cmr_day}{literal}'
+            });
+            $('#cmr_starttime').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#cmr_endtime').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+{if $emp_privileges.manage_standard_tables}
+<div class="ftb-body">
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="cmr_day,cmr_starttime,cmr_endtime,cmr_rate">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+		    <tr>
+			    <td  colspan="2">
+				    <label class="input-required">วัน</label>
+				    <div id="cmr_day" class="selectReferenceJS form-input full" require></div>
+			    </td>
+		    </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-cmr_day-require" class="errInputMsg err-cmr_day">โปรดเลือกวัน</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">เวลาเริ่มต้น</label>
+                      <input id="cmr_starttime" name="cmr_starttime" type="text" class="form-input half" value="{if $values.cmr_starttime}{$values.cmr_starttime}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาสิ้นสุด</label>
+                      <input id="cmr_endtime" name="cmr_endtime" type="text" class="form-input half" value="{if $values.cmr_endtime}{$values.cmr_endtime}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-cmr_starttime-require" class="errInputMsg half err-cmr_starttime">โปรดป้อนเวลาเริ่มต้น</span>
+                </td>
+                <td>
+                    <span id="err-cmr_endtime-require" class="errInputMsg half err-cmr_endtime">โปรดป้อนเวลาสิ้นสุด</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">อัตราการจ่าย(%)</label>
+                    <input id="cmr_rate" name="cmr_rate" type="text" class="form-input full" value="{if $values.cmr_rate}{$values.cmr_rate}{/if}" valuepattern="percent" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-cmr_rate-require" class="errInputMsg half err-cmr_rate">โปรดป้อนอัตราการจ่าย</span>
+                    <span id="err-cmr_rate-percent" class="errInputMsg err-cmr_rate">รูปแบบอัตราการจ่ายไม่ถูกต้อง อัตราการจ่ายเป็นได้เฉพาะตัวเลขตั้งแต่ 0.1-100.0 เท่านั้น</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
+</div>
+{/if}<!-- end if privileges -->
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->

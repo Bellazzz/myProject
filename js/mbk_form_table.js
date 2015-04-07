@@ -196,6 +196,11 @@ function validateInput() {
 					$('#err-' + id + '-number').css('display', 'block');
 					$(this).addClass('required');
 				}
+    		} else if(attrPattern == 'percent') {
+    			if(!validatePercent(value)) {
+					$('#err-' + id + '-percent').css('display', 'block');
+					$(this).addClass('required');
+				}
     		} else if(attrPattern == 'character') {
     			if(!validateCharacter(value)) {
 					$('#err-' + id + '-character').css('display', 'block');
@@ -319,6 +324,20 @@ function validateNumberMoreThanZero(number) {
 	var re 	 = /^[0-9]+$/;
 	if(re.test(number)) {
 		if(parseInt(number) <= 0) {
+			pass = false;
+		}
+	} else {
+		pass = false;
+	}
+
+	return pass;
+}
+
+function validatePercent(percent) {
+	var pass = true;
+	var re = /^[0-9]*(\.[0-9]{1,2})?$/;
+	if(re.test(percent)) {
+		if(parseFloat(percent) <= 0 || parseFloat(percent) > 100) {
 			pass = false;
 		}
 	} else {

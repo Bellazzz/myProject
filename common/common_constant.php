@@ -1427,6 +1427,27 @@ function dbClose() {
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบวันหยุด %f1 (%f2) ใช่หรือไม่?'
 			);
 			break;
+
+		case 'commission_rates':
+			 return array(
+				'tableNameTH'	=> 'อัตราการจ่ายค่าคอมมิชชั่น',
+				'keyFieldName'  => 'cmr_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'CR',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'cmr_id'	  	  => 'รหัสอัตราการจ่ายค่าคอมมิชชั่น',
+						'cmr_day'	  	=> 'วัน',
+						'cmr_starttime'	=> 'เวลาเริ่มต้น',
+						'cmr_endtime' 	=> 'เวลาสิ้นสุด',
+						'cmr_rate'	   	=> 'อัตราการจ่าย(%)'
+				),
+				'searchFields'			=> array('cmr_day','cmr_starttime','cmr_endtime','cmr_rate'),
+				'deleteTxtField'		=> array('cmr_day','cmr_starttime','cmr_endtime'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบอัตราการจ่ายค่าคอมมิชชั่นของวัน %f1 เวลา %f2-%f3 ใช่หรือไม่?',
+				'optionData' 			=> array('cmr_day')
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/

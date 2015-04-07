@@ -333,6 +333,29 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('referenceData', $referenceData);
 	}
 
+	// Get Options for selectReferenceJS
+	if(is_array($tableInfo['optionData']) && count($tableInfo['optionData']) > 0) {
+		$optionData 	= array();
+
+		foreach ($tableInfo['optionData'] as $key => $table) {
+			switch ($table) {
+				case 'cmr_day':
+					$optionData['cmr_day'] = array(
+						array('refText' => 'อาทิตย์', 'refValue' => 'อาทิตย์'),
+						array('refText' => 'จันทร์', 'refValue' => 'จันทร์'),
+						array('refText' => 'อังคาร', 'refValue' => 'อังคาร'),
+						array('refText' => 'พุธ', 'refValue' => 'พุธ'),
+						array('refText' => 'พฤหัสบดี', 'refValue' => 'พฤหัสบดี'),
+						array('refText' => 'ศุกร์', 'refValue' => 'ศุกร์'),
+						array('refText' => 'เสาร์', 'refValue' => 'เสาร์'),
+						array('refText' => 'วันหยุดสปา', 'refValue' => 'วันหยุดสปา')
+					);
+					break;
+				}
+		}
+		$smarty->assign('optionData', $optionData);
+	}
+
 	// Check for hide edit, back button
 	if($hideEditButton == 'true') {
 		$smarty->assign('hideEditButton', true);

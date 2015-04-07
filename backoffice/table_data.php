@@ -1189,6 +1189,16 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 						<td field="<?=$field?>"><?=$dateValue?></td>
 						<?
 					}
+					else if (mysql_field_type($result, $offset) == 'time'){
+						if($value == '') {
+							$timeValue 	= '-';
+						} else {
+							$timeValue 	= substr($value, 0, 5);
+						}
+						?>
+						<td field="<?=$field?>"><?=$timeValue?></td>
+						<?
+					}
 					else {
 						?>
 						<td field="<?=$field?>"><?=$value?></td>
