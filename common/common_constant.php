@@ -1448,6 +1448,30 @@ function dbClose() {
 				'optionData' 			=> array('cmr_day')
 			);
 			break;
+
+		case 'overtime_rates':
+			 return array(
+				'tableNameTH'	=> 'อัตราการจ่ายค่าล่วงเวลา',
+				'keyFieldName'  => 'otr_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'TR',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+						'otr_id'	  	  			=> 'รหัสอัตราการจ่ายค่าล่วงเวลา',
+						'ort_time_in' 				=> 'เวลาเข้างาน',
+						'ort_time_out'	   			=> 'เวลาออกงาน',
+						'ort_otstarttime_daywork' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันทำงาน',
+						'ort_otendtime_daywork' 	=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน',
+						'ort_otstarttime_dayoff' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันหยุด',
+						'ort_otendtime_dayoff' 		=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด',
+						'ort_bath_per_hour' 		=> 'อัตราค่าล่วงเวลา/ชั่วโมง'
+				),
+				'hiddenFields' 			=> array('ort_otstarttime_daywork','ort_otendtime_daywork','ort_otstarttime_dayoff','ort_otendtime_dayoff'),
+				'searchFields'			=> array('ort_time_in','ort_time_out','ort_bath_per_hour'),
+				'deleteTxtField'		=> array('otr_id'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบอัตราการจ่ายค่าล่วงเวลารหัส %f1 ใช่หรือไม่?'
+			);
+			break;
 	 }
  }
  /*วิธีการเรียกใช้ array $table['employees']['fieldNameList']['pos_name'];*/

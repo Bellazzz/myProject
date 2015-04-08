@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="UTF-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function() {
+            $('#ort_time_in').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#ort_time_out').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#ort_otstarttime_daywork').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#ort_otendtime_daywork').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#ort_otstarttime_dayoff').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+            $('#ort_otendtime_dayoff').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+
+{include file="form_table_header.html"}
+{if $emp_privileges.manage_standard_tables}
+<div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>เวลาเข้างาน :</td>
+                <td>
+                    {if $values.ort_time_in != '-'}
+                        {$values.ort_time_in} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เวลาออกงาน :</td>
+                <td>
+                    {if $values.ort_time_out != '-'}
+                        {$values.ort_time_out} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เวลาเริ่มทำงานล่วงเวลาวันทำงาน :</td>
+                <td>
+                    {if $values.ort_otstarttime_daywork != '-'}
+                        {$values.ort_otstarttime_daywork} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน :</td>
+                <td>
+                    {if $values.ort_otendtime_daywork != '-'}
+                        {$values.ort_otendtime_daywork} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เวลาเริ่มทำงานล่วงเวลาวันหยุด :</td>
+                <td>
+                    {if $values.ort_otstarttime_dayoff != '-'}
+                        {$values.ort_otstarttime_dayoff} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด :</td>
+                <td>
+                    {if $values.ort_otendtime_dayoff != '-'}
+                        {$values.ort_otendtime_dayoff} น.
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <td>อัตราค่าล่วงเวลา/ชั่วโมง :</td>
+                <td>{$values.ort_bath_per_hour|number_format:2:".":","} บาท</td>
+            </tr>
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->  
+    <form id="form-table" name="form-table" onsubmit="return false;">
+	<input type="hidden" name="requiredFields" value="ort_time_in,ort_time_out,ort_otstarttime_daywork,ort_otendtime_daywork,ort_otstarttime_dayoff,ort_otendtime_dayoff,ort_bath_per_hour">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+	    <tbody>
+            <tr>
+                <td>
+                    <label class="input-required">เวลาเข้างาน</label>
+                      <input id="ort_time_in" name="ort_time_in" type="text" class="form-input half" value="{if $values.ort_time_in}{$values.ort_time_in}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาออกงาน</label>
+                      <input id="ort_time_out" name="ort_time_out" type="text" class="form-input half" value="{if $values.ort_time_out}{$values.ort_time_out}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-ort_time_in-require" class="errInputMsg half err-ort_time_in">โปรดป้อนเวลาเข้างาน</span>
+                </td>
+                <td>
+                    <span id="err-ort_time_out-require" class="errInputMsg half err-ort_time_out">โปรดป้อนเวลาออกงาน</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">เวลาเริ่มทำงานล่วงเวลาวันทำงาน</label>
+                      <input id="ort_otstarttime_daywork" name="ort_otstarttime_daywork" type="text" class="form-input half" value="{if $values.ort_otstarttime_daywork}{$values.ort_otstarttime_daywork}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน</label>
+                      <input id="ort_otendtime_daywork" name="ort_otendtime_daywork" type="text" class="form-input half" value="{if $values.ort_otendtime_daywork}{$values.ort_otendtime_daywork}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-ort_otstarttime_daywork-require" class="errInputMsg half err-ort_otstarttime_daywork">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันทำงาน</span>
+                </td>
+                <td>
+                    <span id="err-ort_otendtime_daywork-require" class="errInputMsg half err-ort_otendtime_daywork">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">เวลาเริ่มทำงานล่วงเวลาวันหยุด</label>
+                      <input id="ort_otstarttime_dayoff" name="ort_otstarttime_dayoff" type="text" class="form-input half" value="{if $values.ort_otstarttime_dayoff}{$values.ort_otstarttime_dayoff}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด</label>
+                      <input id="ort_otendtime_dayoff" name="ort_otendtime_dayoff" type="text" class="form-input half" value="{if $values.ort_otendtime_dayoff}{$values.ort_otendtime_dayoff}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-ort_otstarttime_dayoff-require" class="errInputMsg half err-ort_otstarttime_dayoff">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันหยุด</span>
+                </td>
+                <td>
+                    <span id="err-ort_otendtime_dayoff-require" class="errInputMsg half err-ort_otendtime_dayoff">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันหยุด</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">อัตราค่าล่วงเวลา/ชั่วโมง</label>
+                    <input id="ort_bath_per_hour" name="ort_bath_per_hour" type="text" class="form-input full" value="{if $values.ort_bath_per_hour}{$values.ort_bath_per_hour}{/if}" valuepattern="percent" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-ort_bath_per_hour-require" class="errInputMsg half err-ort_bath_per_hour">โปรดป้อนอัตราค่าล่วงเวลา</span>
+                    <span id="err-ort_bath_per_hour-percent" class="errInputMsg err-ort_bath_per_hour">รูปแบบอัตราค่าล่วงเวลาไม่ถูกต้อง อัตราค่าล่วงเวลาเป็นได้เฉพาะตัวเลขตั้งแต่ 0.1-100.0 เท่านั้น</span>
+                </td>
+            </tr>
+	    </tbody>
+    </table>
+    </form>
+    {/if}
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
+</div>
+{/if}<!-- end if privileges -->
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+	3.  input[name="uniqueFields"] ใส่ชื่อฟิลด์ที่ต้องการเช็คว่าห้ามซ้ำ
+-->
