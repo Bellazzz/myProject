@@ -17,6 +17,15 @@
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_table.php';
+        var prdtyp_group  = {/literal}{$optionData["prdtyp_group"]|@json_encode}{literal};
+
+        $(document).ready(function() {
+            selectReferenceJS({
+                elem            : $('#prdtyp_group'),
+                data            : prdtyp_group,
+                defaultValue    : '{/literal}{$values.prdtyp_group}{literal}'
+            });
+        });
     </script>
     {/literal}
 </head>
@@ -41,6 +50,17 @@
                     <span id="err-prdtyp_name-require" class="errInputMsg err-prdtyp_name">โปรดป้อนชื่อประเภทผลิตภัณฑ์</span>
                     <span id="err-prdtyp_name-character" class="errInputMsg err-prdtyp_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
                     <span id="err-prdtyp_name-unique" class="errInputMsg err-prdtyp_name">ประเภทผลิตภัณฑ์ซ้ำ โปรดป้อนชื่อประเภทผลิตภัณฑ์ใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                <td  colspan="2">
+                    <label class="input-required">กลุ่มประเภทผลิตภัณฑ์</label>
+                    <div id="prdtyp_group" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-prdtyp_group-require" class="errInputMsg err-prdtyp_group">โปรดเลือกกลุ่มประเภทผลิตภัณฑ์</span>
                 </td>
             </tr>
 	    </tbody>

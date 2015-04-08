@@ -12,8 +12,15 @@
     <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <style type="text/css">
+    .even-row {
+        background-color: #f1f1f1 !important;
+    }
+    .odd-row {
+        background-color: #fff !important;
+    }
+    </style>
     <script type="text/javascript">
-    
     $(document).ready(function() {
         $('#startDate').datetimepicker({
             lang                : 'th',
@@ -55,6 +62,10 @@
                 }
             });
         });
+        $('.selectAll').change(function() {
+            var index = $(this).attr('data-index');
+            $('.selectPrdTypTable tbody input[data-index="' + index + '"]').prop('checked', $(this).prop('checked'));
+        });
     });
     </script>
 	{/literal}
@@ -90,13 +101,35 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="padding-left:20px;padding-bottom:20px;">
-                            {foreach from=$prdtyps key=i item=prdtyp}
-                            <label>
-                                <input type="checkbox" name="prdtypSelected[]" value="{$prdtyp.prdtyp_id}" {if $prdtyp.checked}checked{/if}> 
-                                {$prdtyp.prdtyp_name}
-                            </label>
-                            {/foreach}
+                        <td colspan="2" style="padding-bottom:20px;">
+                            <table class="default-table selectPrdTypTable">
+                                <thead>
+                                    <tr>
+                                        {foreach from=$prdtypGrps key=i item=prdtypGrp}
+                                        <th>
+                                            <label>
+                                                <input type="checkbox" class="selectAll" name="prdtypGrpSelected[]" value="{$prdtypGrp.name}" {if $prdtypGrp.checked}checked{/if} data-index="{$prdtypGrp.index}"> {$prdtypGrp.name}
+                                            </label>
+                                        </th>
+                                        {/foreach}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {foreach from=$prdtyps key=i item=prdtypList}
+                                        <td data-prdtypGrp="{$i}">
+                                            {foreach from=$prdtypList key=prdtyp_id item=prdtyp}
+                                                <label>
+                                                    <input type="checkbox" name="prdtypSelected[]" value="{$prdtyp.prdtyp_id}" {if $prdtyp.checked}checked{/if} data-index="{$prdtyp.index}"> 
+                                                    {$prdtyp.prdtyp_name}
+                                                </label>
+                                           
+                                            {/foreach}
+                                         </td>
+                                        {/foreach}
+                                    </tr>
+                                </tbody>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -127,7 +160,7 @@
                     </thead>
                     <tbody>
                         {foreach from=$report key=i item=prd}
-                        <tr>
+                        <tr class="{$prd.class}">
                             <td align="center" width="100px">{$prd.no}</td>
                             {if $prd.rowspan}
                             <td rowspan="{$prd.rowspan}">{$prd.prdtyp_name}</td>

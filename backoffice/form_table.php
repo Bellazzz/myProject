@@ -351,6 +351,15 @@ if(!$_REQUEST['ajaxCall']) {
 						array('refText' => 'วันหยุดสปา', 'refValue' => 'วันหยุดสปา')
 					);
 					break;
+
+				case 'prdtyp_group':
+					$optionData['prdtyp_group'] = array(
+						array('refText' => 'อาหาร', 'refValue' => 'อาหาร'),
+						array('refText' => 'เครื่องดื่ม', 'refValue' => 'เครื่องดื่ม'),
+						array('refText' => 'ผลิตภัณฑ์', 'refValue' => 'ผลิตภัณฑ์'),
+						array('refText' => 'ไม่ระบุกลุ่ม', 'refValue' => 'ไม่ระบุกลุ่ม')
+					);
+					break;
 				}
 		}
 		$smarty->assign('optionData', $optionData);

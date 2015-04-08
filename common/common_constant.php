@@ -306,10 +306,12 @@ function dbClose() {
 				'keyLength'		=> 4,
 				'fieldNameList'	=> array(
 						'prdtyp_id'		=> 'รหัสประเภทผลิตภัณฑ์',
-						'prdtyp_name'	=> 'ประเภทผลิตภัณฑ์'
+						'prdtyp_name'	=> 'ประเภทผลิตภัณฑ์',
+						'prdtyp_group' 	=> 'กลุ่มประเภทผลิตภัณฑ์'
 				),
-				'searchFields'	=> array('prdtyp_name'),
-				'deleteTxtField'=> array('prdtyp_name')
+				'searchFields'	=> array('prdtyp_name','prdtyp_group'),
+				'deleteTxtField'=> array('prdtyp_name'),
+				'optionData'    => array('prdtyp_group')
 			);
 			break;
 
