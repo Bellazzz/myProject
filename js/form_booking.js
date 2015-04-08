@@ -276,6 +276,7 @@ function addPackage(data) {
                     + '     </td>'
                     + '     <td>'
                     + '         <span class="bkgpkg_price_txt">0.00</span>'
+                    + '         <input type="hidden" name="bkgpkg_total_price_tmp[]" value="0">'
                     + '         <input type="hidden" name="bkgpkg_total_price[]" value="0">'
                     + '     </td>'
                     + '		<td style="width:100%">'
@@ -390,7 +391,7 @@ function addPackage(data) {
     $('#' + inputQtyId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
-        var sumPriceInput = $(this).parent().parent().find('input[name="bkgpkg_total_price[]"]');
+        var sumPriceInput = $(this).parent().parent().find('input[name="bkgpkg_total_price_tmp[]"]');
         calSumPriceInput(sumPriceInput, 'packages');
         addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
         calSummary();
@@ -490,6 +491,7 @@ function addServiceList(data) {
                     + '     </td>'
                     + '     <td>'
                     + '         <span class="bkgsvl_price_txt">0.00</span>'
+                    + '         <input type="hidden" name="bkgsvl_total_price_tmp[]" value="0">'
                     + '         <input type="hidden" name="bkgsvl_total_price[]" value="0">'
                     + '     </td>'
                     + '		<td style="width:100%">'
@@ -602,7 +604,7 @@ function addServiceList(data) {
     $('#' + inputQtyId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
-        var sumPriceInput = $(this).parent().parent().find('input[name="bkgsvl_total_price[]"]');
+        var sumPriceInput = $(this).parent().parent().find('input[name="bkgsvl_total_price_tmp[]"]');
         calSumPriceInput(sumPriceInput, 'service_lists');
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
@@ -668,7 +670,7 @@ function pullPkgUnitPrice(inputKeyId) {
         }
 
         pkgUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
-        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgpkg_total_price[]"]'), 'packages');
+        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgpkg_total_price_tmp[]"]'), 'packages');
     }
 }
 
@@ -687,7 +689,7 @@ function pullSvlUnitPrice(inputKeyId) {
         }
 
         svlUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
-        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgsvl_total_price[]"]'), 'service_lists');
+        calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgsvl_total_price_tmp[]"]'), 'service_lists');
     }
 }
 
@@ -871,8 +873,9 @@ function calSummary() {
         var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
         var pkg_sumPrm_price    = $(this).parent().parent().parent().find('.pkg_sumPrm_price');
         var bkgpkg_price_txt    = $(this).parent().parent().parent().find('.bkgpkg_price_txt');
-        var bkgpkg_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgpkg_total_price[]"]').val());
+        var bkgpkg_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgpkg_total_price_tmp[]"]').val());
         var sumPrmDiscout       = 0;
+        var bkgpkgTotalPrice    = $(this).parent().parent().parent().find('input[name="bkgpkg_total_price[]"]');
 
         tdPrm.find('.prm_sumDiscout').each(function() {
             sumPrmDiscout += parseFloat($(this).val());
@@ -881,14 +884,16 @@ function calSummary() {
         totalDiscoutPrm += sumPrmDiscout;
 
         bkgpkg_price_txt.text((bkgpkg_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        bkgpkgTotalPrice.val(bkgpkg_price - sumPrmDiscout);
         pkg_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
     });
     $('input[name="svl_id[]"]').each(function() {
         var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
         var svl_sumPrm_price    = $(this).parent().parent().parent().find('.svl_sumPrm_price');
         var bkgsvl_price_txt    = $(this).parent().parent().parent().find('.bkgsvl_price_txt');
-        var bkgsvl_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgsvl_total_price[]"]').val());
+        var bkgsvl_price        = parseFloat($(this).parent().parent().parent().find('input[name="bkgsvl_total_price_tmp[]"]').val());
         var sumPrmDiscout       = 0;
+        var bkgsvlTotalPrice    = $(this).parent().parent().parent().find('input[name="bkgsvl_total_price[]"]');
 
         tdPrm.find('.prm_sumDiscout').each(function() {
             sumPrmDiscout += parseFloat($(this).val());
@@ -897,6 +902,7 @@ function calSummary() {
         totalDiscoutPrm += sumPrmDiscout;
 
         bkgsvl_price_txt.text((bkgsvl_price - sumPrmDiscout).formatMoney(2, '.', ','));
+        bkgsvlTotalPrice.val(bkgsvl_price - sumPrmDiscout);
         svl_sumPrm_price.text(sumPrmDiscout.formatMoney(2, '.', ','));
     });
 
@@ -908,7 +914,6 @@ function calSummary() {
         totalPrice += parseFloat($(this).val());
     });
     
-    totalPrice -= totalDiscoutPrm;
     totalPrice = Math.ceil(totalPrice);
 
     $('#pkg_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
