@@ -1852,9 +1852,14 @@ datetimepicker
     padding: 20px;
     float: left;
     cursor: pointer;
+    border: 1px solid #fff;
+    -webkit-transition: all .2s;
+    -moz-transition: all .2s;
+    transition: all .2s;
 }
 .report-list li:hover {
     background: #f5f5f5;
+    border: 1px solid #ddd;
 }
 .report-list li:after {
     clear: both;
@@ -1898,6 +1903,11 @@ datetimepicker
     color: #31656e;
     font-size: 28px;
     cursor: pointer;
+}
+.report-total-column {
+    padding: 8px 5px;
+    background: #DBEFAC;
+    font-weight: bold;"
 }
 
 /*

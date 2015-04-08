@@ -83,10 +83,12 @@
                         <td>
                             <input id="endDate" name="endDate" type="text" class="mbk-dtp-th form-input half" value="{if $endDate}{$endDate}{else}{$nowDate}{/if}">
                         </td>
+                        <td>
+                            <input  type="hidden" name="submit" value="ออกรายงาน">
+                            <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
+                        </td>
                     </tr>
                 </table>
-                <input  type="hidden" name="submit" value="ออกรายงาน">
-                <button id="submit" type="submit" class="button button-icon button-icon-report"> ออกรายงาน</button>
             </form>
             
             <center>
@@ -179,11 +181,11 @@
                         <tr>
                             <td class="space-column"></td>
                             <td class="space-column"></td>
-                            <td align="right" class="total-column">รวมทั้งหมด</td>
-                            <td align="right" class="total-column">{$totalAmount}</td>
-                            <td align="right" class="total-column">{$totalPrice}</td>
-                            <td align="right" class="total-column">{$totalDiscout}</td>
-                            <td align="right" class="total-column">{$totalRealPrice}</td>
+                            <td align="right" class="report-total-column">รวมทั้งหมด</td>
+                            <td align="right" class="report-total-column">{$totalAmount}</td>
+                            <td align="right" class="report-total-column">{$totalPrice}</td>
+                            <td align="right" class="report-total-column">{$totalDiscout}</td>
+                            <td align="right" class="report-total-column">{$totalRealPrice}</td>
                         </tr>
                     </tfoot>
                 </table>

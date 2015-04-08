@@ -19,6 +19,9 @@
     .odd-row {
         background-color: #fff !important;
     }
+    .default-table > tbody > tr:hover {
+        background: none;
+    }
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
@@ -179,11 +182,11 @@
                             <td class="space-column"></td>
                             <td class="space-column"></td>
                             <td class="space-column"></td>
-                            <td align="right" class="total-column">รวม</td>
-                            <td align="right" class="total-column">{$totalAmount}</td>
-                            <td align="right" class="total-column">{$totalPrice}</td>
-                            <td align="right" class="total-column">{$totalDiscout}</td>
-                            <td align="right" class="total-column">{$totalRealPrice}</td>
+                            <td align="right" class="report-total-column">รวม</td>
+                            <td align="right" class="report-total-column">{$totalAmount}</td>
+                            <td align="right" class="report-total-column">{$totalPrice}</td>
+                            <td align="right" class="report-total-column">{$totalDiscout}</td>
+                            <td align="right" class="report-total-column">{$totalRealPrice}</td>
                         </tr>
                     </tfoot>
                 </table>
