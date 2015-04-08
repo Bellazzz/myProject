@@ -104,6 +104,7 @@
                             <th>ลำดับ</th>
                             <th>ชื่อรายการบริการ</th>
                             <th>จำนวนครั้งที่ใช้บริการ</th>
+                            <th>อัตราการใช้รายการอื่นร่วมกัน</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,6 +113,17 @@
                             <td align="center" width="100px">{$svl.no}</td>
                             <td>{$svl.svl_name}</td>
                             <td align="center">{$svl.amount}</td>
+                            <td>
+                                <ul>
+                                    {if $svl.together|count > 0}
+                                        {foreach from=$svl.together key=i item=t}
+                                        <li>{$t.svl_name} ({$t.percent})</li>
+                                        {/foreach}
+                                    {else}
+                                    -
+                                    {/if}
+                                </ul>
+                            </td>
                         </tr>
                         {/foreach}
                     </tbody>
@@ -120,6 +132,7 @@
                             <td class="space-column"></td>
                             <td align="right" class="total-column">รวม</td>
                             <td align="center" class="total-column">{$totalAmount}</td>
+                            <td class="space-column"></td>
                         </tr>
                     </tfoot>
                 </table>
