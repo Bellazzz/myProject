@@ -75,8 +75,8 @@ if(isset($_POST['submit'])) {
 								SELECT DISTINCT s.ser_id
 								FROM 			services s, 
 												service_service_lists sl
-								WHERE 			s.ser_date >=  '2015-04-09' AND 
-												s.ser_date <=  '2015-04-09' AND 
+								WHERE 			s.ser_date >=  '$startDate' AND 
+												s.ser_date <=  '$endDate' AND 
 												s.ser_id = sl.ser_id AND 
 												sl.svl_id =  '$svl_id'
 								) a
@@ -107,7 +107,7 @@ if(isset($_POST['submit'])) {
 
 					array_push($report[$svl_id]['together'], array(
 						'svl_name' => $record['svl_name'],
-						'percent' => $record['percent'],
+						'percent' => $record['percent']
 					));
 				}
 			}

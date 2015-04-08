@@ -105,6 +105,7 @@
                             <th>ลำดับ</th>
                             <th>ชื่อแพ็คเกจ</th>
                             <th>จำนวนครั้งที่ใช้บริการ</th>
+                            <th>อัตราการใช้แพ็คเกจอื่นร่วมกัน</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,6 +114,17 @@
                             <td align="center" width="100px">{$pkg.no}</td>
                             <td>{$pkg.pkg_name}</td>
                             <td align="center">{$pkg.amount}</td>
+                            <td>
+                                <ul>
+                                    {if $pkg.together|count > 0}
+                                        {foreach from=$pkg.together key=i item=t}
+                                        <li>{$t.pkg_name} ({$t.percent})</li>
+                                        {/foreach}
+                                    {else}
+                                    -
+                                    {/if}
+                                </ul>
+                            </td>
                         </tr>
                         {/foreach}
                     </tbody>
@@ -121,6 +133,7 @@
                             <td class="space-column"></td>
                             <td align="right" class="total-column">รวม</td>
                             <td align="center" class="total-column">{$totalAmount}</td>
+                            <td class="space-column"></td>
                         </tr>
                     </tfoot>
                 </table>
