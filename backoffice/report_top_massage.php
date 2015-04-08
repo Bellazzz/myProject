@@ -127,6 +127,10 @@ if(isset($_POST['submit'])) {
 
 	// Query Report Package
 	$pkgIds = array();
+	$sumAmountPkg = 0;
+	$sumPricePkg = 0;
+	$sumDiscoutPkg = 0;
+	$sumRealPricePkg = 0;
 	$reportPackage = array();
 	$sql = "SELECT a.pkg_id, a.pkg_name, a.pkg_price, a.sumAmount, a.sumPrice, IFNULL(b.sumDiscout,0) AS sumDiscout, 
 			a.sumPrice - IFNULL(b.sumDiscout,0) AS sumTotal 
@@ -164,6 +168,11 @@ if(isset($_POST['submit'])) {
 				'sumTotal'		=> number_format($record['sumTotal'], 2)
 			);
 			array_push($pkgIds, $record['pkg_id']);
+
+			$sumAmountPkg += $record['sumAmount'];
+			$sumPricePkg += $record['sumPrice'];
+			$sumDiscoutPkg += $record['sumDiscout'];
+			$sumRealPricePkg += $record['sumTotal'];
 
 			$totalAmount 	+= $record['sumAmount'];
 			$totalPrice 	+= $record['sumPrice'];
@@ -203,7 +212,11 @@ if(isset($_POST['submit'])) {
 	}
 
 
-
+	$smarty->assign('sumAmountPkg', number_format($sumAmountPkg));
+	$smarty->assign('sumPricePkg', number_format($sumPricePkg, 2));
+	$smarty->assign('sumDiscoutPkg', number_format($sumDiscoutPkg, 2));
+	$smarty->assign('sumRealPricePkg', number_format($sumRealPricePkg, 2));
+	
 	$smarty->assign('totalAmount', number_format($totalAmount));
 	$smarty->assign('totalPrice', number_format($totalPrice, 2));
 	$smarty->assign('totalDiscout', number_format($totalDiscout, 2));

@@ -113,7 +113,7 @@
                     <tbody>
                         {foreach from=$reportServiceList key=i item=svl}
                         {if $svl.type}
-                            <tr class="type-col">
+                            <tr style="font-weight:bold;">
                                 <td colspan="7">{$svl.svltyp_name}</td>
                             </tr>
                         {/if}
@@ -134,14 +134,20 @@
                             <td align="right">{$svl.sumTotal}</td>
                         </tr>
                         {if $svl.subtotal}
+                        <tr class="type-col">
                             <td colspan="3" align="right">รวม</td>
                             <td align="right">{$svl.subtotal.sumAmount}</td>
                             <td align="right">{$svl.subtotal.sumPrice}</td>
                             <td align="right">{$svl.subtotal.sumDiscout}</td>
                             <td align="right">{$svl.subtotal.sumRealPrice}</td>
+                        </tr>
                         {/if}
                         {/foreach}
 
+                        {if $reportPackage|count > 0}
+                        <tr style="font-weight:bold;">
+                            <td colspan="7">แพ็คเกจ</td>
+                        </tr>
                         {foreach from=$reportPackage key=i item=pkg}
                         <tr>
                             <td>{$pkg.pkg_name}</td>
@@ -159,8 +165,15 @@
                             <td align="right">{$pkg.sumDiscout}</td>
                             <td align="right">{$pkg.sumTotal}</td>
                         </tr>
-                        
                         {/foreach}
+                        <tr class="type-col">
+                            <td colspan="3" align="right">รวม</td>
+                            <td align="right">{$sumAmountPkg}</td>
+                            <td align="right">{$sumPricePkg}</td>
+                            <td align="right">{$sumDiscoutPkg}</td>
+                            <td align="right">{$sumRealPricePkg}</td>
+                        </tr>
+                        {/if}
                     </tbody>
                     <tfoot>
                         <tr>
