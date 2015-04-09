@@ -22,27 +22,27 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function() {
-            $('#ort_time_in').datetimepicker({
+            $('#otr_time_in').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-            $('#ort_time_out').datetimepicker({
+            $('#otr_time_out').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-            $('#ort_otstarttime_daywork').datetimepicker({
+            $('#otr_otstarttime_daywork').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-            $('#ort_otendtime_daywork').datetimepicker({
+            $('#otr_otendtime_daywork').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-            $('#ort_otstarttime_dayoff').datetimepicker({
+            $('#otr_otstarttime_dayoff').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
-            $('#ort_otendtime_dayoff').datetimepicker({
+            $('#otr_otendtime_dayoff').datetimepicker({
                 datepicker:false,
                 format:'H:i'
             });
@@ -59,141 +59,121 @@
     <table class="table-view-detail">
         <tbody>
             <tr>
+                <td>ชื่ออัตราการจ่ายค่าล่วงเวลา :</td>
+                <td>{$values.otr_name}</td>
+            </tr>
+            <tr>
                 <td>เวลาเข้างาน :</td>
-                <td>
-                    {if $values.ort_time_in != '-'}
-                        {$values.ort_time_in} น.
-                    {else}
-                        -
-                    {/if}
-                </td>
+                <td>{$values.otr_time_in} น.</td>
             </tr>
             <tr>
                 <td>เวลาออกงาน :</td>
+                <td>{$values.otr_time_out} น.</td>
+            </tr>
+            <tr>
+                <td>ระยะเวลาทำงานล่วงเวลาวันทำงาน :</td>
                 <td>
-                    {if $values.ort_time_out != '-'}
-                        {$values.ort_time_out} น.
-                    {else}
-                        -
-                    {/if}
+                    {$values.otr_otstarttime_daywork} น. - 
+                    {$values.otr_otendtime_daywork} น.
                 </td>
             </tr>
             <tr>
-                <td>เวลาเริ่มทำงานล่วงเวลาวันทำงาน :</td>
+                <td>ระยะเวลาทำงานล่วงเวลาวันหยุด :</td>
                 <td>
-                    {if $values.ort_otstarttime_daywork != '-'}
-                        {$values.ort_otstarttime_daywork} น.
-                    {else}
-                        -
-                    {/if}
+                    {$values.otr_otstarttime_dayoff} น. - 
+                    {$values.otr_otendtime_dayoff} น.
                 </td>
             </tr>
             <tr>
-                <td>เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน :</td>
-                <td>
-                    {if $values.ort_otendtime_daywork != '-'}
-                        {$values.ort_otendtime_daywork} น.
-                    {else}
-                        -
-                    {/if}
-                </td>
-            </tr>
-            <tr>
-                <td>เวลาเริ่มทำงานล่วงเวลาวันหยุด :</td>
-                <td>
-                    {if $values.ort_otstarttime_dayoff != '-'}
-                        {$values.ort_otstarttime_dayoff} น.
-                    {else}
-                        -
-                    {/if}
-                </td>
-            </tr>
-            <tr>
-                <td>เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด :</td>
-                <td>
-                    {if $values.ort_otendtime_dayoff != '-'}
-                        {$values.ort_otendtime_dayoff} น.
-                    {else}
-                        -
-                    {/if}
-                </td>
-            </tr>
-            <tr>
-                <td>อัตราค่าล่วงเวลา/ชั่วโมง :</td>
-                <td>{$values.ort_bath_per_hour|number_format:2:".":","} บาท</td>
+                <td>อัตราค่าล่วงเวลา(บาท/ชั่วโมง) :</td>
+                <td>{$values.otr_bath_per_hour|number_format:2:".":","} บาท</td>
             </tr>
         </tbody>
     </table>
     {else}      
     <!-- ADD, EDIT -->  
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="ort_time_in,ort_time_out,ort_otstarttime_daywork,ort_otendtime_daywork,ort_otstarttime_dayoff,ort_otendtime_dayoff,ort_bath_per_hour">
+	<input type="hidden" name="requiredFields" value="otr_name,otr_time_in,otr_time_out,otr_otstarttime_daywork,otr_otendtime_daywork,otr_otstarttime_dayoff,otr_otendtime_dayoff,otr_bath_per_hour">
+    <input type="hidden" name="uniqueFields" value="otr_name">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
+                <td colspan="2">
+                    <label class="input-required">ชื่ออัตราการจ่ายค่าล่วงเวลา</label>
+                    <input id="otr_name" name="otr_name" type="text" class="form-input full" value="{$values.otr_name}" require valuepattern="character">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-otr_name-require" class="errInputMsg err-otr_name">โปรดป้อนชื่ออัตราการจ่ายค่าล่วงเวลา</span>
+                    <span id="err-otr_name-character" class="errInputMsg err-otr_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+                    <span id="err-otr_name-unique" class="errInputMsg err-otr_name">ชื่ออัตราการจ่ายค่าล่วงเวลาซ้ำ โปรดป้อนชื่ออัตราการจ่ายค่าล่วงเวลาใหม่</span>
+                </td>
+            </tr>
+            <tr>
                 <td>
                     <label class="input-required">เวลาเข้างาน</label>
-                      <input id="ort_time_in" name="ort_time_in" type="text" class="form-input half" value="{if $values.ort_time_in}{$values.ort_time_in}{/if}" require>
+                      <input id="otr_time_in" name="otr_time_in" type="text" class="form-input half" value="{if $values.otr_time_in}{$values.otr_time_in}{/if}" require>
                 </td>
                 <td>
                     <label class="input-required">เวลาออกงาน</label>
-                      <input id="ort_time_out" name="ort_time_out" type="text" class="form-input half" value="{if $values.ort_time_out}{$values.ort_time_out}{/if}" require>
+                      <input id="otr_time_out" name="otr_time_out" type="text" class="form-input half" value="{if $values.otr_time_out}{$values.otr_time_out}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-ort_time_in-require" class="errInputMsg half err-ort_time_in">โปรดป้อนเวลาเข้างาน</span>
+                    <span id="err-otr_time_in-require" class="errInputMsg half err-otr_time_in">โปรดป้อนเวลาเข้างาน</span>
                 </td>
                 <td>
-                    <span id="err-ort_time_out-require" class="errInputMsg half err-ort_time_out">โปรดป้อนเวลาออกงาน</span>
+                    <span id="err-otr_time_out-require" class="errInputMsg half err-otr_time_out">โปรดป้อนเวลาออกงาน</span>
                 </td>
             </tr>
             <tr>
                 <td>
                     <label class="input-required">เวลาเริ่มทำงานล่วงเวลาวันทำงาน</label>
-                      <input id="ort_otstarttime_daywork" name="ort_otstarttime_daywork" type="text" class="form-input half" value="{if $values.ort_otstarttime_daywork}{$values.ort_otstarttime_daywork}{/if}" require>
+                      <input id="otr_otstarttime_daywork" name="otr_otstarttime_daywork" type="text" class="form-input half" value="{if $values.otr_otstarttime_daywork}{$values.otr_otstarttime_daywork}{/if}" require>
                 </td>
                 <td>
                     <label class="input-required">เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน</label>
-                      <input id="ort_otendtime_daywork" name="ort_otendtime_daywork" type="text" class="form-input half" value="{if $values.ort_otendtime_daywork}{$values.ort_otendtime_daywork}{/if}" require>
+                      <input id="otr_otendtime_daywork" name="otr_otendtime_daywork" type="text" class="form-input half" value="{if $values.otr_otendtime_daywork}{$values.otr_otendtime_daywork}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-ort_otstarttime_daywork-require" class="errInputMsg half err-ort_otstarttime_daywork">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันทำงาน</span>
+                    <span id="err-otr_otstarttime_daywork-require" class="errInputMsg half err-otr_otstarttime_daywork">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันทำงาน</span>
                 </td>
                 <td>
-                    <span id="err-ort_otendtime_daywork-require" class="errInputMsg half err-ort_otendtime_daywork">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน</span>
+                    <span id="err-otr_otendtime_daywork-require" class="errInputMsg half err-otr_otendtime_daywork">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน</span>
                 </td>
             </tr>
             <tr>
                 <td>
                     <label class="input-required">เวลาเริ่มทำงานล่วงเวลาวันหยุด</label>
-                      <input id="ort_otstarttime_dayoff" name="ort_otstarttime_dayoff" type="text" class="form-input half" value="{if $values.ort_otstarttime_dayoff}{$values.ort_otstarttime_dayoff}{/if}" require>
+                      <input id="otr_otstarttime_dayoff" name="otr_otstarttime_dayoff" type="text" class="form-input half" value="{if $values.otr_otstarttime_dayoff}{$values.otr_otstarttime_dayoff}{/if}" require>
                 </td>
                 <td>
                     <label class="input-required">เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด</label>
-                      <input id="ort_otendtime_dayoff" name="ort_otendtime_dayoff" type="text" class="form-input half" value="{if $values.ort_otendtime_dayoff}{$values.ort_otendtime_dayoff}{/if}" require>
+                      <input id="otr_otendtime_dayoff" name="otr_otendtime_dayoff" type="text" class="form-input half" value="{if $values.otr_otendtime_dayoff}{$values.otr_otendtime_dayoff}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-ort_otstarttime_dayoff-require" class="errInputMsg half err-ort_otstarttime_dayoff">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันหยุด</span>
+                    <span id="err-otr_otstarttime_dayoff-require" class="errInputMsg half err-otr_otstarttime_dayoff">โปรดป้อนเวลาเริ่มทำงานล่วงเวลาวันหยุด</span>
                 </td>
                 <td>
-                    <span id="err-ort_otendtime_dayoff-require" class="errInputMsg half err-ort_otendtime_dayoff">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันหยุด</span>
+                    <span id="err-otr_otendtime_dayoff-require" class="errInputMsg half err-otr_otendtime_dayoff">โปรดป้อนเวลาสิ้นสุดทำงานล่วงเวลาวันหยุด</span>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
-                    <label class="input-required">อัตราค่าล่วงเวลา/ชั่วโมง</label>
-                    <input id="ort_bath_per_hour" name="ort_bath_per_hour" type="text" class="form-input full" value="{if $values.ort_bath_per_hour}{$values.ort_bath_per_hour}{/if}" valuepattern="percent" require>
+                    <label class="input-required">อัตราค่าล่วงเวลา(บาท/ชั่วโมง)</label>
+                    <input id="otr_bath_per_hour" name="otr_bath_per_hour" type="text" class="form-input full" value="{if $values.otr_bath_per_hour}{$values.otr_bath_per_hour}{/if}" valuepattern="percent" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-ort_bath_per_hour-require" class="errInputMsg half err-ort_bath_per_hour">โปรดป้อนอัตราค่าล่วงเวลา</span>
-                    <span id="err-ort_bath_per_hour-percent" class="errInputMsg err-ort_bath_per_hour">รูปแบบอัตราค่าล่วงเวลาไม่ถูกต้อง อัตราค่าล่วงเวลาเป็นได้เฉพาะตัวเลขตั้งแต่ 0.1-100.0 เท่านั้น</span>
+                    <span id="err-otr_bath_per_hour-require" class="errInputMsg half err-otr_bath_per_hour">โปรดป้อนอัตราค่าล่วงเวลา</span>
+                    <span id="err-otr_bath_per_hour-percent" class="errInputMsg err-otr_bath_per_hour">รูปแบบอัตราค่าล่วงเวลาไม่ถูกต้อง อัตราค่าล่วงเวลาเป็นได้เฉพาะตัวเลขตั้งแต่ 0.1-100.0 เท่านั้น</span>
                 </td>
             </tr>
 	    </tbody>

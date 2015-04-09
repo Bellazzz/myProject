@@ -306,6 +306,14 @@ if(!$_REQUEST['ajaxCall']) {
 									ORDER BY 	refText ASC";
 					$refField 	= 'svlprm_id';
 					break;
+
+				case 'overtime_rates':
+					$sqlRefData = "	SELECT 		otr_id refValue,
+												otr_id refText 
+									FROM 		overtime_rates 
+									ORDER BY 	refText ASC";
+					$refField 	= 'otr_id';
+					break;
 			}
 
 			if(hasValue($sqlRefData)) {

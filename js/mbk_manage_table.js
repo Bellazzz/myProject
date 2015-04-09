@@ -761,7 +761,7 @@ function openFormTable(action, code) {
         src += '&code=' + code;
     }
 
-    if(table.name == 'receives' || table.name == 'sales' || table.name == 'services' || table.name == 'booking') {
+    if(table.name == 'receives' || table.name == 'sales' || table.name == 'services' || table.name == 'booking' || table.name == 'packages') {
         openManageBox({
             formSrc     : src,
             widthSize   : 'full'

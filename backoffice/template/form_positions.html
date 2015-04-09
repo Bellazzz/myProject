@@ -17,6 +17,16 @@
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_table.php';
+
+        $(document).ready(function(){
+            selectReferenceJS({
+                elem            : $('#otr_id'),
+                data            : {/literal}{$referenceData["overtime_rates"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{$values.otr_id}{literal}',
+                showClearBtn    : true,
+                clearBtnText    : 'ไม่ระบุ'
+            });
+        });
     </script>
     {/literal}
 </head>
@@ -41,6 +51,12 @@
                     <span id="err-pos_name-require" class="errInputMsg err-pos_name">โปรดป้อนชื่อตำแหน่ง</span>
                     <span id="err-pos_name-character" class="errInputMsg err-pos_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
                     <span id="err-pos_name-unique" class="errInputMsg err-pos_name">ชื่อตำแหน่งซ้ำ โปรดป้อนชื่อตำแหน่งใหม่</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">รหัสอัตราการจ่ายค่าล่วงเวลา</label>
+                    <div id="otr_id" class="selectReferenceJS form-input full"></div>
                 </td>
             </tr>
 	    </tbody>

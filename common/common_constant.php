@@ -125,10 +125,13 @@ function dbClose() {
 				'keyLength'		=> 3,
 				'fieldNameList'	=> array(
 						'pos_id'		=> 'รหัสตำแหน่ง',
-						'pos_name'		=> 'ชื่อตำแหน่ง'
+						'pos_name'		=> 'ชื่อตำแหน่ง',
+						'otr_id' 		=> 'อัตราการจ่ายค่าล่วงเวลา'
 				),
-				'searchFields'	=> array('pos_name'),
-				'deleteTxtField'=> array('pos_name')
+				'searchFields'	=> array('pos_name','otr_id'),
+				'defaultNull' 	=> array('otr_id'),
+				'deleteTxtField'=> array('pos_name'),
+				'referenceData' => array('overtime_rates')
 			);
 			break;
 
@@ -1460,18 +1463,19 @@ function dbClose() {
 				'keyLength'		=> 4,
 				'fieldNameList'	=> array(
 						'otr_id'	  	  			=> 'รหัสอัตราการจ่ายค่าล่วงเวลา',
-						'ort_time_in' 				=> 'เวลาเข้างาน',
-						'ort_time_out'	   			=> 'เวลาออกงาน',
-						'ort_otstarttime_daywork' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันทำงาน',
-						'ort_otendtime_daywork' 	=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน',
-						'ort_otstarttime_dayoff' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันหยุด',
-						'ort_otendtime_dayoff' 		=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด',
-						'ort_bath_per_hour' 		=> 'อัตราค่าล่วงเวลา/ชั่วโมง'
+						'otr_name' 					=> 'ชื่ออัตราการจ่ายค่าล่วงเวลา',
+						'otr_time_in' 				=> 'เวลาเข้างาน',
+						'otr_time_out'	   			=> 'เวลาออกงาน',
+						'otr_otstarttime_daywork' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันทำงาน',
+						'otr_otendtime_daywork' 	=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันทำงาน',
+						'otr_otstarttime_dayoff' 	=> 'เวลาเริ่มทำงานล่วงเวลาวันหยุด',
+						'otr_otendtime_dayoff' 		=> 'เวลาสิ้นสุดทำงานล่วงเวลาวันหยุด',
+						'otr_bath_per_hour' 		=> 'อัตราค่าล่วงเวลา(บาท/ชั่วโมง)'
 				),
-				'hiddenFields' 			=> array('ort_otstarttime_daywork','ort_otendtime_daywork','ort_otstarttime_dayoff','ort_otendtime_dayoff'),
-				'searchFields'			=> array('ort_time_in','ort_time_out','ort_bath_per_hour'),
-				'deleteTxtField'		=> array('otr_id'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบอัตราการจ่ายค่าล่วงเวลารหัส %f1 ใช่หรือไม่?'
+				'hiddenFields' 			=> array('otr_time_in','otr_time_out','otr_otstarttime_daywork','otr_otendtime_daywork','otr_otstarttime_dayoff','otr_otendtime_dayoff'),
+				'searchFields'			=> array('otr_name','otr_bath_per_hour'),
+				'deleteTxtField'		=> array('otr_name'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบอัตราการจ่ายค่าล่วงเวลา %f1 ใช่หรือไม่?'
 			);
 			break;
 	 }

@@ -100,6 +100,20 @@ switch ($tableName) {
 				$order";
 		break;
 
+	case 'positions':
+		if(hasValue($like)) {
+			$like	= str_replace('otr_id', 'o.otr_name', $like);
+			$where .= " WHERE $like";
+		}
+		$sql = "SELECT p.pos_id,
+				p.pos_name,
+				o.otr_name otr_id 
+				FROM positions p LEFT JOIN overtime_rates o 
+				ON p.otr_id = o.otr_id 
+				$where 
+				$order";
+		break;
+
 	case 'titles':
 		$where = 'LEFT JOIN sex s ON t.sex_id = s.sex_id ';
 		if(hasValue($like)) {
