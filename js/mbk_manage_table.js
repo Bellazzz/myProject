@@ -102,6 +102,10 @@ $(document).ready(function () {
 	    $('#search-record-input').val('');
 	    searchRecord();
 	});
+
+    $('.overlay-inner').click(function() {
+        document.getElementById("iframe-form-table").contentWindow.cancelBtnClick();
+    });
 });
 
 function init() {

@@ -22,6 +22,7 @@
         var ajaxUrl     = 'form_packages.php';
         var valuesDetail    = '';
         var vdtlAllSvl 	= 0;
+        var refSvlData = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
 
          // Set valuesDetail
         {/literal}
@@ -196,7 +197,10 @@
                      addServiceList({
                         defaultValue : true,
                         pkgsvl_id   : valuesDetail[i].pkgsvl_id,
-                        svl_id      : valuesDetail[i].svl_id
+                        svl_id      : valuesDetail[i].svl_id,
+                        pkgsvl_hr : valuesDetail[i].pkgsvl_hr,
+                        pkgsvl_min : valuesDetail[i].pkgsvl_min,
+                        pkgsvl_price : valuesDetail[i].pkgsvl_price
                     });
                 }
             } else if(action == 'VIEW_DETAIL') {
@@ -209,26 +213,42 @@
 		function addServiceList(data) {
             var randNum;
             var selectRefDefault = '';
+            var hr = ''
+            var min = '';
+            var price = 0;
             if(data.defaultValue) {
                 selectRefDefault = data.svl_id;
+            }
+            if(typeof(data.pkgsvl_hr) != 'undefined') {
+                hr = (data.pkgsvl_hr != null ? data.pkgsvl_hr : '');
+            }
+            if(typeof(data.pkgsvl_min) != 'undefined') {
+                min = (data.pkgsvl_min != null ? data.pkgsvl_min : '');
+            }
+            if(typeof(data.pkgsvl_price) != 'undefined') {
+                price = data.pkgsvl_price;
             }
             do {
                 randNum     = parseInt(Math.random()*1000);
             } while($('#svl_id_' + randNum).length > 0);
             var inputKeyId  = 'svl_id_' + randNum;
+            var inputHrId = 'svl_hr_' + randNum;
+            var inputMinId = 'svl_min_' + randNum;
+            var inputPriceId = 'svl_price_' + randNum;
 
             // Create HTML and append
             var svlRowHTML  = '<tr class="svl-row">'
-                            + '     <td>'
-                            + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input full" require></div>';
+                            + '     <td><div id="' + inputKeyId + '" class="selectReferenceJS form-input" require style="width:400px;"></div></td>' 
+                            + '     <td><input id="' + inputHrId + '" type="text" name="pkgsvl_hr[]" value="' + hr + '" style="width:150px;text-align:right;" valuepattern="number" class="form-input"></td>'
+                            + '     <td><input id="' + inputMinId + '" type="text" name="pkgsvl_min[]" value="' + min + '" style="width:150px;text-align:right;margin-left:20px;" valuepattern="minute" class="form-input"></td>'
+                            + '     <td><input id="' + inputPriceId + '" type="text" name="pkgsvl_price[]" value="' + price + '" style="width:150px;text-align:right;margin-left:20px;" valuepattern="money" class="form-input" require></td>';
 
             // add pkgsvl id for update
             if(action == 'EDIT' && typeof(data.pkgsvl_id) != 'undefined') {
                 svlRowHTML += '         <input name="pkgsvl_id[]" type="hidden" value="' + data.pkgsvl_id + '">';
             }
 
-                svlRowHTML += '         <a title="ลบรายการนี้"><button class="removeSvlBtn button button-icon button-icon-delete" onclick="removeServiceLists(\'' + randNum + '\')"></button></a>'
-                            + '     </td>'
+                svlRowHTML += '     <td><button class="removeSvlBtn button button-icon button-icon-delete" onclick="removeServiceLists(\'' + randNum + '\')" style="margin-left:20px;">ลบ</button></td>'
                             + '</tr>'
                             + '<tr id="' + inputKeyId + '_errRow">'
                             + '		<td>'
@@ -236,15 +256,37 @@
                             + '				โปรดเลือกรายการบริการ'
                             + '			</span>'
                             + '		</td>'
+                            + '     <td>'
+                            + '         <span id="err-' + inputHrId + '-number" class="errInputMsg err-' + inputHrId + '">'
+                            + '             โปรดกรอกชั่วโมงเป็นตัวเลขจำนวนเต็ม'
+                            + '         </span>'
+                            + '     </td>'
+                             + '     <td>'
+                            + '         <span id="err-' + inputMinId + '-minute" class="errInputMsg err-' + inputMinId + '">'
+                            + '             โปรดกรอกนาทีเป็นตัวเลขจำนวนเต็มที่มีค่าไม่เกิน 59'
+                            + '         </span>'
+                            + '     </td>'
+                            + '     <td>'
+                            + '         <span id="err-' + inputPriceId + '-require" class="errInputMsg err-' + inputPriceId + '">'
+                            + '             โปรดป้อนราคา'
+                            + '         </span>'
+                            + '         <span id="err-' + inputPriceId + '-money" class="errInputMsg err-' + inputPriceId + '">'
+                            + '             รูปแบบจำนวนเงินไม่ถูกต้อง'
+                            + '         </span>'
+                            + '     </td>'
                             + '</tr>';
             $('#service-lists-table tbody').append(svlRowHTML);
 
             selectReferenceJS({
                 elem            : $('#' + inputKeyId),
-                data            : {/literal}{$referenceData["service_lists"]|@json_encode}{literal},
+                data            : refSvlData,
                 searchTool      : true,
                 defaultValue    : selectRefDefault,
                 allowChangeOption : allowSelectSvlId,
+                onOptionSelect  : 
+                function() {
+                    pullSvlInfo($('#' + inputKeyId));
+                },
                 success         : 
                 function() {
                     $('input[name="' + inputKeyId + '"]').attr('name', 'svl_id[]');
@@ -252,6 +294,10 @@
                 },
                 group           : 'service_lists'
             });
+            $('#' + inputHrId).focusout(validateInput);
+            $('#' + inputMinId).focusout(validateInput);
+            $('#' + inputPriceId).focusout(validateInput);
+            $('#' + inputPriceId).change(calPkgPrice);
         }
 
         function removeServiceLists(randNum) {
@@ -312,6 +358,31 @@
                 });
             }
         	
+        }
+
+        function pullSvlInfo(svlIdInput) {
+            var  hr = min = price = 0;
+            var svl_id = svlIdInput.find('.selectReferenceJS-input').val();
+            for(i in refSvlData) {
+                if(svl_id == refSvlData[i].refValue) {
+                    hr    = refSvlData[i].svl_hr;
+                    min   = refSvlData[i].svl_min;
+                    price = refSvlData[i].svl_price;
+                    break;
+                }
+            }
+            svlIdInput.parent().parent().find('input[name="pkgsvl_hr[]"]').val(hr);
+            svlIdInput.parent().parent().find('input[name="pkgsvl_min[]"]').val(min);
+            svlIdInput.parent().parent().find('input[name="pkgsvl_price[]"]').val(price);
+            calPkgPrice();
+        }
+
+        function calPkgPrice() {
+            var pkgPrice = 0;
+            $('input[name="pkgsvl_price[]"]').each(function() {
+                pkgPrice += parseFloat($(this).val());
+            });
+            $('#pkg_price').val(pkgPrice);
         }
 
         function allowSelectSvlId(selected) {
@@ -378,8 +449,19 @@
 				<td>คำอธิบาย :</td>
 				<td>{if $values.pkg_desc}{$values.pkg_desc}{else}-{/if}</td>
 			</tr>
+            <tr>
+                <td>เวลาที่ใช้ทั้งหมด :</td>
+                <td>
+                    {if $pkg_hr || $pkg_min}
+                        {if $pkg_hr}{$pkg_hr} ชั่วโมง {/if}
+                        {if $pkg_min}{$pkg_min} นาที{/if}
+                    {else}
+                        -
+                    {/if}
+                </td>
+            </tr>
 			<tr>
-				<td>ราคา :</td>
+				<td>ราคาแพ็คเกจ :</td>
 				<td>{$values.pkg_price|number_format:2:".":","} บาท</td>
 			</tr>
 			
@@ -395,6 +477,7 @@
                 <th>รหัสรายการบริการ</th>
                 <th class="txtLong-col">ชื่อรายการบริการ</th>
                 <th>เวลาที่ใช้</th>
+                <th>รายการละ(บาท)</th>
             </tr>
         </thead>
         <tbody>
@@ -408,13 +491,14 @@
                 </td>
                 <td align="left" class="txtLong-col">{$pkgsvl.svl_name}</td>
                 <td align="left">
-                    {if $pkgsvl.svl_hr || $pkgsvl.svl_min}
-                        {if $pkgsvl.svl_hr}{$pkgsvl.svl_hr} ชั่วโมง {/if}
-                        {if $pkgsvl.svl_min}{$pkgsvl.svl_min} นาที{/if}
+                    {if $pkgsvl.pkgsvl_hr || $pkgsvl.pkgsvl_min}
+                        {if $pkgsvl.pkgsvl_hr}{$pkgsvl.pkgsvl_hr} ชั่วโมง {/if}
+                        {if $pkgsvl.pkgsvl_min}{$pkgsvl.pkgsvl_min} นาที{/if}
                     {else}
                         -
                     {/if}
                 </td>
+                <td align="right">{$pkgsvl.pkgsvl_price|number_format:2:".":","}</td>
             </tr>
             {/foreach}
         </tbody>
@@ -484,7 +568,20 @@
 	<table id="service-lists-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <td><label class="input-required">รายการบริการทั้งหมด <span id="allSvl"></span> รายการ</label></td>
+                <td style="padding-bottom:20px;">รายการบริการทั้งหมด <span id="allSvl"></span> รายการ</label></td>
+            </tr>
+            <tr class="headTable-row">
+                <td><label class="input-required"><b>รายการบริการ</b></label></td>
+                <td align="left" style="padding-left:20px;width:150px;">
+                    <b>เวลาที่ใช้(ชั่วโมง)</b></label>
+                </td>
+                <td align="left" style="padding-left:20px;width:150px;">
+                    <b>เวลาที่ใช้(นาที)</b></label>
+                </td>
+                <td align="left" style="padding-left:20px;width:150px;">
+                    <label class="input-required"><b>รายการละ(บาท)</b></label>
+                </td>
+                <td width="100%"></td>
             </tr>
         </tbody>
     </table>

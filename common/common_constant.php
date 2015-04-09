@@ -484,10 +484,11 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'pkgsvl_id'	    => 'รหัสรายการบริการที่จัดแพ็คเกจ',
 						'svl_id'	    => 'รายการบริการ',
-						'pkg_id'        => 'แพ็คเกจ'
-				),
-				'searchFields'	=> array('svl_id','pkg_id')
-
+						'pkg_id'        => 'แพ็คเกจ',
+						'pkgsvl_hr' 		=> 'เวลาที่ใช้(ชั่วโมง)',
+						'pkgsvl_min' 		=> 'เวลาที่ใช้(นาทำ)',
+						'pkgsvl_price' 	=> 'ราคา'
+				)
 			);
 			break;
 

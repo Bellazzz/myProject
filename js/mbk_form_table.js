@@ -74,6 +74,10 @@ $(document).ready(function () {
     });
 });
 
+function cancelBtnClick() {
+	$('#cancel-btn').click();
+}
+
 function confirmSaveRecord() {
 	parent.showActionDialog({
         title: 'บันทึกการแก้ไข',

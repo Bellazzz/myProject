@@ -24,7 +24,7 @@ if(!$_REQUEST['ajaxCall']) {
 
 		// Get table order_details data
 		$valuesDetail = array();
-		$sql = "SELECT 		ps.pkgsvl_id, s.svl_id 
+		$sql = "SELECT 		ps.pkgsvl_id, s.svl_id, ps.pkgsvl_hr, ps.pkgsvl_min, ps.pkgsvl_price  
 				FROM 		packages p, package_service_lists ps, service_lists s 
 				WHERE 		p.pkg_id = ps.pkg_id AND ps.svl_id = s.svl_id 
 							AND p.pkg_id = '$code' 
@@ -49,12 +49,15 @@ if(!$_REQUEST['ajaxCall']) {
 		$smarty->assign('values', $values);
 
 		// Get service lists of packages
+		$sumHr = 0;
+		$sumMin = 0;
 		$pkgsvlDetailList = array();
 		$sql 	= "	SELECT ps.pkgsvl_id,
 					s.svl_id,
 					s.svl_name,
-					s.svl_hr,
-					s.svl_min 
+					ps.pkgsvl_hr,
+					ps.pkgsvl_min,
+					ps.pkgsvl_price 
 					FROM package_service_lists ps, service_lists s 
 					WHERE ps.svl_id = s.svl_id 
 					AND ps.pkg_id = '$code' 
@@ -62,9 +65,18 @@ if(!$_REQUEST['ajaxCall']) {
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
-			array_push($pkgsvlDetailList, mysql_fetch_assoc($result));
+			$record = mysql_fetch_assoc($result);
+			array_push($pkgsvlDetailList, $record);
 			$pkgsvlDetailList[$i]['no'] = $i+1;
+			$sumHr 	+= $record['pkgsvl_hr'];
+			$sumMin += $record['pkgsvl_min'];
 		}
+		for($i=$sumMin; $i>=60; $i-=60) {
+			$sumHr++;
+			$sumMin-=60;
+		}
+		$smarty->assign('pkg_hr', $sumHr);
+		$smarty->assign('pkg_min', $sumMin);
 		$smarty->assign('pkgsvlDetailList', $pkgsvlDetailList);
 	}
 
@@ -77,7 +89,10 @@ if(!$_REQUEST['ajaxCall']) {
 			switch ($table) {
 				case 'service_lists':
 					$sqlRefData = "	SELECT 		svl_id refValue,
-												svl_name refText 
+												svl_name refText,
+												svl_price,
+												svl_hr,
+												svl_min 
 									FROM 		service_lists 
 									ORDER BY 	svl_name ASC";
 					$refField 	= 'svl_id';
@@ -92,12 +107,15 @@ if(!$_REQUEST['ajaxCall']) {
 					$referenceData[$table] = array();
 					// push to referenc data
 					for($i=0; $i<$rowsRefData; $i++) {
-						$refDataRow = mysql_fetch_assoc($resultRefData);
-						array_push($referenceData[$table], array(
-							'refText'	=> $refDataRow['refText'],
-							'refValue'	=> $refDataRow['refValue'],
-							'refField'	=> $refField
-						));
+						$tmpRow 	= mysql_fetch_assoc($resultRefData);
+						$refDataRow = array();
+
+						foreach ($tmpRow as $key => $value) {
+							$refDataRow[$key] = $value;
+						}
+						$refDataRow['refField'] = $refField;
+
+						array_push($referenceData[$table], $refDataRow);
 					}
 					
 				}
@@ -230,7 +248,10 @@ if(!$_REQUEST['ajaxCall']) {
 		$insertPkgsvlError  = '';
 		$pkg_id = $tableRecord->getKey();
 		foreach ($formData['svl_id'] as $key => $svl_id) {
-			$pkgsvlValues 	= array($svl_id, $pkg_id);
+			$pkgsvl_hr 		= $formData['pkgsvl_hr'][$key];
+			$pkgsvl_min 	= $formData['pkgsvl_min'][$key];
+			$pkgsvl_price 	= $formData['pkgsvl_price'][$key];
+			$pkgsvlValues 	= array($svl_id, $pkg_id, $pkgsvl_hr, $pkgsvl_min, $pkgsvl_price);
 			$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvlValues);
 			if(!$pkgsvlRecord->insertSuccess()) {
 				$insertPkgsvlResult = false;
@@ -330,15 +351,24 @@ if(!$_REQUEST['ajaxCall']) {
 			if(isset($formData['pkgsvl_id'][$key])) {
 				// Update package_service_lists
 				$pkgsvl_id 		= $formData['pkgsvl_id'][$key];
+				$pkgsvl_hr 		= $formData['pkgsvl_hr'][$key];
+				$pkgsvl_min 	= $formData['pkgsvl_min'][$key];
+				$pkgsvl_price   = $formData['pkgsvl_price'][$key];
 				$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvl_id);
 				$pkgsvlRecord->setFieldValue('svl_id', $svl_id);
+				$pkgsvlRecord->setFieldValue('pkgsvl_hr', $pkgsvl_hr);
+				$pkgsvlRecord->setFieldValue('pkgsvl_min', $pkgsvl_min);
+				$pkgsvlRecord->setFieldValue('pkgsvl_price', $pkgsvl_price);
 				if(!$pkgsvlRecord->commit()) {
 					$updatePkgsvlResult = false;
 					$updatePkgsvlError .= 'EDIT_PAKAGE_SERVICE_LISTS['.($key+1).']_FAIL\n';
 				}
 			} else {
 				// Add new package_service_lists
-				$pkgsvlValues 	= array($svl_id, $code);
+				$pkgsvl_hr 		= $formData['pkgsvl_hr'][$key];
+				$pkgsvl_min 	= $formData['pkgsvl_min'][$key];
+				$pkgsvl_price   = $formData['pkgsvl_price'][$key];
+				$pkgsvlValues 	= array($svl_id, $code, $pkgsvl_hr, $pkgsvl_min, $pkgsvl_price);
 				$pkgsvlRecord 	= new TableSpa('package_service_lists', $pkgsvlValues);
 				if(!$pkgsvlRecord->insertSuccess()) {
 					$updatePkgsvlResult = false;
