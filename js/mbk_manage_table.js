@@ -169,6 +169,7 @@ function pullTable(reFilter) {
     var searchInput         = $('#search-record-input').val();
     var queryFilter         = $('#query-record-filter').val();
     var filterRetroact      = $('#query-record-filter-retroact').val(); 
+    var filterExpired       = $('#query-record-filter-expired').val(); 
  
     $.ajax({
         url: 'table_data.php',
@@ -177,6 +178,7 @@ function pullTable(reFilter) {
               '&sortBy=' + this.table.sortBy + '&searchCol=' + searchCol + 
               '&searchInput=' + searchInput + '&filter=' + queryFilter + 
               '&filterRetroact=' + filterRetroact +
+              '&filterExpired=' + filterExpired +
               '&page=' + currentPage + '&recordDisplay=' + recordDisplay,
         success:
         function (response) {
@@ -556,6 +558,9 @@ function cancelSelectRecord() {
 function refreshFilterQuery() {
     var filterRecordQueryHTML = '';
     var allowFilterRetroact   = ['orders','receives','time_attendances','element_checks','payrolls','booking','services','withdraws','sales'];
+    var allowFilterExpired = ['packages','service_list_promotions','service_list_promotion_details',
+                                'package_promotions','package_promotion_details','product_promotions',
+                                'promotion_products','promotion_discout_sales'];
 
     if(this.table.name == 'orders') {
         filterRecordQueryHTML   = 'ดูการสั่งซื้อที่มีสถานะ '
@@ -571,13 +576,6 @@ function refreshFilterQuery() {
                                 + '     <option value="REMAIN">ค้างรับ</option>'
                                 + '     <option value="COMPLETED">รับครบทั้งหมดแล้ว</option>'
                                 + '     <option value="FIXED_COMPLETED">รับไม่ครบตามที่สั่งซื้อ</option>'
-                                + '</select>';
-    } else if(this.table.name == 'promotion_products') {
-        filterRecordQueryHTML   = 'ดูโปรโมชั่นที่ '
-                                + '<select id="query-record-filter" class="mbk-select">'
-                                + '     <option value="ONLINE">กำลังใช้งานอยู่</option>'
-                                + '     <option value="FORWARD">จัดล่วงหน้า</option>'
-                                + '     <option value="EXPIRED">หมดอายุ</option>'
                                 + '</select>';
     } else if(this.table.name == 'booking') {
         filterRecordQueryHTML   = 'ดูการจองที่มีสถานะ '
@@ -595,10 +593,6 @@ function refreshFilterQuery() {
     if(allowFilterRetroact.indexOf(this.table.name) != -1) {
         var filterRetroactName = 'ขอบเขตการแสดง';
         var filterRetroactFrom = '';
-        /*if (this.table.name == 'orders'){
-            filterRetroactName = 'ขอบเขตการแสดงการสั่งซื้อ';
-            filterRetroactFrom = 'จากวันที่สั่งซื้อ';
-        }*/
         filterRecordQueryHTML  += '&emsp;&emsp;' + filterRetroactName + ' '
                                 + '<select id="query-record-filter-retroact" class="mbk-select">'
                                 + '     <option value="1">1 เดือนที่ผ่านมา</option>'
@@ -608,6 +602,18 @@ function refreshFilterQuery() {
                                 + '     <option value="12">12 เดือนที่ผ่านมา</option>'
                                 + '</select>'
                                 + ' ' + filterRetroactFrom;
+    }
+
+    if(allowFilterExpired.indexOf(this.table.name) != -1) {
+        var filterExpiredName = 'ดูจากสถานะ';
+        var filterExpiredFrom = '';
+        filterRecordQueryHTML  += '&emsp;&emsp;' + filterExpiredName + ' '
+                                + '<select id="query-record-filter-expired" class="mbk-select">'
+                                + '     <option value="ONLINE">กำลังใช้งานอยู่</option>'
+                                + '     <option value="FORWARD">จัดล่วงหน้า</option>'
+                                + '     <option value="EXPIRED">หมดอายุ</option>'
+                                + '</select>'
+                                + ' ' + filterExpiredFrom;
     }
 
 
@@ -621,6 +627,11 @@ function refreshFilterQuery() {
     }
     if($('#query-record-filter-retroact').length > 0) {
         $('#query-record-filter-retroact').change(function() {
+            pullTable(false);
+        });
+    }
+    if($('#query-record-filter-expired').length > 0) {
+        $('#query-record-filter-expired').change(function() {
             pullTable(false);
         });
     }

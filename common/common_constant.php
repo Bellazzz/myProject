@@ -159,7 +159,7 @@ function dbClose() {
 				),
 				'hiddenFields'	=> array('emp_indate','emp_birthdate','emp_addr','emp_tel','emp_email','emp_pass','emp_pic'),
 				'defaultNull' 	=> array('emp_pic','emp_birthdate','emp_email','emp_pass'),
-				'searchFields'	=> array('sex_id','title_id','emp_name','emp_surname','pos_id'),
+				'searchFields'	=> array('emp_name','emp_surname','title_id','sex_id','pos_id'),
 				'deleteTxtField'	 	=> array('title_id','emp_name','emp_surname'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบข้อมูลพนักงานของ %f1%f2 %f3 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> '%f1%f2 %f3',
@@ -383,7 +383,7 @@ function dbClose() {
 						'spa_email'		=> 'E-mail'
 				),
 				'hiddenFields'	=> array('spa_addr','spa_logo'),
-				'searchFields'	=> array('spa_name','spa_addr'),
+				'searchFields'	=> array('spa_name'),
 				'deleteTxtField'=> array('spa_name')
 
 			);
@@ -415,7 +415,7 @@ function dbClose() {
 				'hiddenFields'	=> array('cus_tel','cus_addr','cus_pass','cus_birthdate','cus_registered_date',
 					'cus_facebook','cus_line_id','cus_email'),
 				'defaultNull' 	=> array('cus_pass','cus_birthdate','cus_facebook','cus_line_id','cus_email'),
-				'searchFields'	=> array('cus_name','cus_surname','sex_id','custype_id'),
+				'searchFields'	=> array('cus_name','cus_surname','title_id','sex_id','custype_id'),
 				'deleteTxtField' 		=> array('title_id','cus_name','cus_surname'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบข้อมูลผู้ใช้บริการของ %f1%f2 %f3 ใช่หรือไม่',
 				'deleteTxtPatternMin' 	=> '%f1%f2 %f3',
@@ -432,7 +432,7 @@ function dbClose() {
 				'keyLength'		=> 5,
 				'fieldNameList'	=> array(
 						'svl_id'			=> 'รหัสรายการบริการ',
-						'svltyp_id'			=> 'ประเภทรายการใช้บริการ',
+						'svltyp_id'			=> 'ประเภทรายการบริการ',
 						'svl_min'			=> 'เวลาที่ใช้(นาที)',
 						'svl_hr'			=> 'เวลาที่ใช้(ชั่วโมง)',
 						'svl_name'			=> 'รายการบริการ',
@@ -441,9 +441,9 @@ function dbClose() {
 						'svl_desc'			=> 'คำอธิบาย',
 						'svl_picture'		=> 'รูปภาพ'	
 				),
-				'hiddenFields'	=> array('svl_desc','svl_picture','svl_commission','svl_price'),
+				'hiddenFields'	=> array('svl_desc','svl_picture','svl_commission','svl_hr'),
 				'defaultNull' 	=> array('svl_min','svl_hr','svl_desc','svl_picture'),
-				'searchFields'	=> array('svl_name','svl_price'),
+				'searchFields'	=> array('svl_name','svl_min','svl_price'),
 				'deleteTxtField' 	=> array('svl_name'),
 				'referenceData'		=> array('service_list_types')
 			
@@ -459,16 +459,16 @@ function dbClose() {
 				'keyLength'		=> 5,
 				'fieldNameList'	=> array(
 						'pkg_id'	    => 'รหัสแพ็คเกจ',
-						'pkg_name'	    => 'แพ็คเกจ',
-						'pkg_start'     => 'วันที่เริ่มใช้',
-						'pkg_stop'      => 'วันเวลาที่สิ้นสุด',
-						'pkg_desc'      => 'คำอธิบาย',
+						'pkg_name'	    => 'ชื่อแพ็คเกจ',
 						'pkg_price'     => 'ราคา(บาท)',
+						'pkg_start'     => 'วันที่เริ่มใช้',
+						'pkg_stop'      => 'วันที่สิ้นสุด',
+						'pkg_desc'      => 'คำอธิบาย',
 						'pkg_picture'   => 'รูปภาพ'			
 				),
 				'hiddenFields'	=> array('pkg_desc','pkg_picture'),
 				'defaultNull' 	=> array('pkg_stop','pkg_desc','pkg_picture'),
-				'searchFields'	=> array('pkg_name','pkg_price'),
+				'searchFields'	=> array('pkg_name','pkg_price','pkg_start','pkg_stop'),
 				'deleteTxtField' 	=> array('pkg_name'),
 				'referenceData'		=> array('service_lists')
 			);
@@ -1130,7 +1130,7 @@ function dbClose() {
 				),
 				'hiddenFields' 	=> array('prdprm_picture','prdprm_desc'),
 				'defaultNull' 	=> array('prdprm_enddate','prdprm_picture','prdprm_desc'),
-				'searchFields'	=> array('prdprm_name','prdprm_startdate','prdprm_enddate','prdprm_type','prdprmgrp_id'),
+				'searchFields'	=> array('prdprm_name','prdprm_type','prdprmgrp_id','prdprm_startdate','prdprm_enddate'),
 				'deleteTxtField'	=> array('prdprm_name'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบโปรโมชั่นผลิตภัณฑ์ %f1 ใช่หรือไม่?',
 				'referenceData'			=> array('product_promotion_groups')
@@ -1147,7 +1147,7 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'prmprd_id'	  	  		=> 'รหัสผลิตภัณฑ์ที่จัดโปรโมชั่น',
 						'prd_id'	  			=> 'ผลิตภัณฑ์',
-						'prdprm_id'	  			=> 'โปรโมชั่นผลิตภัณฑ์',
+						'prdprm_id'	  			=> 'โปรโมชั่นที่จัด',
 						'prmprd_startdate'	  	=> 'วันที่เริ่มใช้',
 						'prmprd_enddate'	  	=> 'วันที่สิ้นสุด',
 						'prmprd_discout'	  	=> 'ส่วนลด',
@@ -1155,7 +1155,7 @@ function dbClose() {
 				),
 				'hiddenFields' 			=> array('prmprd_discout'),
 				'defaultNull' 			=> array('prmprd_enddate','prmprd_discout','prmprd_discout_type'),
-				'searchFields'			=> array('prd_id','prdprm_id','prmprd_startdate','prmprd_enddate','prmprd_discout_type'),
+				'searchFields'			=> array('prd_id','prmprd_discout_type','prdprm_id','prmprd_startdate','prmprd_enddate'),
 				'deleteTxtField'		=> array('prd_id','prdprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบผลิตภัณฑ์ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('products','todayOnward_product_promotions')
@@ -1316,16 +1316,16 @@ function dbClose() {
 				'keyLength'		=> 10,
 				'fieldNameList'	=> array(
 						'pkgprmdtl_id'	  	  		=> 'รหัสแพ็คเกจที่จัดโปรโมชั่น',
-						'pkgprm_id'	  				=> 'โปรโมชั่นแพ็คเกจ',
+						'pkgprm_id'	  				=> 'โปรโมชั่นที่จัด',
 						'pkg_id'	  				=> 'แพ็คเกจ',
 						'pkgprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
 						'pkgprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
-						'pkgprmdtl_discout_type'	=> 'ส่วนลดที่จัด',
+						'pkgprmdtl_discout_type'	=> 'ส่วนลด',
 						'pkgprmdtl_discout'	  		=> 'ส่วนลด'
 				),
 				'hiddenFields' 			=> array('pkgprmdtl_discout'),
 				'defaultNull' 			=> array('pkgprmdtl_enddate'),
-				'searchFields'			=> array('pkgprm_id','pkg_id','pkgprmdtl_startdate','pkgprmdtl_enddate','pkgprmdtl_discout_type','pkgprmdtl_discout'),
+				'searchFields'			=> array('pkg_id','pkgprmdtl_discout_type','pkgprm_id','pkgprmdtl_startdate','pkgprmdtl_enddate'),
 				'deleteTxtField'		=> array('pkg_id','pkgprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบแพ็คเกจ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('todayOnward_package_promotions','packages')
@@ -1366,16 +1366,16 @@ function dbClose() {
 				'keyLength'		=> 10,
 				'fieldNameList'	=> array(
 						'svlprmdtl_id'	  	  		=> 'รหัสรายการบริการที่จัดโปรโมชั่น',
-						'svlprm_id'	  				=> 'รหัสโปรโมชั่นรายการบริการ',
-						'svl_id'	  				=> 'รหัสรายการบริการ',
+						'svlprm_id'	  				=> 'โปรโมชั่นที่จัด',
+						'svl_id'	  				=> 'รายการบริการ',
 						'svlprmdtl_startdate'	  	=> 'วันที่เริ่มใช้',
 						'svlprmdtl_enddate'	  		=> 'วันที่สิ้นสุด',
-						'svlprmdtl_discout_type'	=> 'รูปแบบส่วนลด',
+						'svlprmdtl_discout_type'	=> 'ส่วนลด',
 						'svlprmdtl_discout'	  		=> 'ส่วนลด'
 				),
 				'hiddenFields' 			=> array('svlprmdtl_discout'),
 				'defaultNull' 			=> array('svlprmdtl_enddate'),
-				'searchFields'			=> array('svlprm_id','svl_id','svlprmdtl_startdate','svlprmdtl_enddate','svlprmdtl_discout_type','svlprmdtl_discout'),
+				'searchFields'			=> array('svl_id','svlprmdtl_discout_type','svlprm_id','svlprmdtl_startdate','svlprmdtl_enddate'),
 				'deleteTxtField'		=> array('svl_id','svlprm_id'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการบริการ %f1 ออกจากโปรโมชั่น %f2 ใช่หรือไม่?',
 				'referenceData'			=> array('todayOnward_service_list_promotions','service_lists')

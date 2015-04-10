@@ -7,7 +7,7 @@ include('../config/config.php');
 include('../common/common_header.php');
 
 // Pre Valiables
-$tableName	= 'titles';
+$tableName	= '';
 if(hasValue($_REQUEST['tableName'])) {
 	$tableName = $_REQUEST['tableName'];
 }
@@ -17,6 +17,7 @@ $sortBy		= 'asc';
 $sortBySpecial = 'desc';
 $filter 		= '';
 $filterRetroact = '';
+$filterExpired 	= '';
 $where			= '';
 $like			= '';
 $order			= '';
@@ -24,6 +25,9 @@ $limit 			= '';
 $page 			= 1;
 $recordDisplay 	= 20;
 $retroactDate 	= '';
+$filterExpiredCond = '';
+$fieldStartDate = '';
+$fieldEndDate = '';
 
 if(hasValue($_REQUEST['sortBy'])) {
 	$sortBy	= $_REQUEST['sortBy'];
@@ -37,6 +41,34 @@ if(hasValue($_REQUEST['filter'])) {
 }
 if(hasValue($_REQUEST['filterRetroact'])) {
 	$filterRetroact = $_REQUEST['filterRetroact'];
+}
+if(hasValue($_REQUEST['filterExpired'])) {
+	$filterExpired = $_REQUEST['filterExpired'];
+	if($tableName == 'packages') {
+		$fieldStartDate = 'pkg_start';
+		$fieldEndDate = 'pkg_stop';
+	} else if($tableName == 'service_list_promotions') {
+		$fieldStartDate = 'p.svlprm_startdate';
+		$fieldEndDate = 'p.svlprm_enddate';
+	} else if($tableName == 'service_list_promotion_details') {
+		$fieldStartDate = 'd.svlprmdtl_startdate';
+		$fieldEndDate = 'd.svlprmdtl_enddate';
+	} else if($tableName == 'package_promotions') {
+		$fieldStartDate = 'p.pkgprm_startdate';
+		$fieldEndDate = 'p.pkgprm_enddate';
+	} else if($tableName == 'package_promotion_details') {
+		$fieldStartDate = 'd.pkgprmdtl_startdate';
+		$fieldEndDate = 'd.pkgprmdtl_enddate';
+	} else if($tableName == 'product_promotions') {
+		$fieldStartDate = 'p.prdprm_startdate';
+		$fieldEndDate = 'p.prdprm_enddate';
+	} else if($tableName == 'promotion_products') {
+		$fieldStartDate = 'prmprd.prmprd_startdate';
+		$fieldEndDate = 'prmprd.prmprd_enddate';
+	} else if($tableName == 'promotion_discout_sales') {
+		$fieldStartDate = 'p.prmds_startdate';
+		$fieldEndDate = 'p.prmds_enddate';
+	}
 }
 if(hasValue($_REQUEST['page'])) {
 	$page = (Int)$_REQUEST['page'];
@@ -54,6 +86,16 @@ if($filterRetroact == '1') {
 	$retroactDate 	= date('Y-m-d', strtotime('-9 months'));
 } else if($filterRetroact == '12') {
 	$retroactDate 	= date('Y-m-d', strtotime('-12 months'));
+}
+if($filterExpired == 'ONLINE') {
+	$filterExpiredCond 	= " (
+							$fieldStartDate <= '$nowDate' AND 
+							($fieldEndDate IS NULL OR $fieldEndDate >= '$nowDate')
+							) ";
+} else if($filterExpired == 'FORWARD') {
+	$filterExpiredCond 	= " ($fieldStartDate > '$nowDate') ";
+} else if($filterExpired == 'EXPIRED') {
+	$filterExpiredCond 	= " ($fieldEndDate IS NOT NULL AND $fieldEndDate < '$nowDate') ";
 }
 // Generate order and limit
 $startPage 		= ($page - 1) * $recordDisplay;
@@ -75,10 +117,6 @@ switch ($tableName) {
 	case 'receives':
 		header("location:table_data_receives.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
 		break;
-	case 'promotion_products':
-		header("location:table_data_promotion_products.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
-		break;
-
 	case 'booking':
 		header("location:table_data_booking.php?sortCol=$sortCol&sortBy=$sortBySpecial&order=$orderSpecial&searchCol=$searchCol&searchInput=$searchInput&filter=$filter&filterRetroact=$filterRetroact");
 		break;
@@ -167,6 +205,7 @@ switch ($tableName) {
 			$where		= 'WHERE s.svltyp_id = t.svltyp_id';
 			if(hasValue($like)) {
 				$like		= str_replace('svltyp_id', 't.svltyp_name', $like);
+				$like		= str_replace('svl_min', "IFNULL(s.svl_hr,0) * 60 + IFNULL(s.svl_min,0)", $like);
 				$where .= " AND $like";
 				//$where	   .= ' AND '.$like;
 			}
@@ -174,11 +213,8 @@ switch ($tableName) {
 					s.svl_id,
 					s.svl_name,
 					t.svltyp_name svltyp_id,
-					s.svl_desc,
-					s.svl_hr,
-					s.svl_min,
-					s.svl_price,
-					s.svl_commission
+					IFNULL(s.svl_hr,0) * 60 + IFNULL(s.svl_min,0) svl_min,
+					s.svl_price 
 					FROM service_lists s, service_list_types t 
 					$where 
 					$order";
@@ -195,17 +231,11 @@ switch ($tableName) {
 			}
 			$sql = "SELECT e.emp_pic,
 					e.emp_id,
-					s.sex_name sex_id,
 					t.title_name title_id,
 					e.emp_name,
 					e.emp_surname,
-					e.emp_addr,
-					e.emp_tel,
-					p.pos_name pos_id,
-					e.emp_birthdate,
-					e.emp_indate,
-					e.emp_email,
-					e.emp_pass 
+					s.sex_name sex_id,
+					p.pos_name pos_id 
 					FROM employees e, sex s, titles t, positions p 
 					$where
 					$order";
@@ -220,19 +250,11 @@ switch ($tableName) {
 			$where .= " AND $like";
 		}
 		$sql = "SELECT c.cus_id,
-				ct.custype_name custype_id,
-				s.sex_name sex_id,
 				t.title_name title_id,
 				c.cus_name,
 				c.cus_surname,
-				c.cus_addr,
-				c.cus_tel,
-				c.cus_email,
-				c.cus_pass,
-				c.cus_birthdate,
-				c.cus_registered_date,
-				c.cus_line_id,
-				c.cus_facebook 
+				s.sex_name sex_id,
+				ct.custype_name custype_id 
 				FROM customers c, sex s, customer_types ct, titles t 
 				$where 
 				$order";
@@ -269,6 +291,28 @@ switch ($tableName) {
 				FROM promotion_service_lists ps, service_lists s, promotions p 
 				$where 
 				$order";
+		break;
+
+	case 'promotion_products':
+		$where = 'WHERE prmprd.prdprm_id = prdprm.prdprm_id AND prmprd.prd_id = p.prd_id ';
+		if(hasValue($like)) {
+			$like	= str_replace('prdprm_id', 'prdprm.prdprm_name', $like);
+			$like	= str_replace('prd_id', 'p.prd_id', $like);
+			$like	= str_replace('prmprd_discout_type', "COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี')", $like);
+			$like	= str_replace('%%%','%\%%', $like);
+			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
+		}
+		$sql = "SELECT 	prmprd.prmprd_id,
+				p.prd_name prd_id,
+				COALESCE(CONCAT(prmprd.prmprd_discout,' ', prmprd.prmprd_discout_type), 'ฟรี') prmprd_discout_type,
+				prdprm.prdprm_name prdprm_id,
+				prmprd.prmprd_startdate,
+				prmprd.prmprd_enddate 
+				FROM promotion_products prmprd, product_promotions prdprm, products p 
+				$where 
+				$orderSpecial";
 		break;
 	 	
 	case 'products':
@@ -599,6 +643,8 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			$like	= str_replace('prdprmgrp_id', 'g.prdprmgrp_name', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT p.prdprm_id,
 				p.prdprm_name,
@@ -651,6 +697,8 @@ switch ($tableName) {
 			$like	= str_replace('prdprmgrp_id', 'g.prdprmgrp_name', $like);
 			$like	= str_replace('%%%','%\%%', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT p.prmds_id,
 				p.prmds_name,
@@ -683,6 +731,8 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			$like	= str_replace('custype_id', 'c.custype_name', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT p.pkgprm_id,
 				p.pkgprm_name,
@@ -700,6 +750,8 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			$like	= str_replace('custype_id', 'c.custype_name', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT p.svlprm_id,
 				p.svlprm_name,
@@ -717,14 +769,18 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			$like	= str_replace('pkgprm_id', 't.pkgprm_name', $like);
 			$like	= str_replace('pkg_id', 'p.pkg_name', $like);
+			$like	= str_replace('pkgprmdtl_discout_type', "COALESCE(CONCAT(d.pkgprmdtl_discout,' ', d.pkgprmdtl_discout_type))", $like);
+			$like	= str_replace('%%%','%\%%', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT d.pkgprmdtl_id,
-				t.pkgprm_name pkgprm_id,
 				p.pkg_name pkg_id,
+				COALESCE(CONCAT(d.pkgprmdtl_discout,' ', d.pkgprmdtl_discout_type)) pkgprmdtl_discout_type,
+				t.pkgprm_name pkgprm_id,
 				d.pkgprmdtl_startdate,
-				d.pkgprmdtl_enddate,
-				COALESCE(CONCAT(d.pkgprmdtl_discout,' ', d.pkgprmdtl_discout_type)) pkgprmdtl_discout_type 
+				d.pkgprmdtl_enddate 
 				FROM package_promotion_details d, package_promotions t, packages p 
 				$where 
 				$orderSpecial";
@@ -736,14 +792,18 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			$like	= str_replace('svlprm_id', 't.svlprm_name', $like);
 			$like	= str_replace('svl_id', 'p.svl_name', $like);
+			$like	= str_replace('svlprmdtl_discout_type', "COALESCE(CONCAT(d.svlprmdtl_discout,' ', d.svlprmdtl_discout_type))", $like);
+			$like	= str_replace('%%%','%\%%', $like);
 			$where .= " AND $like";
+		} else {
+			$where .= " AND $filterExpiredCond ";
 		}
 		$sql = "SELECT d.svlprmdtl_id,
-				t.svlprm_name svlprm_id,
 				p.svl_name svl_id,
+				COALESCE(CONCAT(d.svlprmdtl_discout,' ', d.svlprmdtl_discout_type)) svlprmdtl_discout_type,
+				t.svlprm_name svlprm_id,
 				d.svlprmdtl_startdate,
-				d.svlprmdtl_enddate,
-				COALESCE(CONCAT(d.svlprmdtl_discout,' ', d.svlprmdtl_discout_type)) svlprmdtl_discout_type 
+				d.svlprmdtl_enddate 
 				FROM service_list_promotion_details d, service_list_promotions t, service_lists p 
 				$where 
 				$orderSpecial";
@@ -783,6 +843,8 @@ switch ($tableName) {
 	default:
 		if(hasValue($like)) {
 			$where = "WHERE $like";
+		} else if(hasValue($filterExpiredCond)) {
+			$where = "WHERE $filterExpiredCond";
 		}
 		$sql = "SELECT * FROM $tableName $where $order";
 		break;
@@ -793,7 +855,10 @@ $rows 		= mysql_num_rows($result);
 $tableData	= array();
 
 // Find all record
-if(hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) {
+if($tableName == 'grant_privileges') {
+	$sqlAllRecord = "SELECT COUNT(*) allRecords FROM ($sql) a";
+} else if((hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) || 
+	hasValue($filterExpiredCond)) {
 	$txtSelect = substr($sql, strpos($sql, 'SELECT'), strpos($sql, 'FROM'));
 	$txtLimit  = substr($sql, strpos($sql, 'LIMIT'));
 	$newSelect = "SELECT COUNT(*) allRecords ";
@@ -805,7 +870,6 @@ if(hasValue($_REQUEST['searchCol']) && hasValue($_REQUEST['searchInput'])) {
 $resultAllRecord 	= mysql_query($sqlAllRecord, $dbConn);
 $allRecordsRows 	= mysql_fetch_assoc($resultAllRecord);
 $allRecords 		= $allRecordsRows['allRecords'];
-
 
 // Get table data
 for($i = 0; $i < $rows; $i++) {
@@ -1122,7 +1186,7 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 						</a>
 						<?
 					}
-					if($displayEditBtn) {
+					if($displayEditBtn && $filterExpired != 'EXPIRED') {
 					?>
 						<a title="แก้ไข">
 							<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>

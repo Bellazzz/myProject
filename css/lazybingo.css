@@ -1849,7 +1849,7 @@ datetimepicker
 }
 .report-list li {
     width: 50%;
-    padding: 20px;
+    padding: 10px 20px;
     float: left;
     cursor: pointer;
     border: 1px solid #fff;
@@ -1871,12 +1871,13 @@ datetimepicker
 .report-picture {
     display: block;
     width: 100%;
-    height: 128px;
+    height: 70px;
     cursor: pointer;
     margin: 0 auto;
     background-position: left center;
     background-repeat: no-repeat;
-    padding-left: 148px;
+    background-size: 70px;
+    padding-left: 85px;
 }
 .report-picture img {
     width: 100%;
@@ -1894,7 +1895,7 @@ datetimepicker
     font-family: ThaiSansNeue-Bold;
     outline: none;
     color: #31656e;
-    font-size: 28px;
+    font-size: 25px;
 }
 .report-info h2 a {
     font-family: ThaiSansNeue-Bold;
