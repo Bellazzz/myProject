@@ -1426,11 +1426,12 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'hld_id'	  	  		=> 'รหัสวันหยุดให้บริการสปา',
 						'hld_name'	  			=> 'ชื่อวันหยุด',
-						'hld_date'	  			=> 'วันที่หยุด'
+						'hld_startdate'	  		=> 'วันหยุดเริ่มต้น',
+						'hld_enddate'	  		=> 'วันหยุดสิ้นสุด'
 				),
-				'searchFields'			=> array('hld_name','hld_date'),
-				'deleteTxtField'		=> array('hld_name','hld_date'),
-				'deleteTxtPatternMain' 	=> 'คุณต้องการลบวันหยุด %f1 (%f2) ใช่หรือไม่?'
+				'searchFields'			=> array('hld_name','hld_startdate'),
+				'deleteTxtField'		=> array('hld_name','hld_startdate','hld_enddate'),
+				'deleteTxtPatternMain' 	=> 'คุณต้องการลบวันหยุด %f1 (%f2 - %f3) ใช่หรือไม่?'
 			);
 			break;
 

@@ -22,7 +22,7 @@
         var ajaxUrl     = 'form_table.php';
 
         $(document).ready(function() {
-            $('#hld_date').datetimepicker({
+            $('#hld_startdate').datetimepicker({
                 lang                : 'th',
                 format              : 'Y/m/d',
                 timepicker          :false,
@@ -31,11 +31,207 @@
                 yearOffset          :543,
                 onSelectDate: 
                 function(){
-                  $('#hld_date').blur();
+                  $('#hld_startdate').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                        this.setOptions({
+                            minDate: realDateToTmpDate('{/literal}{$nowDate}{literal}'),
+                            maxDate:$('#hld_enddate').val()?unconvertThaiDate($('#hld_enddate').val()):false
+                        });
+                    } else if(action == 'EDIT') {
+                        this.setOptions({
+                            maxDate:$('#hld_enddate').val()?unconvertThaiDate($('#hld_enddate').val()):false
+                        });
+                    }
                 },
                 timepicker:false
             });
+
+            $('#hld_enddate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#hld_enddate').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                        this.setOptions({
+                            minDate:$('#hld_startdate').val()?unconvertThaiDate($('#hld_startdate').val()):realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                        });
+                    } else if(action="EDIT") {
+                        this.setOptions({
+                            minDate:$('#hld_startdate').val()?unconvertThaiDate($('#hld_startdate').val()):false
+                        });
+                    }
+                },
+                timepicker:false
+            });
+
+            // Check date
+            $('#hld_startdate').change(function(){
+                checkDate($(this), $('#hld_enddate'));
+            });
+            $('#hld_enddate').change(function() {
+                checkDate($(this), $('#hld_startdate'));
+            });
+
+            
         });
+
+        function checkDate(self, sibling) {
+            // Skip check
+            if(self.val() == '' || isDateThaiFormat(self.val())) {
+                return;
+            }
+
+            var selfDate        = new Date(self.val());
+            var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+            var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+            var selfId          = self.attr('id');
+
+            // Check sibling
+            if(sibling.val() != '') {
+                if(selfId == 'hld_startdate') {
+                    if(selfDate.getTime() > siblingDate.getTime()) {
+                        showAlertInvalidDate(self, 'overSibling');
+                        return;
+                    }
+                } else if(selfId == 'hld_enddate') {
+                    if(selfDate.getTime() < siblingDate.getTime()) {
+                        showAlertInvalidDate(self, 'overSibling');
+                        return;
+                    }
+                }
+            }
+
+            if(action == 'ADD') {
+                // Check now date
+                if(selfId == 'hld_startdate') {
+                    if(selfDate.getTime() < nowDate.getTime()) {
+                        showAlertInvalidDate(self, 'lessThanNow')
+                    }
+                } else if(selfId == 'hld_enddate') {
+                    if(selfDate.getTime() < nowDate.getTime()) {
+                        showAlertInvalidDate(self, 'lessThanNow')
+                    }
+                }
+            }
+        }
+        function showAlertInvalidDate(self, errType) {
+            var titleTxt    = '';
+            var messageTxt  = '';
+            var descTxt     = '';
+            var selfId      = self.attr('id');
+
+            if(selfId == 'hld_startdate') {
+                titleTxt    = 'วันหยุดเริ่มต้นไม่ถูกต้อง';
+                descTxt     = 'ป้อนวันหยุดเริ่มต้นใหม่';
+                if(errType == 'overSibling') {
+                    messageTxt  = 'วันหยุดเริ่มต้นไม่สามารถอยู่หลังหยุดสิ้นสุดได้ค่ะ';
+                } else if(errType == 'lessThanNow') {
+                    messageTxt  = 'ไม่สามารถป้อนวันหยุดเริ่มต้นย้อนหลังได้ค่ะ';
+                }
+            } else if(selfId == 'hld_enddate') {
+                titleTxt    = 'วันหยุดสิ้นสุดไม่ถูกต้อง';
+                descTxt     = 'ป้อนวันหยุดสิ้นสุดใหม่';
+                if(errType == 'overSibling') {
+                    messageTxt  = 'วันหยุดสิ้นสุดไม่สามารถอยู่ก่อนหน้าวันหยุดเริ่มต้นได้ค่ะ';
+                } else if(errType == 'lessThanNow') {
+                    messageTxt  = 'ไม่สามารถป้อนวันหยุดสิ้นสุดย้อนหลังได้ค่ะ';
+                }
+            }
+
+            if(parent.$('.action-dialog-container').length <= 0) {
+                parent.showActionDialog({
+                    title: titleTxt,
+                    message: messageTxt,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: descTxt,
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                self.val('');
+                                self.focus();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        }
+
+        function beforeSaveRecord() {
+            // Not check time overlap
+            if($('#hld_name').val() == '' || $('#hld_startdate').val() == '' || $('#hld_enddate').val() == '') {
+                return false;
+            }
+
+            var returnVal = true; // false = no err, true = have err
+
+            $.ajax({
+                url: '../common/ajaxCheckHolidaysTimeOverlap.php',
+                type: 'POST',
+                data: {
+                    hld_id       : code,
+                    startdate       : tmpDateToRealDate($('#hld_startdate').val()),
+                    enddate         : tmpDateToRealDate($('#hld_enddate').val())
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'OVERLAP') {
+                        var overlapListHTML = '<ul>';
+                        for(i in response.overlapList) {
+                            overlapListHTML += '<li>' + response.overlapList[i] + '</li>';
+                        }
+                        overlapListHTML += '</ul>';
+
+                        var msg = 'คุณกำหนดระยะเวลาของวันหยุด ' 
+                                + $('#hld_name').val()
+                                + ' ซ้อนทับกับช่วงเวลาดังต่อไปนี้' + overlapListHTML 
+                                + '<br>โปรดแก้ไขระยะเวลาของวันหยุดไม่ให้อยู่ในช่วงเวลาดังกล่าว';
+                        parent.showActionDialog({
+                            title: 'ระยะเวลาของวันหยุดซ้อนทับกัน',
+                            message: msg,
+                            actionList: [
+                                {
+                                    id: 'ok',
+                                    name: 'ตกลง',
+                                    func:
+                                    function() {
+                                        parent.hideActionDialog();
+                                    }
+                                }
+                            ],
+                            boxWidth: 500
+                        });
+                    } else if(response.status == 'NOT_OVERLAP') {
+                        if(action == 'ADD') {
+                            if(!hasInputError()) {
+                                saveRecord();
+                            }
+                        } else if(action == 'EDIT') {
+                            if(!hasInputError()) {
+                                confirmSaveRecord();
+                            }
+                        }
+                    } else {
+                        alert(response.status);
+                    }
+                }
+            });
+
+            return returnVal;
+        }
     </script>
     {/literal}
 </head>
@@ -45,32 +241,37 @@
 {if $emp_privileges.manage_standard_tables}
 <div class="ftb-body">
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="hld_name,hld_date">
-    <input type="hidden" name="uniqueFields" value="hld_date">
+	<input type="hidden" name="requiredFields" value="hld_name,hld_startdate,hld_enddate">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
 		    <tr>
-			    <td>
+			    <td colspan="2">
 				    <label class="input-required">ชื่อวันหยุด</label>
 				    <input id="hld_name" name="hld_name" type="text" class="form-input full" value="{$values.hld_name}" require>
 			    </td>
 		    </tr>
             <tr class="errMsgRow">
-                <td>
+                <td colspan="2">
                     <span id="err-hld_name-require" class="errInputMsg err-hld_name">โปรดป้อนชื่อวันหยุด</span>
                     <span id="err-hld_name-unique" class="errInputMsg err-hld_name">ชื่อเพศซ้ำ โปรดป้อนชื่อเพศใหม่</span>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label class="input-required">วันที่หยุด</label>
-                      <input id="hld_date" name="hld_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.hld_date}{$values.hld_date}{/if}" require>
+                    <label class="input-required">วันหยุดเริ่มต้น</label>
+                      <input id="hld_startdate" name="hld_startdate" type="text" class="mbk-dtp-th form-input half" value="{if $values.hld_startdate}{$values.hld_startdate}{/if}" require>
+                </td>
+                <td>
+                    <label class="input-required">วันหยุดสิ้นสุด</label>
+                      <input id="hld_enddate" name="hld_enddate" type="text" class="mbk-dtp-th form-input half" value="{if $values.hld_enddate}{$values.hld_enddate}{/if}" require>
                 </td>
             </tr>
              <tr class="errMsgRow">
                 <td>
-                    <span id="err-hld_date-require" class="errInputMsg err-hld_date">โปรดป้อนวันที่หยุด</span>
-                    <span id="err-hld_date-unique" class="errInputMsg err-hld_date">วันที่หยุดซ้ำ โปรดป้อนวันที่หยุดใหม่</span>
+                    <span id="err-hld_startdate-require" class="errInputMsg err-hld_startdate">โปรดป้อนวันหยุดเริ่มต้น</span>
+                </td>
+                <td>
+                    <span id="err-hld_enddate-require" class="errInputMsg err-hld_enddate">โปรดป้อนวันหยุดสิ้นสุด</span>
                 </td>
             </tr>
 	    </tbody>

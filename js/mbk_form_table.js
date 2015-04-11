@@ -27,7 +27,8 @@ $(document).ready(function () {
 	    		parent.table.name != 'promotion_products' && 
 	    		parent.table.name != 'withdraws' &&
 	    		parent.table.name != 'package_promotions' && 
-	    		parent.table.name != 'service_list_promotion_details') {
+	    		parent.table.name != 'service_list_promotion_details' && 
+	    		parent.table.name != 'holidays') {
 	    		parent.showActionDialog({
 			        title: 'ข้อมูลไม่ถูกต้อง',
 			        message: 'คุณป้อนข้อมูลไม่ครบ หรือรูปแบบข้อมูลไม่ถูกต้อง '
