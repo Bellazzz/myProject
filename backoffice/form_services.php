@@ -130,8 +130,8 @@ if(!$_REQUEST['ajaxCall']) {
 
 		// Get table service_list_detail data
 		$sersvlIdList = wrapSingleQuote($sersvlIdList);
-		$valuesSvlDtl = array();
-		if(count($sersvlIdList) > 0) {
+		if(is_array($sersvlIdList) && count($sersvlIdList) > 0) {
+			$valuesSvlDtl = array();
 			$sql = "SELECT 		svldtl_id,
 								svl_id, 
 								emp_id,
@@ -148,32 +148,34 @@ if(!$_REQUEST['ajaxCall']) {
 				$record['com_rate'] = $svldtl_com / $initPrice * 100;
 				array_push($valuesSvlDtl, $record);
 			}
+			$smarty->assign('valuesSvlDtl', $valuesSvlDtl);
 		}
-		
-		$smarty->assign('valuesSvlDtl', $valuesSvlDtl);
 
 		// Get table package_detail data
 		$serpkgIdList = wrapSingleQuote($serpkgIdList);
-		$valuesPkgDtl = array();
-		$sql = "SELECT 		pkgdtl_id,
-							pkgsvl_id, 
-							emp_id,
-							pkgdtl_com 
-				FROM 		package_details  
-				WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";
-		$result = mysql_query($sql, $dbConn);
-		$rows 	= mysql_num_rows($result);
-		for($i=0; $i<$rows; $i++) {
-			$record 		= mysql_fetch_assoc($result);
-			$com_per 		= 20;
-			$initPrice 		= $realPkgSvlTotalPriceList[$record['pkgsvl_id']] * $com_per / 100;
-			$pkgdtl_com 	= $record['pkgdtl_com'];
-			$record['com_rate'] = $pkgdtl_com / $initPrice * 100;
-			$record['pkg_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['pkg_id'];
-			$record['svl_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['svl_id'];
-			array_push($valuesPkgDtl, $record);
+		if(is_array($serpkgIdList) && count($serpkgIdList) > 0) {
+			$valuesPkgDtl = array();
+			$sql = "SELECT 		pkgdtl_id,
+								pkgsvl_id, 
+								emp_id,
+								pkgdtl_com 
+					FROM 		package_details  
+					WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";echo $sql;
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record 		= mysql_fetch_assoc($result);
+				$com_per 		= 20;
+				$initPrice 		= $realPkgSvlTotalPriceList[$record['pkgsvl_id']] * $com_per / 100;
+				$pkgdtl_com 	= $record['pkgdtl_com'];
+				$record['com_rate'] = $pkgdtl_com / $initPrice * 100;
+				$record['pkg_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['pkg_id'];
+				$record['svl_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['svl_id'];
+				array_push($valuesPkgDtl, $record);
+			}
+			$smarty->assign('valuesPkgDtl', $valuesPkgDtl);
 		}
-		$smarty->assign('valuesPkgDtl', $valuesPkgDtl);
+		
 
 	} else if($action == 'VIEW_DETAIL') {
 		// Get table services data
@@ -768,7 +770,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$errTxt .= mysql_error($dbConn).'\n\n';
 			}
 		}
-
+		
 		if($insertResult) {
 			$response['status'] = 'ADD_PASS';
 			echo json_encode($response);

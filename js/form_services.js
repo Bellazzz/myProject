@@ -10,8 +10,12 @@ $(document).ready(function(){
 	$('#addServiceListBtn').click(addServiceList);
 
 	//Cal change money
-    $('#ser_pay_price').change(calSummary);
-
+    $('#ser_pay_price').change(function() {
+        calSummary(false);
+    });
+    $('#ser_pay_price').click(function() {
+        $(this).select();
+    });
 	setAllSerDetailAmount();
 });
 
@@ -1117,11 +1121,14 @@ function addServiceListCommission(data) {
         });
     });
 
-    checkAllowChangeComRate(tdCom);
-    validateComRate({
-        tdCom: tdCom,
-        inputComRate: $('#' + inputComRateId)
-    });
+    if(!data.defaultValue) {
+        checkAllowChangeComRate(tdCom);
+        validateComRate({
+            tdCom: tdCom,
+            inputComRate: $('#' + inputComRateId)
+        });
+    }
+    
 }
 
 function validateComRate(data) {
@@ -1141,7 +1148,10 @@ function validateComRate(data) {
             if($(this).attr('id') != data.inputComRate.attr('id')) {
                 var enterVal = parseFloat(data.inputComRate.val());
                 if(enterVal <= 100) {
-                    $(this).val(100 - enterVal);
+                    var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
+                    var percent = 100 - enterVal;
+                    $(this).val(percent);
+                    mirrorConRateInput.val(percent)
                 }
             }
         });
@@ -1211,11 +1221,15 @@ function checkAllowChangeComRate(tdCom) {
         // Disable
         disable = true;
         comRateInputs.each(function() {
+            var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
             $(this).val(100);
+            mirrorConRateInput.val(100);
         });
     } else if(comRateInputs.length == 2) {
         comRateInputs.each(function() {
+            var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
             $(this).val(50);
+            mirrorConRateInput.val(50);
         });
     }
 
@@ -1480,10 +1494,13 @@ function removePrm(prmList) {
     }
 }
 
-function calSummary() {
+function calSummary(autoPay) {
     var totalPrice          = 0;
     var totalDiscoutPrm   = 0;
-
+    var autoPayPrice = true;
+    if(typeof(autoPay) != 'undefined') {
+        autoPayPrice = autoPay;
+    }
     // Cal sum promotion discout
     $('input[name="pkg_id[]"]').each(function() {
         var tdPrm               = $(this).parent().parent().parent().next().next().find('td');
@@ -1531,6 +1548,9 @@ function calSummary() {
 
     $('#ser_prm_discout').val(totalDiscoutPrm.formatMoney(2, '.', ''));
     $('#ser_total_price').val(totalPrice.formatMoney(2, '.', ''));
+    if(autoPayPrice) {
+        $('#ser_pay_price').val(totalPrice);
+    }
     
     $('#ser_pay_price').focusout();
     calChangeMoney(totalPrice);
