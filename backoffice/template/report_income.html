@@ -111,11 +111,11 @@
                             <td colspan="2" style="font-weight:bold;">การให้บริการ</td>
                         </tr>
                         <tr>
-                            <td>รายการบริการเดี่ยว</td>
+                            <td style="padding-left: 30px;">รายการบริการเดี่ยว</td>
                             <td align="right">{$report.svlTotalPrice}</td>
                         </tr>
                         <tr>
-                            <td>แพ็คเกจ</td>
+                            <td style="padding-left: 30px;">แพ็คเกจ</td>
                             <td align="right">{$report.pkgTotalPrice}</td>
                         </tr>
                         <tr style="background-color: #F1F1F1;">
@@ -127,7 +127,7 @@
                         </tr>
                         {foreach from=$report.prdtyps key=i item=prdtyp}
                         <tr>
-                            <td>{$prdtyp.name}</td>
+                            <td style="padding-left: 30px;">{$prdtyp.name}</td>
                             <td align="right">{$prdtyp.totalPrice}</td>
                         </tr>
                         {/foreach}
