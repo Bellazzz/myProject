@@ -88,6 +88,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$realSvlTotalPriceList = array();
 		$sql = "SELECT 		ss.sersvl_id, 
 							ss.sersvl_total_price,
+							SUBSTR(ss.sersvl_time,1,5) sersvl_time,
 							s.svl_id, 
 							ss.sersvl_amount,
 							s.svl_price 
@@ -332,7 +333,8 @@ if(!$_REQUEST['ajaxCall']) {
 				case 'service_lists':
 					$sqlRefData = "	SELECT 		svl_id refValue,
 												svl_name refText,
-												svl_price 
+												svl_price,
+												IFNULL(svl_hr,0) * 60 + IFNULL(svl_min,0) svl_min 
 									FROM 		service_lists 
 									ORDER BY 	svl_name ASC";
 					$refField 	= 'svl_id';
@@ -587,6 +589,26 @@ if(!$_REQUEST['ajaxCall']) {
 		array_push($fieldListEn, $field);
 	}
 
+	// Find current day type
+	$currentDay = '';
+	$sql = "SELECT hld_id FROM holidays WHERE '$nowDate' >= hld_startdate && '$nowDate' <= hld_enddate";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		$currentDay = 'วันหยุดสปา';
+	} else {
+		$dayTh = array(
+			'Sunday' => 'อาทิตย์',
+			'Monday' => 'จันทร์',
+			'Tuesday' => 'อังคาร',
+			'Wednesday' => 'พุธ',
+			'Thursday' => 'พฤหัสบดี',
+			'Friday' => 'ศุกร์',
+			'Saturday' => 'เสาร์'
+		);
+		$currentDay = $dayTh[date('l')];
+	}
+
 	if($action == 'ADD') {
 		//2.1 Insert new record
 		$values['fieldName']  = array();
@@ -715,7 +737,8 @@ if(!$_REQUEST['ajaxCall']) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
 				$sersvl_amount 		= $formData['svl_qty'][$key];
 				$sersvl_total_price = $formData['sersvl_total_price'][$key];
-				$sersvlValues 		= array($ser_id, $svl_id, $sersvl_amount, $sersvl_total_price);
+				$sersvl_time 		= $formData['sersvl_time'][$key];
+				$sersvlValues 		= array($ser_id, $svl_id, $sersvl_amount, $sersvl_total_price, $sersvl_time);
 				$sersvlRecord 		= new TableSpa('service_service_lists', $sersvlValues);
 				if(!$sersvlRecord->insertSuccess()) {
 					$insertResult = false;
@@ -1122,6 +1145,7 @@ if(!$_REQUEST['ajaxCall']) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
 				$sersvl_amount  = $formData['svl_qty'][$key];
 				$sersvl_total_price = $formData['sersvl_total_price'][$key];
+				$sersvl_time = $formData['sersvl_time'][$key];
 
 				if(isset($formData['sersvl_id'][$key])) {
 					// Update service_service_lists
@@ -1130,6 +1154,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$serviceSvlRecord->setFieldValue('svl_id', $svl_id);
 					$serviceSvlRecord->setFieldValue('sersvl_amount', $sersvl_amount);
 					$serviceSvlRecord->setFieldValue('sersvl_total_price', $sersvl_total_price);
+					$serviceSvlRecord->setFieldValue('sersvl_time', $sersvl_time);
 					if(!$serviceSvlRecord->commit()) {
 						$updateResult = false;
 						$errTxt .= 'EDIT_SERVICE_SERVICE_LISTS['.($key+1).']_FAIL\n';
@@ -1137,7 +1162,7 @@ if(!$_REQUEST['ajaxCall']) {
 					}
 				} else {
 					// Add new service_service_lists
-					$sersvlValues 		= array($code, $svl_id, $sersvl_amount, $sersvl_total_price);
+					$sersvlValues 		= array($code, $svl_id, $sersvl_amount, $sersvl_total_price, $sersvl_time);
 					$serviceSvlRecord 	= new TableSpa('service_service_lists', $sersvlValues);
 					if(!$serviceSvlRecord->insertSuccess()) {
 						$updateResult = false;
@@ -1254,5 +1279,9 @@ function getRealSerSvlTotalPrice($ser_id, $svl_id) {
 		$realPrice = $record['realPrice'];
 	}
 	return $realPrice;
+}
+
+function getComRate($day, $time) {
+	
 }
 ?>

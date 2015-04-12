@@ -36,7 +36,8 @@ function addItemForEdit() {
                 sersvl_id   : valuesSvl[i].sersvl_id,
                 svl_id      : valuesSvl[i].svl_id,
                 svl_qty     : valuesSvl[i].sersvl_amount,
-                unitPrice   : valuesSvl[i].svl_price
+                unitPrice   : valuesSvl[i].svl_price,
+                sersvl_time : valuesSvl[i].sersvl_time
             });
         }
         for(i in valuesSvlDtl) {
@@ -691,7 +692,7 @@ function addPkgCommission(data) {
                       + '               <td class="emp-col">'
                       + '                   <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                       + '               </td>'
-                      + '               <td class="com-rate-col">ค่าคอมมิชชั่น ';
+                      + '               <td class="com-rate-col"><span class="inlineBlock">ค่าคอมมิชชั่น </span>';
 
     // add input commisstion rate
     if(data.defaultValue) {
@@ -702,7 +703,7 @@ function addPkgCommission(data) {
         pkgsvlComHtml += '                  <input id="' + inputComRateId + '" type="text" class="form-input half com_rate_input" value="100" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
     }
 
-    pkgsvlComHtml    += '                   %&nbsp;&nbsp;&nbsp;'
+    pkgsvlComHtml    += '                   <span class="inlineBlock">%</span>&nbsp;&nbsp;&nbsp;'
                       + '                   <button id="removeSvlComBtn_' + inputKeyId + '" class="removeSvlComBtn button button-icon button-icon-delete">ลบ</button>'
                       + '               </td>';
 
@@ -800,30 +801,47 @@ function addPkgCommission(data) {
         });
     });
 
-    checkAllowChangeComRate(comListConn);
-    validateComRate({
-        tdCom: comListConn,
-        inputComRate: $('#' + inputComRateId)
-    });
+    if(!data.defaultValue) {
+        checkAllowChangeComRate(comListConn);
+        validateComRate({
+            tdCom: comListConn,
+            inputComRate: $('#' + inputComRateId)
+        });
+    }
 }
 
 function addServiceList(data) {
     var randNum;
     var selectRefDefault = '';
     var unitPrice = '0.00';
+    var svl_min = 0;
+    var time = '';
     do {
         randNum     = parseInt(Math.random()*1000);
     } while($('#svl_id_' + randNum).length > 0);
     var inputKeyId  = 'svl_id_' + randNum;
     var inputQtyId  = 'svl_qty_' + randNum;
+    var inputTimeId = 'svl_time_' + randNum;
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
+    }
+    if(typeof(data.sersvl_time) != 'undefined' && data.sersvl_time != '') {
+        time = data.sersvl_time;
+    }
+    if(typeof(data.sersvl_min) != 'undefined' && data.sersvl_min != '') {
+        svl_min = data.sersvl_min;
     }
 
     // Create HTML and append
     var svlRowHTML  = '<tr class="service-list-row">'
                     + '     <td width="350px">'
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                    + '     </td>'
+                    + '     <td><input id="' + inputTimeId + '" type="text" name="sersvl_time[]" class="form-input" value="' + time + '" style="width:150px;" require></td>'
+                    + '     <td align="right" style="padding-right:20px;">'
+                    + '         <span class="svl_min_txt">' + svl_min + ' นาที</span>'
+                    + '         <input type="hidden" name="sersvl_min[]" value="' + svl_min + '">'
+                    + '         <input type="hidden" name="sersvl_time_end[]">'
                     + '     </td>'
                     + '		<td align="right" style="padding-right:20px;"><span class="svl_unit_price">' + unitPrice + '</span>'
                     + '     <td style="padding-left:40px;" class="qty-column">';
@@ -856,6 +874,11 @@ function addServiceList(data) {
                     + '     <td>'
                     + '         <span id="err-' + inputKeyId + '-require" class="errInputMsg half err-' + inputKeyId + '">'
                     + '             โปรดเลือกรายการบริการ'
+                    + '         </span>'
+                    + '     </td>'
+                    + '     <td>'
+                    + '         <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '">'
+                    + '             โปรดป้อนเวลาที่ใช้บริการ'
                     + '         </span>'
                     + '     </td>'
                     + '		<td></td>'
@@ -926,14 +949,25 @@ function addServiceList(data) {
         },
         group           : 'service_lists'
     });
+    // Create time picker
+    $('#' + inputTimeId).datetimepicker({
+        datepicker:false,
+        format:'H:i',
+        step: 5
+    });
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
+    $('#' + inputTimeId).focusout(validateInput);
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
         var sumPriceInput = $(this).parent().parent().find('input[name="sersvl_total_price[]"]');
         calSumPriceInput(sumPriceInput, 'service_lists');
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
+    });
+    // Set time end
+    $('#' + inputTimeId).change(function() {
+        setSvlTimeEnd(inputKeyId);
     });
 
     function allowChangeServiceList() {
@@ -980,7 +1014,7 @@ function addServiceListCommission(data) {
                             + '         <td class="emp-col">'
                             + ' 			<div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                             + '         </td>'
-                            + '         <td class="com-rate-col">ค่าคอมมิชชั่น ';
+                            + '         <td class="com-rate-col"><span class="inlineBlock">ค่าคอมมิชชั่น <span>';
 
     // add input commisstion rate
     if(data.defaultValue) {
@@ -1306,18 +1340,61 @@ function pullSvlUnitPrice(inputKeyId) {
     
     if(typeof(svlID) != 'undefined' && svlID != '') {
         var svlUnitPrice = $('#' + inputKeyId).parent().parent().find('.svl_unit_price');
+        var svlMinTxt = $('#' + inputKeyId).parent().parent().find('.svl_min_txt');
+        var svlMinInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_min[]"]');
+        var sersvlTimeInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time[]"]');
         var unitPrice    = '';
+        var svl_min = '';
 
         for(i in refSvlData) {
             if(refSvlData[i].refValue == svlID) {
                 unitPrice = parseFloat(refSvlData[i].svl_price);
+                svl_min = parseInt(refSvlData[i].svl_min);
                 break;
             }
         }
 
+        
+        setSvlTimeEnd(inputKeyId, svl_min);
         svlUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
+        svlMinTxt.text(svl_min.formatMoney(0, '', ',') + ' นาที');
+        svlMinInput.val(svl_min);
         calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="sersvl_total_price[]"]'), 'service_lists');
     }
+}
+
+function setSvlTimeEnd(inputKeyId, svlMin) {
+    var sersvlTimeInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time[]"]');
+    var svl_min = svlMin;
+    if(typeof(svl_min) == 'undefined') {
+        var svlID = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+        if(typeof(svlID) != 'undefined' && svlID != '') {
+            for(i in refSvlData) {
+                if(refSvlData[i].refValue == svlID) {
+                    svl_min = parseInt(refSvlData[i].svl_min);
+                    break;
+                }
+            }
+        }
+    }
+
+    // cal time end
+    if(sersvlTimeInput.val() != '') {
+        var sersvlTimeEndInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
+        var endTime = addMinutes(sersvlTimeInput.val(), svl_min);
+        sersvlTimeEndInput.val(endTime);
+    }
+}
+
+function addMinutes(time, addMin) {
+    var now = new Date();
+    var date = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + time + ':00');
+    if(addMin > 0) {
+        var after = new Date(date.getTime() + addMin*60000);
+    } else {
+        var after = date;
+    }
+    return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
 }
 
 function calSumPriceInput(sumPriceInput, type) {

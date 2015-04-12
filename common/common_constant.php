@@ -749,7 +749,8 @@ function dbClose() {
 						'ser_id'	          => 'รหัสการใช้บริการ',
 						'svl_id' 			  => 'รหัสรายการบริการ',
 						'sersvl_amount' 	  => 'จำนวนครั้งที่ใช้บริการ',
-						'sersvl_total_price'  => 'ราคารวม(บาท)'
+						'sersvl_total_price'  => 'ราคารวม(บาท)',
+						'sersvl_time'		  => 'เวลาที่ใช้บริการ'
 				)
 
 			);

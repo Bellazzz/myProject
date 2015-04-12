@@ -16,13 +16,16 @@
     <script type="text/javascript" src="../js/form_services.js"></script>
     <style type="text/css">
         .pkg_unit_price, .svl_unit_price, .pkg_sumPrm_price, .serpkg_price_txt,
-        .svl_sumPrm_price, .sersvl_price_txt {
+        .svl_sumPrm_price, .sersvl_price_txt, .svl_min_txt {
             width: 150px;
             display: inline-block;
             text-overflow: ellipsis;
             overflow: hidden;
             text-align: right;
             padding: 5px;
+        }
+        .svl_min_txt {
+            width: 100px;
         }
         .removePackageBtn, .removeServiceListBtn {
             padding: 5px;
@@ -150,6 +153,9 @@
             position: absolute; 
             margin-left: 10px;
             display: none;
+        }
+        .inlineBlock {
+            display: inline-block !important;
         }
     </style>
     <script type="text/javascript">
@@ -535,6 +541,8 @@
         <tbody>
             <tr class="headTable-row">
                 <td><label class="input-required"><b>รายการบริการ</b></label></td>
+                <td><label class="input-required"><b>ใช้บริการเวลา</b></label></td>
+                <td align="right" style="padding-right:20px;"><b>เวลาที่ใช้</b></td>
                 <td align="right" style="padding-right:20px;"><label><b>รายการละ</b></label></td>
                 <td style="padding-left:40px;" class="qty-column"><label class="input-required"><b>จำนวน</b></label></td>
                 <td align="right"><label>ส่วนลด</label></td>
