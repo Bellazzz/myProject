@@ -958,16 +958,15 @@ function addServiceList(data) {
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
+    $('#' + inputTimeId).focusout(function() {
+        setSvlTimeEnd(inputKeyId); // Set time end
+    });
     // Calculate sum price
     $('#' + inputQtyId).change(function() {
         var sumPriceInput = $(this).parent().parent().find('input[name="sersvl_total_price[]"]');
         calSumPriceInput(sumPriceInput, 'service_lists');
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
-    });
-    // Set time end
-    $('#' + inputTimeId).change(function() {
-        setSvlTimeEnd(inputKeyId);
     });
 
     function allowChangeServiceList() {
@@ -1383,6 +1382,7 @@ function setSvlTimeEnd(inputKeyId, svlMin) {
         var sersvlTimeEndInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
         var endTime = addMinutes(sersvlTimeInput.val(), svl_min);
         sersvlTimeEndInput.val(endTime);
+        checkTimeOverlap(inputKeyId, 'service_lists');
     }
 }
 
@@ -1395,6 +1395,88 @@ function addMinutes(time, addMin) {
         var after = date;
     }
     return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
+}
+
+function checkTimeOverlap(inputKeyId, type) {
+    var timeList = Array();
+    var timeOverlapList = Array();
+    var inputTime = '';
+    var inputTimeEnd = '';
+    var selectRefVal = $('#' + inputKeyId).parent().parent().find('.selectReferenceJS-input').val();
+
+    if(selectRefVal == '') {
+        return;
+    }
+    
+    if(type == 'service_lists') {
+        // get time list of service list
+        inputTime = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time[]"]');
+        inputTimeEnd = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
+
+        allInputTime = $('#' + inputKeyId).parent().parent().parent().find('input[name="sersvl_time[]"]');
+        allInputTime.each(function() {
+            if($(this).attr('id') != inputTime.attr('id')) {
+                timeList.push({
+                    name: $(this).parent().parent().find('.selectReferenceJS-text').text(),
+                    timeStart: $(this).val(),
+                    timeEnd: $(this).parent().parent().find('input[name="sersvl_time_end[]"]').val()
+                });
+            }
+        });
+    } else {
+
+    }
+
+    // Check overlap
+    var now = new Date();
+    var timeStart = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + inputTime.val() + ':00');
+    var timeEnd = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + inputTimeEnd.val() + ':00');
+    var tmpTimeStart, tmpTimeEnd;
+    for(i in timeList) {
+        tmpTimeStart = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeStart + ':00');
+        tmpTimeEnd = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeEnd + ':00');
+
+        if((timeStart >= tmpTimeStart && timeStart <= tmpTimeEnd) || 
+            (timeEnd >= tmpTimeStart  && timeEnd <= tmpTimeEnd)) {
+            var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
+            var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
+            var txt = timeList[i].name + ' (' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
+            timeOverlapList.push(txt)
+        }
+    }
+
+    // Show alert dialogBox
+    if(timeOverlapList.length > 0) {
+        var svlName = $('#' + inputKeyId).parent().parent().find('.selectReferenceJS-text').text();
+        var timeStartTxt = timeStart.getHours() + ':' + (timeStart.getMinutes()<10?'0':'') + timeStart.getMinutes();
+        var timeEndTxt = timeEnd.getHours() + ':' + (timeEnd.getMinutes()<10?'0':'') + timeEnd.getMinutes();
+        var msg = 'คุณกำหนดให้';
+        msg += (type == 'service_lists')?'รายการบริการ ':'แพ็คเกจ ';
+        msg += svlName + ' มีการใช้บริการเวลา ' + timeStartTxt + ' น. - ' + timeEndTxt + ' น. ซึ่งซ้อนทับกับรายการดังต่อไปนี้ <ul>';
+        for(i in timeOverlapList) {
+            msg += '<li>' + timeOverlapList[i] + '</li>';
+        }
+        msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว';
+        parent.showActionDialog({
+            title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
+            message: msg,
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    desc: 'ป้อนเวลาที่ใช้บริการใหม่',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        inputTime.val('');
+                        inputTimeEnd.val('');
+                        inputTime.focus();
+                    }
+                }
+            ],
+            boxWidth: 650
+        });
+    }
 }
 
 function calSumPriceInput(sumPriceInput, type) {
