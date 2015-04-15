@@ -19,6 +19,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Get table services data
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
+		$currentDay = getCurrentDay($tableRecord->getFieldValue('ser_date')); // Find current day type
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
 			$colFieldType = $tableRecord->getFieldType($field);
 			if($colFieldType == 'time'){
@@ -84,6 +85,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Get table service_service_lists data
 		$sersvlIdList 	= array();
 		$svlIdList 		= array();
+		$svlForCmr 		= array();
 		$valuesSvl 		= array();
 		$realSvlTotalPriceList = array();
 		$sql = "SELECT 		ss.sersvl_id, 
@@ -91,7 +93,10 @@ if(!$_REQUEST['ajaxCall']) {
 							SUBSTR(ss.sersvl_time,1,5) sersvl_time,
 							s.svl_id, 
 							ss.sersvl_amount,
-							s.svl_price 
+							s.svl_price,
+							ss.sersvl_time tmpSersvl_time,
+							s.svl_hr,
+							s.svl_min 
 				FROM 		service_service_lists ss, service_lists s  
 				WHERE 		ss.svl_id = s.svl_id AND 
 							ser_id = '$code' 
@@ -104,6 +109,13 @@ if(!$_REQUEST['ajaxCall']) {
 			array_push($sersvlIdList, $record['sersvl_id']);
 			array_push($svlIdList, $record['svl_id']);
 			$realSvlTotalPriceList[$record['svl_id']] = $record['sersvl_total_price'];
+
+			// Find service for commission rate
+			$allMin 			= $record['svl_hr'] * 60 + $record['svl_min'];
+			$startDate 			= strtotime($nowDate." ".$record['tmpSersvl_time']);
+			$endDate 			= $startDate+(60*$allMin);
+			$sersvl_time_end 	= date('H:i', $endDate);
+			$svlForCmr[$record['svl_id']] = getComRate($currentDay, $record['tmpSersvl_time'], $sersvl_time_end);
 		}
 		$smarty->assign('valuesSvl', $valuesSvl);
 
@@ -143,7 +155,8 @@ if(!$_REQUEST['ajaxCall']) {
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {
 				$record 		= mysql_fetch_assoc($result);
-				$com_per 		= 20;
+				$com_per 		= $svlForCmr[$record['svl_id']];
+				echo "com_per = $com_per";
 				$initPrice 		= $realSvlTotalPriceList[$record['svl_id']] * $com_per / 100;
 				$svldtl_com 	= $record['svldtl_com'];
 				$record['com_rate'] = $svldtl_com / $initPrice * 100;
@@ -589,32 +602,13 @@ if(!$_REQUEST['ajaxCall']) {
 		array_push($fieldListEn, $field);
 	}
 
-	// Find current day type
-	$currentDay = '';
-	$sql = "SELECT hld_id FROM holidays WHERE '$nowDate' >= hld_startdate && '$nowDate' <= hld_enddate";
-	$result = mysql_query($sql, $dbConn);
-	$rows 	= mysql_num_rows($result);
-	if($rows > 0) {
-		$currentDay = 'วันหยุดสปา';
-	} else {
-		$dayTh = array(
-			'Sunday' => 'อาทิตย์',
-			'Monday' => 'จันทร์',
-			'Tuesday' => 'อังคาร',
-			'Wednesday' => 'พุธ',
-			'Thursday' => 'พฤหัสบดี',
-			'Friday' => 'ศุกร์',
-			'Saturday' => 'เสาร์'
-		);
-		$currentDay = $dayTh[date('l')];
-	}
-
 	if($action == 'ADD') {
 		//2.1 Insert new record
 		$values['fieldName']  = array();
 		$values['fieldValue'] = array();
 		$insertResult 		  = true;
 		$errTxt 			  = '';
+		$currentDay = getCurrentDay($nowDate); // Find current day type
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
@@ -732,6 +726,16 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 		// End service packages
 
+		// Find commission percent of service lists
+		$cmrSvl = array();
+		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
+			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$sersvl_time 		= $formData['sersvl_time'][$key];
+				$sersvl_time_end	= $formData['sersvl_time_end'][$key];
+				$cmrSvl[$svl_id] = getComRate($currentDay, $sersvl_time, $sersvl_time_end);
+			}
+		}
+
 		// Insert service service_list
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
@@ -767,16 +771,18 @@ if(!$_REQUEST['ajaxCall']) {
 				$real_sersvl_total_price = $sersvl_total_price;
 				if(hasValue($formData['svlCom_'.$svl_id.'_emp_id']) && is_array($formData['svlCom_'.$svl_id.'_emp_id'])) {
 					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $key => $comEmp_id) {
-						$com_per 			= 20; // Percent
-						$initCom 			= $real_sersvl_total_price * $com_per / 100;
-						$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$key];
-						$svldtl_com 		= $initCom * $com_rate / 100;
-						$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
-						$svldtlprmRecord 	= new TableSpa('service_list_details', $svldtlValues);
-						if(!$svldtlprmRecord->insertSuccess()) {
-							$insertResult = false;
-							$errTxt .= 'INSERT_SERVICE_LIST_DETAILS['.($key+1).']_FAIL\n';
-							$errTxt .= mysql_error($dbConn).'\n\n';
+						$com_per = $cmrSvl[$svl_id]; // Percent
+						if($com_per > 0) {
+							$initCom 			= $real_sersvl_total_price * $com_per / 100;
+							$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$key];
+							$svldtl_com 		= $initCom * $com_rate / 100;
+							$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
+							$svldtlprmRecord 	= new TableSpa('service_list_details', $svldtlValues);
+							if(!$svldtlprmRecord->insertSuccess()) {
+								$insertResult = false;
+								$errTxt .= 'INSERT_SERVICE_LIST_DETAILS['.($key+1).']_FAIL\n';
+								$errTxt .= mysql_error($dbConn).'\n\n';
+							}
 						}
 					}
 				}
@@ -808,6 +814,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 		$updateResult  	= true;
 		$errTxt 		= '';
+		$currentDay = getCurrentDay($formData['ser_date']); // Find current day type
 
 		// Set all field value
 		foreach($formData as $fieldName => $value) {
@@ -1140,6 +1147,16 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
+		// Find commission percent of service lists
+		$cmrSvl = array();
+		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
+			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$sersvl_time 		= $formData['sersvl_time'][$key];
+				$sersvl_time_end	= $formData['sersvl_time_end'][$key];
+				$cmrSvl[$svl_id] = getComRate($currentDay, $sersvl_time, $sersvl_time_end);
+			}
+		}
+
 		// Update or Add service_service_lists & service_service_list_promotions & service_list_details
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
@@ -1203,30 +1220,33 @@ if(!$_REQUEST['ajaxCall']) {
 				// Update or Add service_list_details
 				if(isset($formData['svlCom_'.$svl_id.'_emp_id']) && is_array($formData['svlCom_'.$svl_id.'_emp_id'])) {
 					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
-						$com_per 			= 20; // Percent
-						$realSvlTotalPrice 	= getRealSerSvlTotalPrice($code, $svl_id);
-						$initCom 			= $realSvlTotalPrice * $com_per / 100;
-						$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$comKey];
-						$svldtl_com 		= $initCom * $com_rate / 100;
-						if(isset($formData['svlCom_'.$svl_id.'_svldtl_id'][$comKey])) {
-							// Update service_list_details
-							$svldtl_id 	= $formData['svlCom_'.$svl_id.'_svldtl_id'][$comKey];
-							$svlDtlRecord 	= new TableSpa('service_list_details', $svldtl_id);
-							$svlDtlRecord->setFieldValue('emp_id', $comEmp_id);
-							$svlDtlRecord->setFieldValue('svldtl_com', $svldtl_com);
-							if(!$svlDtlRecord->commit()) {
-								$updateResult = false;
-								$errTxt .= 'EDIT_SERVICE_LIST_DETAILS['.($comKey+1).']_FAIL\n';
-								$errTxt .= mysql_error($dbConn).'\n\n';
-							}
-						} else {
-							// Add service_list_details
-							$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
-							$svlDtlRecord 		= new TableSpa('service_list_details', $svldtlValues);
-							if(!$svlDtlRecord->insertSuccess()) {
-								$updateResult = false;
-								$errTxt .= 'ADD_SERVICE_LIST_DETAILS['.($comKey+1).']_FAIL\n';
-								$errTxt .= mysql_error($dbConn).'\n\n';
+						$com_per 			= $cmrSvl[$svl_id]; // Percent
+						if($com_per > 0) {
+							$errTxt .= "com_per = $com_per";
+							$realSvlTotalPrice 	= getRealSerSvlTotalPrice($code, $svl_id);
+							$initCom 			= $realSvlTotalPrice * $com_per / 100;
+							$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$comKey];
+							$svldtl_com 		= $initCom * $com_rate / 100;
+							if(isset($formData['svlCom_'.$svl_id.'_svldtl_id'][$comKey])) {
+								// Update service_list_details
+								$svldtl_id 	= $formData['svlCom_'.$svl_id.'_svldtl_id'][$comKey];
+								$svlDtlRecord 	= new TableSpa('service_list_details', $svldtl_id);
+								$svlDtlRecord->setFieldValue('emp_id', $comEmp_id);
+								$svlDtlRecord->setFieldValue('svldtl_com', $svldtl_com);
+								if(!$svlDtlRecord->commit()) {
+									$updateResult = false;
+									$errTxt .= 'EDIT_SERVICE_LIST_DETAILS['.($comKey+1).']_FAIL\n';
+									$errTxt .= mysql_error($dbConn).'\n\n';
+								}
+							} else {
+								// Add service_list_details
+								$svldtlValues 		= array($svl_id, $comEmp_id, $sersvl_id, $svldtl_com);
+								$svlDtlRecord 		= new TableSpa('service_list_details', $svldtlValues);
+								if(!$svlDtlRecord->insertSuccess()) {
+									$updateResult = false;
+									$errTxt .= 'ADD_SERVICE_LIST_DETAILS['.($comKey+1).']_FAIL\n';
+									$errTxt .= mysql_error($dbConn).'\n\n';
+								}
 							}
 						}
 					}
@@ -1244,7 +1264,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$errTxt .= mysql_error($dbConn).'\n\n';
 			}
 		}
-
+		$updateResult = false;
 		if($updateResult) {
 			$response['status'] = 'EDIT_PASS';
 			echo json_encode($response);
@@ -1281,7 +1301,74 @@ function getRealSerSvlTotalPrice($ser_id, $svl_id) {
 	return $realPrice;
 }
 
-function getComRate($day, $time) {
-	
+function getComRate($day, $timeStart, $timeEnd) {
+	global $dbConn;
+	global $errTxt;$errTxt .= "day = $day, timeStart = $timeStart, timeEnd = $timeEnd";
+	$countStart = substr_count($timeStart, ':');
+	$countEnd = substr_count($timeEnd, ':');
+	if($countStart <2) $timeStart .= ':00';
+	if($countEnd <2) $timeEnd .= ':00';
+
+	$sql = "SELECT 	cmr_rate, 
+					cmr_starttime  
+			FROM 	commission_rates 
+			WHERE 	cmr_day = '$day' AND 
+					(
+						('$timeStart' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
+						('$timeStart' >= cmr_starttime AND '$timeStart' <= cmr_endtime AND '$timeEnd' >= cmr_endtime) OR 
+						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
+						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_endtime) 
+					) 
+			ORDER BY cmr_endtime DESC";
+	$result = mysql_query($sql, $dbConn);
+	$rows  	= mysql_num_rows($result);
+	if($rows == 1) {
+		$record = mysql_fetch_assoc($result);
+		return $record['cmr_rate'];
+	} else if($rows > 1) {
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+
+			if($i == $rows-1) {
+				// last record
+				return $record['cmr_rate'];
+			} else {
+				$interval = intervalTime($timeEnd, $record['cmr_starttime']);
+				if($interval >= 30) {
+					return $record['cmr_rate'];
+
+				}
+			}
+		}
+		
+	} else {
+		return -1;
+	}
 }
+
+function getCurrentDay($date) {
+	// Find current day type
+	global $dbConn;
+	$currentDay = '';
+	$sql = "SELECT hld_id FROM holidays WHERE '$date' >= hld_startdate && '$date' <= hld_enddate";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		$currentDay = 'วันหยุดสปา';
+	} else {
+		$dayTh = array(
+			'Sunday' => 'อาทิตย์',
+			'Monday' => 'จันทร์',
+			'Tuesday' => 'อังคาร',
+			'Wednesday' => 'พุธ',
+			'Thursday' => 'พฤหัสบดี',
+			'Friday' => 'ศุกร์',
+			'Saturday' => 'เสาร์'
+		);
+		$currentDay = $dayTh[date('l')];
+	}
+
+	return $currentDay;
+}
+
 ?>

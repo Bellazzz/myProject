@@ -154,4 +154,16 @@ function alertNoPrivlgTableData() {
 			<i class="fa fa-lock"></i><br> คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
 			</div>';
 }
+
+function intervalTime($a, $b) {
+	$tmpA = split(':', $a);
+	$tmpB = split(':', $b);
+
+	if(!isset($tmpA[2])) $tmpA[2] = 0;
+	if(!isset($tmpB[2])) $tmpB[2] = 0;
+
+	$minA = ((int)$tmpA[0] * 60) + (int)$tmpA[1] + (float)$tmpA[2]/100;
+	$minB = ((int)$tmpB[0] * 60) + (int)$tmpB[1] + (float)$tmpB[2]/100;
+	return $minA - $minB;
+}
 ?>

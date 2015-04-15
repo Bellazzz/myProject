@@ -1013,7 +1013,7 @@ function addServiceListCommission(data) {
                             + '         <td class="emp-col">'
                             + ' 			<div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                             + '         </td>'
-                            + '         <td class="com-rate-col"><span class="inlineBlock">ค่าคอมมิชชั่น <span>';
+                            + '         <td class="com-rate-col"><span class="inlineBlock">ค่าคอมมิชชั่น </span>';
 
     // add input commisstion rate
     if(data.defaultValue) {
@@ -1155,6 +1155,7 @@ function addServiceListCommission(data) {
     });
 
     if(!data.defaultValue) {
+        alert('enter default check');
         checkAllowChangeComRate(tdCom);
         validateComRate({
             tdCom: tdCom,
@@ -1248,6 +1249,7 @@ function validateComRate(data) {
 }
 
 function checkAllowChangeComRate(tdCom) {
+    alert('enter');
     var comRateInputs   = tdCom.find('.com_rate_input');
     var disable         = false;
     if(comRateInputs.length == 1) {
