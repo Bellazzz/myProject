@@ -227,8 +227,8 @@
             <tr>
                 <td>จำนวนคงเหลือน้อยสุด :</td>
                 <td>
-                    {if $values.prd_amount_max != '-'}
-                    {$values.prd_amount_max|number_format:0:".":","}   <span id="prd_amount_max_unit"></span>
+                    {if $values.prd_amount_min != '-'}
+                    {$values.prd_amount_min|number_format:0:".":","}   <span id="prd_amount_min_unit"></span>
                     {else}
                     ไม่มีจำนวนในสต็อค
                     {/if}
@@ -237,8 +237,8 @@
             <tr>
                 <td>จำนวนคงเหลือสูงสุด :</td>
                 <td>
-                    {if $values.prd_amount_min != '-'}
-                    {$values.prd_amount_min|number_format:0:".":","}   <span id="prd_amount_min_unit"></span>
+                    {if $values.prd_amount_max != '-'}
+                    {$values.prd_amount_max|number_format:0:".":","}   <span id="prd_amount_max_unit"></span>
                     {else}
                     ไม่มีจำนวนในสต็อค
                     {/if}
