@@ -156,7 +156,6 @@ if(!$_REQUEST['ajaxCall']) {
 			for($i=0; $i<$rows; $i++) {
 				$record 		= mysql_fetch_assoc($result);
 				$com_per 		= $svlForCmr[$record['svl_id']];
-				echo "com_per = $com_per";
 				$initPrice 		= $realSvlTotalPriceList[$record['svl_id']] * $com_per / 100;
 				$svldtl_com 	= $record['svldtl_com'];
 				$record['com_rate'] = $svldtl_com / $initPrice * 100;
@@ -174,7 +173,7 @@ if(!$_REQUEST['ajaxCall']) {
 								emp_id,
 								pkgdtl_com 
 					FROM 		package_details  
-					WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";echo $sql;
+					WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";
 			$result = mysql_query($sql, $dbConn);
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {

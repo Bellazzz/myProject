@@ -807,6 +807,8 @@ function addPkgCommission(data) {
             tdCom: comListConn,
             inputComRate: $('#' + inputComRateId)
         });
+    } else {
+        checkAllowChangeComRate(comListConn, false);
     }
 }
 
@@ -1155,12 +1157,13 @@ function addServiceListCommission(data) {
     });
 
     if(!data.defaultValue) {
-        alert('enter default check');
         checkAllowChangeComRate(tdCom);
         validateComRate({
             tdCom: tdCom,
             inputComRate: $('#' + inputComRateId)
         });
+    } else {
+        checkAllowChangeComRate(tdCom, false);
     }
     
 }
@@ -1248,24 +1251,32 @@ function validateComRate(data) {
     return pass;
 }
 
-function checkAllowChangeComRate(tdCom) {
-    alert('enter');
+function checkAllowChangeComRate(tdCom, autoSetFlag) {
     var comRateInputs   = tdCom.find('.com_rate_input');
     var disable         = false;
+    var autoSet         = true;
+    if(typeof(autoSetFlag) == 'boolean') {
+        autoSet = autoSetFlag;
+    }
+
     if(comRateInputs.length == 1) {
         // Disable
         disable = true;
-        comRateInputs.each(function() {
-            var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
-            $(this).val(100);
-            mirrorConRateInput.val(100);
-        });
+        if(autoSet) {
+            comRateInputs.each(function() {
+                var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
+                $(this).val(100);
+                mirrorConRateInput.val(100);
+            });
+        }
     } else if(comRateInputs.length == 2) {
-        comRateInputs.each(function() {
-            var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
-            $(this).val(50);
-            mirrorConRateInput.val(50);
-        });
+        if(autoSet) {
+            comRateInputs.each(function() {
+                var mirrorConRateInput = $(this).parent().parent().parent().parent().parent().find('.com_rate');
+                $(this).val(50);
+                mirrorConRateInput.val(50);
+            });
+        }
     }
 
     comRateInputs.each(function() {
