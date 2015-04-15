@@ -955,7 +955,9 @@ function addServiceList(data) {
     $('#' + inputTimeId).datetimepicker({
         datepicker:false,
         format:'H:i',
-        step: 5
+        step: 5,
+        minTime:'06:00',
+        maxTime: '21:00'
     });
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);

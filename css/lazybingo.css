@@ -1948,3 +1948,10 @@ datetimepicker
 .noPrivilege-tableData i {
     font-size: 150px;
 }
+
+/*
+ * Date time picker js
+ */
+ .xdsoft_time.xdsoft_disabled {
+    display: none;
+ }

@@ -38,7 +38,7 @@
             padding-left: 100px;
         }
         .prm-list-container {
-            width: 100%;
+            width: 660px;
             margin-bottom: 10px;
             border: 1px solid #DDD;
         }
@@ -77,11 +77,13 @@
         .prm-list table td.amount-col {
             width: 80px;
             text-align: right !important;
+            display: none;
         }
         .prm-list table td.discout-col {
             color: #F44 !important;
             text-align: left !important;
             padding-left: 111px;
+            display: none;
         }
 
         .prm-list table .prm-name {
@@ -312,6 +314,7 @@
                 datepicker:false,
                 format:'H:i',
                 minTime:'06:00',
+                maxTime: '21:00'
             });
         });
     </script>
