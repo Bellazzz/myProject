@@ -105,7 +105,12 @@ if(!$_REQUEST['ajaxCall']) {
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
-			if($fieldName != 'requiredFields' && $fieldName != 'uniqueFields') {
+			if(in_array($fieldName, $fieldListEn)) {
+				// Skip if value is empty and default this field is null
+				if($value == '' && is_array($tableInfo['defaultNull']) && in_array($fieldName, $tableInfo['defaultNull'])) {
+					continue;
+				}
+				
 				$value = str_replace("\\\'", "'", $value);
 				$value = str_replace('\\\"', '"', $value);
 				$value = str_replace('\\\\"', '\\', $value);
