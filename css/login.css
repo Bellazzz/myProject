@@ -15,11 +15,11 @@ p, ul, ol, dl, h1, h2, h3, h4, h5, h6, blockquote, pre, form.aui, table.mbk {
 }
 
 .myButton {
-    background-color: #21a7d4;
+    background-color: #25A800;
     -moz-border-radius: 28px;
     -webkit-border-radius: 28px;
     border-radius: 5px;
-    border: 1px solid #21a7d4;
+    border: 1px solid;
     display: inline-block;
     cursor: pointer;
     color: #ffffff;
@@ -31,7 +31,7 @@ p, ul, ol, dl, h1, h2, h3, h4, h5, h6, blockquote, pre, form.aui, table.mbk {
     outline: none;
 }
 .myButton:hover {
-    background-color:#21B3E4;
+    background-color:#6DCF00;
 }
 .myButton:active {
     position:relative;

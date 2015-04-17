@@ -9,6 +9,13 @@
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	{/literal}
 </head>
+<style type="text/css">
+	body {
+	    background-image: url("../img/bg_login.png");
+	    background-repeat: no-repeat;
+	    padding-top: 180px;
+	}
+</style>
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#login-btn').click(function() {
@@ -33,9 +40,9 @@ $(document).ready(function() {
 });
 </script>
 <body>
-<div style="text-align: center; margin-top: 40px;">
+<!-- <div style="text-align: center; margin-top: 40px;">
 	<img src="../img/backoffice/spa-logo.png">
-</div>
+</div> -->
 <div class="login-content container">
 	<h1>Account Login</h1>
 	<form id="form-login" name="form-login" onsubmit="return false;">
@@ -55,6 +62,6 @@ $(document).ready(function() {
 	<button id="login-btn" class="myButton">Login</button>
 </form>
 </div>
-<div class="loginPage-footer"></div>
+<!-- <div class="loginPage-footer"></div> -->
 </body>
 </html>
