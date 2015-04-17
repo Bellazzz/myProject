@@ -676,12 +676,18 @@ function addServiceListOfPackage(data) {
         var no        = parseInt(i) + 1;
         var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
         var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var time      = pkgsvlData[data.pkg_id][i].time;
         var addPkgComBtnRandNum;
         do {
             addPkgComBtnRandNum     = parseInt(Math.random()*1000);
         } while($('#addPkgComBtn_' + addPkgComBtnRandNum).length > 0);
+        var inputTimeId = 'sersvt_time_' + data.pkg_id + '_' + svl_id;
         var pkgsvlHTML= '<div class="pkgsvl-list">'
-                      + '   ' + no + '. ' + svl_name
+                      + '   <div class="name-cont">' + no + '. ' + svl_name + '</div>'
+                      + '   <div class="time-cont">'
+                      + '       ใช้บริการเวลา <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input" value="' + time + '" require>'
+                      + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>'
+                      + '   </div>' 
                       + '   <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
                       + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
                       + '   <div class="pkgsvlCom-list-container-body"></div>'
@@ -694,6 +700,16 @@ function addServiceListOfPackage(data) {
                       + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                       + '</div>';
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
+
+        // create time picker
+        $('#sersvt_time_' + data.pkg_id + '_' + svl_id).datetimepicker({
+            datepicker:false,
+            format:'H:i',
+            step: 5,
+            minTime:'06:00',
+            maxTime: '21:00'
+        });
+        $('#' + inputTimeId).focusout(validateInput);
 
         if(addPkgCom) {
             addPkgCommission({

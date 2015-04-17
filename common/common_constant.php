@@ -792,6 +792,22 @@ function dbClose() {
 			);
 			break;
 
+		case 'service_service_list_times':
+			 return array(
+				'tableNameTH'	=> 'รายละเอียดเวลาที่ใช้บริการรายการบริการ',
+				'keyFieldName'  => 'sersvt_id',
+				'keyFieldType'	=> 2, 
+				'keyChar'		=> 'ST',
+				'keyLength'		=> 15,
+				'fieldNameList'	=> array(
+						'sersvt_id'	  		  	=> 'รหัสรายละเอียดเวลาที่ใช้บริการรายการบริการ',
+						'serpkg_id'	          	=> 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
+						'pkgsvl_id' 			=> 'รหัสรายการบริการที่จัดแพ็คเกจ',
+						'sersvt_time' 			=> 'เวลาที่ใช้บริการ'
+				)
+			);
+			break;
+
 		case 'package_details':
 			 return array(
 				'tableNameTH'	=> 'รายละเอียดแพ็คเกจ',
@@ -801,12 +817,10 @@ function dbClose() {
 				'keyLength'		=> 15,
 				'fieldNameList'	=> array(
 						'pkgdtl_id'	  		  => 'รหัสรายละเอียดแพ็คเกจ',
-						'serpkg_id'	  		  => 'รหัสรายละเอียดการใช้บริการแพ็คเกจ',
-						'pkgsvl_id'	          => 'รหัสรายการบริการที่จัดแพ็คเกจ',
+						'sersvt_id'	  		  => 'รหัสรายละเอียดเวลาที่ใช้บริการรายการบริการ',
 						'emp_id' 			  => 'ชื่อ-สกุลพนักงาน',
 						'pkgdtl_com'		  => 'ค่าคอมมิชชั่น(บาท)'
-				),
-				'searchFields'	=> array('pkgdtl_id','pkgsvl_id')
+				)
 			);
 			break;
 

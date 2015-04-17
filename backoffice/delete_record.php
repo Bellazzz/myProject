@@ -269,18 +269,39 @@ if($tableName == 'packages') {
 			}
 		}
 		
-		// Delete package_details
+		
 		if(is_array($serpkgIdList) && count($serpkgIdList) > 0) {
-			$sql 	= "DELETE FROM package_details WHERE serpkg_id IN (".implode(',', $serpkgIdList).")";
+			// Find service_service_list_times id
+			$sersvtIdList 	= array();
+			$sql 	= "SELECT sersvt_id FROM service_service_list_times WHERE serpkg_id IN (".implode(',', $serpkgIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				array_push($sersvtIdList, $record['sersvt_id']);
+			}
+			$sersvtIdList = wrapSingleQuote($sersvtIdList);
+
+			// Delete package_details
+			$sql 	= "DELETE FROM package_details WHERE sersvt_id IN (".implode(',', $sersvtIdList).")";
 			$result = mysql_query($sql, $dbConn);
 			if(!$result) {
 				$err = mysql_error($dbConn);
 				echo "DELETE_PACKAGE_DETAILS : $err";
 				exit();
 			}
+
+			// Delete service_service_list_times
+			$sql 	= "DELETE FROM service_service_list_times WHERE sersvt_id IN (".implode(',', $sersvtIdList).")";
+			$result = mysql_query($sql, $dbConn);
+			if(!$result) {
+				$err = mysql_error($dbConn);
+				echo "DELETE_SERVICE_SERVICE_LIST_TIMES : $err";
+				exit();
+			}
 		}
 
-		// Delete service_service_list_promotions
+		// Delete service_service_lists
 		$sql 	= "DELETE FROM service_service_lists WHERE ser_id = '$ser_id'";
 		$result = mysql_query($sql, $dbConn);
 		if(!$result) {

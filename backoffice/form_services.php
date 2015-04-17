@@ -529,7 +529,8 @@ if(!$_REQUEST['ajaxCall']) {
 
 			$pkgsvlValues = array(
 				'svl_id' 	=> $record['svl_id'],
-				'svl_name' 	=> $record['svl_name']
+				'svl_name' 	=> $record['svl_name'],
+				'time' 		=> ''
 			);
 			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
 		}
@@ -703,14 +704,25 @@ if(!$_REQUEST['ajaxCall']) {
 				// Insert package_detail (Commission)
 				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						// Insert service_service_list_times
+						$pkgsvl_id 	  = $pkgSvlIdList[$pkg_id][$svl_id];
+						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+						$sersvtValues = array($serpkg_id, $pkgsvl_id, $sersvt_time);
+						$sersvtRecord 		= new TableSpa('service_service_list_times', $sersvtValues);
+						if(!$sersvtRecord->insertSuccess()) {
+							$insertResult = false;
+							$errTxt .= 'INSERT_SERVICE_SERVICE_LIST_TIMES['.($key+1).']_FAIL\n';
+							$errTxt .= mysql_error($dbConn).'\n\n';
+						}
+						$sersvt_id = $sersvtRecord->getKey();
+
 						if(hasValue($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id']) && is_array($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'])) {
 							foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $empKey => $comEmp_id) {
 								$com_per 			= 20; // Percent
 								$initCom 			= $svlTotalPrices[$svl_id] * $com_per / 100;
 								$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$empKey];
-								$pkgsvl_id 			= $pkgSvlIdList[$pkg_id][$svl_id];
 								$pkgdtl_com 		= $initCom * $com_rate / 100;
-								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $comEmp_id, $pkgdtl_com);
+								$pkgdtlValues 		= array($sersvt_id, $comEmp_id, $pkgdtl_com);
 								$pkgdtlprmRecord 	= new TableSpa('package_details', $pkgdtlValues);
 								if(!$pkgdtlprmRecord->insertSuccess()) {
 									$insertResult = false;
