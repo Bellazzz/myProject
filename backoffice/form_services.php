@@ -95,8 +95,8 @@ if(!$_REQUEST['ajaxCall']) {
 							ss.sersvl_amount,
 							s.svl_price,
 							ss.sersvl_time tmpSersvl_time,
-							s.svl_hr,
-							s.svl_min 
+							IFNULL(s.svl_hr,0) svl_hr,
+							IFNULL(s.svl_min,0) svl_min 
 				FROM 		service_service_lists ss, service_lists s  
 				WHERE 		ss.svl_id = s.svl_id AND 
 							ser_id = '$code' 
@@ -164,29 +164,74 @@ if(!$_REQUEST['ajaxCall']) {
 			$smarty->assign('valuesSvlDtl', $valuesSvlDtl);
 		}
 
+		// Find commission rate for package service list
+		$pkgsvlForCmr 		= array();
+		$sql = "SELECT 		st.pkgsvl_id, 
+							SUBSTR(st.sersvt_time,1,5) sersvt_time,
+							st.sersvt_time tmpSersvt_time,
+							IFNULL(ps.pkgsvl_hr,0) pkgsvl_hr,
+							IFNULL(ps.pkgsvl_min,0) pkgsvl_min 
+				FROM 		service_service_list_times st, 
+							package_service_lists ps,
+							service_packages sp    
+				WHERE 		st.pkgsvl_id = ps.pkgsvl_id AND 
+							st.serpkg_id = sp.serpkg_id AND 
+							sp.ser_id = '$code'";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$allMin 			= $record['pkgsvl_hr'] * 60 + $record['pkgsvl_min'];
+			$startDate 			= strtotime($nowDate." ".$record['tmpSersvt_time']);
+			$endDate 			= $startDate+(60*$allMin);
+			$sersvt_time_end 	= date('H:i', $endDate);
+			$pkgsvlForCmr[$record['pkgsvl_id']] = getComRate($currentDay, $record['tmpSersvt_time'], $sersvt_time_end);
+		}
+
 		// Get table package_detail data
+		$pkgsvlData = getPkgSvlDataList();
+		$sersvtData = array();
 		$serpkgIdList = wrapSingleQuote($serpkgIdList);
 		if(is_array($serpkgIdList) && count($serpkgIdList) > 0) {
 			$valuesPkgDtl = array();
-			$sql = "SELECT 		pkgdtl_id,
-								pkgsvl_id, 
-								emp_id,
-								pkgdtl_com 
-					FROM 		package_details  
-					WHERE 		serpkg_id IN (".implode(',', $serpkgIdList).")";
+			$sql = "SELECT 		pd.pkgdtl_id,
+								st.pkgsvl_id, 
+								pd.emp_id,
+								pd.pkgdtl_com,
+								st.sersvt_id,
+								SUBSTR(st.sersvt_time,1,5) sersvt_time,
+								sp.serpkg_amount amount 
+					FROM 		package_details pd,
+								service_service_list_times st,
+								service_packages sp  
+					WHERE 		pd.sersvt_id = st.sersvt_id AND 
+								st.serpkg_id = sp.serpkg_id AND 
+								sp.serpkg_id IN (".implode(',', $serpkgIdList).")";
 			$result = mysql_query($sql, $dbConn);
 			$rows 	= mysql_num_rows($result);
 			for($i=0; $i<$rows; $i++) {
 				$record 		= mysql_fetch_assoc($result);
-				$com_per 		= 20;
-				$initPrice 		= $realPkgSvlTotalPriceList[$record['pkgsvl_id']] * $com_per / 100;
+				$pkgsvl_id 		= $record['pkgsvl_id'];
+				$pkg_id 		= $pkgsvlRef[$pkgsvl_id]['pkg_id'];
+				$svl_id 		= $pkgsvlRef[$pkgsvl_id]['svl_id'];
+				$com_per 		= $pkgsvlForCmr[$pkgsvl_id];
+				$initPrice 		= ($pkgsvlData[$pkg_id][$svl_id]['realPrice']*$record['amount']) * $com_per / 100;
 				$pkgdtl_com 	= $record['pkgdtl_com'];
 				$record['com_rate'] = $pkgdtl_com / $initPrice * 100;
-				$record['pkg_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['pkg_id'];
-				$record['svl_id'] 	= $pkgsvlRef[$record['pkgsvl_id']]['svl_id'];
+				$record['pkg_id'] 	= $pkg_id;
+				$record['svl_id'] 	= $svl_id;
 				array_push($valuesPkgDtl, $record);
+
+				// Get sersvl times
+				if(!isset($sersvtData[$pkg_id][$svl_id])) {
+					$sersvtData[$pkg_id][$svl_id] = array(
+						'sersvt_id' => $record['sersvt_id'],
+						'sersvt_time' => $record['sersvt_time']
+					);
+				}
 			}
 			$smarty->assign('valuesPkgDtl', $valuesPkgDtl);
+			$smarty->assign('sersvtData', $sersvtData);
 		}
 		
 
@@ -529,8 +574,7 @@ if(!$_REQUEST['ajaxCall']) {
 
 			$pkgsvlValues = array(
 				'svl_id' 	=> $record['svl_id'],
-				'svl_name' 	=> $record['svl_name'],
-				'time' 		=> ''
+				'svl_name' 	=> $record['svl_name']
 			);
 			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
 		}
@@ -929,6 +973,20 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
+		// Find commission percent of packages
+		$cmrPkg = array();
+		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
+			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
+					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+						$sersvt_time_end = $formData['sersvt_time_end'][$key];
+						$cmrPkg[$svl_id] = getComRate($currentDay, $sersvt_time, $sersvt_time_end);
+					}
+				}
+			}
+		}
+
 		// Update or Add service_packages
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
@@ -990,8 +1048,19 @@ if(!$_REQUEST['ajaxCall']) {
 				// Update or Add package_details
 				if(isset($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						// Update service_service_list_times
+						$sersvt_id = $formData['sersvt_id'][$key];
+						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+						$sersvtRecord = new TableSpa('service_service_list_times', $sersvt_id);
+						$sersvtRecord->setFieldValue('sersvt_time', $sersvt_time);
+						if(!$sersvtRecord->commit()) {
+							$updateResult = false;
+							$errTxt .= 'EDIT_SERVICE_SERVICE_LIST_TIMES['.($key+1).']_FAIL\n';
+							$errTxt .= mysql_error($dbConn).'\n\n';
+						}
+
 						foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
-							$com_per 			= 20; // Percent
+							$com_per 			= $cmrPkg[$svl_id]; // Percent
 							$realPkgSvlTotalPrice 	= $pkgsvlDataList[$pkg_id][$svl_id]['realPrice'] * $serpkg_amount;
 							$initCom 			= $realPkgSvlTotalPrice * $com_per / 100;
 							$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$comKey];
@@ -1009,8 +1078,8 @@ if(!$_REQUEST['ajaxCall']) {
 								}
 							} else {
 								// Add package_details
-								$pkgsvl_id 			= $pkgsvlDataList[$pkg_id][$svl_id]['pkgsvl_id'];
-								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $comEmp_id, $pkgdtl_com);
+								$pkgsvl_id = $pkgsvlDataList[$pkg_id][$svl_id]['pkgsvl_id'];
+								$pkgdtlValues 		= array($sersvt_id, $comEmp_id, $pkgdtl_com);
 								$pkgDtlRecord 		= new TableSpa('package_details', $pkgdtlValues);
 								if(!$pkgDtlRecord->insertSuccess()) {
 									$updateResult = false;
@@ -1240,7 +1309,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$errTxt .= mysql_error($dbConn).'\n\n';
 			}
 		}
-		
+
 		if($updateResult) {
 			$response['status'] = 'EDIT_PASS';
 			echo json_encode($response);

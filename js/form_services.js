@@ -560,7 +560,8 @@ function addPackage(data) {
                 addServiceListOfPackage({
                     pkg_id          : defaultKey,
                     parentRandNum   : randNum,
-                    addPkgCom       : false
+                    addPkgCom       : false,
+                    setTime: true
                 });
             }
             if(typeof(data.pullPkg) != 'undefined') {
@@ -676,7 +677,15 @@ function addServiceListOfPackage(data) {
         var no        = parseInt(i) + 1;
         var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
         var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
-        var time      = pkgsvlData[data.pkg_id][i].time;
+        var sersvt_id = '';
+        var time      = '';
+
+        // Set sersvl time
+        if(typeof(data.setTime) != 'undefined' && typeof(sersvtData[data.pkg_id][svl_id]) != 'undefined') {
+            sersvt_id = sersvtData[data.pkg_id][svl_id].sersvt_id;
+            time = sersvtData[data.pkg_id][svl_id].sersvt_time;
+        }
+
         var addPkgComBtnRandNum;
         do {
             addPkgComBtnRandNum     = parseInt(Math.random()*1000);
@@ -687,8 +696,13 @@ function addServiceListOfPackage(data) {
                       + '   <div class="time-cont">'
                       + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
                       + '       <input type="hidden" name="sersvt_time_end[]">'
-                      + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>'
-                      + '   </div>' 
+                      + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
+
+        if(sersvt_id != '') {
+            pkgsvlHTML += '<input type="hidden" name="sersvt_id[]" value="' + sersvt_id + '">';
+        }
+
+            pkgsvlHTML+= '  </div>' 
                       + '   <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
                       + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
                       + '   <div class="pkgsvlCom-list-container-body"></div>'
