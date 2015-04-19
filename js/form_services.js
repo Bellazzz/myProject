@@ -1576,6 +1576,7 @@ function checkTimeOverlap(data) {
 
     // Show alert dialogBox
     if(timeOverlapList.length > 0) {
+        inputTime.addClass('required');
         var svlName = '';
         if(data.type == 'service_lists') {
             svlName = $('#' + data.inputKeyId).parent().parent().find('.selectReferenceJS-text').text();
@@ -1591,25 +1592,28 @@ function checkTimeOverlap(data) {
             msg += '<li>' + timeOverlapList[i] + '</li>';
         }
         msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว';
-        parent.showActionDialog({
-            title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
-            message: msg,
-            actionList: [
-                {
-                    id: 'ok',
-                    name: 'ตกลง',
-                    desc: 'ป้อนเวลาที่ใช้บริการใหม่',
-                    func:
-                    function() {
-                        parent.hideActionDialog();
-                        inputTime.val('');
-                        inputTimeEnd.val('');
-                        inputTime.focus();
+        if(parent.$('.action-dialog').length == 0) {
+            parent.showActionDialog({
+                title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: 'ป้อนเวลาที่ใช้บริการใหม่',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            inputTime.val('');
+                            inputTimeEnd.val('');
+                            inputTime.focus();
+                        }
                     }
-                }
-            ],
-            boxWidth: 650
-        });
+                ],
+                boxWidth: 650
+            });
+        }
+        
     }
 }
 

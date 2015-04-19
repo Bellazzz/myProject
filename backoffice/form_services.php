@@ -626,36 +626,8 @@ if(!$_REQUEST['ajaxCall']) {
 			}
 		}
 
-		// Get service_list price
-		$svlPrices = array();
-		$sql 		= "SELECT svl_id, svl_price FROM service_lists";
-		$result 	= mysql_query($sql, $dbConn);
-		$rows 		= mysql_num_rows($result);
-		if($rows > 0) {
-			for($i=0; $i<$rows; $i++) {
-				$record = mysql_fetch_assoc($result);
-				$svlPrices[$record['svl_id']] = $record['svl_price'];
-			}
-		}
-
-		// Get package_service_list
-		$pkgSvlIdList = array();
-		$sql = "SELECT 		ps.pkgsvl_id,
-							p.pkg_id, 
-							s.svl_id 
-				FROM 		packages p, 
-							package_service_lists ps,
-							service_lists s 
-				WHERE 		p.pkg_id = ps.pkg_id AND 
-							s.svl_id = ps.svl_id";
-		$result 	= mysql_query($sql, $dbConn);
-		$rows 		= mysql_num_rows($result);
-		if($rows > 0) {
-			for($i=0; $i<$rows; $i++) {
-				$record = mysql_fetch_assoc($result);
-				$pkgSvlIdList[$record['pkg_id']][$record['svl_id']] = $record['pkgsvl_id'];
-			}
-		}
+		// Get package_service_list data
+		$pkgsvlDataList = getPkgSvlDataList();
 
 		// Insert services
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
@@ -665,6 +637,20 @@ if(!$_REQUEST['ajaxCall']) {
 			$errTxt .= mysql_error($dbConn).'\n\n';
 		}
 		$ser_id = $tableRecord->getKey();
+
+		// Find commission percent of packages
+		$cmrPkg = array();
+		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
+			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
+					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+						$sersvt_time_end = $formData['sersvt_time_end'][$key];
+						$cmrPkg[$svl_id] = getComRate($currentDay, $sersvt_time, $sersvt_time_end);
+					}
+				}
+			}
+		}
 		
 		// Insert service packages
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
@@ -679,13 +665,6 @@ if(!$_REQUEST['ajaxCall']) {
 					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 				$serpkg_id = $serpkgRecord->getKey();
-
-				// Calculage svl total price
-				$svlTotalPrices = array();
-				foreach ($svlPrices as $svl_id => $price) {
-					$svlTotalPrices[$svl_id] = $price * $serpkg_amount;
-				}
-
 
 				// Insert service packages promotion (Sale)
 				if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
@@ -705,7 +684,7 @@ if(!$_REQUEST['ajaxCall']) {
 				if(hasValue($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
 						// Insert service_service_list_times
-						$pkgsvl_id 	  = $pkgSvlIdList[$pkg_id][$svl_id];
+						$pkgsvl_id 	  = $pkgsvlDataList[$pkg_id][$svl_id]['pkgsvl_id'];
 						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
 						$sersvtValues = array($serpkg_id, $pkgsvl_id, $sersvt_time);
 						$sersvtRecord 		= new TableSpa('service_service_list_times', $sersvtValues);
@@ -718,8 +697,8 @@ if(!$_REQUEST['ajaxCall']) {
 
 						if(hasValue($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id']) && is_array($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'])) {
 							foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $empKey => $comEmp_id) {
-								$com_per 			= 20; // Percent
-								$initCom 			= $svlTotalPrices[$svl_id] * $com_per / 100;
+								$com_per 			= $cmrPkg[$svl_id]; // Percent
+								$initCom 			= ($pkgsvlDataList[$pkg_id][$svl_id]['realPrice'] * $serpkg_amount) * $com_per / 100;
 								$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$empKey];
 								$pkgdtl_com 		= $initCom * $com_rate / 100;
 								$pkgdtlValues 		= array($sersvt_id, $comEmp_id, $pkgdtl_com);
@@ -840,22 +819,7 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 
 		// Get pkgsvl_id and real_pkgsvl_total_price list
-		$realPkgSvlTotalPriceList = array();
-		$pkgsvlIdList = array();
-		$sql = "SELECT 		p.pkg_id,
-							ps.pkgsvl_id, 
-							s.svl_id,
-							s.svl_price 
-				FROM 		packages p, package_service_lists ps, service_lists s  
-				WHERE 		p.pkg_id = ps.pkg_id AND 
-							ps.svl_id = s.svl_id";
-		$result = mysql_query($sql, $dbConn);
-		$rows 	= mysql_num_rows($result);
-		for($i=0; $i<$rows; $i++) {
-			$record = mysql_fetch_assoc($result);
-			$realPkgSvlTotalPriceList[$record['pkg_id']][$record['svl_id']] = $record['svl_price'];
-			$pkgsvlIdList[$record['pkg_id']][$record['svl_id']] = $record['pkgsvl_id'];
-		}
+		$pkgsvlDataList = getPkgSvlDataList();
 
 		// Update Services
 		if(!$tableRecord->commit()) {
@@ -907,8 +871,10 @@ if(!$_REQUEST['ajaxCall']) {
 		// Find old package_details
 		$sql = "SELECT 		pd.pkgdtl_id 
 				FROM 		package_details pd,
+							service_service_list_times st,
 							service_packages sp 
-				WHERE 		pd.serpkg_id = sp.serpkg_id AND 
+				WHERE 		st.serpkg_id = sp.serpkg_id AND 
+							st.sersvt_id = pd.sersvt_id AND 
 							sp.ser_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
@@ -1026,7 +992,7 @@ if(!$_REQUEST['ajaxCall']) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
 						foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
 							$com_per 			= 20; // Percent
-							$realPkgSvlTotalPrice 	= $realPkgSvlTotalPriceList[$pkg_id][$svl_id] * $serpkg_amount;
+							$realPkgSvlTotalPrice 	= $pkgsvlDataList[$pkg_id][$svl_id]['realPrice'] * $serpkg_amount;
 							$initCom 			= $realPkgSvlTotalPrice * $com_per / 100;
 							$com_rate 			= $formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_com_rate'][$comKey];
 							$pkgdtl_com 		= $initCom * $com_rate / 100;
@@ -1043,7 +1009,7 @@ if(!$_REQUEST['ajaxCall']) {
 								}
 							} else {
 								// Add package_details
-								$pkgsvl_id 			= $pkgsvlIdList[$pkg_id][$svl_id];
+								$pkgsvl_id 			= $pkgsvlDataList[$pkg_id][$svl_id]['pkgsvl_id'];
 								$pkgdtlValues 		= array($serpkg_id, $pkgsvl_id, $comEmp_id, $pkgdtl_com);
 								$pkgDtlRecord 		= new TableSpa('package_details', $pkgdtlValues);
 								if(!$pkgDtlRecord->insertSuccess()) {
@@ -1233,7 +1199,6 @@ if(!$_REQUEST['ajaxCall']) {
 					foreach ($formData['svlCom_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {
 						$com_per 			= $cmrSvl[$svl_id]; // Percent
 						if($com_per > 0) {
-							$errTxt .= "com_per = $com_per";
 							$realSvlTotalPrice 	= getRealSerSvlTotalPrice($code, $svl_id);
 							$initCom 			= $realSvlTotalPrice * $com_per / 100;
 							$com_rate 			= $formData['svlCom_'.$svl_id.'_com_rate'][$comKey];
@@ -1275,7 +1240,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$errTxt .= mysql_error($dbConn).'\n\n';
 			}
 		}
-		$updateResult = false;
+		
 		if($updateResult) {
 			$response['status'] = 'EDIT_PASS';
 			echo json_encode($response);
@@ -1314,7 +1279,6 @@ function getRealSerSvlTotalPrice($ser_id, $svl_id) {
 
 function getComRate($day, $timeStart, $timeEnd) {
 	global $dbConn;
-	global $errTxt;$errTxt .= "day = $day, timeStart = $timeStart, timeEnd = $timeEnd";
 	$countStart = substr_count($timeStart, ':');
 	$countEnd = substr_count($timeEnd, ':');
 	if($countStart <2) $timeStart .= ':00';
@@ -1380,6 +1344,63 @@ function getCurrentDay($date) {
 	}
 
 	return $currentDay;
+}
+
+function getPkgSvlDataList() {
+	global $dbConn, $nowDate;
+	$pkgsvlData = array();
+	$sql = "SELECT 		p.pkg_id,
+						ps.svl_id,
+						ps.pkgsvl_id,
+						ps.pkgsvl_price 
+			FROM 		packages p,
+						package_service_lists ps 
+			WHERE 		p.pkg_id = ps.pkg_id AND 
+						p.pkg_start <= '$nowDate' AND 
+						(
+							p.pkg_stop IS NULL OR 
+							p.pkg_stop >= '$nowDate'
+						)";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$pkgsvlData[$record['pkg_id']][$record['svl_id']] = array(
+			'pkgsvl_id' => $record['pkgsvl_id'],
+			'price' => $record['pkgsvl_price'],
+			'realPrice' => $record['pkgsvl_price']
+		);
+	}
+
+	// Find pkgsvl real price for discout percent
+	$sql = "SELECT 		pkg_id,
+						pkgprmdtl_discout,
+						pkgprmdtl_discout_type 
+			FROM 		package_promotion_details 
+			WHERE 		pkgprmdtl_startdate <= '$nowDate' AND 
+						(
+							pkgprmdtl_enddate IS NULL OR 
+							pkgprmdtl_enddate >= '$nowDate'
+						)";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		if(isset($pkgsvlData[$record['pkg_id']])) {
+			$pkgsvlData[$record['pkg_id']]['discout_type'] = $record['pkgprmdtl_discout_type'];
+			$pkgsvlData[$record['pkg_id']]['discout'] = $record['pkgprmdtl_discout'];
+			foreach ($pkgsvlData[$record['pkg_id']] as $key => $value) {
+				if(is_array($value) && isset($value['realPrice']) && $value['realPrice'] > 0) {
+					if($record['pkgprmdtl_discout_type'] == '%') {
+						$realPrice = $value['price'] - ($value['realPrice'] * $record['pkgprmdtl_discout'] / 100);
+						$pkgsvlData[$record['pkg_id']][$key]['realPrice'] = $realPrice;
+					}
+				}
+			}
+		}
+	}
+
+	return $pkgsvlData;
 }
 
 ?>
