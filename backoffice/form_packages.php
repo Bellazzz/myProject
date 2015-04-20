@@ -94,6 +94,10 @@ if(!$_REQUEST['ajaxCall']) {
 												svl_hr,
 												svl_min 
 									FROM 		service_lists 
+									WHERE 		(
+													svl_stop IS NULL OR 
+													svl_stop >= '$nowDate'
+												) 
 									ORDER BY 	svl_name ASC";
 					$refField 	= 'svl_id';
 					break;

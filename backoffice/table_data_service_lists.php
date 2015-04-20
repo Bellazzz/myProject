@@ -30,8 +30,7 @@ $sql = "SELECT s.svl_picture,
 		s.svl_desc,
 		s.svl_hr,
 		s.svl_min,
-		s.svl_price,
-		s.svl_commission
+		s.svl_price 
 		FROM service_lists s, service_list_types t 
 		$where 
 		$order";

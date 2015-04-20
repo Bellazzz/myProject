@@ -72,11 +72,15 @@ if(!$_REQUEST['ajaxCall']) {
 												svl_price,
 												svl_hr,
 												svl_min,
-												svl_commission,
 												svl_desc,
 												svl_picture,
 												svltyp_id  
 									FROM 		service_lists 
+									WHERE 		(
+													svl_stop IS NULL OR 
+													svl_stop >= '$nowDate'
+												) AND 
+												svl_type = 1 
 									ORDER BY 	refText ASC";
 					$refField 	= 'svl_id';
 					break;

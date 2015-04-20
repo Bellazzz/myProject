@@ -393,6 +393,12 @@ if(!$_REQUEST['ajaxCall']) {
 												svl_price,
 												IFNULL(svl_hr,0) * 60 + IFNULL(svl_min,0) svl_min 
 									FROM 		service_lists 
+									WHERE 		svl_start <= '$nowDate' AND 
+												(
+													svl_stop IS NULL OR 
+													svl_stop >= '$nowDate'
+												) AND 
+												svl_type = 1 
 									ORDER BY 	svl_name ASC";
 					$refField 	= 'svl_id';
 					break;
@@ -402,8 +408,13 @@ if(!$_REQUEST['ajaxCall']) {
 												pkg_name refText,
 												pkg_start,
 												pkg_stop,
-												pkg_price
+												pkg_price 
 									FROM 		packages p 
+									WHERE 		pkg_start <= '$nowDate' AND 
+												(
+													pkg_stop IS NULL OR 
+													pkg_stop >= '$nowDate'
+												) 
 									ORDER BY 	refText ASC";
 					$refField 	= 'pkg_id';
 					break;
