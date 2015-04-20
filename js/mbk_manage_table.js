@@ -558,7 +558,7 @@ function cancelSelectRecord() {
 function refreshFilterQuery() {
     var filterRecordQueryHTML = '';
     var allowFilterRetroact   = ['orders','receives','time_attendances','element_checks','payrolls','booking','services','withdraws','sales'];
-    var allowFilterExpired = ['packages','service_list_promotions','service_list_promotion_details',
+    var allowFilterExpired = ['packages','service_lists','service_list_promotions','service_list_promotion_details',
                                 'package_promotions','package_promotion_details','product_promotions',
                                 'promotion_products','promotion_discout_sales'];
 

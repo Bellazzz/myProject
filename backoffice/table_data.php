@@ -47,6 +47,9 @@ if(hasValue($_REQUEST['filterExpired'])) {
 	if($tableName == 'packages') {
 		$fieldStartDate = 'pkg_start';
 		$fieldEndDate = 'pkg_stop';
+	} else if($tableName == 'service_lists') {
+		$fieldStartDate = 'svl_start';
+		$fieldEndDate = 'svl_stop';
 	} else if($tableName == 'service_list_promotions') {
 		$fieldStartDate = 'p.svlprm_startdate';
 		$fieldEndDate = 'p.svlprm_enddate';
@@ -208,6 +211,8 @@ switch ($tableName) {
 				$like		= str_replace('svl_min', "IFNULL(s.svl_hr,0) * 60 + IFNULL(s.svl_min,0)", $like);
 				$where .= " AND $like";
 				//$where	   .= ' AND '.$like;
+			} else {
+				$where .= " AND $filterExpiredCond ";
 			}
 			$sql = "SELECT s.svl_picture,
 					s.svl_id,
