@@ -437,12 +437,14 @@ function dbClose() {
 						'svl_hr'			=> 'เวลาที่ใช้(ชั่วโมง)',
 						'svl_name'			=> 'รายการบริการ',
 						'svl_price'			=> 'ราคา(บาท)',
-						'svl_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
 						'svl_desc'			=> 'คำอธิบาย',
-						'svl_picture'		=> 'รูปภาพ'	
+						'svl_picture'		=> 'รูปภาพ',
+						'svl_start'			=> 'วันที่เริ่มใช้',
+						'svl_stop' 			=> 'วันที่สิ้นสุด',
+						'svl_type' 			=> 'รูปแบบ'
 				),
-				'hiddenFields'	=> array('svl_desc','svl_picture','svl_commission','svl_hr'),
-				'defaultNull' 	=> array('svl_min','svl_hr','svl_desc','svl_picture'),
+				'hiddenFields'	=> array('svl_desc','svl_picture','svl_hr','svl_start','svl_stop','svl_type'),
+				'defaultNull' 	=> array('svl_min','svl_hr','svl_desc','svl_picture','svl_stop'),
 				'searchFields'	=> array('svl_name','svl_min','svl_price'),
 				'deleteTxtField' 	=> array('svl_name'),
 				'referenceData'		=> array('service_list_types')

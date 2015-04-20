@@ -6,8 +6,11 @@
     {literal}
 	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<link rel="stylesheet" type="text/css" href="../inc/datetimepicker/jquery.datetimepicker.css">
 	<link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> 
     <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
+	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
 	<script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> 
     <script type="text/javascript" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" src="../js/mbk_main.js"></script>
@@ -21,8 +24,6 @@
         var ajaxUrl     = 'form_service_lists.php';
 
 		$(document).ready(function() {
-			$("#emp_birthdate").datepicker();
-
             selectReferenceJS({
                 elem            : $('#svltyp_id'),
                 data            : {/literal}{$referenceData["service_list_types"]|@json_encode}{literal},
@@ -38,7 +39,156 @@
 
 			// Set default value of textarea
 			$('#svl_desc').text('{/literal}{$values.svl_desc}{literal}');
+
+			$('#svl_start').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#svl_start').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                    	this.setOptions({
+	                        minDate: realDateToTmpDate('{/literal}{$nowDate}{literal}'),
+	                        maxDate:$('#svl_stop').val()?unconvertThaiDate($('#svl_stop').val()):false
+	                    });
+                    } else if(action == 'EDIT') {
+                    	this.setOptions({
+	                        maxDate:$('#svl_stop').val()?unconvertThaiDate($('#svl_stop').val()):false
+	                    });
+                    }
+                },
+                timepicker:false
+            });
+
+            $('#svl_stop').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#svl_stop').blur();
+                },
+                onShow:function( ct ){
+                    if(action == 'ADD') {
+                    	this.setOptions({
+	                        minDate:$('#svl_start').val()?unconvertThaiDate($('#svl_start').val()):realDateToTmpDate('{/literal}{$nowDate}{literal}')
+	                    });
+                    } else if(action="EDIT") {
+                    	this.setOptions({
+	                        minDate:$('#svl_start').val()?unconvertThaiDate($('#svl_start').val()):false
+	                    });
+                    }
+                },
+                timepicker:false
+            });
+
+			// Check date
+            $('#svl_start').change(function(){
+                checkDate($(this), $('#svl_stop'));
+            });
+            $('#svl_stop').change(function() {
+                checkDate($(this), $('#svl_start'));
+            });
+
+            // Set default radio input
+            if(action == 'EDIT') {
+                $('input[name="svl_type"][value="{/literal}{$values.svl_type}{literal}"]').click();
+            }
 		});
+
+		function checkDate(self, sibling) {
+	        // Skip check
+	        if(self.val() == '' || isDateThaiFormat(self.val())) {
+	            return;
+	        }
+
+	        var selfDate        = new Date(self.val());
+	        var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+	        var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+	        var selfId          = self.attr('id');
+
+	        // Check sibling
+	        if(sibling.val() != '') {
+	            if(selfId == 'svl_start') {
+	                if(selfDate.getTime() > siblingDate.getTime()) {
+	                    showAlertInvalidDate(self, 'overSibling');
+	                    return;
+	                }
+	            } else if(selfId == 'svl_stop') {
+	                if(selfDate.getTime() < siblingDate.getTime()) {
+	                    showAlertInvalidDate(self, 'overSibling');
+	                    return;
+	                }
+	            }
+	        }
+
+	        if(action == 'ADD') {
+	        	// Check now date
+	            if(selfId == 'svl_start') {
+	                if(selfDate.getTime() < nowDate.getTime()) {
+	                    showAlertInvalidDate(self, 'lessThanNow')
+	                }
+	            } else if(selfId == 'svl_stop') {
+	                if(selfDate.getTime() < nowDate.getTime()) {
+	                    showAlertInvalidDate(self, 'lessThanNow')
+	                }
+	            }
+	        }
+	    }
+	    function showAlertInvalidDate(self, errType) {
+	        var titleTxt    = '';
+	        var messageTxt  = '';
+	        var descTxt     = '';
+	        var selfId      = self.attr('id');
+
+	        if(selfId == 'svl_start') {
+	            titleTxt    = 'วันที่เริ่มใช้ไม่ถูกต้อง';
+	            descTxt     = 'ป้อนวันที่เริ่มใช้ใหม่';
+	            if(errType == 'overSibling') {
+	                messageTxt  = 'วันที่เริ่มใช้ไม่สามารถอยู่หลังวันที่สิ้นสุดได้ค่ะ';
+	            } else if(errType == 'lessThanNow') {
+	                messageTxt  = 'ไม่สามารถป้อนวันที่เริ่มใช้ย้อนหลังได้ค่ะ';
+	            }
+	        } else if(selfId == 'svl_stop') {
+	            titleTxt    = 'วันที่สิ้นสุดไม่ถูกต้อง';
+	            descTxt     = 'ป้อนวันที่สิ้นสุดใหม่';
+	            if(errType == 'overSibling') {
+	                messageTxt  = 'วันที่สิ้นสุดไม่สามารถอยู่ก่อนหน้าวันที่เริ่มใช้ได้ค่ะ';
+	            } else if(errType == 'lessThanNow') {
+	                messageTxt  = 'ไม่สามารถป้อนวันที่สิ้นสุดย้อนหลังได้ค่ะ';
+	            }
+	        }
+
+	        if(parent.$('.action-dialog-container').length <= 0) {
+	            parent.showActionDialog({
+	                title: titleTxt,
+	                message: messageTxt,
+	                actionList: [
+	                    {
+	                        id: 'ok',
+	                        name: 'ตกลง',
+	                        desc: descTxt,
+	                        func:
+	                        function() {
+	                            parent.hideActionDialog();
+	                            self.val('');
+	                            self.focus();
+	                        }
+	                    }
+	                ],
+	                boxWidth: 400
+	            });
+	        }
+	    }
     </script>
     {/literal}
 </head>
@@ -67,35 +217,52 @@
 				<td><div id="svltyp_id" class="selectReferenceJS text"></div></td>
 			</tr>
 			<tr>
-				<td>เวลาที่ใช้ :</td>
-				<td>
-					{if $values.svl_hr || $values.svl_min}
-                        {if $values.svl_hr}{$values.svl_hr} ชั่วโมง {/if}
-                        {if $values.svl_min}{$values.svl_min} นาที{/if}
+                <td>เวลาที่ใช้ :</td>
+                <td>
+                    {if $values.svl_hr || $values.svl_min}
+                    	{if $values.svl_hr == 0 && $values.svl_min == 0}
+                    		-
+                    	{else}
+	                        {if $values.svl_hr && $values.svl_hr > 0}{$values.svl_hr} ชั่วโมง {/if}
+	                        {if $values.svl_min && $values.svl_min > 0}{$values.svl_min} นาที{/if}
+                        {/if}
                     {else}
                         -
                     {/if}
-				</td>
-			</tr>
+                </td>
+            </tr>
 			<tr>
 				<td>ราคา :</td>
 				<td>{$values.svl_price|number_format:2:".":","} บาท</td>
 			</tr>
 			<tr>
-				<td>ค่าคอมมิชชั่น :</td>
-				<td>{$values.svl_commission|number_format:2:".":","} บาท</td>
-			</tr>
-			<tr>
 				<td>คำอธิบาย :</td>
 				<td>{if $values.svl_desc}{$values.svl_desc}{else}-{/if}</td>
+			</tr>
+			<tr>
+				<td>วันที่เริ่มใช้ :</td>
+				<td>{$values.svl_start}</td>
+			</tr>
+			<tr>
+				<td>วันที่สิ้นสุด :</td>
+				<td>{$values.svl_stop}</td>
+			</tr>
+			<tr>
+				<td>รูปแบบรายการบริการ :</td>
+				<td>
+					{if $values.svl_type == 1}
+						รายการบริการเดี่ยว
+					{elseif $values.svl_type == 2}
+						รายการบริการสำหรับแพ็คเกจ
+					{/if}
+				</td>
 			</tr>
 		</tbody>
 	</table>
 	{else}	 	
 	<!-- ADD, EDIT -->		 	 	 	
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="svltyp_id,svl_name,svl_price,svl_commission">
-	<input type="hidden" name="uniqueFields" value="svl_name">
+	<input type="hidden" name="requiredFields" value="svltyp_id,svl_name,svl_price,svl_start,svl_type">
 	<table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 		<tbody>
 			<tr>
@@ -108,7 +275,6 @@
                 <td colspan="2">
                     <span id="err-svl_name-require" class="errInputMsg err-svl_name">โปรดป้อนชื่อรายการบริการ</span>
                     <span id="err-svl_name-character" class="errInputMsg err-svl_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
-                    <span id="err-svl_name-unique" class="errInputMsg err-svl_name">ชื่อรายการบริการซ้ำ โปรดป้อนชื่อรายการบริการใหม่</span>
                 </td>
             </tr>
 			<tr>
@@ -141,23 +307,15 @@
                 </td>
             </tr>
 			<tr>
-				<td>
+				<td colspan="2">
 					<label class="input-required">ราคา</label>
-					<input id="svl_price" name="svl_price" type="text" class="form-input half" value="{$values.svl_price}" valuepattern="money" require style="text-align:right;">
-				</td>
-				<td>
-					<label class="input-required">ค่าคอมมิชชั่น</label>
-					<input id="svl_commission" name="svl_commission" type="text" class="form-input half" value="{$values.svl_commission}"  valuepattern="money" require style="text-align:right;">
+					<input id="svl_price" name="svl_price" type="text" class="form-input full" value="{$values.svl_price}" valuepattern="money" require style="text-align:right;">
 				</td>
 			</tr>
 			<tr class="errMsgRow">
-                <td>
-                    <span id="err-svl_price-require" class="errInputMsg half err-svl_price">โปรดป้อนราคา</span>
-                    <span id="err-svl_price-money" class="errInputMsg half err-svl_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
-                </td>
-                <td>
-                    <span id="err-svl_commission-require" class="errInputMsg half err-svl_commission">โปรดป้อนค่าคอมมิชชั่น</span>
-                    <span id="err-svl_commission-money" class="errInputMsg half err-svl_commission">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
+                <td colspan="2">
+                    <span id="err-svl_price-require" class="errInputMsg full err-svl_price">โปรดป้อนราคา</span>
+                    <span id="err-svl_price-money" class="errInputMsg full err-svl_price">รูปแบบจำนวนเงินไม่ถูกต้อง จำนวนเงินเป็นได้เฉพาะตัวเลข ไม่มีคอมม่าคั่น จุดทศนิยม 2 ตำแหน่ง เช่น 130, 1600.25</span>
                 </td>
             </tr>
 			<tr>
@@ -166,6 +324,29 @@
 					<textarea id="svl_desc" name="svl_desc" class="form-input full" value="{$values.svl_desc}" rows="6"></textarea>
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<label class="input-required">วันที่เริ่มใช้</label>
+                	<input id="svl_start" name="svl_start" type="text" class="mbk-dtp-th form-input half" value="{if $values.svl_start}{$values.svl_start}{else}{$nowDate}{/if}" require>
+                </td>
+                <td>
+					<label>วันที่สิ้นสุด</label>
+                	<input id="svl_stop" name="svl_stop" type="text" class="mbk-dtp-th form-input half" value="{$values.svl_stop}">
+                </td>
+			</tr>
+			<tr>
+				<td>
+					<span id="err-svl_start-require" class="errInputMsg err-svl_start">โปรดป้อนวันที่เริ่มใช้</span>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="showForSale">
+                <td colspan="2">
+                    <label class="input-required">รูปแบบรายการบริการ</label>
+                    <label style="display:inline-block;"><input type="radio" name="svl_type" value="1" class="discout_type_radio" checked> รายการบริการเดี่ยว</label><br>
+                    <label style="display:inline-block;"><input type="radio" name="svl_type" value="2" class="discout_type_radio"> รายการบริการสำหรับแพ็คเกจ</label><br><br>
+                </td>
+            </tr>
 			<tr>
 				<td colspan=2>
 					<label>รูปภาพรายการบริการ</label>
