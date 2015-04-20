@@ -567,7 +567,8 @@ if(!$_REQUEST['ajaxCall']) {
 	$pkgsvlData = array();
 	$sql = "SELECT 		pkg.pkg_id,
 						s.svl_id,
-						s.svl_name 
+						s.svl_name,
+						pkgsvl.pkgsvl_price 
 			FROM 		packages pkg,
 						package_service_lists pkgsvl,
 						service_lists s  
@@ -585,7 +586,8 @@ if(!$_REQUEST['ajaxCall']) {
 
 			$pkgsvlValues = array(
 				'svl_id' 	=> $record['svl_id'],
-				'svl_name' 	=> $record['svl_name']
+				'svl_name' 	=> $record['svl_name'],
+				'pkgsvl_price' => $record['pkgsvl_price']
 			);
 			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
 		}

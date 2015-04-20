@@ -677,6 +677,7 @@ function addServiceListOfPackage(data) {
         var no        = parseInt(i) + 1;
         var svl_id    = pkgsvlData[data.pkg_id][i].svl_id;
         var svl_name  = pkgsvlData[data.pkg_id][i].svl_name;
+        var price = pkgsvlData[data.pkg_id][i].pkgsvl_price;
         var sersvt_id = '';
         var time      = '';
 
@@ -691,29 +692,37 @@ function addServiceListOfPackage(data) {
             addPkgComBtnRandNum     = parseInt(Math.random()*1000);
         } while($('#addPkgComBtn_' + addPkgComBtnRandNum).length > 0);
         var inputTimeId = 'sersvt_time_' + data.pkg_id + '_' + svl_id;
-        var pkgsvlHTML= '<div class="pkgsvl-list">'
-                      + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
-                      + '   <div class="time-cont">'
-                      + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
-                      + '       <input type="hidden" name="sersvt_time_end[]">'
-                      + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
 
-        if(sersvt_id != '') {
-            pkgsvlHTML += '<input type="hidden" name="sersvt_id[]" value="' + sersvt_id + '">';
+        if(price > 0) {
+            var pkgsvlHTML= '<div class="pkgsvl-list">'
+                          + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
+                          + '   <div class="time-cont">'
+                          + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
+                          + '       <input type="hidden" name="sersvt_time_end[]">'
+                          + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
+
+            if(sersvt_id != '') {
+                pkgsvlHTML += '<input type="hidden" name="sersvt_id[]" value="' + sersvt_id + '">';
+            }
+
+                pkgsvlHTML+= '  </div>' 
+                          + '   <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
+                          + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
+                          + '   <div class="pkgsvlCom-list-container-body"></div>'
+                          + '</div>'
+                          + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
+                          + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
+                          + '<span class="errInputMsg com-err-zero com-err">ค่าคอมมิชชั่นไม่สามารถเป็น 0 ได้</span>'
+                          + '<span class="errInputMsg com-err-over com-err">ค่าคอมมิชชั่นเกิน 100%</span>'
+                          + '<span class="errInputMsg com-err-less com-err">ค่าคอมมิชชั่นไม่ครบ 100%</span>'
+                          + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
+                          + '</div>';
+        } else {
+            var pkgsvlHTML= '<div class="pkgsvl-list">'
+                          + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
+                          + '  </div>';
         }
-
-            pkgsvlHTML+= '  </div>' 
-                      + '   <input type="hidden" class="svl_id" name="pkgCom_'+ data.pkg_id + '_svl_id[]" value="' + svl_id + '">'
-                      + '   <div id="pkgsvl-list-com-container_' + data.pkg_id + '_' + svl_id + '" class="pkgsvlCom-list-container">'
-                      + '   <div class="pkgsvlCom-list-container-body"></div>'
-                      + '</div>'
-                      + '<span class="errInputMsg com-err-empty com-err">กรุณาป้อนค่าคอมมิชชั่น</span>'
-                      + '<span class="errInputMsg com-err-notNum com-err">กรุณาป้อนค่าคอมมิชชั่นเป็นตัวเลข</span>'
-                      + '<span class="errInputMsg com-err-zero com-err">ค่าคอมมิชชั่นไม่สามารถเป็น 0 ได้</span>'
-                      + '<span class="errInputMsg com-err-over com-err">ค่าคอมมิชชั่นเกิน 100%</span>'
-                      + '<span class="errInputMsg com-err-less com-err">ค่าคอมมิชชั่นไม่ครบ 100%</span>'
-                      + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
-                      + '</div>';
+        
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
 
         // create time picker
