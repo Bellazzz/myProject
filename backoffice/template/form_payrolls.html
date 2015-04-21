@@ -18,6 +18,7 @@
         padding: 10px;
         border: 1px solid #ccc;
         width: 520px;
+        display: none;
     }
     .payrollDetail table {
         border-collapse: collapse;
@@ -43,6 +44,18 @@
         padding-right: 20px;
         text-align: right;
     }
+    .pullEmpId-loader {
+        height: 31px; 
+        position: absolute; 
+        margin-left: 10px;
+        display: none;
+        right: -40px;
+        top: 21px;
+    }
+    .pullPayrollDtl-loader {
+        height: 31px; 
+        display: none;
+    }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -53,12 +66,21 @@
         var ajaxUrl     = 'form_table.php';
         var payroll_year  = {/literal}{$optionData["payroll_year"]|@json_encode}{literal};
         var payroll_month  = {/literal}{$optionData["payroll_month"]|@json_encode}{literal};
+        var oldPayroll_month_val = '';
+        var oldPayroll_month_text = '';
 
         $(document).ready(function () {
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.emp_id}{literal}'
+                defaultValue    : '{/literal}{$values.emp_id}{literal}',
+                onOptionSelect      : changeEmpId
+            });
+
+            selectReferenceJS({
+                elem            : $('#emp_give_id'),
+                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                defaultValue    : '{/literal}{if $values.emp_give_id}{$values.emp_give_id}{else}{$session_emp_id}{/if}{literal}'
             });
 
             $('#payroll_monthly').datetimepicker({
@@ -93,11 +115,139 @@
                 elem            : $('#payroll_month'),
                 data            : payroll_month,
                 defaultValue    : '{/literal}{if $values.payroll_month}{$values.payroll_month}{else}{$nowMonth}{/if}{literal}',
+                onOptionSelect      : changePayrollMonth,
                 searchTool      : false,
             });
             
 			
         });
+        
+        function setPayrollMonth() {
+            oldPayroll_month_val = parseInt($('input[name="payroll_month"]').val());
+            oldPayroll_month_text = $('#payroll_month').find('.selectReferenceJS-text').text();
+            var year = $('input[name="payroll_year"]').val();
+            var month = (oldPayroll_month_val < 10 ? "0"+oldPayroll_month_val : oldPayroll_month_val);
+            var payroll_monthly = year + '/' + month + '/01';
+            $('input[name="payroll_monthly"]').val(payroll_monthly);
+        }
+        
+        function changePayrollMonth() {
+            newPayrollMonth = $('input[name="payroll_month"]').val();
+            if($('input[name="emp_id"]').val() != '') {
+                var msg         = 'การเปลี่ยนเดือนจำเป็นต้องเคลียร์ข้อมูลพนักงานที่รับเงินเดือนใหม่ '
+                                + 'คุณแน่ใจหรือไม่ที่จะเปลี่ยนเดือน?';
+                parent.showActionDialog({
+                    title: 'เปลี่ยนเดือน',
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'change',
+                            name: 'เปลี่ยน',
+                            desc: 'ข้อมูลพนักงานที่รับเงินเดือนจะถูกเคลียร์',
+                            func:
+                            function() {
+                                $('#emp_id').find('.selectReferenceJS-input').val('');
+                                $('#emp_id').find('.selectReferenceJS-text').text('กรุณาเลือก');
+                                $('.payrollDetail').css('display','none');
+                                setPayrollMonth();
+                                pullEmpId();
+                                parent.hideActionDialog();
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'ยกเลิกการเปลี่ยนเดือน',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                $('#payroll_month').find('.selectReferenceJS-input').val(oldPayroll_month_val);
+                                $('#payroll_month').find('.selectReferenceJS-text').text(oldPayroll_month_text);
+                            }
+                        }
+                    ],
+                    boxWidth: 500
+                });
+            } else {
+                setPayrollMonth();
+                pullEmpId();
+            }
+            
+        }
+
+        function changeEmpId(success) {
+            $('.payrollDetail').css('display', 'none');
+            $('.pullPayrollDtl-loader').css('display', 'inline');
+
+             $.ajax({
+                url: '../common/ajaxPullPayrollDetail.php',
+                type: 'POST',
+                data: {
+                    emp_id: $('input[name="emp_id"]').val(),
+                    payroll_monthly: $('#payroll_monthly').val()
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    var emp_salary = parseFloat(response.emp_salary);
+                    var sumCommission = parseFloat(response.sumCommission);
+                    var sumOvertime = parseFloat(response.sumOvertime);
+                    var payrollTotalPrice = emp_salary + sumCommission + sumOvertime;
+
+                    $('#payroll_salary').val(emp_salary);
+                    $('.payroll_salary_txt').text(emp_salary.formatMoney(2, '.', ','));
+                    $('#payroll_commission').val(sumCommission);
+                    $('.payroll_commission_txt').text(sumCommission.formatMoney(2, '.', ','));
+                    $('#payroll_overtime').val(sumOvertime);
+                    $('.payroll_overtime_txt').text(sumOvertime.formatMoney(2, '.', ','));
+                    $('.payroll_totalPrice').text(payrollTotalPrice.formatMoney(2, '.', ','));
+
+
+                    if(typeof(success) == 'function') {
+                        success();
+                    }
+
+                    $('.pullPayrollDtl-loader').css('display', 'none');
+                    $('.payrollDetail').css('display', 'block');
+                }
+            });
+        }
+
+        function pullEmpId(success) {
+            var payroll_monthly = $('#payroll_monthly').val();
+            $('.pullEmpId-loader').css('display', 'inline');
+
+            $.ajax({
+                url: '../common/ajaxPullEmpIdOfPayrollsTable.php',
+                type: 'POST',
+                data: {
+                    payroll_monthly: payroll_monthly
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    var empIdListHTML = '';
+                    for(i in response) {
+                        empIdListHTML  += '<li style="display: list-item;" id="emp_id_' + response[i].emp_id + '">'
+                                        + '     <span class="text">' + response[i].emp_fullname + '</span>'
+                                        + '     <span class="value">' + response[i].emp_id + '</span>'
+                                        + '</li>';
+                    }
+                    $('#emp_id').find('.option-container').html(empIdListHTML);
+
+                    addEventSelectReferenceJSLi({
+                        elem : $('#emp_id'),
+                        onOptionSelect : changeEmpId
+                    });
+
+                    if(typeof(success) == 'function') {
+                        success();
+                    }
+
+                    $('.pullEmpId-loader').css('display', 'none');
+                }
+            });
+        }
     </script>
     {/literal}
 </head>
@@ -110,6 +260,28 @@
 	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date,payroll_commission,payroll_overtime">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">พนักงานที่จ่ายเงินเดือน</label>
+                    <div id="emp_give_id" class="selectReferenceJS form-input full" require></div>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_give_id-require" class="errInputMsg half err-emp_give_id">โปรดเลือกพนักงานที่จ่ายเงินเดือน</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">วันที่จ่ายเงินเดือน</label>
+                    <input id="payroll_date" name="payroll_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.payroll_date}{$values.payroll_date}{else}{$nowDate}{/if}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-payroll_date-require" class="errInputMsg full err-payroll_date">โปรดป้อนวันที่จ่ายเงินเดือน</span>
+                </td>
+            </tr>
             <tr>
                 <td>
                     <label class="input-required">ปี</label>
@@ -129,56 +301,47 @@
                     <span id="err-payroll_month-require" class="errInputMsg half err-payroll_month">โปรดป้อนเดือน</span>
                 </td>
             </tr>
-            <tr>
-                <td colspan="2">
-                    <label class="input-required">วันที่จ่ายเงินเดือน</label>
-                    <input id="payroll_date" name="payroll_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.payroll_date}{$values.payroll_date}{else}{$nowDate}{/if}" require>
-                </td>
-            </tr>
-            <tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-payroll_date-require" class="errInputMsg full err-payroll_date">โปรดป้อนวันที่จ่ายเงินเดือน</span>
-                </td>
-            </tr>
 			<tr>
-			    <td colspan="2">
-				    <label class="input-required">ชื่อ-นามสกุลพนักงาน</label>
-				    <div id="emp_id" class="selectReferenceJS form-input full" require> </div>
+			    <td colspan="2" style="position:relative;">
+				    <label class="input-required">พนักงานที่ได้รับเงินเดือน</label>
+				    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
+                    <img class="pullEmpId-loader" src="../img/loading.gif">
 			    </td>
 		    </tr>
             <tr class="errMsgRow">
                 <td colspan="2">
-                    <span id="err-emp_id-require" class="errInputMsg half err-emp_id">โปรดเลือกชื่อ-นามสกุลพนักงาน</span>
+                    <span id="err-emp_id-require" class="errInputMsg half err-emp_id">โปรดเลือกพนักงานที่ได้รับเงินเดือน</span>
                 </td>
             </tr>
 	    </tbody>
     </table>
+    <img class="pullPayrollDtl-loader" src="../img/loading.gif">
     <div class="payrollDetail">
         <table>
             <tr>
                 <td>จำนวนเงินเดือน</td>
                 <td>
-                    <span class="payroll_salary_txt">1,000.00</span> บาท
+                    <span class="payroll_salary_txt"></span> บาท
                     <input id="payroll_salary" name="payroll_salary" type="hidden" require>
                 </td>
             </tr>
             <tr>
                 <td>ค่าคอมมิชชั่น</td>
                 <td>
-                    <span class="payroll_commission_txt">1,000.00</span> บาท
+                    <span class="payroll_commission_txt"></span> บาท
                     <input id="payroll_commission" name="payroll_commission" type="hidden" require>
                 </td>
             </tr>
             <tr>
                 <td>ค่าล่วงเวลา</td>
                 <td>
-                    <span class="payroll_overtime_txt">1,000.00</span> บาท
+                    <span class="payroll_overtime_txt"></span> บาท
                     <input id="payroll_overtime" name="payroll_overtime" type="hidden" require>
                 </td>
             </tr>
             <tr>
                 <td><b>รวมทั้งหมด</b></td>
-                <td><b><span class="payroll_overtime_txt">3,000.00</span> บาท</b></td>
+                <td><b><span class="payroll_totalPrice"></span> บาท</b></td>
             </tr>
         </table>
     </div>
