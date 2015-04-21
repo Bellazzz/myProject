@@ -77,6 +77,19 @@ function dateThaiFormatShort($date) {
 	return "$day $month $year";
 }
 
+function monthlyThaiFormat($date) {
+	global $monthThai;
+	if(hasValue($date)) {
+		$time 		= strtotime($date);
+		$yearTH 	= date('Y', $time) + 543;
+		$month 		= $monthThai[(int)date('m', $time)-1];
+		$dateValue 	= $month.' '.$yearTH;
+		return $dateValue;
+	} else {
+		return '-';
+	}
+}
+
 function redirect($location) {
 	echo "<script>location='$location'</script>";
 }

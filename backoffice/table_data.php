@@ -372,17 +372,18 @@ switch ($tableName) {
 		if(hasValue($like)) {
 			if($searchCol == 'emp_id') {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
+			} else if($searchCol == 'payroll_salary') {
+				$like = "(p.payroll_commission + p.payroll_overtime + p.payroll_salary like '%$searchInput%') ";
 			}
 			$where .= " AND $like";
 		} else {
 			$where .= " AND p.payroll_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT p.payroll_id,
-				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
-				p.payroll_salary,
-				p.payroll_commission,
+				p.payroll_date,
 				p.payroll_monthly,
-				p.payroll_date 
+				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
+				p.payroll_commission + p.payroll_overtime + p.payroll_salary AS payroll_salary 
 				FROM payrolls p, employees e 
 				$where 
 				$orderSpecial";
@@ -1249,6 +1250,11 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 							<?
 						}
 					}
+					else if($field == 'payroll_monthly') {
+						?>
+						<td field="<?=$field?>"><? echo monthlyThaiFormat($value); ?></td>
+						<?
+					} 
 					else if(mysql_field_type($result, $offset) == 'real') {
 						?>
 						<td field="<?=$field?>" class="real-col"><? echo number_format($value,2);?></td>

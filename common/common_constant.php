@@ -604,16 +604,19 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'payroll_id'			=> 'รหัสการจ่ายเงินเดือน',
 						'emp_id'				=> 'ชื่อ-นามสกุลพนักงาน',
-						'payroll_salary'		=> 'จำนวนเงินเดือน(บาท)',
+						'payroll_salary'		=> 'จำนวนเงินทั้งหมด(บาท)',
 						'payroll_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
+						'payroll_overtime'		=> 'ค่าล่วงเวลา(บาท)',
 						'payroll_monthly'		=> 'ประจำเดือน-ปี',
 						'payroll_date'			=> 'วันที่จ่ายเงินเดือน'
 				),
-				'searchFields'	=> array('emp_id','payroll_salary','payroll_monthly'),
+				'hiddenFields'	=> array('payroll_commission','payroll_overtime'),
+				'searchFields'	=> array('emp_id','payroll_monthly','payroll_salary'),
 				'deleteTxtField'	=> array('emp_id','payroll_monthly'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการจ่ายเงินเดือนของ %f1 ประจำเดือน %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> '%f1 ประจำเดือน %f2',
-				'referenceData'			=> array('employees')
+				'referenceData'			=> array('employees'),
+				'optionData' => array('payroll_year', 'payroll_month')
 			);
 			break;
 

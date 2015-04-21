@@ -368,6 +368,27 @@ if(!$_REQUEST['ajaxCall']) {
 						array('refText' => 'ไม่ระบุกลุ่ม', 'refValue' => 'ไม่ระบุกลุ่ม')
 					);
 					break;
+
+				case 'payroll_year':
+					$optionData['payroll_year'] = array();
+					$start = 2015;
+					$end = (int)date('Y');
+					for($i=$start; $i<=$end; $i++) {
+						array_push($optionData['payroll_year'], array(
+							'refText' => $i+543, 'refValue' => $i
+						));
+					}
+					break;
+
+				case 'payroll_month':
+					$optionData['payroll_month'] = array();
+					foreach ($monthThai as $key => $monthTH) {
+						$numMonth = $key+1;
+						array_push($optionData['payroll_month'], array(
+							'refText' => $monthTH, 'refValue' => $numMonth
+						));
+					}
+					break;
 				}
 		}
 		$smarty->assign('optionData', $optionData);
