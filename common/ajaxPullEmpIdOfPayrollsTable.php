@@ -14,7 +14,8 @@ if(hasValue($_POST['payroll_monthly'])) {
 						SELECT 	emp_id 
 						FROM 	payrolls 
 						WHERE 	payroll_monthly = '$payroll_monthly'
-					)";
+					) 
+			ORDER BY emp_fullname ASC";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
 	if($rows > 0) {
