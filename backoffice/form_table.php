@@ -375,7 +375,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$end = (int)date('Y');
 					for($i=$start; $i<=$end; $i++) {
 						array_push($optionData['payroll_year'], array(
-							'refText' => $i+543, 'refValue' => $i
+							'refField' => 'payroll_year', 'refText' => $i+543, 'refValue' => $i
 						));
 					}
 					break;
@@ -385,7 +385,7 @@ if(!$_REQUEST['ajaxCall']) {
 					foreach ($monthThai as $key => $monthTH) {
 						$numMonth = $key+1;
 						array_push($optionData['payroll_month'], array(
-							'refText' => $monthTH, 'refValue' => $numMonth
+							'refField' => 'payroll_month', 'refText' => $monthTH, 'refValue' => $numMonth
 						));
 					}
 					break;

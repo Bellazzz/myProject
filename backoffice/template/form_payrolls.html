@@ -73,11 +73,37 @@
             // pull emp_id when open form
             pullEmpId();
 
+            if(action == "EDIT") {
+                pullEmpId();
+            }
+
+            selectReferenceJS({
+                elem            : $('#payroll_year'),
+                data            : payroll_year,
+                defaultValue    : '{/literal}{if $values.payroll_year}{$values.payroll_year}{else}{$nowYear}{/if}{literal}',
+                searchTool      : false,
+            });
+
+            selectReferenceJS({
+                elem            : $('#payroll_month'),
+                data            : payroll_month,
+                defaultValue    : '{/literal}{if $values.payroll_month}{$values.payroll_month}{else}{$nowMonth}{/if}{literal}',
+                onOptionSelect      : changePayrollMonth,
+                searchTool      : false,
+            });
+
             selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.emp_id}{literal}',
-                onOptionSelect      : changeEmpId
+                onOptionSelect      : changeEmpId,
+                success: 
+                function(defaultValue) {
+                    if(typeof(defaultValue) != 'undefinded') {
+                        setYearAndMonth($('#payroll_monthly').val());
+                        pullPayrollDetail();
+                    }
+                }
             });
 
             selectReferenceJS({
@@ -106,24 +132,20 @@
                 },
                 timepicker:false
             });
-
-            selectReferenceJS({
-                elem            : $('#payroll_year'),
-                data            : payroll_year,
-                defaultValue    : '{/literal}{if $values.payroll_year}{$values.payroll_year}{else}{$nowYear}{/if}{literal}',
-                searchTool      : false,
-            });
-
-            selectReferenceJS({
-                elem            : $('#payroll_month'),
-                data            : payroll_month,
-                defaultValue    : '{/literal}{if $values.payroll_month}{$values.payroll_month}{else}{$nowMonth}{/if}{literal}',
-                onOptionSelect      : changePayrollMonth,
-                searchTool      : false,
-            });
-            
-			
         });
+        
+        function setYearAndMonth(date) {
+            if(date != '') {
+                var monthsTH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม', 'สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+                var tmp = date.split("-");
+                tmp[0] = parseInt(tmp[0]);
+                tmp[1] = parseInt(tmp[1])-1;
+                $('#payroll_year').find('.selectReferenceJS-input').val(tmp[0]);
+                $('#payroll_year').find('.selectReferenceJS-text').text(tmp[0]+543);
+                $('#payroll_month').find('.selectReferenceJS-input').val(monthsTH[tmp[1]]);
+                $('#payroll_month').find('.selectReferenceJS-text').text(monthsTH[tmp[1]]);
+            }
+        }
         
         function setPayrollMonth() {
             oldPayroll_month_val = parseInt($('input[name="payroll_month"]').val());
@@ -181,8 +203,12 @@
         function changeEmpId(success) {
             $('.payrollDetail').css('display', 'none');
             $('.pullPayrollDtl-loader').css('display', 'inline');
+            pullPayrollDetail();
+             
+        }
 
-             $.ajax({
+        function pullPayrollDetail(success) {
+            $.ajax({
                 url: '../common/ajaxPullPayrollDetail.php',
                 type: 'POST',
                 data: {
