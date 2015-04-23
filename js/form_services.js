@@ -694,7 +694,7 @@ function addServiceListOfPackage(data) {
         var inputTimeId = 'sersvt_time_' + data.pkg_id + '_' + svl_id;
 
         if(price > 0) {
-            var pkgsvlHTML= '<div class="pkgsvl-list">'
+            var pkgsvlHTML= '<div class="pkgsvl-list clearfix">'
                           + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
                           + '   <div class="time-cont">'
                           + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
@@ -718,7 +718,7 @@ function addServiceListOfPackage(data) {
                           + '<button id="addPkgComBtn_' + addPkgComBtnRandNum + '" data-svlId="' + svl_id + '" class="addPkgComBtn button button-icon button-icon-add">เพิ่มพนักงาน</button>'
                           + '</div>';
         } else {
-            var pkgsvlHTML= '<div class="pkgsvl-list">'
+            var pkgsvlHTML= '<div class="pkgsvl-list clearfix">'
                           + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
                           + '  </div>';
         }

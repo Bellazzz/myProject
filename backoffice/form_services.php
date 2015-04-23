@@ -1442,7 +1442,8 @@ function getPkgSvlDataList() {
 						(
 							p.pkg_stop IS NULL OR 
 							p.pkg_stop >= '$nowDate'
-						)";
+						) 
+			ORDER BY 	ps.pkgsvl_id";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
 	for($i=0; $i<$rows; $i++) {
