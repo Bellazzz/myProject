@@ -75,12 +75,23 @@
 
             if(action == "EDIT") {
                 pullEmpId();
+
+                // Disable select ref
+                $('#payroll_year').addClass('disabled');
+                $('#payroll_month').addClass('disabled');
+                $('#emp_id').addClass('disabled');
             }
 
             selectReferenceJS({
                 elem            : $('#payroll_year'),
                 data            : payroll_year,
                 defaultValue    : '{/literal}{if $values.payroll_year}{$values.payroll_year}{else}{$nowYear}{/if}{literal}',
+                beforeShow      : function() {
+                    if(action == 'EDIT') 
+                        allowChangeSelectRef('payroll_year');
+                    else 
+                        return true;
+                },
                 searchTool      : false,
             });
 
@@ -88,6 +99,12 @@
                 elem            : $('#payroll_month'),
                 data            : payroll_month,
                 defaultValue    : '{/literal}{if $values.payroll_month}{$values.payroll_month}{else}{$nowMonth}{/if}{literal}',
+                beforeShow      : function() {
+                    if(action == 'EDIT') 
+                        allowChangeSelectRef('payroll_month');
+                    else 
+                        return true;
+                },
                 onOptionSelect      : changePayrollMonth,
                 searchTool      : false,
             });
@@ -96,10 +113,16 @@
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.emp_id}{literal}',
+                beforeShow      : function() {
+                    if(action == 'EDIT') 
+                        allowChangeSelectRef('emp_id');
+                    else 
+                        return true;
+                },
                 onOptionSelect      : changeEmpId,
                 success: 
                 function(defaultValue) {
-                    if(typeof(defaultValue) != 'undefinded') {
+                    if(typeof(defaultValue) != 'undefined') {
                         setYearAndMonth($('#payroll_monthly').val());
                         pullPayrollDetail();
                     }
@@ -276,6 +299,47 @@
                     $('.pullEmpId-loader').css('display', 'none');
                 }
             });
+        }
+
+        function allowChangeSelectRef(name) {
+            var alertFlag = false;
+            var title = '';
+            var msg = '';
+
+            if(name == 'payroll_year') {
+                title = 'ไม่สามารถแก้ไขปีที่จ่ายเงินเดือนได้';
+                msg = 'การจ่ายเงินเดือนที่บันทึกแล้วจะไม่สามารถแก้ไขปีที่จ่ายเงินเดือนได้';
+                alertFlag = true;
+            } else if(name == 'payroll_month') {
+                title = 'ไม่สามารถแก้ไขเดือนที่จ่ายเงินเดือนได้';
+                msg = 'การจ่ายเงินเดือนที่บันทึกแล้วจะไม่สามารถแก้ไขเดือนที่จ่ายเงินเดือนได้';
+                alertFlag = true;
+            } else if(name == 'emp_id') {
+                title = 'ไม่สามารถแก้ไขพนักงานที่รับเงินเดือนได้';
+                msg = 'การจ่ายเงินเดือนที่บันทึกแล้วจะไม่สามารถแก้ไขพนักงานที่รับเงินเดือนได้';
+                alertFlag = true;
+            } else {
+                return true;
+            }
+
+            if(alertFlag) {
+                parent.showActionDialog({
+                    title: title,
+                    message: msg,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                return false;
+                            }
+                        }
+                    ],
+                    boxWidth: 500
+                });
+            }
         }
     </script>
     {/literal}

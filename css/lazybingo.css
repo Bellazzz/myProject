@@ -1536,6 +1536,9 @@ label.article-title {
 .selectReferenceJS.text span:first-child {
     display: none;
 }
+.selectReferenceJS.disabled {
+    background: #EBEBE4;
+}
 
 /*
  * select option
