@@ -68,19 +68,17 @@
         var payroll_month  = {/literal}{$optionData["payroll_month"]|@json_encode}{literal};
         var oldPayroll_month_val = '';
         var oldPayroll_month_text = '';
+        var defaultMonlty = '{/literal}{$nowDate}{literal}';
+
+        // set default monlty
+        defaultMonlty = defaultMonlty.substr(0, 8) + '01';
 
         $(document).ready(function () {
             // pull emp_id when open form
-            pullEmpId();
-
-            if(action == "EDIT") {
-                pullEmpId();
-
-                // Disable select ref
-                $('#payroll_year').addClass('disabled');
-                $('#payroll_month').addClass('disabled');
-                $('#emp_id').addClass('disabled');
+            if(action == 'ADD') {
+                $('#payroll_monthly').val(defaultMonlty);
             }
+            pullEmpId();
 
             selectReferenceJS({
                 elem            : $('#payroll_year'),
@@ -122,7 +120,7 @@
                 onOptionSelect      : changeEmpId,
                 success: 
                 function(defaultValue) {
-                    if(typeof(defaultValue) != 'undefined') {
+                    if(action!= 'VIEW_DETAIL' && typeof(defaultValue) != 'undefined') {
                         setYearAndMonth($('#payroll_monthly').val());
                         pullPayrollDetail();
                     }
@@ -155,10 +153,40 @@
                 },
                 timepicker:false
             });
+
+            if(action == "EDIT") {
+                pullEmpId();
+
+                // Disable select ref
+                $('#payroll_year').addClass('disabled');
+                $('#payroll_month').addClass('disabled');
+                $('#emp_id').addClass('disabled');
+            } else if(action == 'VIEW_DETAIL') {
+                // set view detail values
+                var salary =    {/literal}{if $values.payroll_salary}{literal}
+                                    {/literal}{$values.payroll_salary}{literal}
+                                {/literal}{else}{literal}
+                                    0
+                                {/literal}{/if}{literal};
+                var com =       {/literal}{if $values.payroll_commission}{literal}
+                                    {/literal}{$values.payroll_commission}{literal}
+                                {/literal}{else}{literal}
+                                    0
+                                {/literal}{/if}{literal};
+                var ot =        {/literal}{if $values.payroll_overtime}{literal}
+                                    {/literal}{$values.payroll_overtime}{literal}
+                                {/literal}{else}{literal}
+                                    0
+                                {/literal}{/if}{literal};
+                var total = salary + com + ot;
+                $('#totalPrice_txt').text(total.formatMoney(2, '.', ','));
+                setYearAndMonth(getRealDate($('#payroll_monthly').val()));
+            }
         });
         
         function setYearAndMonth(date) {
             if(date != '') {
+                date = date.split('/').join('-');
                 var monthsTH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม', 'สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
                 var tmp = date.split("-");
                 tmp[0] = parseInt(tmp[0]);
@@ -349,6 +377,63 @@
 {include file="form_table_header.html"}
 {if $emp_privileges.manage_payrolls}
 <div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสการจ่ายเงินเดือน :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>พนักงานที่จ่ายเงินเดือน :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_give_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_give_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>วันที่จ่ายเงินเดือน :</td>
+                <td>{$values.payroll_date}</td>
+            </tr>
+            <tr>
+                <td>ประจำเดือน-ปี :</td>
+                <td>
+                    <div id="payroll_month" class="selectReferenceJS text"></div> 
+                    <div id="payroll_year" class="selectReferenceJS text"></div>
+                    <input id="payroll_monthly" name="payroll_monthly" type="hidden" value="{$values.payroll_monthly}">
+                </td>
+            </tr>
+            <tr>
+                <td>พนักงานที่ได้รับเงินเดือน :</td>
+                <td>
+                    <a href="form_table.php?action=VIEW_DETAIL&tableName=employees&code={$values.emp_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
+                            <div id="emp_id" class="selectReferenceJS text" style="cursor:pointer;"></div>
+                        </a>
+                </td>
+            </tr>
+            <tr>
+                <td>อัตรางินเดือน :</td>
+                <td>{$values.payroll_salary|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>ค่าคอมมิชชั่น :</td>
+                <td>{$values.payroll_commission|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>ค่าล่วงเวลา :</td>
+                <td>{$values.payroll_overtime|number_format:2:".":","} บาท</td>
+            </tr>
+            <tr>
+                <td>รวมทั้งหมด :</td>
+                <td><span id="totalPrice_txt"></span> บาท</td>
+            </tr>
+            
+        </tbody> 
+    </table>
+    {else}
+    <!-- ADD, EDIT -->        
     <form id="form-table" name="form-table" onsubmit="return false;">
 	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date,payroll_commission,payroll_overtime">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
@@ -384,7 +469,7 @@
                     <label class="input-required">เดือน</label>
                     <div id="payroll_month" class="selectReferenceJS form-input half" require></div>
                 </td>
-                <input id="payroll_monthly" name="payroll_monthly" type="hidden" value="{if $values.payroll_monthly}{$values.payroll_monthly}{else}{$nowDate}{/if}" require>
+                <input id="payroll_monthly" name="payroll_monthly" type="hidden" value="{if $values.payroll_monthly}{$values.payroll_monthly}{/if}" require>
             </tr>
             <tr class="errMsgRow">
                 <td>
@@ -412,7 +497,7 @@
     <div class="payrollDetail">
         <table>
             <tr>
-                <td>จำนวนเงินเดือน</td>
+                <td>อัตรางินเดือน</td>
                 <td>
                     <span class="payroll_salary_txt"></span> บาท
                     <input id="payroll_salary" name="payroll_salary" type="hidden" require>
@@ -439,6 +524,7 @@
         </table>
     </div>
     </form>
+    {/if}
 </div><!-- end ftb-body -->
 {else}
 <div class="noPrivilege-formTable-container">
