@@ -1492,15 +1492,17 @@ function setPkgTimeEnd(inputpkgTimeInput, svlMin) {
     if(typeof(svl_min) == 'undefined') {
         var svlID = inputpkgTimeInput.parent().parent().find('.svl_id').val();
         if(typeof(svlID) != 'undefined' && svlID != '') {
-            for(i in refSvlData) {
-                if(refSvlData[i].refValue == svlID) {
-                    svl_min = parseInt(refSvlData[i].svl_min);
-                    break;
+            for(i in pkgsvlData) {
+                for(j in pkgsvlData[i]) {
+                    if(pkgsvlData[i][j].svl_id == svlID) {
+                        svl_min = parseInt(pkgsvlData[i][j].allMin);
+                        break;
+                    }
                 }
             }
         }
     }
-
+    
     // cal time end
     if(inputpkgTimeInput.val() != '') {
         var serpkgTimeEndInput = inputpkgTimeInput.parent().find('input[name="sersvt_time_end[]"]');

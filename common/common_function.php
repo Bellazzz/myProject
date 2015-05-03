@@ -179,4 +179,73 @@ function intervalTime($a, $b) {
 	$minB = ((int)$tmpB[0] * 60) + (int)$tmpB[1] + (float)$tmpB[2]/100;
 	return $minA - $minB;
 }
+
+function getSpaCurrentDay($date) {
+	// Find current day type
+	global $dbConn;
+	$currentDay = '';
+	$sql = "SELECT hld_id FROM holidays WHERE '$date' >= hld_startdate && '$date' <= hld_enddate";
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		$currentDay = 'วันหยุดสปา';
+	} else {
+		$dayTh = array(
+			'Sunday' => 'อาทิตย์',
+			'Monday' => 'จันทร์',
+			'Tuesday' => 'อังคาร',
+			'Wednesday' => 'พุธ',
+			'Thursday' => 'พฤหัสบดี',
+			'Friday' => 'ศุกร์',
+			'Saturday' => 'เสาร์'
+		);
+		$currentDay = $dayTh[date('l')];
+	}
+
+	return $currentDay;
+}
+
+function getComRate($day, $timeStart, $timeEnd) {
+	global $dbConn;
+	$countStart = substr_count($timeStart, ':');
+	$countEnd = substr_count($timeEnd, ':');
+	if($countStart <2) $timeStart .= ':00';
+	if($countEnd <2) $timeEnd .= ':00';
+
+	$sql = "SELECT 	cmr_rate, 
+					cmr_starttime  
+			FROM 	commission_rates 
+			WHERE 	cmr_day = '$day' AND 
+					(
+						('$timeStart' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
+						('$timeStart' >= cmr_starttime AND '$timeStart' <= cmr_endtime AND '$timeEnd' >= cmr_endtime) OR 
+						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
+						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_endtime) 
+					) 
+			ORDER BY cmr_endtime DESC";
+	$result = mysql_query($sql, $dbConn);
+	$rows  	= mysql_num_rows($result);
+	if($rows == 1) {
+		$record = mysql_fetch_assoc($result);
+		return $record['cmr_rate'];
+	} else if($rows > 1) {
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+
+			if($i == $rows-1) {
+				// last record
+				return $record['cmr_rate'];
+			} else {
+				$interval = intervalTime($timeEnd, $record['cmr_starttime']);
+				if($interval >= 30) {
+					return $record['cmr_rate'];
+
+				}
+			}
+		}
+		
+	} else {
+		return -1;
+	}
+}
 ?>

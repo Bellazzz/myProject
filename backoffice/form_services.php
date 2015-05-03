@@ -19,7 +19,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Get table services data
 		$tableRecord = new TableSpa($tableName, $code);
 		$values      = array();
-		$currentDay = getCurrentDay($tableRecord->getFieldValue('ser_date')); // Find current day type
+		$currentDay = getSpaCurrentDay($tableRecord->getFieldValue('ser_date')); // Find current day type
 		foreach($tableInfo['fieldNameList'] as $field => $value) {
 			$colFieldType = $tableRecord->getFieldType($field);
 			if($colFieldType == 'time'){
@@ -568,6 +568,7 @@ if(!$_REQUEST['ajaxCall']) {
 	$sql = "SELECT 		pkg.pkg_id,
 						s.svl_id,
 						s.svl_name,
+						IFNULL(pkgsvl.pkgsvl_hr,0) * 60 + IFNULL(pkgsvl.pkgsvl_min,0) allMin, 
 						pkgsvl.pkgsvl_price 
 			FROM 		packages pkg,
 						package_service_lists pkgsvl,
@@ -587,6 +588,7 @@ if(!$_REQUEST['ajaxCall']) {
 			$pkgsvlValues = array(
 				'svl_id' 	=> $record['svl_id'],
 				'svl_name' 	=> $record['svl_name'],
+				'allMin' 	=> $record['allMin'],
 				'pkgsvl_price' => $record['pkgsvl_price']
 			);
 			array_push($pkgsvlData[$record['pkg_id']], $pkgsvlValues);
@@ -665,7 +667,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$values['fieldValue'] = array();
 		$insertResult 		  = true;
 		$errTxt 			  = '';
-		$currentDay = getCurrentDay($nowDate); // Find current day type
+		$currentDay = getSpaCurrentDay($nowDate); // Find current day type
 
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
@@ -861,7 +863,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $code);
 		$updateResult  	= true;
 		$errTxt 		= '';
-		$currentDay = getCurrentDay($formData['ser_date']); // Find current day type
+		$currentDay = getSpaCurrentDay($formData['ser_date']); // Find current day type
 
 		// Set all field value
 		foreach($formData as $fieldName => $value) {
@@ -1357,75 +1359,6 @@ function getRealSerSvlTotalPrice($ser_id, $svl_id) {
 		$realPrice = $record['realPrice'];
 	}
 	return $realPrice;
-}
-
-function getComRate($day, $timeStart, $timeEnd) {
-	global $dbConn;
-	$countStart = substr_count($timeStart, ':');
-	$countEnd = substr_count($timeEnd, ':');
-	if($countStart <2) $timeStart .= ':00';
-	if($countEnd <2) $timeEnd .= ':00';
-
-	$sql = "SELECT 	cmr_rate, 
-					cmr_starttime  
-			FROM 	commission_rates 
-			WHERE 	cmr_day = '$day' AND 
-					(
-						('$timeStart' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
-						('$timeStart' >= cmr_starttime AND '$timeStart' <= cmr_endtime AND '$timeEnd' >= cmr_endtime) OR 
-						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_starttime AND '$timeEnd' <= cmr_endtime) OR 
-						('$timeStart' <= cmr_starttime AND '$timeEnd' >= cmr_endtime) 
-					) 
-			ORDER BY cmr_endtime DESC";
-	$result = mysql_query($sql, $dbConn);
-	$rows  	= mysql_num_rows($result);
-	if($rows == 1) {
-		$record = mysql_fetch_assoc($result);
-		return $record['cmr_rate'];
-	} else if($rows > 1) {
-		for($i=0; $i<$rows; $i++) {
-			$record = mysql_fetch_assoc($result);
-
-			if($i == $rows-1) {
-				// last record
-				return $record['cmr_rate'];
-			} else {
-				$interval = intervalTime($timeEnd, $record['cmr_starttime']);
-				if($interval >= 30) {
-					return $record['cmr_rate'];
-
-				}
-			}
-		}
-		
-	} else {
-		return -1;
-	}
-}
-
-function getCurrentDay($date) {
-	// Find current day type
-	global $dbConn;
-	$currentDay = '';
-	$sql = "SELECT hld_id FROM holidays WHERE '$date' >= hld_startdate && '$date' <= hld_enddate";
-	$result = mysql_query($sql, $dbConn);
-	$rows 	= mysql_num_rows($result);
-	if($rows > 0) {
-		$currentDay = 'วันหยุดสปา';
-	} else {
-		$dayTh = array(
-			'Sunday' => 'อาทิตย์',
-			'Monday' => 'จันทร์',
-			'Tuesday' => 'อังคาร',
-			'Wednesday' => 'พุธ',
-			'Thursday' => 'พฤหัสบดี',
-			'Friday' => 'ศุกร์',
-			'Saturday' => 'เสาร์'
-		);
-		$currentDay = $dayTh[date('l')];
-	}
-
-	return $currentDay;
 }
 
 function getPkgSvlDataList() {
