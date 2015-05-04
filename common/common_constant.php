@@ -664,12 +664,14 @@ function dbClose() {
 						'bkgsvl_id'	  		 => 'รหัสรายละเอียดรายการบริการที่จอง',
 						'svl_id'	         => 'รหัสรายการบริการ',
 						'bkg_id' 		     => 'รหัสการจอง',
+						'emp_id'			 => 'รหัสพนักงาน',
 						'bkgsvl_date'        => 'วันที่ใช้บริการ',
 						'bkgsvl_time'        => 'เวลาที่ใช้บริการ',
 						'bkgsvl_total_price' => 'ราคารวมการจองรายการบริการ(บาท)',
 						'bkgsvl_persons'     => 'จำนวนผู้ใช้บริการ'
 				),
-				'searchFields'	=> array('bkgsvl_id','svl_id','bkg_id')
+				'searchFields'	=> array('bkgsvl_id','svl_id','bkg_id'),
+				'defaultNull' 	=> array('emp_id')
 			);
 			break;
 

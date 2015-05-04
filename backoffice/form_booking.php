@@ -69,6 +69,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$valuesSvl = array();
 		$sql = "SELECT 		bs.bkgsvl_id, 
 							s.svl_id, 
+							bs.emp_id,
 							bs.bkgsvl_date,
 							DATE_FORMAT(bs.bkgsvl_time,'%H:%i') bkgsvl_time,
 							bs.bkgsvl_persons,
@@ -507,12 +508,22 @@ if(!$_REQUEST['ajaxCall']) {
 		// Insert booking service_list
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$bkgsvl_empId 		= $formData['bkgsvl_emp_id'][$key] ;
 				$bkgsvl_date 		= $formData['bkgsvl_date'][$key];
 				$bkgsvl_time 		= $formData['bkgsvl_time'][$key];
 				$bkgsvl_persons 	= $formData['svl_qty'][$key];
 				$bkgsvl_total_price = $formData['bkgsvl_total_price'][$key];
-				$bkgsvlValues 		= array($svl_id, $bkg_id, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
-				$bkgsvlRecord 		= new TableSpa('booking_service_lists', $bkgsvlValues);
+
+				// create fields and values
+				if($formData['bkgsvl_emp_id'][$key] == '') {
+					$bkgsvlFields = array('svl_id','bkg_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+					$bkgsvlValues = array($svl_id, $bkg_id, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+				} else {
+					$bkgsvlFields = array('svl_id','bkg_id','emp_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+					$bkgsvlValues = array($svl_id, $bkg_id, $bkgsvl_empId, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+				}
+
+				$bkgsvlRecord 		= new TableSpa('booking_service_lists', $bkgsvlFields, $bkgsvlValues);
 				if(!$bkgsvlRecord->insertSuccess()) {
 					$insertResult = false;
 					$errTxt .= 'INSERT_BOOKING_SERVICE_LISTS['.($key+1).']_FAIL\n';
@@ -710,6 +721,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Update or Add booking_service_lists
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
+				$bkgsvl_empId = $formData['bkgsvl_emp_id'][$key];
 				$bkgsvl_date  = $formData['bkgsvl_date'][$key];
 				$bkgsvl_time  = $formData['bkgsvl_time'][$key];
 				$bkgsvl_persons  = $formData['svl_qty'][$key];
@@ -720,6 +732,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$bkgsvl_id = $formData['bkgsvl_id'][$key];
 					$bookingSvlRecord 	= new TableSpa('booking_service_lists', $bkgsvl_id);
 					$bookingSvlRecord->setFieldValue('svl_id', $svl_id);
+					$bookingSvlRecord->setFieldValue('emp_id', $bkgsvl_empId == ''? NULL : $bkgsvl_empId);
 					$bookingSvlRecord->setFieldValue('bkgsvl_date', $bkgsvl_date);
 					$bookingSvlRecord->setFieldValue('bkgsvl_time', $bkgsvl_time);
 					$bookingSvlRecord->setFieldValue('bkgsvl_persons', $bkgsvl_persons);
@@ -731,8 +744,16 @@ if(!$_REQUEST['ajaxCall']) {
 					}
 				} else {
 					// Add new booking_service_lists
-					$bkgsvlValues 		= array($svl_id, $code, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
-					$bookingSvlRecord 	= new TableSpa('booking_service_lists', $bkgsvlValues);
+					// create fields and values
+					if($formData['bkgsvl_emp_id'][$key] == '') {
+						$bkgsvlFields = array('svl_id','bkg_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+						$bkgsvlValues = array($svl_id, $code, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+					} else {
+						$bkgsvlFields = array('svl_id','bkg_id','emp_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+						$bkgsvlValues = array($svl_id, $code, $bkgsvl_empId, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+					}
+
+					$bookingSvlRecord 	= new TableSpa('booking_service_lists', $bkgsvlFields, $bkgsvlValues);
 					if(!$bookingSvlRecord->insertSuccess()) {
 						$updateResult = false;
 						$errTxt .= 'ADD_BOOKING_SERVICE_LISTS['.($key+1).']_FAIL\n';

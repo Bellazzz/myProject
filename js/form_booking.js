@@ -112,6 +112,7 @@ function addItemForEdit() {
                 defaultValue : true,
                 bkgsvl_id   : valuesSvl[i].bkgsvl_id,
                 svl_id      : valuesSvl[i].svl_id,
+                emp_id      : valuesSvl[i].emp_id,
                 bkgsvl_date : valuesSvl[i].bkgsvl_date,
                 bkgsvl_time : valuesSvl[i].bkgsvl_time,
                 svl_qty     : valuesSvl[i].bkgsvl_persons,
@@ -181,7 +182,7 @@ function changeCusId() {
 	                func:
 	                function() {
 	                    $('#booking-package-table tr:not(.headTable-row)').remove();
-	                    $('#bookinbookg-service-list-table tr:not(.headTable-row)').remove();
+	                    $('#booking-service-list-table tr:not(.headTable-row)').remove();
 	                    setAllBkgDetailAmount();
 	                    setCusTypeId(newCusId);
 	                    calSummary();
@@ -446,6 +447,7 @@ function addServiceList(data) {
     var randNum;
     var selectRefDefault = '';
     var unitPrice = '0.00';
+    var bkgsvl_emp_id = '';
     var bkgsvl_date = nowDate;
     var bkgsvl_time = '';
     do {
@@ -455,6 +457,10 @@ function addServiceList(data) {
     var inputQtyId  = 'svl_qty_' + randNum;
     var inputDateId = 'svl_date_' + randNum;
     var inputTimeId = 'svl_time_' + randNum;
+    var inputEmpId  = 'bkgsvl_emp_id_' + randNum;
+    if(typeof(data.emp_id) != 'undefined' && data.emp_id != '') {
+        bkgsvl_emp_id = data.emp_id;
+    }
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
     }
@@ -532,6 +538,9 @@ function addServiceList(data) {
                     + '                     <td>'
                     + '                         เวลา <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
+                    + '                     <td>'
+                    + '                         พนักงานที่จอง <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
+                    + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'
                     + '                     <td>'
@@ -567,6 +576,17 @@ function addServiceList(data) {
             calSummary();
         },
         group           : 'service_lists'
+    });
+    selectReferenceJS({
+        elem            : $('#' + inputEmpId),
+        data            : refEmpData,
+        defaultValue    : bkgsvl_emp_id,
+        showClearBtn    : true,
+        clearBtnText    : 'ไม่ระบุ',
+        success:
+        function() {
+            $('input[name="' + inputEmpId + '"]').attr('name', 'bkgsvl_emp_id[]');
+        }
     });
     $('#' + inputDateId).datetimepicker({
         lang                : 'th',

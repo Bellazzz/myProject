@@ -163,6 +163,7 @@
 		var tableNameTH = '{/literal}{$tableNameTH}{literal}';
         var code        = '{/literal}{$code}{literal}';
         var ajaxUrl     = 'form_booking.php';
+        var refEmpData  = {/literal}{$referenceData["employees"]|@json_encode}{literal};
         var refPkgData  = {/literal}{$referenceData["packages"]|@json_encode}{literal};
         var refSvlData  = {/literal}{$referenceData["service_lists"]|@json_encode}{literal};
         var refCusData  = {/literal}{$referenceData["customers"]|@json_encode}{literal};
