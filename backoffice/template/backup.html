@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="utf-8"/>
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <style type="text/css">
+    .default-table tbody tr:hover {
+        background: none;
+    }
+    .import-loader {
+        display: none;
+    }
+    .import-loader td {
+        vertical-align: middle;
+    }
+    .import-loader img {
+        height: 30px;
+    }
+    .importMsg {
+        font-family: ThaiSansNeue-BOld;
+        font-size: 25px;
+    }
+    .importMsg.success {
+        color: green;
+    }
+    .importMsg.error {
+        color: #D80000;
+    }
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('.taber li').click(function() {
+            var target = $(this).attr('data-target');
+            $('.taber-header li').removeClass('selected');
+            $(this).addClass('selected');
+            $('.taber-body').css('display','none');
+            $('#' + target).css('display', 'block');
+        });
+        $('#import-btn').click(function() {
+            $(this).css('display','none');
+            $('.import-loader').css('display','table');
+        });
+
+        {/literal}{if $importResult}{literal}
+        $('.importMsg').css('display','inline');
+        $('.errMsg').css('display','inline');
+        $('#head-import').click();
+        {/literal}{/if}{literal}
+
+        $('#importFile').change(function() {
+            $('.importMsg').css('display','none');
+            $('.errMsg').css('display','none');
+        });
+    });
+    </script>
+	{/literal}
+</head>
+<body>
+<div id="page">
+	<div id="wrapper">
+		{include file="_manage_table_header.html"}
+        <div class="mainContainer">
+            <h1><i class="fa fa-database"></i> สำรอง และนำเข้าข้อมูล</h1>
+            <div class="taber">
+                <ul class="taber-header clearfix">
+                    <li data-target="tabBody-1" class="selected"><a><i class="fa fa-upload"></i> สำรองข้อมูล</a></li>
+                    <li id="head-import" data-target="tabBody-2"><a><i class="fa fa-download"></i> นำเข้าข้อมูล</a></li>
+                </ul>
+            </div>
+            <div id="tabBody-1" class="taber-body">
+                <form method="post" action="export.php">
+                <table class="default-table" style="width:400px;">
+                    <thead>
+                        <tr>
+                            <th>โครงสร้าง</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label><input type="checkbox" name="createDB" value="1"> สร้างฐานข้อมูลใหม่</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <button id="export-btn" class="button button-icon" type="submit">สำรองข้อมูล</button>
+                </form>
+            </div>
+            <div id="tabBody-2" class="taber-body" style="display:none;">
+                {if $importResult == 'PASS'}
+                <font class="importMsg success"><i class="fa fa-check-circle"></i> นำเข้าข้อมูลเรียบร้อยแล้ว<br /><br /></font>
+                {elseif $importResult == 'NOFILE'}
+                <font class="importMsg error"><i class="fa fa-exclamation-circle"></i> กรุณาเลือกไฟล์ที่ต้องการนำเข้าข้อมูล<br /><br /></font>
+                {elseif $importResult == 'WRONGTYPE'}
+                <font class="importMsg error"><i class="fa fa-exclamation-circle"></i> ไฟล์ที่นำเข้าข้อมูลต้องเป็น .sql เท่านั้น<br /><br /></font>
+                {/if}
+                <form name="form-import" action="backup.php" method="post" enctype="multipart/form-data">
+                    <label for="importFile">เลือกไฟล์จาก</label>
+                    <input type="file" name="importFile" id="importFile"><br>
+                    <input type="hidden" name="importSubmit" value="1">
+                    <br />
+                    <button id="import-btn" class="button button-icon" type="submit">นำเข้าข้อมูล</button>
+                </form>
+                <table class="import-loader">
+                    <tr>
+                        <td><img src="../img/loading.gif"> </td>
+                        <td>กรุณารอสักครู่ ระบบกำลังนำเข้าข้อมูล</td>
+                    </tr>
+                </table>
+                {if $importResult == 'ERROR'}
+                <br/>
+                <br/>
+                <font class="importMsg error"><i class="fa fa-exclamation-circle"></i> เกิดข้อผิดพลาด กรุณาตรวจสอบไฟล์ที่นำเข้าข้อมูล<br /></font>
+                <span class="errMsg">{$errMsg}</span>
+                {/if}
+            </div>
+
+            <br />
+            <a href="manage_system.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
+        </div>
+	</div>
+</div>
+<!-- end page-->
+</body>
+</html>
