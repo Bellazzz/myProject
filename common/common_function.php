@@ -199,7 +199,7 @@ function getSpaCurrentDay($date) {
 			'Friday' => 'ศุกร์',
 			'Saturday' => 'เสาร์'
 		);
-		$currentDay = $dayTh[date('l')];
+		$currentDay = $dayTh[date('l', strtotime($date))];
 	}
 
 	return $currentDay;
