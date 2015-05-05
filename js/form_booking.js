@@ -101,6 +101,7 @@ function addItemForEdit() {
                 defaultValue : true,
                 bkgpkg_id   : valuesPkg[i].bkgpkg_id,
                 pkg_id      : valuesPkg[i].pkg_id,
+                emp_id      : valuesPkg[i].emp_id,
                 bkgpkg_date : valuesPkg[i].bkgpkg_date,
                 bkgpkg_time : valuesPkg[i].bkgpkg_time,
                 pkg_qty     : valuesPkg[i].bkgpkg_persons,
@@ -233,6 +234,7 @@ function addPackage(data) {
     var unitPrice = '0.00';
     var bkgpkg_date = nowDate;
     var bkgpkg_time = '';
+    var bkgpkg_emp_id = '';
     do {
         randNum     = parseInt(Math.random()*1000);
     } while($('#pkg_id_' + randNum).length > 0);
@@ -240,8 +242,12 @@ function addPackage(data) {
     var inputQtyId  = 'pkg_qty_' + randNum;
     var inputDateId = 'pkg_date_' + randNum;
     var inputTimeId = 'pkg_time_' + randNum;
+    var inputEmpId  = 'pkg_emp_id_' + randNum;
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
+    }
+    if(typeof(data.emp_id) != 'undefined' && data.emp_id != '') {
+        bkgpkg_emp_id = data.emp_id;
     }
     if(typeof(data.bkgpkg_date) != 'undefined' && data.bkgpkg_date != '') {
         bkgpkg_date = data.bkgpkg_date;
@@ -313,10 +319,13 @@ function addPackage(data) {
                     + '             <tbody>'
                     + '                 <tr>'
                     + '                     <td>'
-                    + '                         วันที่ <input id="' + inputDateId + '" name="bkgpkg_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
+                    + '                         <label>วันที่</label> <input id="' + inputDateId + '" name="bkgpkg_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         เวลา <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
+                    + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
+                    + '                     </td>'
+                    + '                     <td>'
+                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
                     + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'
@@ -355,6 +364,17 @@ function addPackage(data) {
             calSummary();
         },
         group           : 'packages'
+    });
+    selectReferenceJS({
+        elem            : $('#' + inputEmpId),
+        data            : refEmpData,
+        defaultValue    : bkgpkg_emp_id,
+        showClearBtn    : true,
+        clearBtnText    : 'ไม่ระบุ',
+        success:
+        function() {
+            $('input[name="' + inputEmpId + '"]').attr('name', 'bkgpkg_emp_id[]');
+        }
     });
     $('#' + inputDateId).datetimepicker({
         lang                : 'th',
@@ -533,13 +553,13 @@ function addServiceList(data) {
                     + '             <tbody>'
                     + '                 <tr>'
                     + '                     <td>'
-                    + '                         วันที่ <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
+                    + '                         <label>วันที่</label> <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         เวลา <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
+                    + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         พนักงานที่จอง <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
+                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
                     + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'

@@ -686,12 +686,14 @@ function dbClose() {
 						'bkgpkg_id'	  		  => 'รหัสรายละเอียดแพ็คเกจที่จอง',
 						'pkg_id'	          => 'รหัสแพ็คเกจ',
 						'bkg_id' 		      => 'รหัสการจอง',
+						'emp_id'			  => 'พนักงานที่จอง',
 						'bkgpkg_date'         => 'วันที่ใช้บริการ',
 						'bkgpkg_time'         => 'เวลาที่ใช้บริการ',
 						'bkgpkg_total_price'  => 'ราคารวมการจองแพ็คเกจ(บาท)',
 						'bkgpkg_persons'      => 'จำนวนผู้ใช้บริการ'
 				),
-				'searchFields'	=> array('bkgpkg_id','pkg_id','bkg_id')
+				'searchFields'	=> array('bkgpkg_id','pkg_id','bkg_id'),
+				'defaultNull' 	=> array('emp_id')
 			);
 			break;
 

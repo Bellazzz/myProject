@@ -39,6 +39,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Get table booking_packages data
 		$valuesPkg = array();
 		$sql = "SELECT 		bp.bkgpkg_id, 
+							bp.emp_id,
 							bp.bkgpkg_date,
 							DATE_FORMAT(bp.bkgpkg_time,'%H:%i') bkgpkg_time,
 							bp.bkgpkg_persons,
@@ -56,6 +57,7 @@ if(!$_REQUEST['ajaxCall']) {
 				$valuesPkg[$record['pkg_id']] = array(
 					'bkgpkg_id'   		=> $record['bkgpkg_id'],
 					'pkg_id' 			=> $record['pkg_id'],
+					'emp_id'			=> $record['emp_id'],
 					'bkgpkg_date' 		=> $record['bkgpkg_date'],
 					'bkgpkg_time' 		=> $record['bkgpkg_time'],
 					'pkg_price' 		=> $record['pkg_price'],
@@ -490,12 +492,22 @@ if(!$_REQUEST['ajaxCall']) {
 		// Insert booking packages
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				$bkgpkg_empId 		= $formData['bkgpkg_emp_id'][$key];
 				$bkgpkg_date 		= $formData['bkgpkg_date'][$key];
 				$bkgpkg_time 		= $formData['bkgpkg_time'][$key];
 				$bkgpkg_persons 	= $formData['pkg_qty'][$key];
 				$bkgpkg_total_price = $formData['bkgpkg_total_price'][$key];
-				$bkgpkgValues 		= array($pkg_id, $bkg_id, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
-				$bkgpkgRecord 		= new TableSpa('booking_packages', $bkgpkgValues);
+
+				// create fields and values
+				if($formData['bkgpkg_emp_id'][$key] == '') {
+					$bkgpkgFields = array('pkg_id','bkg_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+					$bkgpkgValues = array($pkg_id, $bkg_id, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+				} else {
+					$bkgpkgFields = array('pkg_id','bkg_id','emp_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+					$bkgpkgValues = array($pkg_id, $bkg_id, $bkgpkg_empId, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+				}
+
+				$bkgpkgRecord 		= new TableSpa('booking_packages', $bkgpkgFields, $bkgpkgValues);
 				if(!$bkgpkgRecord->insertSuccess()) {
 					$insertResult = false;
 					$errTxt .= 'INSERT_BOOKING_PACKAGES['.($key+1).']_FAIL\n';
@@ -508,7 +520,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Insert booking service_list
 		if(isset($formData['svl_id']) && is_array($formData['svl_id'])) {
 			foreach ($formData['svl_id'] as $key => $svl_id) {
-				$bkgsvl_empId 		= $formData['bkgsvl_emp_id'][$key] ;
+				$bkgsvl_empId 		= $formData['bkgsvl_emp_id'][$key];
 				$bkgsvl_date 		= $formData['bkgsvl_date'][$key];
 				$bkgsvl_time 		= $formData['bkgsvl_time'][$key];
 				$bkgsvl_persons 	= $formData['svl_qty'][$key];

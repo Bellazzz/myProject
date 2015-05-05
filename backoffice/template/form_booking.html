@@ -36,11 +36,9 @@
             padding-left: 100px;
         }
         .prm-list-container {
-            width: 718px;
-            margin-bottom: 40px;
-            background: #f8f8f8;
-            border-radius: 6px;
-            box-shadow: 0 2px 2px #ddd;
+            width: 820px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
         }
         .prm-list {
             position: relative;
@@ -51,9 +49,6 @@
         .prm-list .prm-thumb {
             width: 50px;
             height: 50px;
-            -webkit-border-radius: 6px;
-            -moz-border-radius: 6px;
-            border-radius: 6px;
             background-repeat: no-repeat;
             background-position: center top;
             background-size: cover;
@@ -78,10 +73,12 @@
             width: 412px;
         }
         .prm-list table td.amount-col {
+            display: none;
             width: 80px;
             text-align: right !important;
         }
         .prm-list table td.discout-col {
+            display: none;
             text-align: right !important;
             color: rgb(255, 68, 68) !important;
         }
@@ -121,9 +118,12 @@
             border-top: 1px solid #c4c4c4;
             padding-top: 21px;
         }
-        .svldtl-container td, .pkgsvlCom-list-container td {
+        .svldtl-container td, .pkgsvlCom-list-container td, .pkgdtl-container td {
             padding-left: 20px;
             color: #666;
+        }
+        .svldtl-container label, .pkgdtl-container label {
+            display: inline-block;
         }
         .status-waiting, .status-complete, .status-remain {
             display: inline;
