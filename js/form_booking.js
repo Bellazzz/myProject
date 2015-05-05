@@ -229,6 +229,10 @@ function allowChangeCusTypeId() {
 }
 
 function addPackage(data) {
+    if(!hasCustomer('pkg')) {
+        return;
+    }
+
     var randNum;
     var selectRefDefault = '';
     var unitPrice = '0.00';
@@ -464,6 +468,10 @@ function removePackage(randNum) {
 }
 
 function addServiceList(data) {
+    if(!hasCustomer('svl')) {
+        return;
+    }
+
     var randNum;
     var selectRefDefault = '';
     var unitPrice = '0.00';
@@ -999,4 +1007,36 @@ function beforeSaveRecord() {
     	returnVal = true;
     }
     return returnVal;
+}
+
+function hasCustomer(type) {
+    if($('input[name="cus_id"]').val() == '') {
+        var title = 'กรุณาเลือกผู้ใช้บริการ';
+        var msg = 'กรุณาเลือกผู้ใช้บริการก่อนจึงจะสามารถเลือก';
+        if(type == 'svl') {
+            msg += 'รายการบริการได้';
+        } else {
+            msg += 'แพ็คเกจได้';
+        }
+        
+        parent.showActionDialog({
+            title: title,
+            message: msg,
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        return false;
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+        return false;
+    } else {
+        return true;
+    }
 }
