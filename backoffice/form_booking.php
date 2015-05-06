@@ -189,7 +189,8 @@ if(!$_REQUEST['ajaxCall']) {
 				case 'service_lists':
 					$sqlRefData = "	SELECT 		svl_id refValue,
 												svl_name refText,
-												svl_price 
+												svl_price,
+												IFNULL(svl_hr,0) * 60 + IFNULL(svl_min,0) svl_min 
 									FROM 		service_lists 
 									WHERE 		svl_start <= '$nowDate' AND 
 												(

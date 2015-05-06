@@ -478,6 +478,7 @@ function addServiceList(data) {
     var bkgsvl_emp_id = '';
     var bkgsvl_date = nowDate;
     var bkgsvl_time = '';
+    var svl_min = 0;
     do {
         randNum     = parseInt(Math.random()*1000);
     } while($('#svl_id_' + randNum).length > 0);
@@ -504,6 +505,7 @@ function addServiceList(data) {
                     + '     <td width="350px">'
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                     + '     </td>'
+                    + '     <td align="right" style="padding-right:20px;width:110px;"><span id="svl_min_' + randNum + '" class="svl_min_txt">' + svl_min + '</span> นาที'
                     + '		<td align="right" style="padding-right:20px;"><span class="svl_unit_price">' + unitPrice + '</span>'
                     + '     <td style="padding-left:40px;">';
 
@@ -528,7 +530,7 @@ function addServiceList(data) {
                     + '         <input type="hidden" name="bkgsvl_total_price_tmp[]" value="0">'
                     + '         <input type="hidden" name="bkgsvl_total_price[]" value="0">'
                     + '     </td>'
-                    + '		<td style="width:100%">'
+                    + '		<td>'
                     + '			<button class="removeServiceListBtn button button-icon button-icon-delete" onclick="removeServiceList(\'' + randNum + '\')">ลบ</button>'
                     + '     </td>'
                     + '</tr>'
@@ -566,8 +568,8 @@ function addServiceList(data) {
                     + '                     <td>'
                     + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
-                    + '                     <td>'
-                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
+                    + '                     <td class="bkgemp_col" style="display:none;">'
+                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half" data-randNum="' + randNum + '">'
                     + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'
@@ -594,6 +596,11 @@ function addServiceList(data) {
             pullSvlUnitPrice(inputKeyId);
             addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
             calSummary();
+
+            pullBkgEmp({
+                empInput: $('#' + inputEmpId),
+                type: 'svl'
+            });
         },
         success         : 
         function() {
@@ -656,6 +663,24 @@ function addServiceList(data) {
         calSumPriceInput(sumPriceInput, 'service_lists');
         addSvlPrmSale($('#' + inputKeyId).find('input[name="svl_id[]"]').val());
         calSummary();
+
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'svl'
+        });
+    });
+    // Pull employee id
+    $('#' + inputDateId).focusout(function() {
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'svl'
+        });
+    });
+    $('#' + inputTimeId).focusout(function() {
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'svl'
+        });
     });
 }
 
@@ -727,16 +752,20 @@ function pullSvlUnitPrice(inputKeyId) {
     
     if(typeof(svlID) != 'undefined' && svlID != '') {
         var svlUnitPrice = $('#' + inputKeyId).parent().parent().find('.svl_unit_price');
+        var svlMinTxt = $('#' + inputKeyId).parent().parent().find('.svl_min_txt');
         var unitPrice    = '';
+        var svl_min = '';
 
         for(i in refSvlData) {
             if(refSvlData[i].refValue == svlID) {
                 unitPrice = parseFloat(refSvlData[i].svl_price);
+                svl_min = parseInt(refSvlData[i].svl_min);
                 break;
             }
         }
 
         svlUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
+        svlMinTxt.text(svl_min.formatMoney(0, '', ','));
         calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgsvl_total_price_tmp[]"]'), 'service_lists');
     }
 }
@@ -1039,4 +1068,72 @@ function hasCustomer(type) {
     } else {
         return true;
     }
+}
+
+function pullBkgEmp(data) {
+    var randNum = data.empInput.attr('data-randNum');
+    var date = '';
+    var time = '';
+
+    if(data.type == 'svl') {
+        var svl_id = $('#svl_id_' + randNum).find('.selectReferenceJS-input').val();
+        var svl_qty = $('#svl_qty_' + randNum).val();
+        var svl_min = $('#svl_min_' + randNum).text();
+        date = data.empInput.parent().parent().find('input[name="bkgsvl_date[]"]').val();
+        time = data.empInput.parent().parent().find('input[name="bkgsvl_time[]"]').val();
+
+        // Check for skip
+        if(svl_id != '' && svl_qty != '' && parseInt(svl_qty) == 1 && date != '' && time != '') {
+            var timeEnd = addMinutes(time, svl_min);
+            if(isDateThaiFormat(date)) {
+                date = getRealDate(date);
+            } else {
+                date = tmpDateToRealDate(date);
+            }
+            ajaxPullBkgEmp({
+                date: date,
+                time: time,
+                timeEnd: timeEnd,
+                success:
+                function() {
+                    data.empInput.parent().parent().find('.bkgemp_col').css('display','table-cell');
+                }
+            });
+        } else {
+            alert('no pull');
+            data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
+            data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
+            data.empInput.find('.selectReferenceJS-input').val('');
+        }
+    }
+}
+
+function ajaxPullBkgEmp(data) {
+    $.ajax({
+        url: '../common/ajaxPullEmpIdOfBooking.php',
+        type: 'POST',
+        data: {
+            date: data.date,
+            time: data.time,
+            timeEnd: data.timeEnd
+        },
+        success:
+        function(response) {
+            alert(response);
+            if(typeof(data.success) == 'function') {
+                data.success();
+            }
+        }
+    })
+}
+
+function addMinutes(time, addMin) {
+    var now = new Date();
+    var date = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + time + ':00');
+    if(addMin > 0) {
+        var after = new Date(date.getTime() + addMin*60000);
+    } else {
+        var after = date;
+    }
+    return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
 }
