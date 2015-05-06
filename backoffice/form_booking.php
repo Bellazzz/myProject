@@ -209,6 +209,11 @@ if(!$_REQUEST['ajaxCall']) {
 												pkg_stop,
 												pkg_price
 									FROM 		packages p 
+									WHERE 		pkg_start <= '$nowDate' AND 
+												(
+													pkg_stop IS NULL OR 
+													pkg_stop >= '$nowDate'
+												) 
 									ORDER BY 	refText ASC";
 					$refField 	= 'pkg_id';
 					break;
