@@ -431,20 +431,21 @@ function pullBkgPkgAndBkgSvl(success) {
         },
         success:
         function(responseJSON) {
+
             var response = $.parseJSON(responseJSON);
-            for(i in response.pkg) {
+            for(a in response.pkg) {
                 addPackage({
                     defaultValue    : true,
                     pullPkg         : true,
-                    pkg_id          : response.pkg[i],
+                    pkg_id          : response.pkg[a],
                     pkg_qty         : 1
                 });
             }
-            for(i in response.svl) {
+            for(b in response.svl) {
                 addServiceList({
                     defaultValue : true,
                     pullSvl         : true,
-                    svl_id      : response.svl[i],
+                    svl_id      : response.svl[b],
                     svl_qty     : 1,
                 });
             }
