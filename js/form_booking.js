@@ -1100,7 +1100,7 @@ function pullBkgEmp(data) {
                 }
             });
         } else {
-            alert('no pull');
+            // alert('no pull');
             data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
             data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
             data.empInput.find('.selectReferenceJS-input').val('');
@@ -1119,7 +1119,7 @@ function ajaxPullBkgEmp(data) {
         },
         success:
         function(response) {
-            alert(response);
+            console.log(response);
             if(typeof(data.success) == 'function') {
                 data.success();
             }
