@@ -58,7 +58,7 @@ if(isset($_POST['submit'])) {
 						sd.emp_id = '$curEmp_id' AND 
 						s.ser_date >= '$startDate' AND 
 						s.ser_date <= '$endDate'
-			UNION 
+			UNION ALL 
 			SELECT 		s.ser_date date, 
 						s.cus_id, 
 						c.custype_id,
