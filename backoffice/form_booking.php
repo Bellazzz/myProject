@@ -203,18 +203,36 @@ if(!$_REQUEST['ajaxCall']) {
 					break;
 
 				case 'packages':
-					$sqlRefData = "	SELECT 		pkg_id refValue,
-												pkg_name refText,
-												pkg_start,
-												pkg_stop,
-												pkg_price
-									FROM 		packages p 
-									WHERE 		pkg_start <= '$nowDate' AND 
-												(
-													pkg_stop IS NULL OR 
-													pkg_stop >= '$nowDate'
-												) 
-									ORDER BY 	refText ASC";
+					$sqlRefData = "SELECT * FROM 
+									(
+										SELECT 		pkg_id refValue,
+													pkg_name refText,
+													pkg_start,
+													pkg_stop,
+													pkg_price
+										FROM 		packages p 
+										WHERE 		pkg_start <= '$nowDate' AND 
+													(
+														pkg_stop IS NULL OR 
+														pkg_stop >= '$nowDate'
+													) 
+										ORDER BY 	refText ASC
+									) a 
+									JOIN 
+									(
+										SELECT 		p.pkg_id,
+													SUM(IFNULL(s.pkgsvl_hr,0) * 60 + IFNULL(s.pkgsvl_min,0)) pkg_min 
+										FROM 		packages p,
+													package_service_lists s 
+										WHERE 		p.pkg_id = s.pkg_id AND 
+													p.pkg_start <= '$nowDate' AND 
+													(
+														p.pkg_stop IS NULL OR 
+														p.pkg_stop >= '$nowDate'
+													) 
+										GROUP BY 	p.pkg_id 
+									) b 
+									ON a.refValue = b.pkg_id";
 					$refField 	= 'pkg_id';
 					break;
 

@@ -247,6 +247,7 @@ function addPackage(data) {
     var inputDateId = 'pkg_date_' + randNum;
     var inputTimeId = 'pkg_time_' + randNum;
     var inputEmpId  = 'pkg_emp_id_' + randNum;
+    var pkg_min = 0;
     if(typeof(data.unitPrice) != 'undefined' && data.unitPrice != '') {
         unitPrice = data.unitPrice;
     }
@@ -259,12 +260,16 @@ function addPackage(data) {
     if(typeof(data.bkgpkg_time) != 'undefined' && data.bkgpkg_time != '') {
         bkgpkg_time = data.bkgpkg_time;
     }
+    if(typeof(data.bkgpkg_time) != 'undefined' && data.bkgpkg_time != '') {
+        bkgpkg_time = data.bkgpkg_time;
+    }
 
     // Create HTML and append
     var pkgRowHTML  = '<tr class="package-row">'
                     + '     <td width="350px">'
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                     + '     </td>'
+                    + '     <td align="right" style="padding-right:20px;width:110px;"><span id="pkg_min_' + randNum + '" class="pkg_min_txt">' + pkg_min + '</span> นาที'
                     + '		<td align="right" style="padding-right:20px;"><span class="pkg_unit_price">' + unitPrice + '</span>'
                     + '     <td style="padding-left:40px;">';
 
@@ -290,7 +295,7 @@ function addPackage(data) {
                     + '         <input type="hidden" name="bkgpkg_total_price_tmp[]" value="0">'
                     + '         <input type="hidden" name="bkgpkg_total_price[]" value="0">'
                     + '     </td>'
-                    + '		<td style="width:100%">'
+                    + '		<td>'
         			+ '			<button class="removePackageBtn button button-icon button-icon-delete" onclick="removePackage(\'' + randNum + '\')">ลบ</button>'
                     + '     </td>'
                     + '</tr>'
@@ -323,13 +328,17 @@ function addPackage(data) {
                     + '             <tbody>'
                     + '                 <tr>'
                     + '                     <td>'
-                    + '                         <label>วันที่</label> <input id="' + inputDateId + '" name="bkgpkg_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
+                    + '                         <label class="input-required">วันที่</label> <input id="' + inputDateId + '" name="bkgpkg_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
+                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half">'
+                    + '                         <span class="err-bkgemp-require errInputMsg half">ไม่มีพนักงานที่สามารถจองในวันเวลาดังกล่าว</span>'
+                    + '                     </td>'
+                    + '                     <td class="bkgemp_col" style="display:none;position:relative;">'
+                    + '                         <img class="pullEmpId-loader" src="../img/loading.gif">'
+                    + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half" data-randNum="' + randNum + '">'
                     + '                     </td>'
                     + '                 </tr>'
                     + '                 <tr>'
@@ -366,6 +375,11 @@ function addPackage(data) {
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
             calSummary();
+
+            pullBkgEmp({
+                empInput: $('#' + inputEmpId),
+                type: 'pkg'
+            });
         },
         group           : 'packages'
     });
@@ -420,6 +434,24 @@ function addPackage(data) {
         calSumPriceInput(sumPriceInput, 'packages');
         addPkgPrmSale($('#' + inputKeyId).find('input[name="pkg_id[]"]').val());
         calSummary();
+
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'pkg'
+        });
+    });
+    // Pull employee id
+    $('#' + inputDateId).focusout(function() {
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'pkg'
+        });
+    });
+    $('#' + inputTimeId).focusout(function() {
+        pullBkgEmp({
+            empInput: $('#' + inputEmpId),
+            type: 'pkg'
+        });
     });
 }
 
@@ -737,16 +769,20 @@ function pullPkgUnitPrice(inputKeyId) {
     
     if(typeof(pkgID) != 'undefined' && pkgID != '') {
         var pkgUnitPrice = $('#' + inputKeyId).parent().parent().find('.pkg_unit_price');
+        var pkgMinTxt = $('#' + inputKeyId).parent().parent().find('.pkg_min_txt');
         var unitPrice    = '';
+        var pkg_min = '';
 
         for(i in refPkgData) {
             if(refPkgData[i].refValue == pkgID) {
                 unitPrice = parseFloat(refPkgData[i].pkg_price);
+                pkg_min = parseInt(refPkgData[i].pkg_min);
                 break;
             }
         }
 
         pkgUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
+        pkgMinTxt.text(pkg_min.formatMoney(0, '', ','));
         calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgpkg_total_price_tmp[]"]'), 'packages');
     }
 }
@@ -1109,6 +1145,36 @@ function pullBkgEmp(data) {
             data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
             data.empInput.find('.selectReferenceJS-input').val('');
         }
+    } else if(data.type == 'pkg') {
+        var pkg_id = $('#pkg_id_' + randNum).find('.selectReferenceJS-input').val();
+        var pkg_qty = $('#pkg_qty_' + randNum).val();
+        var pkg_min = $('#pkg_min_' + randNum).text();
+        date = data.empInput.parent().parent().find('input[name="bkgpkg_date[]"]').val();
+        time = data.empInput.parent().parent().find('input[name="bkgpkg_time[]"]').val();
+
+        // Check for skip
+        if(pkg_id != '' && pkg_qty != '' && parseInt(pkg_qty) == 1 && date != '' && time != '') {
+            var timeEnd = addMinutes(time, pkg_min);
+            if(isDateThaiFormat(date)) {
+                date = getRealDate(date);
+            } else {
+                date = tmpDateToRealDate(date);
+            }
+            ajaxPullBkgEmp({
+                date: date,
+                time: time,
+                timeEnd: timeEnd,
+                empInput: data.empInput,
+                success:
+                function() {
+                }
+            });
+        } else {
+            data.empInput.parent().parent().find('.err-bkgemp-require').css('display','none');
+            data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
+            data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
+            data.empInput.find('.selectReferenceJS-input').val('');
+        }
     }
 }
 
@@ -1127,7 +1193,6 @@ function ajaxPullBkgEmp(data) {
         },
         success:
         function(responseJSON) {
-            console.log(responseJSON);
             var response = $.parseJSON(responseJSON);
             if(response.status == 'PASS') {
                 // Add options
