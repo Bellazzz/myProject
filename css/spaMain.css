@@ -623,6 +623,7 @@ datetimepicker
   border-bottom: 1px solid #DDDDDD;
   text-align: center;
   margin-bottom: 20px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
 .product:hover {
   border: 1px solid #8AC007;
@@ -656,6 +657,7 @@ datetimepicker
   -o-transition: all 0.5s ease 0s;
   max-height: 240px;
   margin: 0 auto;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
 }
 .description {
   margin: 0 4px 0 5px;
@@ -867,10 +869,12 @@ min-height: 260px;
   width: 100%;
   overflow: hidden;
   margin-bottom: 20px;
+  padding: 4px 4px 4px 0;
 }
 .product-image img {
   max-width: 100%;
   height: auto;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
 }
 .product-price {
   font-size: 30px;
@@ -1248,3 +1252,57 @@ h2.block-title-2, .formBox h3, .block-title-2 {
    font-size: 27px;
   font-family: ThaiSansNeue-Regular;
 }
+
+.descAbout {
+   font-size: 22px;
+  font-family: ThaiSansNeue-Regular;
+}
+
+.shadowImg
+{
+    position:relative;       
+    -webkit-box-shadow:0 7px 15px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+       -moz-box-shadow:0 7px 15px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+            box-shadow:0 7px 15px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+.shadowImg:before, .shadowImg:after
+{
+  content:"";
+    position:absolute; 
+    z-index:-1;
+    -webkit-box-shadow:0 0 20px rgba(0,0,0,0.8);
+    -moz-box-shadow:0 0 20px rgba(0,0,0,0.8);
+    box-shadow:0 0 20px rgba(0,0,0,0.8);
+    top:0;
+    bottom:0;
+    left:10px;
+    right:10px;
+    -moz-border-radius:100px / 10px;
+    border-radius:100px / 10px;
+} 
+.shadowImg:after
+{
+  right:10px; 
+    left:auto;
+    -webkit-transform:skew(8deg) rotate(3deg); 
+       -moz-transform:skew(8deg) rotate(3deg);     
+        -ms-transform:skew(8deg) rotate(3deg);     
+         -o-transform:skew(8deg) rotate(3deg); 
+            transform:skew(8deg) rotate(3deg);
+}
+
+/*Header CSS*/
+.titleHeader a {
+  font-size: 22px !important;
+  font-family: ThaiSansNeue-Bold;
+}
+
+.titleLogin a {
+   font-size: 18px !important;
+  font-family: ThaiSansNeue-Bold;
+}
+
+/*.titleHeader {
+   font-size: 22px;
+  font-family: ThaiSansNeue-Regular;
+}*/
