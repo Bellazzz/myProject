@@ -568,7 +568,8 @@ function addServiceList(data) {
                     + '                     <td>'
                     + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
-                    + '                     <td class="bkgemp_col" style="display:none;">'
+                    + '                     <td class="bkgemp_col" style="display:none;position:relative;">'
+                    + '                         <img class="pullEmpId-loader" src="../img/loading.gif">'
                     + '                         <label>พนักงานที่จอง</label> <div id="' + inputEmpId + '" class="selectReferenceJS form-input half" data-randNum="' + randNum + '">'
                     + '                     </td>'
                     + '                 </tr>'
@@ -1094,6 +1095,7 @@ function pullBkgEmp(data) {
                 date: date,
                 time: time,
                 timeEnd: timeEnd,
+                empInput: data.empInput,
                 success:
                 function() {
                     data.empInput.parent().parent().find('.bkgemp_col').css('display','table-cell');
@@ -1109,6 +1111,10 @@ function pullBkgEmp(data) {
 }
 
 function ajaxPullBkgEmp(data) {
+    // Show loader
+    $(data.empInput).parent().find('.pullEmpId-loader').css('display','inline-block');
+    
+
     $.ajax({
         url: '../common/ajaxPullEmpIdOfBooking.php',
         type: 'POST',
@@ -1118,10 +1124,35 @@ function ajaxPullBkgEmp(data) {
             timeEnd: data.timeEnd
         },
         success:
-        function(response) {
-            console.log(response);
+        function(responseJSON) {
+            console.log(responseJSON);
+            var response = $.parseJSON(responseJSON);
+            if(response.status == 'PASS') {
+                // Add options
+                var empIdListHTML = '';
+                for(i in response.returnEmpId) {
+                    empIdListHTML  += '<li style="display: list-item;" id="emp_id_' + response.returnEmpId[i].emp_id + '">'
+                                    + '     <span class="text">' + response.returnEmpId[i].fullName + '</span>'
+                                    + '     <span class="value">' + response.returnEmpId[i].emp_id + '</span>'
+                                    + '</li>';
+                }
+                data.empInput.find('.option-container').html(empIdListHTML);
+
+                addEventSelectReferenceJSLi({
+                    elem : data.empInput
+                });
+            } else if(response.status == 'EMPTY') {
+                $(data.empInput).css('display','none');
+            } else {
+                alert(response.status);
+            }
+            
+
             if(typeof(data.success) == 'function') {
-                data.success();
+                // Hide loader
+                $(data.empInput).parent().find('.pullEmpId-loader').css('display','none');
+                $(data.empInput).css('display','inline-block');
+                data.success(); // calback
             }
         }
     })

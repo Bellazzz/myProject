@@ -2,7 +2,10 @@
 include('../config/config.php');
 include('../common/common_header.php');
 
-$response = array();
+$response = array(
+	'status' => '',
+	'returnEmpId' => array()
+);
 if(hasValue($_POST['date']) && hasValue($_POST['time']) && hasValue($_POST['timeEnd'])) {
 	$date = str_replace("/", "-", $_POST['date']);
 	$time = $_POST['time'];
@@ -73,7 +76,7 @@ if(hasValue($_POST['date']) && hasValue($_POST['time']) && hasValue($_POST['time
 					b.status_id IN ('S01','S02','S03','S04') AND 
 					bs.bkgsvl_status = 0 AND 
 					bs.bkgsvl_date = '$date' AND 
-					bs.emp_id IS NOT NULL";echo $sql;
+					bs.emp_id IS NOT NULL";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
 	if($rows > 0) {
@@ -92,10 +95,30 @@ if(hasValue($_POST['date']) && hasValue($_POST['time']) && hasValue($_POST['time
 			}
 		}
 	}
-	print_r($overlapEmpIds);
 
-	
+	// Get employee id
+	$overlapEmpIds = wrapSingleQuote($overlapEmpIds);
+	$sql = "SELECT 	emp_id,
+					CONCAT(emp_name, ' ', emp_surname) fullName 
+			FROM 	employees 
+			WHERE 	pos_id = 'P03'";
+	if(count($overlapEmpIds) > 0) {
+		$sql .= "AND emp_id NOT IN (".implode(",", $overlapEmpIds).")";
+	}
+	$result = mysql_query($sql, $dbConn);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($response['returnEmpId'], array(
+				'emp_id' => $record['emp_id'],
+				'fullName' => $record['fullName']
+			));
+		}
+		$response['status'] = 'PASS';
+	} else {
+		$response['status'] = 'EMPTY';
+	}
 } 
-// echo json_encode($response);
-echo "heyyyy";
+echo json_encode($response);
 ?>
