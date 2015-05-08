@@ -15,10 +15,10 @@
                     <div class="col-sm-6">
                         <ul class="list-inline right-topbar pull-right">
                             {if $session_cusLogin && $session_cus_id}
-                                <li><a href="myaccount.php">บัญชีของฉัน</a></li>
+                                <li class="titleLogin"><a href="myaccount.php">บัญชีของฉัน</a></li>
                                 <li><a href="myaccount.php"><i class="fa fa-user"></i> {$session_cus_fullname}</a> | <a href="account_logout.php">ออกจากระบบ</a></li>
                             {else}
-                                <li><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
+                                <li class="titleLogin"><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
                             {/if}
                             <li><i class="search fa fa-search search-button"></i></li>
                         </ul>
@@ -94,7 +94,7 @@
                     <!-- Nav Menu -->
                     <ul class="nav navbar-nav">
                         <!-- Pages -->
-                        <li class="active">
+                        <li class="active titleHeader">
                             <a href="index.php">
                                 หน้าแรก
                             </a>
@@ -102,11 +102,11 @@
                         <!-- End Pages -->
 
                         <!-- Promotion -->
-                        <li class="dropdown">
+                        <li class="dropdown titleHeader">
                             <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" aria-expanded="false">
                                 การจอง
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu titleHeader">
                                 <li>
                                     <a href="shop_service_lists.php">รายการบริการ</a>
                                 </li>
@@ -116,38 +116,6 @@
                             </ul>
                         </li>
                         <!-- End Promotion -->
-
-                        <!-- Gifts -->
-                        <li class="dropdown mega-menu-fullwidth" style="display:none;">
-                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">
-                                Gifts
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <div class="mega-menu-content">
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col-md-3 col-sm-12 col-xs-12 md-margin-bottom-30">
-                                                    <h3 class="mega-menu-heading">Pellentes que nec diam lectus</h3>
-                                                    <p>Proin pulvinar libero quis auctor pharet ra. Aenean fermentum met us orci, sedf eugiat augue pulvina r vitae. Nulla dolor nisl, molestie nec aliquam vitae, gravida sodals dolor...</p>
-                                                    <button type="button" class="btn-u btn-u-dark">Read More</button>
-                                                </div>
-                                                <div class="col-md-3 col-sm-4 col-xs-4 md-margin-bottom-30">
-                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/01.jpg" alt=""></a>
-                                                </div>
-                                                <div class="col-md-3 col-sm-4 col-xs-4 sm-margin-bottom-30">
-                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/02.jpg" alt=""></a>
-                                                </div>
-                                                <div class="col-md-3 col-sm-4 col-xs-4">
-                                                    <a href="#"><img class="product-offers img-responsive" src="assets/img/blog/03.jpg" alt=""></a>
-                                                </div>
-                                            </div><!--/end row-->
-                                        </div><!--/end container-->
-                                    </div><!--/end mega menu content-->  
-                                </li>
-                            </ul><!--/end dropdown-menu-->
-                        </li>
-                        <!-- End Gifts -->
 
                         <!-- Books -->
                         <li class="dropdown mega-menu-fullwidth" style="display:none;">
@@ -306,10 +274,10 @@
                         <!-- End Clothes -->
 
                         <!-- Main Demo -->
-                        <li><a href="#">โปรโมชั่น</a></li>
-                        <li><a href="#">ผลิตภัณฑ์</a></li>
-                        <li><a href="#">อาหาร/เครื่องดื่ม</a></li>
-                        <li><a href="about_us.php">เกี่ยวกับเรา</a></li>
+                        <li class="titleHeader"><a href="#">โปรโมชั่น</a></li>
+                        <li class="titleHeader"><a href="#">ผลิตภัณฑ์</a></li>
+                        <li class="titleHeader"><a href="#">อาหาร/เครื่องดื่ม</a></li>
+                        <li class="titleHeader"><a href="about_us.php">เกี่ยวกับเรา</a></li>
                         <!-- Main Demo -->
                     </ul>
                     <!-- End Nav Menu -->
