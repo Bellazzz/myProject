@@ -563,10 +563,13 @@ function addServiceList(data) {
                     + '             <tbody>'
                     + '                 <tr>'
                     + '                     <td>'
-                    + '                         <label>วันที่</label> <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
+                    + '                         <label class="input-required">วันที่</label> <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <label>เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
+                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
+                    + '                     </td>'
+                    + '                     <td>'
+                    + '                         <span class="err-bkgemp-require errInputMsg half">ไม่มีพนักงานที่สามารถจองในวันเวลาดังกล่าว</span>'
                     + '                     </td>'
                     + '                     <td class="bkgemp_col" style="display:none;position:relative;">'
                     + '                         <img class="pullEmpId-loader" src="../img/loading.gif">'
@@ -1098,11 +1101,10 @@ function pullBkgEmp(data) {
                 empInput: data.empInput,
                 success:
                 function() {
-                    data.empInput.parent().parent().find('.bkgemp_col').css('display','table-cell');
                 }
             });
         } else {
-            // alert('no pull');
+            data.empInput.parent().parent().find('.err-bkgemp-require').css('display','none');
             data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
             data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
             data.empInput.find('.selectReferenceJS-input').val('');
@@ -1141,17 +1143,23 @@ function ajaxPullBkgEmp(data) {
                 addEventSelectReferenceJSLi({
                     elem : data.empInput
                 });
+
+                // Hide loader
+                data.empInput.parent().parent().find('.err-bkgemp-require').css('display','none');
+                $(data.empInput).parent().find('.pullEmpId-loader').css('display','none');
+                $(data.empInput).css('display','inline-block');
+                data.empInput.parent().parent().find('.bkgemp_col').css('display','table-cell');
             } else if(response.status == 'EMPTY') {
-                $(data.empInput).css('display','none');
+                data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
+                data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
+                data.empInput.find('.selectReferenceJS-input').val('');
+                data.empInput.parent().parent().find('.err-bkgemp-require').css('display','inline');
             } else {
                 alert(response.status);
             }
             
 
             if(typeof(data.success) == 'function') {
-                // Hide loader
-                $(data.empInput).parent().find('.pullEmpId-loader').css('display','none');
-                $(data.empInput).css('display','inline-block');
                 data.success(); // calback
             }
         }
