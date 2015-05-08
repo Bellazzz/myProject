@@ -12,6 +12,31 @@ body {
   position: relative;
   background: #fff;
 }
+@font-face {
+    font-family: FontAwesome;
+    src: url('../inc/font-awesome/fonts/fontawesome-webfont.eot');
+    src: url('../inc/font-awesome/fonts/fontawesome-webfont.eot?') format('embedded-opentype'),
+         url('../inc/font-awesome/fonts/fontawesome-webfont.woff') format('woff'),
+         url('../inc/font-awesome/fonts/fontawesome-webfont.ttf') format('truetype');
+}
+@font-face {
+    font-family: ThaiSansNeue-Regular;
+    src: url('../font/ThaiSansNeue-Regular.eot');
+    src: url('../font/ThaiSansNeue-Regular.eot?') format('embedded-opentype'),
+         url('../font/ThaiSansNeue-Regular.woff') format('woff'),
+         url('../font/ThaiSansNeue-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: ThaiSansNeue-Bold;
+    src: url('../font/ThaiSansNeue-Bold.eot');
+    src: url('../font/ThaiSansNeue-Bold.eot?') format('embedded-opentype'),
+         url('../font/ThaiSansNeue-Bold.woff') format('woff'),
+         url('../font/ThaiSansNeue-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
 p {
   font-size: 14px;
 }
@@ -27,6 +52,9 @@ a {
 }
 a:hover {
   color: #8AC007;
+}
+h1 {
+  font-family: ThaiSansNeue-Bold;
 }
 h2 {
   font-size: 24px;
@@ -1202,4 +1230,21 @@ h2.block-title-2, .formBox h3, .block-title-2 {
 }
 .statusHL.statusHL-green {
     background-color: #5CB85C;
+}
+
+/*CSS About US*/
+#spaname {
+ /* color: #34495E;*/
+  font-size: 30px;
+  font-family: ThaiSansNeue-Bold;
+}
+
+#descspa {
+  font-size: 27px;
+  font-family: ThaiSansNeue-Regular;
+}
+
+.titleAbout {
+   font-size: 27px;
+  font-family: ThaiSansNeue-Regular;
 }
