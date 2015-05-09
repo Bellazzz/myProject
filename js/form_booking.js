@@ -334,7 +334,7 @@ function addPackage(data) {
                     + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <span class="err-bkgemp-require errInputMsg half">ไม่มีพนักงานที่สามารถจองในวันเวลาดังกล่าว</span>'
+                    + '                         <span class="err-bkgemp-require errInputMsg half" data-type="pkg" data-randNum="' + randNum + '">ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว</span>'
                     + '                     </td>'
                     + '                     <td class="bkgemp_col" style="display:none;position:relative;">'
                     + '                         <img class="pullEmpId-loader" src="../img/loading.gif">'
@@ -601,7 +601,7 @@ function addServiceList(data) {
                     + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <span class="err-bkgemp-require errInputMsg half">ไม่มีพนักงานที่สามารถจองในวันเวลาดังกล่าว</span>'
+                    + '                         <span class="err-bkgemp-require errInputMsg half" data-type="svl" data-randNum="' + randNum + '">ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว</span>'
                     + '                     </td>'
                     + '                     <td class="bkgemp_col" style="display:none;position:relative;">'
                     + '                         <img class="pullEmpId-loader" src="../img/loading.gif">'
@@ -1074,6 +1074,56 @@ function beforeSaveRecord() {
             ]
         });
     	returnVal = true;
+    } else if(!hasInputError() && $('.err-bkgemp-require').length > 0) {
+        // No employee for service this time
+        var msg = 'รายการดังต่อไปนี้ไม่มีพนักงานที่สามารถให้บริการตามเวลาที่คุณจองได้ กรุณาเลือกวันที่และเวลาที่ต้องการจองใหม่<ul>';
+        // Check packages
+        $('.err-bkgemp-require').each(function() {
+            var type = $(this).attr('data-type');
+            var randNum = $(this).attr('data-randNum');
+            var name = '';
+            var date = '';
+            var time = '';
+            var timeEnd = '';
+            var allMin = 0;
+            if(type == 'pkg') {
+                name = $('#pkg_id_' + randNum).find('.selectReferenceJS-text').text();
+                allMin = $('#pkg_min_' + randNum).text();
+                var dateInputVal = $(this).parent().parent().find('input[name="bkgpkg_date[]"]').val();
+                time = $(this).parent().parent().find('input[name="bkgpkg_time[]"]').val();
+            } else if(type == 'svl') {
+                name = $('#svl_id_' + randNum).find('.selectReferenceJS-text').text();
+                allMin = $('#svl_min_' + randNum).text();
+                var dateInputVal = $(this).parent().parent().find('input[name="bkgsvl_date[]"]').val();
+                time = $(this).parent().parent().find('input[name="bkgsvl_time[]"]').val();
+            }
+
+            if(isDateThaiFormat(dateInputVal)) {
+                date = dateInputVal;
+            } else {
+                date = convertThaiDate(dateInputVal);
+            }
+            timeEnd = addMinutes(time, parseInt(allMin));
+            msg += '<li>' + name + ' -> ' + date + ' ' + time + ' น. - ' + timeEnd + ' น.</li>';
+        });
+        msg += '</ul>'
+
+        parent.showActionDialog({
+            title   : 'ไม่มีพนักงานที่สามารถให้บริการได้',
+            message : msg,
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                    }
+                }
+            ],
+            boxWidth: 500
+        });
+        returnVal = true;
     }
     return returnVal;
 }
