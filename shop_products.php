@@ -108,7 +108,9 @@ $prdIds = wrapSingleQuote($prdIds);
 $sql = "SELECT  pm.prmprd_id, 
 				pm.prd_id, 
 				pm.prmprd_discout, 
-				pm.prmprd_discout_type 
+				pm.prmprd_discout_type,
+				pm.prmprd_startdate,
+				pm.prmprd_enddate  
 		FROM 	promotion_products pm, product_promotions pp 
 		WHERE 	pm.prdprm_id = pp.prdprm_id 
 		AND 	pm.prmprd_startdate <= '$nowDate' 
