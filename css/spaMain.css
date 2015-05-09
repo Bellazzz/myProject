@@ -292,22 +292,26 @@ text-decoration: line-through;
 .footer h3 {
   border-bottom: 1px solid #BAC1C8;
   color: #54697E;
-  font-size: 18px;
+  font-size: 26px;
   font-weight: 600;
   line-height: 27px;
-  padding: 40px 0 10px;
+  padding: 10px 0 10px;
   text-transform: uppercase;
+  font-family: ThaiSansNeue-Regular;
 }
 .footer ul {
-  font-size: 13px;
+  font-size: 20px;
   list-style-type: none;
   margin-left: 0;
   padding-left: 0;
   margin-top: 15px;
   color: #7F8C8D;
+  font-family: ThaiSansNeue-Bold;
 }
 .footer p {
   margin: 0;
+  font-size: 20px;
+  font-family: ThaiSansNeue-Bold;
 }
 .supportLi h4 {
   font-size: 20px;
@@ -1247,6 +1251,15 @@ h2.block-title-2, .formBox h3, .block-title-2 {
   font-size: 27px;
   font-family: ThaiSansNeue-Regular;
 }
+#descspa td {
+  padding: 3px;
+}
+#descspa tr td:nth-child(1) {
+  text-align: right;
+}
+#descspa tr td:nth-child(2) {
+  padding-left: 15px;
+}
 
 .titleAbout {
    font-size: 27px;
@@ -1302,7 +1315,3 @@ h2.block-title-2, .formBox h3, .block-title-2 {
   font-family: ThaiSansNeue-Bold;
 }
 
-/*.titleHeader {
-   font-size: 22px;
-  font-family: ThaiSansNeue-Regular;
-}*/

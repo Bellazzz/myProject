@@ -64,6 +64,21 @@
 		$smarty->assign('session_cus_fullname', $_SESSION['cus_fullname']);
 	}
 
+	//Get data to show
+	$spaRecord 	= new TableSpa('spa', 'SA01');
+	$spaData 	= array(
+		'spa_name' 	=> $spaRecord->getFieldValue('spa_name'),
+		'spa_addr' 	=> $spaRecord->getFieldValue('spa_addr'),
+		'spa_tel' 	=> $spaRecord->getFieldValue('spa_tel'),
+		'spa_fax' 	=> $spaRecord->getFieldValue('spa_fax'),
+		'spa_email' => $spaRecord->getFieldValue('spa_email')
+	);
+	// Check null
+	$spaData['spa_fax'] 	= $spaData['spa_fax'] == '' ? '-' : $spaData['spa_fax'];
+	$spaData['spa_email'] 	= $spaData['spa_email'] == '' ? '-' : $spaData['spa_email'];
+
+	$smarty->assign('spaData', $spaData);
+
 	/*
 	 * Get Privileges
 	 */

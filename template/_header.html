@@ -93,16 +93,16 @@
 
                     <!-- Nav Menu -->
                     <ul class="nav navbar-nav">
-                        <!-- Pages -->
-                        <li class="active titleHeader">
+                        <!-- Home -->
+                        <li class="{if $tplName == 'index.html'}active{/if} titleHeader">
                             <a href="index.php">
                                 หน้าแรก
                             </a>
                         </li>
-                        <!-- End Pages -->
+                        <!-- End Home -->
 
-                        <!-- Promotion -->
-                        <li class="dropdown titleHeader">
+                        <!-- Booking -->
+                        <li class="{if $tplName == 'shop_service_lists.html' || $tplName == 'shop_packages.html'}active{/if} dropdown titleHeader">
                             <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" aria-expanded="false">
                                 การจอง
                             </a>
@@ -115,7 +115,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <!-- End Promotion -->
+                        <!-- End Booking -->
 
                         <!-- Books -->
                         <li class="dropdown mega-menu-fullwidth" style="display:none;">
@@ -273,12 +273,21 @@
                         </li>
                         <!-- End Clothes -->
 
-                        <!-- Main Demo -->
-                        <li class="titleHeader"><a href="#">โปรโมชั่น</a></li>
-                        <li class="titleHeader"><a href="#">ผลิตภัณฑ์</a></li>
-                        <li class="titleHeader"><a href="#">อาหาร/เครื่องดื่ม</a></li>
-                        <li class="titleHeader"><a href="about_us.php">เกี่ยวกับเรา</a></li>
-                        <!-- Main Demo -->
+                        <!-- Promotion -->
+                        <li class="{if $tplName == '#.html'}active{/if} titleHeader"><a href="#">โปรโมชั่น</a></li>
+                        <!-- End Promotion -->
+
+                        <!-- Product -->
+                        <li class="{if $tplName == '#.html'}active{/if} titleHeader"><a href="#">ผลิตภัณฑ์</a></li>
+                        <!-- End Product -->
+
+                        <!-- Food and Drink -->
+                        <li class="{if $tplName == '#.html'}active{/if} titleHeader"><a href="#">อาหาร/เครื่องดื่ม</a></li>
+                        <!-- End Food and Drink -->
+
+                        <!-- About Us -->
+                        <li class="{if $tplName == 'about_us.html'}active{/if} titleHeader"><a href="about_us.php">เกี่ยวกับเรา</a></li>
+                        <!-- End About Us -->
                     </ul>
                     <!-- End Nav Menu -->
                 </div>
