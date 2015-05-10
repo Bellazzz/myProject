@@ -1055,7 +1055,7 @@ function calChangeMoney(totalPrice) {
 
 function beforeSaveRecord() {
     // Check input required
-    var returnVal 				= false;
+    var returnVal = false;
 
     // Not input booking
     if(!hasInputError() && $('input[name="pkg_id[]"]').length == 0 && $('input[name="svl_id[]"]').length == 0) {
@@ -1075,6 +1075,17 @@ function beforeSaveRecord() {
         });
     	returnVal = true;
     } else if(!hasInputError() && $('.err-bkgemp-require').length > 0) {
+        // Skip if no dispay
+        var allDisplayErr = 0;
+        $('.err-bkgemp-require').each(function() {
+            if($(this).css('display') != 'none') {
+                allDisplayErr++;
+            }
+        });
+        if(allDisplayErr == 0) {
+            return returnVal;
+        }
+
         // No employee for service this time
         var msg = 'รายการดังต่อไปนี้ไม่มีพนักงานที่สามารถให้บริการตามเวลาที่คุณจองได้ กรุณาเลือกวันที่และเวลาที่ต้องการจองใหม่<ul>';
         // Check packages
@@ -1290,4 +1301,138 @@ function addMinutes(time, addMin) {
         var after = date;
     }
     return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
+}
+
+function showEmpScheduleBox(dialog) {
+    var empScheduleBoxHTML  = '<div class="empScheduleBox">'
+                            + '     <div class="empScheduleBox-inner">'
+                            + '         <div class="empSchedulePopup">'
+                            + '             <div class="empSchedulePopup-chooseDate">'
+                            + '                 <div class="empScheduleIdCont">'
+                            + '                     <label class="input-required">พนักงานนวด</label> '
+                            + '                     <div id="empSchedule_id" class="selectReferenceJS form-input" require></div>'
+                            + '                 </div>'
+                            + '                 <div class="header">'
+                            + '                     <span class="month">มกราคม</span> <span class="year">2558</span>'
+                            + '                 </div>'
+                            + '                 <div class="schedulaeCont"><div class="scheduleCont-inner">'
+                            + '                     <table class="empSchedulePopup-dateTable">'
+                            + '                     <thead><tr>'
+                            + '                         <th>จันทร์</th>'
+                            + '                         <th>อังคาร</th>'
+                            + '                         <th>พุธ</th>'
+                            + '                         <th>พฤหัส</th>'
+                            + '                         <th>ศุกร์</th>'
+                            + '                         <th>เสาร์</th>'
+                            + '                         <th>อาทิตย์</th>'
+                            + '                     </tr></thead>'
+                            + '                     <tbody>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '                     </toby>'
+                            + '                     </table>'
+                            + '                 </div></div>'
+                            + '             </div>'
+                            + '         </div>'
+                            + '     </div>'
+                            + '</div>';
+    $('body').prepend(empScheduleBoxHTML);
+    $('.empScheduleBox').css('visibility', 'hidden');
+
+    // Create select reference
+    selectReferenceJS({
+        elem       : $('#empSchedule_id'),
+        data       : refEmpData,
+        onOptionSelect: 
+        function() {
+            var today = new Date();
+            showEmpScheduleTable(today.getFullYear() + '-' + parseInt(today.getMonth())+1 + '-' + today.getDate());
+        }
+    });
+
+    
+
+    // Display
+    $('.empScheduleBox').css('visibility', 'visible');
+
+    if(typeof(dialog.success) == 'function') {
+        dialog.success();
+    }
+
+    
+}
+
+function hideEmpScheduleBox() {
+    $('.empScheduleBox').remove();
+}
+
+function showEmpScheduleTable(paramDate) {
+    var tmpParamDate = paramDate.split('-');
+    var date = new Date(tmpParamDate[0], tmpParamDate[1] - 1, tmpParamDate[2]);
+    var firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    var tmpDate = firstDate;
+    var dayOfWeeks = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var dateOfThisMonth = Array();
+    while(tmpDate <= lastDate) {
+        var curMonth = parseInt(tmpDate.getMonth()+1);
+        var curDate = parseInt(tmpDate.getDate());
+        if(curMonth < 10) curMonth = '0' + curMonth;
+        if(curDate < 10) curDate = '0' + curDate;
+
+        dateOfThisMonth.push(tmpDate.getFullYear() + '-' + curMonth + '-' + curDate);
+        tmpDate.setDate(tmpDate.getDate() + 1);
+    }
+
+    // Create schedule cell
+    var tbodyHTML = '';
+    var dayOfWeeksTable = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun"];
+    var index = 0;
+    var sumIndex = 0;
+
+    // Create before space cell
+    var a = dateOfThisMonth[0].split('-');
+    var curDate = new Date(a[0], a[1] - 1, a[2]);
+    while(dayOfWeeksTable[index] != dayOfWeeks[curDate.getDay()]) {
+        if(sumIndex % 8 == 0) tbodyHTML += '<tr>';
+        tbodyHTML += '<td class="whiteSpace"></td>';
+        if(sumIndex != 0 && sumIndex % 7 == 0) tbodyHTML += '</tr>';
+        index++;
+        sumIndex++;
+    }
+
+    // Create date cell
+    for(i in dateOfThisMonth) {
+        var tmp = dateOfThisMonth[i].split('-');
+        var curDate = new Date(tmp[0], tmp[1] - 1, tmp[2]);
+
+        if(dayOfWeeksTable[index] == dayOfWeeks[curDate.getDay()]) {
+            tbodyHTML += '<td><span class="dateNo">' + tmp[2] + '</span></td>';
+            if((sumIndex+1) % 7 == 0) tbodyHTML += '</tr><tr>';
+        }
+        if(index >= 6) {
+            index = 0;
+        } else {
+            index++;
+        }
+        sumIndex++;
+    }
+
+    // Create after space cell
+    while(sumIndex <= 34) {
+        tbodyHTML += '<td class="whiteSpace"></td>';
+        if((sumIndex+1) % 7 == 0) {
+            if(sumIndex == 34)
+                tbodyHTML += '</tr>';
+            else
+                tbodyHTML += '</tr><tr>';
+        } 
+        index++;
+        sumIndex++;
+    }
+    $('.empSchedulePopup-dateTable tbody').html(tbodyHTML);
 }
