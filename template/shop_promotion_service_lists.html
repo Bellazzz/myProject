@@ -41,24 +41,24 @@
 			<div class="col-xs-12 col-sm-12 col-md-12 col-md-12">
 				<div class="col-xs-12 col-sm-12 col-md-3 col-md-3">
 					<div class="product-image">
-						<img src="img/{if $prd.pkgprm_pic != ''}package_promotions/{$prd.pkgprm_pic}{else}shopItemDefaultPro.png{/if}" class="img-responsive" alt="{$prd.pkgprm_name}">
+						<img src="img/{if $prd.svlprm_pic != ''}service_list_promotions/{$prd.svlprm_pic}{else}shopItemDefaultPro.png{/if}" class="img-responsive" alt="{$prd.pkgprm_name}">
 					</div>
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-9 col-md-9">
-					<h1 class="product-title">{$prd.pkgprm_name}</h1>
-					<h4><i id="fontColor" class="fa fa-star"></i>โปรโมชั่นสำหรับแพ็คเกจ</h4>
+					<h1 class="product-title">{$prd.svlprm_name}</h1>
+					<h4><i id="fontColor" class="fa fa-star"></i>โปรโมชั่นสำหรับรายการบริการ</h4>
 				    <div class="product-desc">
-				    	<p>{$prd.pkgprm_desc}</p>
+				    	<p>{$prd.svlprm_desc}</p>
 				    </div>
-		            <label><b>แพ็คเกจที่จัดโปรโมชั่นนี้ ได้แก่</b></label>
+		            <label><b>รายการบริการที่จัดโปรโมชั่นนี้ ได้แก่</b></label>
 	                <ul>
-	                	{foreach from=$prd.pkgprmdtl key=i item=pkg}
+	                	{foreach from=$prd.svlprmdtl key=i item=prm}
 	                	<li>
-	                		{$pkg.pkg_name} <label class="expired">ลดราคา {$pkg.discoutText}</label>
-	                		{if $pkg.pkgprmdtl_startdate == $pkg.pkgprmdtl_enddate}
-	                			เฉพาะวันที่ {$pkg.pkgprmdtl_startdate}
-	                		{elseif $pkg.pkgprmdtl_enddate != ''}
-						    	สิ้นสุดโปรโมชั่น {$pkg.pkgprmdtl_enddate}
+	                		{$prm.svl_name} <label class="expired">ลดราคา {$prm.discoutText}</label>
+	                		{if $prm.svlprmdtl_startdate == $prm.svlprmdtl_enddate}
+	                			เฉพาะวันที่ {$prm.svlprmdtl_startdate}
+	                		{elseif $prm.svlprmdtl_enddate != ''}
+						    	สิ้นสุดโปรโมชั่น {$prm.svlprmdtl_enddate}
 						    {else}
 						    	ไม่มีกำหนดสิ้นสุด
 	                		{/if}

@@ -53,23 +53,19 @@ if($itemDisplay <= $allRecord) {
 }
 
 //Get Service List Data
-$svlList = array();
+$svlData = array();
 $svlIds  = array();
 $sql = "SELECT 		svl_id,
-					svl_name,
-					svl_min,
-					svl_hr,
-					svl_price,
-					svl_desc,
-					svl_picture 
+					svl_price 
 		FROM 		service_lists 
-		$order";
+		WHERE 		svl_stop IS NULL OR 
+					svl_stop >= '$nowDate'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
-		$svlList[$record['svl_id']] = $record;
+		$svlData[$record['svl_id']] = $record;
 		array_push($svlIds, $record['svl_id']);
 	}
 }
@@ -81,36 +77,63 @@ if($rows > 1) {
 }
 
 // Get service_list promotion detail data
+$svlList = array();
 $svlIds = wrapSingleQuote($svlIds);
-$sql = "SELECT 		svlprmdtl.svl_id,
+$sql = "SELECT 		svlprmdtl.svl_id, 
+					ss.svl_name,
+					ss.svl_price,
+					svlprm.svlprm_name,
+					svlprm.svlprm_id,
+					svlprm.svlprm_pic,
+					svlprm.svlprm_desc, 
+					svlprmdtl.svlprmdtl_startdate, 
+					svlprmdtl.svlprmdtl_enddate,
 					svlprmdtl.svlprmdtl_discout,
 					svlprmdtl.svlprmdtl_discout_type 
 		FROM 		service_list_promotion_details svlprmdtl,
-					service_list_promotions svlprm 
+					service_list_promotions svlprm, service_lists ss 
 		WHERE 		svlprmdtl.svlprm_id = svlprm.svlprm_id AND 
 					svlprmdtl.svlprmdtl_startdate <= '$nowDate' AND 
 					(
 						svlprmdtl.svlprmdtl_enddate IS NULL OR
 						svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 					) AND 
-					svlprmdtl.svl_id IN (".implode(',', $svlIds).")"; //echo $sql;
+					svlprmdtl.svl_id IN (".implode(',', $svlIds).")
+		AND 		svlprmdtl.svl_id  = ss.svl_id 
+		ORDER BY  	svlprm .svlprm_id DESC, svlprmdtl.svlprmdtl_id ";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$svl_id = $record['svl_id'];
+		$svlprm_id = $record['svlprm_id'];
+
+		if(!isset($svlList[$svlprm_id])) {
+			$svlList[$svlprm_id]['svlprm_name'] = $record['svlprm_name'];
+			$svlList[$svlprm_id]['svlprm_pic'] = $record['svlprm_pic'];
+			$svlList[$svlprm_id]['svlprm_desc'] = $record['svlprm_desc'];
+			$svlList[$svlprm_id]['svlprmdtl'] = array();
+		}
+
 		$discoutText = $record['svlprmdtl_discout'];
 		$discoutPrice = $record['svlprmdtl_discout'];
 
 		if($record['svlprmdtl_discout_type'] == '%') {
-			$discoutPrice = $svlList[$svl_id]['svl_price'] * $record['svlprmdtl_discout'] / 100;
+			$discoutPrice = $svlData[$svl_id]['svl_price'] * $record['svlprmdtl_discout'] / 100;
 			$discoutText .= '%';
 		} else {
 			$discoutText .= ' บาท';
 		}
-		$svlList[$svl_id]['discoutText'] = $discoutText;
-		$svlList[$svl_id]['svl_prmPrice'] = $svlList[$svl_id]['svl_price'] - $discoutPrice;
+
+		$svlList[$svlprm_id]['svlprmdtl'][$svl_id]['discoutText'] = $discoutText;
+		$svlList[$svlprm_id]['svlprmdtl'][$svl_id]['svl_prmPrice'] = $svlData[$svl_id]['svl_price'] - $discoutPrice;
+		if($record['svlprmdtl_enddate'] != '') {
+			$record['svlprmdtl_enddate'] = dateThaiFormatShort($record['svlprmdtl_enddate']);
+		}
+		$svlList[$svlprm_id]['svlprmdtl'][$svl_id]['svlprmdtl_startdate'] = dateThaiFormatShort($record['svlprmdtl_startdate']);
+		$svlList[$svlprm_id]['svlprmdtl'][$svl_id]['svlprmdtl_enddate'] = $record['svlprmdtl_enddate'];
+		$svlList[$svlprm_id]['svlprmdtl'][$svl_id]['svl_name'] = $record['svl_name'];
 	}
 }
 

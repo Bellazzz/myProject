@@ -70,16 +70,10 @@ if($page >= $allPage) {
 $pkgData = array();
 $pkgIds  = array();
 $sql = "SELECT 		pkg_id,
-					pkg_name,
-					pkg_start,
-					pkg_stop,
-					pkg_price,
-					pkg_desc,
-					pkg_picture 
+					pkg_price 
 		FROM 		packages 
 		WHERE 		pkg_stop IS NULL OR 
-					pkg_stop >= '$nowDate' 
-		$order";
+					pkg_stop >= '$nowDate'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
