@@ -84,7 +84,7 @@
 			                      					<span>รายการละ {$pkg.pkg_price|number_format:2:".":","} บาท</span>
 			                      				</div>
 			                      				<div>
-			                      					<span>วันที่จอง {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
+			                      					<span>วันที่จอง: {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
 			                      				</div>
 			                  				</div>
 			                  			</td>
@@ -97,7 +97,7 @@
 			                      					<span>รายการละ {$pkg.pkg_price|number_format:2:".":","} บาท</span>
 			                      				</div>
 			                      				<div>
-			                      					<span>วันที่จอง {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
+			                      					<span>วันที่จอง: {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
 			                      				</div>
 			                    			</div>
 			                    		</td>
@@ -160,8 +160,13 @@
 			                      					<span>รายการละ {$svl.svl_price|number_format:2:".":","} บาท</span>
 			                      				</div>
 			                      				<div>
-			                      					<span>วันที่จอง {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
+			                      					<span>วันที่จอง: {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
 			                      				</div>
+			                      				{if $svl.bkgemp_fullname}
+			                      				<div>
+			                      					<span>พนักงานที่จอง: {$svl.bkgemp_fullname}</span>
+			                      				</div>
+			                      				{/if}
 			                  				</div>
 			                  			</td>
 			                  			<td class="mainDesc-col">
@@ -173,8 +178,13 @@
 			                      					<span>รายการละ {$svl.svl_price|number_format:2:".":","} บาท</span>
 			                      				</div>
 			                      				<div>
-			                      					<span>วันที่จอง {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
+			                      					<span>วันที่จอง: {$svl.bkg_date_th} เวลา {$svl.bkg_time} น.</span>
 			                      				</div>
+			                      				{if $svl.bkgemp_fullname}
+			                      				<div>
+			                      					<span>พนักงานที่จอง: {$svl.bkgemp_fullname}</span>
+			                      				</div>
+			                      				{/if}
 			                    			</div>
 			                    		</td>
 			                  			<td class="edit">

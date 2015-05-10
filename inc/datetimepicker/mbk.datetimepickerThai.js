@@ -109,6 +109,16 @@ function isDateThaiFormat(input) {
 	return false;
 }
 
+function isDateFormat(input) {
+	var value = typeof(input) == 'string' ? input : input.val();
+	var tmp = value.split('/');
+	if(tmp.length == 3 && tmp[0].length == 4 && tmp[1].length == 2 && tmp[2].length == 2) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function realDateToThaiDate(input) {
 	// Skip if empty value
 	if(typeof(input) == 'string') {

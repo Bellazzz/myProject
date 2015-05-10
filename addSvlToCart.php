@@ -14,6 +14,8 @@ hasValue($_POST['svl_price'])) {
 	$svl_picture = $_POST['svl_picture'];
 	$svl_name = $_POST['svl_name'];
 	$svl_price = $_POST['svl_price'];
+	$bkgemp_id = $_POST['bkgemp_id'];
+	$bkgemp_fullname = $_POST['bkgemp_fullname'];
 
 	$values = array(
 		'svl_id' 	=> $svl_id,
@@ -22,8 +24,14 @@ hasValue($_POST['svl_price'])) {
 		'bkg_time' 	=> $bkg_time,
 		'svl_picture' 	=> $svl_picture,
 		'svl_name' 	=> $svl_name,
-		'svl_price' => $svl_price
+		'svl_price' => $svl_price,
+		'bkgemp_id' => $bkgemp_id,
+		'bkgemp_fullname' => $bkgemp_fullname
 	);
+
+	if($bkgemp_fullname == 'ไม่ระบุ') {
+		unset($values['bkgemp_fullname']);
+	}
 
 	$_SESSION['bookingSvl'][$svl_id] = $values;
 
