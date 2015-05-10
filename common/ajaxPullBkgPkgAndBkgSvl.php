@@ -18,7 +18,8 @@ $bkgDetails = array(
 );
 
 // Get booking packages
-$sql = "SELECT 		pkg_id 
+$sql = "SELECT 		pkg_id,
+					emp_id 
 		FROM 		booking_packages 
 		WHERE 		bkg_id = '$bkg_id' AND 
 					bkgpkg_status != 2 AND 
@@ -27,13 +28,13 @@ $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
-		$record = mysql_fetch_assoc($result);
-		array_push($bkgDetails['pkg'], $record['pkg_id']);
+		array_push($bkgDetails['pkg'], mysql_fetch_assoc($result));
 	}
 }
 
 // Get booking service_lists
-$sql = "SELECT 		svl_id 
+$sql = "SELECT 		svl_id,
+					emp_id 
 		FROM 		booking_service_lists 
 		WHERE 		bkg_id = '$bkg_id' AND 
 					bkgsvl_status != 2 AND 
@@ -42,8 +43,7 @@ $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
-		$record = mysql_fetch_assoc($result);
-		array_push($bkgDetails['svl'], $record['svl_id']);
+		array_push($bkgDetails['svl'], mysql_fetch_assoc($result));
 	}
 }
 

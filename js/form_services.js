@@ -437,16 +437,18 @@ function pullBkgPkgAndBkgSvl(success) {
                 addPackage({
                     defaultValue    : true,
                     pullPkg         : true,
-                    pkg_id          : response.pkg[a],
-                    pkg_qty         : 1
+                    pkg_id          : response.pkg[a].pkg_id,
+                    pkg_qty         : 1,
+                    bkgemp_id       : response.pkg[a].emp_id
                 });
             }
             for(b in response.svl) {
                 addServiceList({
                     defaultValue : true,
-                    pullSvl         : true,
-                    svl_id      : response.svl[b],
-                    svl_qty     : 1,
+                    pullSvl      : true,
+                    svl_id       : response.svl[b].svl_id,
+                    svl_qty      : 1,
+                    bkgemp_id    : response.svl[b].emp_id
                 });
             }
 
@@ -566,9 +568,14 @@ function addPackage(data) {
                 });
             }
             if(typeof(data.pullPkg) != 'undefined') {
+                var bkgemp_id = null;
+                if(typeof(data.bkgemp_id) != 'undefined') {
+                    bkgemp_id = data.bkgemp_id;
+                }
                 addServiceListOfPackage({
                     pkg_id          : defaultKey,
                     parentRandNum   : randNum,
+                    bkgemp_id       : bkgemp_id
                 });
             }
         },
@@ -740,9 +747,14 @@ function addServiceListOfPackage(data) {
         });
 
         if(addPkgCom) {
+            var bkgemp_id = null;
+            if(typeof(data.bkgemp_id) != 'undefined') {
+                bkgemp_id = data.bkgemp_id;
+            }
             addPkgCommission({
                 pkg_id          : data.pkg_id,
                 svl_id          : svl_id,
+                bkgemp_id       : bkgemp_id
             });
         }
         
@@ -764,6 +776,9 @@ function addPkgCommission(data) {
     } while($('#emp_id_pkgCom_' + randNum).length > 0);
     var inputKeyId      = 'emp_id_pkgCom_' + randNum;
     var inputComRateId  = 'com_rate_pkgCom_' + randNum;
+    if(typeof(data.bkgemp_id) != 'undefined') {
+        selectRefDefault = data.bkgemp_id;
+    }
 
     var pkgsvlComHtml = '<div class="pkgsvlCom com-list">'
                       + '   <table cellpadding="0" cellspacing="0">'
@@ -1021,9 +1036,15 @@ function addServiceList(data) {
             if(typeof(data.pullSvl) != 'undefined') {
                 var svlComTr = $('#serviceListComRow_' + randNum);
                 if(svlComTr.find('.com-list-container').length == 0) {
+                    var bkgemp_id = null;
+                    if(typeof(data.bkgemp_id) != 'undefined') {
+                        bkgemp_id = data.bkgemp_id;
+                    }
+
                     addServiceListCommission({
                         svl_id: $('#' + inputKeyId).find('input[name="svl_id[]"]').val(),
-                        parentRandNum: randNum
+                        parentRandNum: randNum,
+                        bkgemp_id: bkgemp_id
                     });
                 } else {
                     var empId = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
@@ -1093,6 +1114,9 @@ function addServiceListCommission(data) {
 	var tr           	= selectRef.parent().parent();
 	var tdCom 		 	= tr.next().next().next().find('td');
     var comRate         = 100;
+    if(typeof(data.bkgemp_id) != 'undefined' && data.bkgemp_id != null) {
+        selectRefDefault = data.bkgemp_id;
+    }
 
 	var commissionHTML      = '<div class="svlCom com-list">'
                             + ' <table cellpadding="0" cellspacing="0">'
