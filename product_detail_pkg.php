@@ -41,6 +41,17 @@ if($rows > 0) {
 	}
 }
 
+// Get package time
+$sql = "SELECT 		IFNULL(pkgsvl_hr,0) * 60 + IFNULL(pkgsvl_min,0) allMin 
+		FROM 		package_service_lists  
+		WHERE 		pkg_id = '$id'";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	$record = mysql_fetch_assoc($result);
+	$prdData['allMin'] = $record['allMin'];
+}
+
 // Get package promotion detail data
 $sql = "SELECT 		pkgprmdtl.pkg_id,
 					pkgprmdtl.pkgprmdtl_discout,

@@ -86,6 +86,11 @@
 			                      				<div>
 			                      					<span>วันที่จอง: {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
 			                      				</div>
+			                      				{if $pkg.bkgemp_fullname}
+			                      				<div>
+			                      					<span>พนักงานที่จอง: {$pkg.bkgemp_fullname}</span>
+			                      				</div>
+			                      				{/if}
 			                  				</div>
 			                  			</td>
 			                  			<td class="mainDesc-col">
@@ -99,6 +104,11 @@
 			                      				<div>
 			                      					<span>วันที่จอง: {$pkg.bkg_date_th} เวลา {$pkg.bkg_time} น.</span>
 			                      				</div>
+			                      				{if $pkg.bkgemp_fullname}
+			                      				<div>
+			                      					<span>พนักงานที่จอง: {$pkg.bkgemp_fullname}</span>
+			                      				</div>
+			                      				{/if}
 			                    			</div>
 			                    		</td>
 			                  			<td class="edit">

@@ -14,6 +14,8 @@ hasValue($_POST['pkg_price'])) {
 	$pkg_picture = $_POST['pkg_picture'];
 	$pkg_name = $_POST['pkg_name'];
 	$pkg_price = $_POST['pkg_price'];
+	$bkgemp_id = $_POST['bkgemp_id'];
+	$bkgemp_fullname = $_POST['bkgemp_fullname'];
 
 	$values = array(
 		'pkg_id' 	=> $pkg_id,
@@ -22,8 +24,14 @@ hasValue($_POST['pkg_price'])) {
 		'bkg_time' 	=> $bkg_time,
 		'pkg_picture' 	=> $pkg_picture,
 		'pkg_name' 	=> $pkg_name,
-		'pkg_price' => $pkg_price
+		'pkg_price' => $pkg_price,
+		'bkgemp_id' => $bkgemp_id,
+		'bkgemp_fullname' => $bkgemp_fullname
 	);
+
+	if($bkgemp_fullname == 'ไม่ระบุ') {
+		unset($values['bkgemp_fullname']);
+	}
 
 	$_SESSION['bookingPkg'][$pkg_id] = $values;
 

@@ -22,6 +22,11 @@
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
     <script src="js/spaMain.js"></script>
     <script src="js/shop.js"></script>
+    <style type="text/css">
+    .bkgempCont, .bkgempErrCont {
+    	display: none;
+    }
+    </style>
     <script type="text/javascript">
     $(document).ready(function() {
     	$('#bkg_date').datetimepicker({
@@ -43,6 +48,12 @@
             timepicker:false
         });
         $('#addToCartBtn').click(function() {
+        	// Skip
+        	if($('.bkgempErrCont').css('display') != 'none') {
+        		alert('ขออภัยค่ะ ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว');
+        		return;
+        	}
+
         	$.ajax({
         		url: 'addPkgToCart.php',
         		type: 'POST',
@@ -53,7 +64,9 @@
         			bkg_time: $('#bkg_time').val(),
         			pkg_picture: '{/literal}{$prdData.pkg_picture}{literal}',
         			pkg_name: '{/literal}{$prdData.pkg_name}{literal}',
-        			pkg_price: $('input[name="realPrice"]').val()
+        			pkg_price: $('input[name="realPrice"]').val(),
+        			bkgemp_id: $('#bkgemp_id').val(),
+        			bkgemp_fullname: $('#s2id_bkgemp_id .select2-chosen').text()
         		},
         		success:
         		function(response) {
@@ -61,6 +74,7 @@
         				$('#persons_text').text($('#persons').val() + ' คน');
         				$('#bkg_date_text').text($('#bkg_date').val());
         				$('#bkg_time_text').text($('#bkg_time').val() + ' น.');
+        				$('#bkgemp_id_text').text($('#s2id_bkgemp_id .select2-chosen').text());
         				$('.sectionContainer').fadeOut(500);
         				$('.action-control').fadeOut(500);
         				setTimeout(function() {
@@ -74,7 +88,98 @@
         		}
         	});
         });
-    })
+
+		// Check for display booking employee
+		$('#bkg_date').focusout(checkForShowBkgEmp);
+		$('#persons').change(checkForShowBkgEmp);
+		$('#bkg_time').change(checkForShowBkgEmp);
+    });
+	
+	function checkForShowBkgEmp() {
+		var persons = parseInt($('#persons').val());
+		var date = $('#bkg_date').val();
+		var time = $('#bkg_time').val();
+		if(isDateThaiFormat(date)) {
+			date = getRealDate(date);
+		} else if(isDateFormat(date)) {
+			date = tmpDateToRealDate(date);
+		}
+		if(persons == 1 && isDateFormat(date) && date != '' && time != '') {
+			pullBkgEmp({
+				success:
+				function() {
+					$('.bkgempErrCont').fadeOut();
+					$('.bkgempCont').slideDown();
+				}
+			});
+		} else {
+			$('.bkgempCont').slideUp();
+			$('#bkgemp_id').val('');
+			$('#s2id_bkgemp_id .select2-chosen').text('ไม่ระบุ');
+		}
+	}
+
+	function pullBkgEmp(data) {
+		var allMin = {/literal}{$prdData.allMin}{literal};
+		var date = $('#bkg_date').val();
+		var time = $('#bkg_time').val();
+		var timeEnd = addMinutes(time, allMin);
+		if(isDateThaiFormat(date)) {
+			date = getRealDate(date);
+		} else if(isDateFormat(date)) {
+			date = tmpDateToRealDate(date);
+		}
+
+		$.ajax({
+	        url: 'common/ajaxPullEmpIdOfBooking.php',
+	        type: 'POST',
+	        data: {
+	            date: date,
+	            time: time,
+	            timeEnd: timeEnd
+	        },
+	        success:
+	        function(responseJSON) {
+	            var response = $.parseJSON(responseJSON);
+	            if(response.status == 'PASS') {
+	                // Add options
+	                var empIdListHTML = '<option value="">ไม่ระบุ</option>';
+	                for(i in response.returnEmpId) {
+	                    empIdListHTML  += '<option value="' + response.returnEmpId[i].emp_id + '">'
+	                    				+ response.returnEmpId[i].fullName
+	                                    + '</option>';
+	                }
+	                $('#bkgemp_id').html(empIdListHTML);
+
+	                if(typeof(data.success) == 'function') {
+		                data.success(); // calback
+		            }
+	            } else if(response.status == 'EMPTY') {
+	                // data.empInput.parent().parent().find('.bkgemp_col').css('display','none');
+	                // data.empInput.find('.selectReferenceJS-text').text('ไม่ระบุ');
+	                // data.empInput.find('.selectReferenceJS-input').val('');
+	                // data.empInput.parent().parent().find('.err-bkgemp-require').css('display','inline');
+	                $('.bkgempCont').slideUp();
+					$('#bkgemp_id').val('');
+					$('#s2id_bkgemp_id .select2-chosen').text('ไม่ระบุ');
+	                $('.bkgempErrCont').fadeIn();
+	            } else {
+	                alert(response.status);
+	            }
+	        }
+	    });
+	}
+
+	function addMinutes(time, addMin) {
+	    var now = new Date();
+	    var date = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + time + ':00');
+	    if(addMin > 0) {
+	        var after = new Date(date.getTime() + addMin*60000);
+	    } else {
+	        var after = date;
+	    }
+	    return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
+	}
     </script>
     {/literal}
 </head>
@@ -166,6 +271,16 @@
 					            </select>
 				        	</div>
 			    		</div>
+			    		<div class="col-xs-12 bkgempCont">
+			    			<div class="form-group">
+			    				<label>พนักงานที่จอง</label>
+				            	<select id="bkgemp_id" class="form-control select select-primary" data-toggle="select" name="bkgemp_id" value="{$bkgemp_id}">
+					            </select>
+				        	</div>
+			    		</div>
+			    		<div class="col-xs-12 bkgempErrCont">
+			    			<span class="errInputMsg">ขออภัยค่ะ ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว</span>
+			    		</div>
 			    	</div>
 			    </div>
 			    <div class="action-control">
@@ -213,6 +328,10 @@
 	            			<tr>
 	            				<td>เวลาที่จอง</td>
 	            				<td><span id="bkg_time_text"></span></td>
+	            			</tr>
+	            			<tr>
+	            				<td>พนักงานที่จอง</td>
+	            				<td><span id="bkgemp_id_text"></span></td>
 	            			</tr>
 	            		</table>
 	            	</div>
