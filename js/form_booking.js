@@ -367,6 +367,11 @@ function addPackage(data) {
             pullPkgUnitPrice(inputKeyId);
             addPkgPrmSale(curPkgId);
             calSummary();
+
+            pullBkgEmp({
+                empInput: $('#' + inputEmpId),
+                type: 'pkg'
+            });
         },
         success         : 
         function(defaultKey) {
@@ -621,6 +626,11 @@ function addServiceList(data) {
                     + '         </div>'
                     + '     </td>';
     $('#booking-service-list-table > tbody').append(svlRowHTML);
+
+    // display booking employee when edit
+    if(bkgsvl_emp_id != '') {
+        $('#' + inputEmpId).parent().css('display','table-cell');
+    }
 
     // Create select reference
     selectReferenceJS({
