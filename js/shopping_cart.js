@@ -39,7 +39,28 @@ $(document).ready(function() {
 function plusOrMinusPerson(personInput, action) {
 	var person = personInput.val();
 	if(action == 'plus') {
-		person++;
+		var bkgemp_fullnames = personInput.parent().parent().parent().parent().find('.bkgemp_fullname');
+		if(bkgemp_fullnames.length > 0) {
+			if(confirm('การจองที่มีจำนวนผู้ใช้บริการมากกว่า 1 คน ไม่สามารถจองพนักงานได้ คุณต้องการเพิ่มจำนวนผู้ใช้บริการหรือไม่?') == true) {
+				$.ajax({
+					url: 'unsetBkgEmpSession.php',
+					type: 'POST',
+					data: {
+						id: personInput.attr('data-id')
+					},
+					success:
+					function() {
+						bkgemp_fullnames.slideUp(200);
+						setTimeout(function(){
+							bkgemp_fullnames.remove();
+						}, 200);
+					}
+				});
+				person++;
+			}
+		} else {
+			person++;
+		}
 	} else if(action == 'minus'){
 		person--;
 	}

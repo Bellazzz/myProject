@@ -96,7 +96,8 @@
 
 		{/literal}{if $edit}{literal}
 		$('#bkg_date').focusout();
-		$('#s2id_bkgemp_id .select2-chosen').text('{/literal}{$bkgemp_fullname}{literal}');
+		var bkgemp_fullname = '{/literal}{$bkgemp_fullname}{literal}' == '' ? 'ไม่ระบุ' : '{/literal}{$bkgemp_fullname}{literal}';
+		$('#s2id_bkgemp_id .select2-chosen').text(bkgemp_fullname);
 		$('#bkgemp_id').val('{/literal}{$bkgemp_id}{literal}');
 		{/literal}{/if}{literal}
     });
