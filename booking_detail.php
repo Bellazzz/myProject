@@ -58,11 +58,12 @@ $sql = "SELECT 	s.svl_id,
 				bs.bkgsvl_persons,
 				bs.bkgsvl_date,
 				DATE_FORMAT(bs.bkgsvl_time,'%H:%i') bkgsvl_time,
-				bs.bkgsvl_status 
-		FROM 	booking_service_lists bs,
-				service_lists s 
-		WHERE 	bs.svl_id = s.svl_id AND 
-				bs.bkg_id = '$bkg_id'";
+				bs.bkgsvl_status,
+				CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname  
+		FROM 	booking_service_lists bs JOIN 
+				service_lists s ON bs.svl_id = s.svl_id LEFT JOIN 
+				employees e ON bs.emp_id = e.emp_id 
+		WHERE 	bs.bkg_id = '$bkg_id'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -82,11 +83,12 @@ $sql = "SELECT 	p.pkg_id,
 				bp.bkgpkg_persons,
 				bp.bkgpkg_date,
 				DATE_FORMAT(bp.bkgpkg_time,'%H:%i') bkgpkg_time,
-				bp.bkgpkg_status 
-		FROM 	booking_packages bp,
-				packages p 
-		WHERE 	bp.pkg_id = p.pkg_id AND 
-				bp.bkg_id = '$bkg_id'";
+				bp.bkgpkg_status,
+				CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname  
+		FROM 	booking_packages bp JOIN 
+				packages p ON bp.pkg_id = p.pkg_id LEFT JOIN 
+				employees e ON bp.emp_id = e.emp_id 
+		WHERE 	bp.bkg_id = '$bkg_id'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

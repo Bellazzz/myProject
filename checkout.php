@@ -52,7 +52,6 @@ if((isset($_SESSION['bookingPkg']) || isset($_SESSION['bookingSvl'])) && isset($
 		$insertResult = false;
 		$errTxt .= 'INSERT_BOOKING_FAIL<br>';
 		$errTxt .= mysql_error($dbConn).'<br><br>';
-		echo $errTxt;
 	}
 	$bkg_id = $tableRecord->getKey();
 
@@ -63,8 +62,18 @@ if((isset($_SESSION['bookingPkg']) || isset($_SESSION['bookingSvl'])) && isset($
 			$bkgpkg_time 		= $val['bkg_time'];
 			$bkgpkg_persons 	= $val['persons'];
 			$bkgpkg_total_price = $val['sumPrice'];
-			$bkgpkgValues 		= array($pkg_id, $bkg_id, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
-			$bkgpkgRecord 		= new TableSpa('booking_packages', $bkgpkgValues);
+
+			// create fields and values
+			if(!isset($val['bkgemp_id'])) {
+				$bkgpkgFields = array('pkg_id','bkg_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+				$bkgpkgValues = array($pkg_id, $bkg_id, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+			} else {
+				$bkgpkg_empId = $val['bkgemp_id'];
+				$bkgpkgFields = array('pkg_id','bkg_id','emp_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+				$bkgpkgValues = array($pkg_id, $bkg_id, $bkgpkg_empId, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+			}
+
+			$bkgpkgRecord 		= new TableSpa('booking_packages', $bkgpkgFields, $bkgpkgValues);
 			if(!$bkgpkgRecord->insertSuccess()) {
 				$insertResult = false;
 				$errTxt .= 'INSERT_BOOKING_PACKAGES['.$pkg_id.']_FAIL<br>';
@@ -81,8 +90,18 @@ if((isset($_SESSION['bookingPkg']) || isset($_SESSION['bookingSvl'])) && isset($
 			$bkgsvl_time 		= $val['bkg_time'];
 			$bkgsvl_persons 	= $val['persons'];
 			$bkgsvl_total_price = $val['sumPrice'];
-			$bkgsvlValues 		= array($svl_id, $bkg_id, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
-			$bkgsvlRecord 		= new TableSpa('booking_service_lists', $bkgsvlValues);
+
+			// create fields and values
+			if(!isset($val['bkgemp_id'])) {
+				$bkgsvlFields = array('svl_id','bkg_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+				$bkgsvlValues = array($svl_id, $bkg_id, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+			} else {
+				$bkgsvl_empId = $val['bkgemp_id'];
+				$bkgsvlFields = array('svl_id','bkg_id','emp_id','bkgsvl_date','bkgsvl_time','bkgsvl_total_price','bkgsvl_persons');
+				$bkgsvlValues = array($svl_id, $bkg_id, $bkgsvl_empId, $bkgsvl_date, $bkgsvl_time, $bkgsvl_total_price, $bkgsvl_persons);
+			}
+
+			$bkgsvlRecord 		= new TableSpa('booking_service_lists', $bkgsvlFields, $bkgsvlValues);
 			if(!$bkgsvlRecord->insertSuccess()) {
 				$insertResult = false;
 				$errTxt .= 'INSERT_BOOKING_SERVICE_LISTS['.$svl_id.']_FAIL<br>';

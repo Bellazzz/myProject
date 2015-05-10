@@ -82,7 +82,8 @@
             <li> <a href="index.php"> หน้าแรก </a> </li>
             <li> <a href="shop_service_lists.php"> จองรายการบริการ </a> </li>
             <li> <a href="shop_packages.php"> จองแพ็คเกจ </a> </li>
-            <li> <a href="shop_promotions.php"> โปรโมชั่น </a> </li>
+            <li> <a href="shop_promotion_service_lists.php"> โปรโมชั่นรายการบริการ </a> </li>
+            <li> <a href="shop_promotion_packages.php"> โปรโมชั่นแพ็คเกจ </a> </li>
             <li> <a href="shop_products.php"> ผลิตภัณฑ์ </a> </li>
             <li> <a href="shop_foods.php"> อาหาร/เครื่องดื่ม </a> </li>
             <li> <a href="about_us.php"> เกี่ยวกับเรา </a> </li>
@@ -94,16 +95,12 @@
             Account
           </h3>
           <ul>
-            <li> <a href="myaccount.php">
-                เข้าสู่ระบบ
-              </a>
-              
-            </li>
-            <li> <a href="shop-ui-register.php">
-                สมัครสมาชิก
-              </a>
-              
-            </li>
+            {if $session_cusLogin && $session_cus_id}
+            <li><a href="account_logout.php">ออกจากระบบ</a></li>
+            {else}
+            <li><a href="account_login.php">เข้าสู่ระบบ</a></li>
+            <li><a href="account_register.php">สมัครสมาชิก</a></li>
+            {/if}
           </ul>
         </div>
       </div><!--/.row-->

@@ -115,8 +115,8 @@
                                   <td style="width:15%">รายการ</td>
                                   <td style="width:25%"></td>
                                   <td style="width:10%">ผู้ใช้บริการ</td>
-                                  <td style="width:25%">วันเวลาที่จอง</td>
-                                  <td style="width:25%">สถานะ</td>
+                                  <td style="width:30%">รายละเอียด</td>
+                                  <td style="width:20%">สถานะ</td>
                               </tr>
                               <!-- Package Session -->
                               {foreach from=$pkgList key=pkg_id item=pkg}
@@ -137,6 +137,11 @@
                                         <div>
                                           <span>วันที่จอง {$pkg.bkgpkg_date_th} เวลา {$pkg.bkgpkg_time} น.</span>
                                         </div>
+                                        {if $pkg.emp_fullname != ''}
+                                        <div>
+                                          <span>พนักงานที่จอง: {$pkg.emp_fullname}</span>
+                                        </div>
+                                        {/if}
                                     </div>
                                   </td>
                                   <td class="mainDesc-col">
@@ -145,7 +150,12 @@
                                     </a>
                                   </td>
                                   <td class="mainDesc-col">{$pkg.bkgpkg_persons}</td>
-                                  <td class="mainDesc-col">{$pkg.bkgpkg_date_th} เวลา {$pkg.bkgpkg_time} น.</td>
+                                  <td class="mainDesc-col">
+                                    {$pkg.bkgpkg_date_th} เวลา {$pkg.bkgpkg_time} น.
+                                    {if $pkg.emp_fullname != ''}
+                                    <br />พนักงานที่จอง: {$pkg.emp_fullname}
+                                    {/if}
+                                  </td>
                                   <td style="text-align:right;">
                                     {if $pkg.bkgpkg_status == 2}
                                         <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
@@ -178,6 +188,11 @@
                                         <div>
                                           <span>วันที่จอง {$svl.bkgsvl_date_th} เวลา {$svl.bkgsvl_time} น.</span>
                                         </div>
+                                        {if $svl.emp_fullname != ''}
+                                        <div>
+                                          <span>พนักงานที่จอง: {$svl.emp_fullname}</span>
+                                        </div>
+                                        {/if}
                                     </div>
                                   </td>
                                   <td class="mainDesc-col">
@@ -186,7 +201,12 @@
                                     </a>
                                   </td>
                                   <td class="mainDesc-col">{$svl.bkgsvl_persons}</td>
-                                  <td class="mainDesc-col">{$svl.bkgsvl_date_th} เวลา {$svl.bkgsvl_time} น.</td>
+                                  <td class="mainDesc-col">
+                                    {$svl.bkgsvl_date_th} เวลา {$svl.bkgsvl_time} น.
+                                    {if $svl.emp_fullname != ''}
+                                    <br />พนักงานที่จอง: {$svl.emp_fullname}
+                                    {/if}
+                                  </td>
                                   <td style="text-align:right;">
                                     {if $svl.bkgsvl_status == 2}
                                         <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
