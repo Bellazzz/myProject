@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('config/config.php');
-$tplName = 'shop_service_lists.html';
+$tplName = 'shop_promotion_service_lists.html';
 $subDir	 = WEB_ROOTDIR.'/';
 
 include('common/common_header.php');
@@ -52,21 +52,6 @@ if($itemDisplay <= $allRecord) {
 	$startPage = 0;
 }
 
-// Calculate page
-$allPage = ceil($allRecord/$itemDisplay);
-if($page <= 1) {
-	$prevPageLink = '#fakelink';
-} else {
-	$prevPage = $page-1;
-	$prevPageLink = "shop_service_lists.php?sort=$sort&page=$prevPage&itemDisplay=$itemDisplay";
-}
-if($page >= $allPage) {
-	$nextPageLink = '#fakelink';
-} else {
-	$nextPage = $page+1;
-	$nextPageLink = "shop_service_lists.php?sort=$sort&page=$nextPage&itemDisplay=$itemDisplay";
-}
-
 //Get Service List Data
 $svlList = array();
 $svlIds  = array();
@@ -108,7 +93,7 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 						svlprmdtl.svlprmdtl_enddate IS NULL OR
 						svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 					) AND 
-					svlprmdtl.svl_id IN (".implode(',', $svlIds).")";
+					svlprmdtl.svl_id IN (".implode(',', $svlIds).")"; //echo $sql;
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

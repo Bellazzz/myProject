@@ -92,7 +92,6 @@ if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$prdList[$record['prd_id']] = $record;
-		// $prdList[$record['prd_id']]['svlList'] = array();
 		array_push($prdIds, $record['prd_id']);
 	}
 }

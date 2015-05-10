@@ -56,10 +56,17 @@ a:hover {
 h1 {
   font-family: ThaiSansNeue-Bold;
 }
+
 h2 {
   font-size: 24px;
   line-height: 28px;
 }
+
+h4  {
+  font-size: 22px;
+  font-family: ThaiSansNeue-Bold;
+}
+
 label {
   display: inline-block;
   max-width: 100%;
@@ -1311,7 +1318,6 @@ h2.block-title-2, .formBox h3, .block-title-2 {
 }
 
 .titleLogin a {
-   font-size: 18px !important;
+  font-size: 18px !important;
   font-family: ThaiSansNeue-Bold;
 }
-

@@ -35,7 +35,7 @@
 			<div class="col-lg-12 col-md-12 col-sm-12">
 				<div class="w100 productFilter clearfix">
 					<p class="pull-left productFilter-title">
-						รายการผลิตภัณฑ์ทั้งหมด {$allRecord} รายการ
+						รายการผลิตภัณฑ์ทั้งหมด {$allRecord} รายการ (สำหรับซื้อที่สปา)
 					</p>
         			<div class="pull-right controlPrdFilter">
           				<div class="change-order pull-right">
@@ -79,7 +79,7 @@
 				<div class="product">
 		            <div class="image">  
 		          		<a>
-		          			<img class="img-responsive" alt="img" src="img/{if $prd.prd_pic != ''}products/{$prd.prd_pic}{else}shopItemDefault.png{/if}">
+		          			<img class="img-responsive" alt="img" src="img/{if $prd.prd_pic != ''}products/{$prd.prd_pic}{else}shopItemDefaultPrd.png{/if}">
 		          		</a>
 		          		{if $prd.discoutText}
 		          		<div class="promotion">

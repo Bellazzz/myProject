@@ -274,7 +274,19 @@
                         <!-- End Clothes -->
 
                         <!-- Promotion -->
-                        <li class="{if $tplName == '#.html'}active{/if} titleHeader"><a href="#">โปรโมชั่น</a></li>
+                        <li class="{if $tplName == 'shop_promotion_packages.html' || $tplName == 'shop_promotion_service_lists.html'}active{/if} dropdown titleHeader">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" aria-expanded="false">
+                                โปรโมชั่น
+                            </a>
+                            <ul class="dropdown-menu titleHeader">
+                                <li>
+                                    <a href="shop_promotion_service_lists.php">รายการบริการ</a>
+                                </li>
+                                <li>
+                                    <a href="shop_promotion_packages.php">แพ็คเกจ</a>
+                                </li>
+                            </ul>
+                        </li>
                         <!-- End Promotion -->
 
                         <!-- Product -->
