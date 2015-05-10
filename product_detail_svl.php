@@ -15,6 +15,8 @@ if(hasValue($_GET['id'])) {
 		$smarty->assign('persons', $_SESSION['bookingSvl'][$id]['persons']);
 		$smarty->assign('bkg_date', $_SESSION['bookingSvl'][$id]['bkg_date']);
 		$smarty->assign('bkg_time', $_SESSION['bookingSvl'][$id]['bkg_time']);
+		$smarty->assign('bkgemp_id', $_SESSION['bookingSvl'][$id]['bkgemp_id']);
+		$smarty->assign('bkgemp_fullname', $_SESSION['bookingSvl'][$id]['bkgemp_fullname']);
 		$smarty->assign('edit', true);
 	}
 }
