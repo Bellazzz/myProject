@@ -133,7 +133,7 @@ function saveRecord() {
 		},
 		success:
 		function (responseJSON) {
-			// alert(responseJSON);
+			// console.log(responseJSON);
 			var response = $.parseJSON(responseJSON);
 			if (response.status == 'ADD_PASS') {
 				// Add record success

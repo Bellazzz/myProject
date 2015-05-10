@@ -699,6 +699,7 @@ if(!$_REQUEST['ajaxCall']) {
 		// Update or Add booking_packages
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				$bkgpkg_empId = $formData['bkgpkg_emp_id'][$key];
 				$bkgpkg_date  = $formData['bkgpkg_date'][$key];
 				$bkgpkg_time  = $formData['bkgpkg_time'][$key];
 				$bkgpkg_persons  = $formData['pkg_qty'][$key];
@@ -709,6 +710,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$bkgpkg_id = $formData['bkgpkg_id'][$key];
 					$bookingPkgRecord 	= new TableSpa('booking_packages', $bkgpkg_id);
 					$bookingPkgRecord->setFieldValue('pkg_id', $pkg_id);
+					$bookingPkgRecord->setFieldValue('emp_id', $bkgpkg_empId == ''? NULL : $bkgpkg_empId);
 					$bookingPkgRecord->setFieldValue('bkgpkg_date', $bkgpkg_date);
 					$bookingPkgRecord->setFieldValue('bkgpkg_time', $bkgpkg_time);
 					$bookingPkgRecord->setFieldValue('bkgpkg_persons', $bkgpkg_persons);
@@ -720,8 +722,16 @@ if(!$_REQUEST['ajaxCall']) {
 					}
 				} else {
 					// Add new booking_packages
-					$bkgpkgValues 		= array($pkg_id, $code, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
-					$bookingPkgRecord 	= new TableSpa('booking_packages', $bkgpkgValues);
+					// create fields and values
+					if($formData['bkgpkg_emp_id'][$key] == '') {
+						$bkgpkgFields = array('pkg_id','bkg_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+						$bkgpkgValues = array($pkg_id, $code, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+					} else {
+						$bkgpkgFields = array('pkg_id','bkg_id','emp_id','bkgpkg_date','bkgpkg_time','bkgpkg_total_price','bkgpkg_persons');
+						$bkgpkgValues = array($pkg_id, $code, $bkgpkg_empId, $bkgpkg_date, $bkgpkg_time, $bkgpkg_total_price, $bkgpkg_persons);
+					}
+
+					$bookingPkgRecord = new TableSpa('booking_packages', $bkgpkgFields, $bkgpkgValues);
 					if(!$bookingPkgRecord->insertSuccess()) {
 						$updateResult = false;
 						$errTxt .= 'ADD_BOOKING_PACKAGES['.($key+1).']_FAIL\n';
