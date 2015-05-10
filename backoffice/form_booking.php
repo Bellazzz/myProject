@@ -118,10 +118,12 @@ if(!$_REQUEST['ajaxCall']) {
 							bp.bkgpkg_persons,
 							bp.bkgpkg_status,
 							p.pkg_id,
-							p.pkg_name 
-					FROM 	booking_packages bp, packages p 
-					WHERE 	bp.pkg_id = p.pkg_id AND 
-					 		bp.bkg_id = '$code'";
+							p.pkg_name,
+							CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname 
+					FROM 	booking_packages bp JOIN 
+							packages p ON bp.pkg_id = p.pkg_id LEFT JOIN 
+							employees e ON bp.emp_id = e.emp_id 
+					WHERE 	bp.bkg_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {
@@ -139,10 +141,12 @@ if(!$_REQUEST['ajaxCall']) {
 							bs.bkgsvl_persons,
 							bs.bkgsvl_status,
 							s.svl_id,
-							s.svl_name 
-					FROM 	booking_service_lists bs, service_lists s 
-					WHERE 	bs.svl_id = s.svl_id AND 
-					 		bs.bkg_id = '$code'";
+							s.svl_name,
+							CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname 
+					FROM 	booking_service_lists bs JOIN 
+							service_lists s ON bs.svl_id = s.svl_id LEFT JOIN 
+							employees e ON bs.emp_id = e.emp_id 
+					WHERE 	bs.bkg_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		for($i=0; $i<$rows; $i++) {

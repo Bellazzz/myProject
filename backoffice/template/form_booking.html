@@ -556,11 +556,11 @@
         <thead>
             <tr>
                 <th style="text-align:center;">ลำดับ</th>
-                <th>รหัสแพ็คเกจ</th>
                 <th class="txtLong-col">ชื่อแพ็คเกจ</th>
                 <th>ผู้ใช้บริการ(คน)</th>
                 <th>วันที่มาใช้บริการ</th>
                 <th>เวลาที่มาใช้บริการ</th>
+                <th>พนักงานที่จอง</th>
                 <th>สถานะ</th>
             </tr>
         </thead>
@@ -568,15 +568,21 @@
             {foreach from=$viewBkgpkgData key=i item=bkgpkg}
             <tr>
                 <td align="center">{$bkgpkg.no}</td>
-                <td align="left">
+                <td align="left" class="txtLong-col">
                     <a href="form_table.php?action=VIEW_DETAIL&tableName=packages&code={$bkgpkg.pkg_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                        {$bkgpkg.pkg_id}
+                        {$bkgpkg.pkg_name}
                     </a>
                 </td>
-                <td align="left" class="txtLong-col">{$bkgpkg.pkg_name}</td>
                 <td align="right">{$bkgpkg.bkgpkg_persons}</td>
                 <td align="left">{$bkgpkg.bkgpkg_date}</td>
                 <td align="left">{$bkgpkg.bkgpkg_time} น.</td>
+                <td align="left">
+                    {if $bkgpkg.emp_fullname != ''}
+                        {$bkgpkg.emp_fullname}
+                    {else}
+                        -
+                    {/if}
+                </td>
                 <td align="left">
                     {if $bkgpkg.bkgpkg_status == 2}
                         <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
@@ -600,11 +606,11 @@
         <thead>
             <tr>
                 <th style="text-align:center;">ลำดับ</th>
-                <th>รหัสรายการบริการ</th>
                 <th class="txtLong-col">ชื่อรายการบริการ</th>
                 <th>ผู้ใช้บริการ(คน)</th>
                 <th>วันที่มาใช้บริการ</th>
                 <th>เวลาที่มาใช้บริการ</th>
+                <th>พนักงานที่จอง</th>
                 <th>สถานะ</th>
             </tr>
         </thead>
@@ -612,15 +618,21 @@
             {foreach from=$viewBkgsvlData key=i item=bkgsvl}
             <tr>
                 <td align="center">{$bkgsvl.no}</td>
-                <td align="left">
+                <td align="left" class="txtLong-col">
                     <a href="form_table.php?action=VIEW_DETAIL&tableName=service_lists&code={$bkgsvl.svl_id}&hideEditButton=true" class="normal-link" title="คลิกเพื่อดูรายละเอียด">
-                        {$bkgsvl.svl_id}
+                        {$bkgsvl.svl_name}
                     </a>
                 </td>
-                <td align="left" class="txtLong-col">{$bkgsvl.svl_name}</td>
                 <td align="right">{$bkgsvl.bkgsvl_persons}</td>
                 <td align="left">{$bkgsvl.bkgsvl_date}</td>
                 <td align="left">{$bkgsvl.bkgsvl_time} น.</td>
+                <td align="left">
+                    {if $bkgsvl.emp_fullname != ''}
+                        {$bkgsvl.emp_fullname}
+                    {else}
+                        -
+                    {/if}
+                </td>
                 <td align="left">
                     {if $bkgsvl.bkgsvl_status == 2}
                         <span class="statusHL statusHL-green">ใช้บริการครบแล้ว</span>
