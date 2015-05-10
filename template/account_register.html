@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abhaibhubajhr Day Spa</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  {literal}
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="inc/Flat-UI-master/dist/css/flat-ui.css">
+    <link rel="stylesheet" type="text/css" href="inc/datetimepicker/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="css/fontFace.css">
+    <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="css/spaMain.css">
+    <link rel="stylesheet" href="css/header-v5.css">
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+    <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/spaMain.js"></script>
+    <style type="text/css">
+      #error-message {
+        color: #C0392B;
+        background: #FADBD8;
+        padding: 10px;
+        border-radius: 6px;
+      }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function() {
+        $('#error-message').slideUp(0);
+
+        $('#register-btn').click(function() {
+          $.ajax({
+            url: 'common/ajaxCheckCustomerLogin.php',
+            type: 'POST',
+            data: {
+              'formData' : $('#form-login').serialize()
+            },
+            success:
+            function(response) {
+              if(response == 'PASS') {
+                document.location.href = 'index.php';
+              } else if(response == 'NOT_PASS') {
+                $('#error-message').html('<i class="fa fa-exclamation-circle"></i> ไม่พบบัญชีผู้ใช้นี้ หรือคุณกรอกชื่อผู้ใช้ และรหัสผ่านผิดพลาด โปรดลองอีกครั้ง');
+                $('#error-message').slideDown(400);
+              }  else {
+                alert(response);
+              }
+            }
+          })
+        });
+
+        $('#email').focus(function() {
+          $('#error-message').slideUp(0);
+        });
+        $('#password').focus(function() {
+          $('#error-message').slideUp(0);
+        });
+
+        $('#birthday').datetimepicker({
+            lang                : 'th',
+            format              : 'Y/m/d',
+            timepicker          :false,
+            closeOnDateSelect   :true,
+            scrollInput         :false,
+            yearOffset          :543,
+            onSelectDate: 
+            function(){
+              $('#birthday').blur();
+            },
+            onShow:function( ct ){
+                this.setOptions({
+                    minDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                })
+            },
+            timepicker:false
+        });
+      });
+    </script>
+    {/literal}
+</head>
+<body class="header-fixed">
+{include file="_header.html"}
+<div class="page-wrapper">
+  <div class="container headerOffset">
+    <div class="row">
+      <div class="breadcrumbDiv col-md-12 col-lg-12">
+        <ul class="breadcrumb">
+              <li><a href="index.php"><span class="fui-home"></span> หน้าแรก</a></li>
+              <li class="active">สมัครสมาชิก</li>
+           </ul>
+      </div>
+    </div>
+    <div class="row">
+  
+    <div class="col-lg-12 col-md-12 col-sm-7">
+      <h1 class="section-title-inner"><span><i class="fa fa-user"></i> สมัครสมาชิก</span></h1>
+      <form id="form-login" role="form" class="logForm" onsubmit="return false;">
+      <div class="row userInfo">
+        <div class="col-xs-12 col-md-6">
+          <h2 class="block-title-2"><span>สมัครสมาชิกเพื่อทำการจองรายการบริการและแพ็คเกจ</span></h2>
+          <span id="error-message"></span>
+            <div class="form-group">
+              
+              <label>คำนำหน้าชื่อ</label>
+              <select class="form-control select select-primary" data-toggle="select" name="sex_id">
+                {foreach from=$titleList key=i item=title}
+                  <option value="{$title.title_id}" >{$title.title_name}</option>
+                {/foreach}
+              </select>
+
+              <!-- <label>เพศ</label>
+              <select class="form-control select select-primary" data-toggle="select" name="sex_id">
+                {foreach from=$sexList key=i item=sex}
+                  <option value="{$sex.sex_id}" >{$sex.sex_name}</option>
+                {/foreach}
+              </select> -->
+
+              <label>ชื่อ</label>
+              <input id="name" name="name" type="text" class="form-control" placeholder="Enter your name">
+             
+              <label>นามสกุล</label>
+              <input id="surname" name="surname" type="text" class="form-control" placeholder="Enter your surname">
+              
+              <label>ที่อยู่</label>
+              <input id="addr" name="addr" type="text" class="form-control" placeholder="Enter your address">
+              
+              <label>เบอร์โทรศัพท์</label>
+              <input id="tel" name="tel" type="text" class="form-control" placeholder="Enter your telephone number">
+
+              <label>วันเกิด</label>
+              <input id="birthday" name="birthday" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$birthday}">
+
+               <label>Facebook(Link)</label>
+              <input id="face" name="face" type="text" class="form-control" placeholder="Enter your Facebook link">
+
+               <label>Line(ID)</label>
+              <input id="line" name="line" type="text" class="form-control" placeholder="Enter your Line ID">
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6">
+          <h2 class="block-title-2"> ข้อมูลการเข้าสู่ระบบ </h2>
+              <label>Username(Email Address)</label>
+              <input id="email" name="email" type="email" class="form-control" placeholder="Enter email address">
+
+              <label>Password</label>
+              <input id="pasword" name="password" type="password" class="form-control" placeholder="Enter password">
+
+              <label>Confirm Password</label>
+              <input id="comfirm_pasword" name="comfirm_pasword" type="password" class="form-control" placeholder="Enter confirm password ">
+
+              <hr class="hr hr30">
+              <button id="register-btn" class="btn btn-primary btn-lg btn-block" type="submit"><i class="fa fa-sign-in"></i> สมัครสมาชิก</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!--/row end--> 
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-5"> </div>
+  </div>	
+  </div>
+</div>
+{include file="_footer.html"}
+</body>
+</script>

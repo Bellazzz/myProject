@@ -1,0 +1,46 @@
+<?php
+session_start();
+include('config/config.php');
+$tplName = 'account_register.html';
+$subDir	 = WEB_ROOTDIR.'/';
+
+include('common/common_header.php');
+
+$sexList = array();
+$sql = "SELECT 		sex_id,
+					sex_name  
+		FROM 		sex 
+		ORDER BY 	sex_name ASC";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$sexList[$record['sex_id']] = $record;
+	}
+}
+
+$titleList = array();
+$sql = "SELECT 		t.title_id,
+					t.title_name,
+					IFNULL(s.sex_id,'') sex_id 
+		FROM 		titles t 
+		LEFT JOIN 	sex s 
+		ON          t.sex_id = s.sex_id 
+		ORDER BY 	t.title_name ASC";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$titleList[$record['title_id']] = $record;
+	}
+}
+
+$smarty->assign('sexList', $sexList);
+$smarty->assign('titleList', $titleList);
+
+$smarty->assign('tplName', $tplName);
+include('common/common_footer.php');
+?>
+

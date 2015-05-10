@@ -15,10 +15,18 @@
                     <div class="col-sm-6">
                         <ul class="list-inline right-topbar pull-right">
                             {if $session_cusLogin && $session_cus_id}
-                                <li class="titleLogin"><a href="myaccount.php">บัญชีของฉัน</a></li>
-                                <li><a href="myaccount.php"><i class="fa fa-user"></i> {$session_cus_fullname}</a> | <a href="account_logout.php">ออกจากระบบ</a></li>
+                                <li class="titleLogin">
+                                    <a href="myaccount.php"><i class="fa fa-user"></i>
+                                    ยินดีต้อนรับ คุณ{$session_cus_fullname}  | </a>
+                                </li>
+                                <li class="titleLogin">
+                                    <a href="myaccount.php">บัญชีของฉัน  | </a>
+                                </li>
+                                <li class="titleLogin">
+                                  <a class="titleLogin" href="account_logout.php">ออกจากระบบ</a>
+                                </li>
                             {else}
-                                <li class="titleLogin"><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="shop-ui-register.html">สมัครสมาชิก</a></li>
+                                <li class="titleLogin"><a href="account_login.php">เข้าสู่ระบบ</a> | <a href="account_register.php">สมัครสมาชิก</a></li>
                             {/if}
                             <li><i class="search fa fa-search search-button"></i></li>
                         </ul>
