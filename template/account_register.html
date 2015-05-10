@@ -35,7 +35,7 @@
 
         $('#register-btn').click(function() {
           $.ajax({
-            url: 'common/ajaxCheckCustomerLogin.php',
+            url: 'common/ajaxCustomerRegister.php',
             type: 'POST',
             data: {
               'formData' : $('#form-login').serialize()
@@ -43,9 +43,10 @@
             success:
             function(response) {
               if(response == 'PASS') {
-                document.location.href = 'index.php';
+                alert('สมัครสมาชิกเรียบร้อย!')
+                document.location.href = 'account_login.php';
               } else if(response == 'NOT_PASS') {
-                $('#error-message').html('<i class="fa fa-exclamation-circle"></i> ไม่พบบัญชีผู้ใช้นี้ หรือคุณกรอกชื่อผู้ใช้ และรหัสผ่านผิดพลาด โปรดลองอีกครั้ง');
+                $('#error-message').html('<i class="fa fa-exclamation-circle"></i> เกิดข้อผิดพลาด การสมัครสมาชิกล้มเหลว');
                 $('#error-message').slideDown(400);
               }  else {
                 alert(response);
@@ -54,14 +55,14 @@
           })
         });
 
-        $('#email').focus(function() {
+        $('#cus_email').focus(function() {
           $('#error-message').slideUp(0);
         });
-        $('#password').focus(function() {
+        $('#cus_password').focus(function() {
           $('#error-message').slideUp(0);
         });
 
-        $('#birthday').datetimepicker({
+        $('#cus_birthdate').datetimepicker({
             lang                : 'th',
             format              : 'Y/m/d',
             timepicker          :false,
@@ -74,7 +75,7 @@
             },
             onShow:function( ct ){
                 this.setOptions({
-                    minDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
+                    maxDate:realDateToTmpDate('{/literal}{$nowDate}{literal}')
                 })
             },
             timepicker:false
@@ -107,7 +108,7 @@
             <div class="form-group">
               
               <label class="input-required">คำนำหน้าชื่อ</label>
-              <select class="form-control select select-primary" data-toggle="select" name="sex_id">
+              <select class="form-control select select-primary" data-toggle="select" name="title_id">
                 {foreach from=$titleList key=i item=title}
                   <option value="{$title.title_id}" >{$title.title_name}</option>
                 {/foreach}
@@ -121,35 +122,35 @@
               </select> -->
 
               <label class="input-required">ชื่อ</label>
-              <input id="name" name="name" type="text" class="form-control" placeholder="Enter your name">
+              <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name">
              
               <label class="input-required">นามสกุล</label>
-              <input id="surname" name="surname" type="text" class="form-control" placeholder="Enter your surname">
+              <input id="cus_surname" name="cus_surname" type="text" class="form-control" placeholder="Enter your surname">
               
               <label class="input-required">ที่อยู่</label>
-              <input id="addr" name="addr" type="text" class="form-control" placeholder="Enter your address">
+              <input id="cus_addr" name="cus_addr" type="text" class="form-control" placeholder="Enter your address">
               
               <label class="input-required">เบอร์โทรศัพท์</label>
-              <input id="tel" name="tel" type="text" class="form-control" placeholder="Enter your telephone number">
+              <input id="cus_tel" name="cus_tel" type="text" class="form-control" placeholder="Enter your telephone number">
 
               <label>วันเกิด</label>
-              <input id="birthday" name="birthday" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$birthday}">
+              <input id="cus_birthdate" name="cus_birthdate" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$birthday}">
 
                <label>Facebook(Link)</label>
-              <input id="face" name="face" type="text" class="form-control" placeholder="Enter your Facebook link">
+              <input id="cus_facebook" name="cus_facebook" type="text" class="form-control" placeholder="Enter your Facebook link">
 
                <label>Line(ID)</label>
-              <input id="line" name="line" type="text" class="form-control" placeholder="Enter your Line ID">
+              <input id="cus_line" name="cus_line" type="text" class="form-control" placeholder="Enter your Line ID">
             </div>
         </div>
 
         <div class="col-xs-12 col-md-6">
           <h2 class="block-title-2"> ข้อมูลการเข้าสู่ระบบ </h2>
               <label class="input-required">Username(Email Address)</label>
-              <input id="email" name="email" type="email" class="form-control" placeholder="Enter email address">
+              <input id="cus_email" name="cus_email" type="email" class="form-control" placeholder="Enter email address">
 
               <label class="input-required">Password</label>
-              <input id="pasword" name="password" type="password" class="form-control" placeholder="Enter password">
+              <input id="cus_pass" name="cus_pass" type="password" class="form-control" placeholder="Enter password">
 
               <label class="input-required">Confirm Password</label>
               <input id="comfirm_pasword" name="comfirm_pasword" type="password" class="form-control" placeholder="Enter confirm password ">
