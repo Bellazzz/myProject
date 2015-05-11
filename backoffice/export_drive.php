@@ -1,7 +1,5 @@
 <?php
 date_default_timezone_set('Asia/Bangkok');
-header("Content-type: text/html; charset=utf-8;");
-header("Content-Disposition: attachment; filename='db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql');
 require('../config/config.php');
 require('../common/common_constant.php');
 
@@ -13,8 +11,6 @@ if(isset($_POST['createDB']) && $_POST['createDB'] == '1') {
 	$fileSQL = backup_tables(DB_HOST,DB_USERNAME,DB_PASSWORD,DB_NAME, '*');
 }
 
-
-echo $fileSQL;
 
 /* backup the db OR just a table */
 function backup_tables($host,$user,$pass,$name,$tables = '*', $createDB = false) {
@@ -69,10 +65,31 @@ function backup_tables($host,$user,$pass,$name,$tables = '*', $createDB = false)
 	}
 	$return.= "\n\nSET FOREIGN_KEY_CHECKS = 1;\nCOMMIT;\nSET AUTOCOMMIT = 1;";
 	
-	//save file
-	// $handle = fopen('db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
-	// fwrite($handle,$return);
-	// fclose($handle);
-	return $return;
+	/*
+	 * save file
+	 */ 
+	// Create directory
+	$driveSelected = $_POST['drive_selected'];
+	if(substr($driveSelected, -1) != "/") {
+		$driveSelected .= "/";
+	}
+	$folderName = "db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His');
+	$filename = "db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql';
+	$filePath = $driveSelected.$folderName.'/'.$filename;
+	$dirname = dirname($filePath);
+	if (!is_dir($dirname))
+	{
+	    if(mkdir($dirname, 0755, true)) {
+	    	// Write file
+			$handle = fopen($filePath,'w+');
+			if(fwrite($handle,$return)){
+				fclose($handle);
+				header("location:backup.php?exportResult=true");
+			} else {
+				//write fail
+			}
+	    }
+	    
+	}
 }
 ?>

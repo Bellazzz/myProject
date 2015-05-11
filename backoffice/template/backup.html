@@ -13,13 +13,13 @@
     .default-table tbody tr:hover {
         background: none;
     }
-    .import-loader {
+    .import-loader, .export-loader {
         display: none;
     }
-    .import-loader td {
+    .import-loader td, .export-loader td {
         vertical-align: middle;
     }
-    .import-loader img {
+    .import-loader img, .export-loader img {
         height: 30px;
     }
     .importMsg {
@@ -35,6 +35,19 @@
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
+        selectReferenceJS({
+            elem            : $('#drive_selected'),
+            data            : {/literal}{$optionData["drives"]|@json_encode}{literal},
+            beforeShow:
+            function() {
+                if($('#dest-drive').prop('checked')) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
         $('.taber li').click(function() {
             var target = $(this).attr('data-target');
             $('.taber-header li').removeClass('selected');
@@ -45,6 +58,12 @@
         $('#import-btn').click(function() {
             $(this).css('display','none');
             $('.import-loader').css('display','table');
+        });
+        $('#export-btn').click(function() {
+            if(!$('#dest-default').prop('checked')) {
+                $(this).css('display','none');
+                $('.export-loader').css('display','table');
+            }
         });
 
         {/literal}{if $importResult}{literal}
@@ -57,7 +76,41 @@
             $('.importMsg').css('display','none');
             $('.errMsg').css('display','none');
         });
+
+        $('#dest-default').click(function() {
+            $('#form-export').prop('action', 'export.php');
+            disabledDestManual();
+            disabledDestDrive();
+            $('.importMsg').slideUp();
+        }); 
+        $('#dest-manual').click(function() {
+            $('#form-export').prop('action', 'export_manual.php');
+            enabledDestManual();
+            disabledDestDrive();
+            $('.importMsg').slideUp();
+        }); 
+        $('#dest-drive').click(function() {
+            $('#form-export').prop('action', 'export_drive.php');
+            enabledDestDrive();
+            disabledDestManual();
+            $('.importMsg').slideUp();
+        });
     });
+
+    function enabledDestManual() {
+        $('#dest-manual-input').removeAttr('readonly');
+        $('#dest-manual-input').removeClass('readonly');
+    }
+    function disabledDestManual() {
+        $('#dest-manual-input').attr('readonly', true);
+        $('#dest-manual-input').addClass('readonly');
+    }
+    function enabledDestDrive() {
+        $('#drive_selected').removeClass('readonly');
+    }
+    function disabledDestDrive() {
+        $('#drive_selected').addClass('readonly');
+    }
     </script>
 	{/literal}
 </head>
@@ -74,20 +127,57 @@
                 </ul>
             </div>
             <div id="tabBody-1" class="taber-body">
-                <form method="post" action="export.php">
+                {if $exportResult == 'PASS'}
+                <font class="importMsg success"><i class="fa fa-check-circle"></i> สำรองข้อมูลเรียบร้อยแล้ว<br /><br /></font>
+                {/if}
+                <form id="form-export" method="post" action="export.php">
+                <table class="default-table mbk-form-input-normal" style="width:400px;">
+                    <thead>
+                        <tr>
+                            <th>เลือกรูปแบบปลายทางสำรองข้อมูล</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border-bottom:none;padding-bottom:0;">
+                                <label><input id="dest-default" type="radio" name="destination" value="DEFAULT" checked=""> เลือกอัตโนมัติ(default)</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-top:none;border-bottom:none;padding-bottom:0;">
+                                <input id="dest-manual" type="radio" name="destination"> <input id="dest-manual-input" name="dest-manual" type="text" class="form-input half readonly" placeholder="ใส่ Path ที่ต้องการสำรองข้อมูล" readonly style="width: 353px;font-size: 14px;margin: 0;">
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align:middle;border-top:none;">
+                                <label><input id="dest-drive" type="radio" name="destination"> บันทึกลงไดรฟว์</label> <div id="drive_selected" class="selectReferenceJS form-input full readonly" style="margin-left: 24px;width: 354px;min-width: 353px;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
                 <table class="default-table" style="width:400px;">
                     <thead>
                         <tr>
-                            <th>โครงสร้าง</th>
+                            <th>เลือกรูปแบบการสำรองข้อมูล</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <label><input type="checkbox" name="createDB" value="1"> สร้างฐานข้อมูลใหม่</label>
+                                <label><input type="radio" name="createDB" value="0" checked=""> สำรองข้อมูล</label><br />
+                                <label><input type="radio" name="createDB" value="1"> สร้างฐานข้อมูลใหม่</label>
                             </td>
                         </tr>
                     </tbody>
+                </table>
+                <br />
+                <table class="export-loader">
+                    <tr>
+                        <td><img src="../img/loading.gif"> </td>
+                        <td>กรุณารอสักครู่ ระบบกำลังสำรองข้อมูล</td>
+                    </tr>
                 </table>
                 <br />
                 <button id="export-btn" class="button button-icon" type="submit">สำรองข้อมูล</button>
