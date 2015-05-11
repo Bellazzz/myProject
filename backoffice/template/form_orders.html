@@ -707,7 +707,7 @@
     <label class="article-title">ข้อมูลการสั่งซื้อ</label>
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
-            <tr>
+            <tr {if !$session_emp_admin}style="display:none;"{/if}>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่สั่งซื้อ</label>
                     <div id="emp_id" class="selectReferenceJS form-input full" require></div>

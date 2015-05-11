@@ -245,7 +245,7 @@
                     <label class="input-required">รหัสการสั่งซื้อ</label>
                     <div id="ord_id" class="selectReferenceJS form-input half" require></div>
                 </td>
-                <td>
+                <td {if !$session_emp_admin}style="display:none;"{/if}>
                     <label class="input-required">พนักงานที่รับ</label>
                     <div id="emp_id" class="selectReferenceJS form-input half" require></div>
                 </td>

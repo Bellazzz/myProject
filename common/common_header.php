@@ -35,6 +35,9 @@
 	if(isset($_SESSION['emp_surname'])) {
 		$smarty->assign('session_emp_surname', $_SESSION['emp_surname']);
 	}
+	if(isset($_SESSION['emp_pos_name']) && $_SESSION['emp_pos_name'] == 'ผู้ดูแลระบบ') {
+		$smarty->assign('session_emp_admin', true);
+	}
 
 	// Session & Cookie login customer
 	if(isset($_COOKIE['cusRememberMe'])) {

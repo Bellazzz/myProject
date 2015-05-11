@@ -438,7 +438,7 @@
 	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date,payroll_commission,payroll_overtime">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
-            <tr>
+            <tr {if !$session_emp_admin}style="display:none;"{/if}>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่จ่ายเงินเดือน</label>
                     <div id="emp_give_id" class="selectReferenceJS form-input full" require></div>

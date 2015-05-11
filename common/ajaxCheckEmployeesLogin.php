@@ -15,13 +15,15 @@ if(hasValue($formData['password'])) {
 	$password = md5($formData['password']);
 }
 
-$sql = "SELECT 	emp_id,
-				emp_email,
-				emp_name,
-				emp_surname 
-		FROM 	employees 
-		WHERE 	emp_email = '$username' 
-				AND emp_pass = '$password'
+$sql = "SELECT 	e.emp_id,
+				e.emp_email,
+				e.emp_name,
+				e.emp_surname,
+				p.pos_name 
+		FROM 	employees e, positions p 
+		WHERE 	e.pos_id = p.pos_id AND 
+				e.emp_email = '$username' 
+				AND e.emp_pass = '$password'
 		LIMIT 	1";
 $result = mysql_query($sql, $dbConn);
 $row	= mysql_num_rows($result);
@@ -32,6 +34,7 @@ if($row > 0) {
 	$_SESSION['emp_email'] 		= $empRow['emp_email'];
 	$_SESSION['emp_name'] 		= $empRow['emp_name'];
 	$_SESSION['emp_surname'] 	= $empRow['emp_surname'];
+	$_SESSION['emp_pos_name'] 	= $empRow['pos_name'];
 	echo "PASS";
 } else {
 	echo "NOT_PASS";

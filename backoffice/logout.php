@@ -12,5 +12,14 @@ if(isset($_SESSION['emp_id'])) {
 if(isset($_SESSION['emp_email'])) {
 	unset($_SESSION['emp_email']);
 }
+if(isset($_SESSION['emp_name'])) {
+	unset($_SESSION['emp_name']);
+}
+if(isset($_SESSION['emp_surname'])) {
+	unset($_SESSION['emp_surname']);
+}
+if(isset($_SESSION['emp_pos_name'])) {
+	unset($_SESSION['emp_pos_name']);
+}
 header("location:login.php");
 ?>

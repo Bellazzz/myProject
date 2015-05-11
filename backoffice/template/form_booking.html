@@ -664,7 +664,7 @@
                     <span id="err-cus_id-require" class="errInputMsg err-cus_id">โปรดเลือกผู้ใช้บริการ</span>
                 </td>
             </tr>
-            <tr>
+            <tr {if !$session_emp_admin}style="display:none;"{/if}>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่รับการจอง</label>
                     <div id="emp_id" class="selectReferenceJS form-input full" require></div>

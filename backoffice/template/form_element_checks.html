@@ -69,7 +69,7 @@
 	<input type="hidden" name="requiredFields" value="eletyp_id,emp_id,cus_id,elechk_date,elechk_time">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
-            <tr>
+            <tr {if !$session_emp_admin}style="display:none;"{/if}>
                 <td colspan="2">
                     <label class="input-required">พนักงานที่ตรวจ</label>
                     <div id="emp_id" class="selectReferenceJS form-input full" require> </div>
