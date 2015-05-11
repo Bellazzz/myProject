@@ -29,7 +29,7 @@
             });
             selectReferenceJS({
                 elem            : $('#emp_id'),
-                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                data            : {/literal}{$referenceData["employees_doctor"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
             selectReferenceJS({

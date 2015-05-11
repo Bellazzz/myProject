@@ -854,7 +854,7 @@ function dbClose() {
 				'deleteTxtField'		=> array('cus_id','elechk_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการตรวจธาตุของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> '%f1 ตรวจธาตุวันที่ %f2',
-				'referenceData'			=> array('employees','customers','element_types')
+				'referenceData'			=> array('employees_doctor','customers','element_types')
 			);
 			break;
 
