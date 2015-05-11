@@ -244,10 +244,13 @@ function beforeSaveRecord() {
     var notInputAmount 			= true;
     var notInputUnitPrice 		= false;
     var notReceivePrdList 		= Array();
+    var notReceivePrdMaxList 	= Array();
     var notInputUnitPriceList 	= Array();
     var ord_id 				= $('#ord_id').find('.selectReferenceJS-input').val();
 
     $('input[name="recdtl_amount[]"]').each(function() {
+    	var prdName = $(this).parent().parent().find('.prd_name').text();
+
         if($(this).val() != '' && $(this).val() != '0') {
         	var unitPrice = $(this).parent().parent().find('input[name="recdtl_price[]"]');
         	if(unitPrice.val() == '' || unitPrice.val() == 0) {
@@ -260,8 +263,20 @@ function beforeSaveRecord() {
         		});
         	}
         	notInputAmount = false;
+
+        	// Check receive not max
+        	var receiveNum = $(this).val();
+        	var maxNum = parseInt($(this).attr('max'));
+        	var unitName = $(this).parent().parent().find('.unit_name').text();
+        	if(receiveNum < maxNum) {
+        		var diff = maxNum - receiveNum;
+        		notReceivePrdMaxList.push({
+        			prdName: prdName,
+        			diff: diff,
+        			unitName: unitName
+        		});
+        	}
         } else {
-        	var prdName = $(this).parent().parent().find('.prd_name').text();
         	notReceivePrdList.push(prdName);
         }
     });
@@ -336,6 +351,43 @@ function beforeSaveRecord() {
 
     	parent.showActionDialog({
 	            title	: 'มีสินค้าที่ยังไม่ได้รับ',
+	            message : msg,
+	            actionList: [
+	                {
+	                    id: 'ok',
+	                    name: 'บันทึก',
+	                    desc: 'บันทึกการรับ (สินค้าไม่ครบ)',
+	                    func:
+	                    function() {
+	                        parent.hideActionDialog();
+	                        saveRecord();
+	                    }
+	                },
+	                {
+	                    id: 'cancel',
+	                    name: 'ยกเลิก',
+	                    desc: 'กลับไปแก้ไขการรับ',
+	                    func:
+	                    function() {
+	                        parent.hideActionDialog();
+	                    }
+	                }
+	            ],
+	            boxWidth: 500
+	        });
+    	returnVal = true;
+    } else if(notReceivePrdMaxList.length > 0) {
+    	// กล่องแจ้งเตือนกรณีรับสินค้าไม่ครบ
+    	var msg = 'มีสินค้าที่คุณยังรับไม่ครบทั้งหมด ' + notReceivePrdMaxList.length + ' รายการ ได้แก่'
+    			+ '<ol>';
+    	for(i in notReceivePrdMaxList) {
+    		msg += '<li>' + notReceivePrdMaxList[i].prdName + ' (ขาด ' + notReceivePrdMaxList[i].diff + ' ' + notReceivePrdMaxList[i].unitName + ')</li>';
+    	}
+    	msg += '</ol><br>'
+    		 + 'คุณต้องการบันทึกการรับครั้งนี้ใช่หรือไม่?';
+
+    	parent.showActionDialog({
+	            title	: 'มีสินค้าที่ยังรับไม่ครบ',
 	            message : msg,
 	            actionList: [
 	                {
