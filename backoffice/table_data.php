@@ -1185,7 +1185,7 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 							<i class="fa fa-file-text-o" onclick="openPrintReceipt('<?=$code?>')"></i>
 						</a>
 						<?
-					} else if($tableName == 'services' && $emp_privileges["print_services_receipt"]) {
+					} else if($tableName == 'services' && $emp_privileges["manage_services"]) {
 						?>
 						<a title="ดูใบเสร็จ">
 							<i class="fa fa-file-text-o" onclick="openPrintServiceReceipt('<?=$code?>')"></i>

@@ -160,7 +160,7 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 					<td class="action-col">
 					<?php
 					?>
-						<?php if ($emp_privileges['print_purchase_orders']) { ?>
+						<?php if ($emp_privileges['manage_orders']) { ?>
 							<a title="ดูใบสั่งซื้อ">
 								<i class="fa fa-file-text-o" onclick="openPrintPurchaseOrder('<?=$code?>')"></i>
 							</a>
