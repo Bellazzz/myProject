@@ -1,0 +1,162 @@
+/* line 1, ../sass/responsive-carousel.scss */
+#banner-section {
+  position: relative;
+  width: 100%;
+  /**
+   * Indicators
+   */
+  /**
+   * arrows
+   */
+}
+/* line 5, ../sass/responsive-carousel.scss */
+#banner-section .carousel {
+  position: relative;
+  width: 100%;
+  height: 370px;
+  overflow: hidden;
+}
+/* line 17, ../sass/responsive-carousel.scss */
+#banner-section .indicators {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: 4;
+  padding: 0;
+  text-align: center;
+}
+/* line 26, ../sass/responsive-carousel.scss */
+#banner-section .indicators li {
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  margin-right: 15px;
+  cursor: pointer;
+  display: inline-block;
+  list-style-type: none;
+  box-shadow: 0 1px 1px rgba(255,255,255,0.4), inset 0 1px 1px rgba(0,0,0,0.1), 0 0 0 3px rgba(255,255,255,0.5);
+  transition: all 0.2s;
+}
+/* line 40, ../sass/responsive-carousel.scss */
+#banner-section .indicators li:hover {
+  background-color: #8AC007;
+  box-shadow: 0 1px 1px rgba(255,255,255,0.4), inset 0 1px 1px rgba(0,0,0,0.1), 0 0 0 5px rgba(255,255,255,0.5);
+}
+/* line 44, ../sass/responsive-carousel.scss */
+#banner-section .indicators li.active {
+  background-color: #7edd32;
+}
+/* line 48, ../sass/responsive-carousel.scss */
+#banner-section .indicators li.active:hover {
+  background-color: #7edd32;
+}
+/* line 56, ../sass/responsive-carousel.scss */
+#banner-section .arrow {
+  font-size: 22px;
+  position: absolute;
+  top: 50%;
+  color: white;
+  background-color: rgb(138, 192, 7);
+  padding: 20px 10px;
+  z-index: 5;
+  cursor: pointer;
+  transition: border-color 0.3s ease-out;
+}
+/* line 67, ../sass/responsive-carousel.scss */
+#banner-section .arrow:hover {
+  border-color: #7edd32;
+}
+/* line 72, ../sass/responsive-carousel.scss */
+#banner-section .arrow-left {
+  left: 0;
+}
+/* line 77, ../sass/responsive-carousel.scss */
+#banner-section .arrow-right {
+  right: 0;
+}
+
+/* line 83, ../sass/responsive-carousel.scss */
+.carousel-inner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /**
+   * use z-index and opacity to control slide (with left right)
+   * for css3 and js animataion
+   */
+  /**
+    change the left:0 property of the slide to left:auto
+   */
+  /**
+   * css3 animation styles
+   */
+}
+/* line 95, ../sass/responsive-carousel.scss */
+.carousel-inner .slide {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+}
+/* line 105, ../sass/responsive-carousel.scss */
+.carousel-inner .slide img {
+  width: 100%;
+  height: 100%;
+}
+/* line 111, ../sass/responsive-carousel.scss */
+.carousel-inner .slide.active,
+.carousel-inner .slide.left,
+.carousel-inner .slide.right {
+  z-index: 2;
+  opacity: 1;
+}
+/* line 122, ../sass/responsive-carousel.scss */
+.carousel-inner .js-reset-left {
+  left: auto;
+}
+/* line 128, ../sass/responsive-carousel.scss */
+.carousel-inner .slide.left {
+  left: -100%;
+  right: 0;
+}
+/* line 133, ../sass/responsive-carousel.scss */
+.carousel-inner .slide.right {
+  right: -100%;
+  left: auto;
+}
+
+/**
+ * css3 transition for animation
+ */
+/* line 143, ../sass/responsive-carousel.scss */
+.transition .slide.left {
+  left: 0%;
+}
+
+/* line 144, ../sass/responsive-carousel.scss */
+.transition .slide.right {
+  right: 0%;
+}
+
+/* line 146, ../sass/responsive-carousel.scss */
+.transition .slide.shift-right {
+  right: 100%;
+  left: auto;
+}
+
+/* line 147, ../sass/responsive-carousel.scss */
+.transition .slide.shift-left {
+  left: 100%;
+  right: auto;
+}
+
+/* line 149, ../sass/responsive-carousel.scss */
+.transition .slide {
+  transition-property: right, left, margin;
+}

@@ -12,17 +12,46 @@
     <link rel="stylesheet" href="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="css/spaMain.css">
     <link rel="stylesheet" href="css/header-v5.css">
+    <link rel="stylesheet" href="css/responsive-carousel.css"/>
     <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/responsive-carousel.js"></script>
     <script src="inc/jquery-mCustomScrollbar/jquery.mCustomScrollbar.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
     <script src="js/spaMain.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    	// Custom options for the carousel
+		var args = {
+			arrowRight : '.arrow-right',
+			arrowLeft : '.arrow-left',
+			speed : 700,
+			slideDuration : 4000
+		};
+		// start BannerSlide
+		$('.carousel').BannerSlide(args);
+    });
+    </script>
 </head>
 <body class="header-fixed">
 {include file="_header.html"}
 <div class="page-wrapper">
-	<div class="testSlide" style="background-image:url('img/testSlide.jpeg')"></div>
+	<!--Image Slider-->
+	<div id="banner-section">
+	  <div class="carousel">
+	    <div class="carousel-inner">
+			<div class="slide active"><img src="img/website/ws1.png"></div>
+	      	<div class="slide"><img src="img/website/ws2.png"></div>
+	      	<div class="slide"><img src="img/website/ws3.png"></div>
+	      	<div class="slide"><img src="img/website/ws4.png"></div>
+	      	<div class="slide"><img src="img/website/ws5.png"></div>
+	    </div>
+	    <div class="arrow arrow-left"><i class="fa fa-long-arrow-left"></i></div>
+	    <div class="arrow arrow-right"><i class="fa fa-long-arrow-right"></i></div>
+	  </div>
+	</div>
+	<!--Container-->
 	<div class="container">
 		<div class="row">
 			<div class="top-product">
