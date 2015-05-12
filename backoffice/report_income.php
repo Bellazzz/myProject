@@ -93,5 +93,6 @@ if(isset($_POST['submit'])) {
 	$smarty->assign('totalPrice', number_format($totalPrice, 2));
 }
 
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

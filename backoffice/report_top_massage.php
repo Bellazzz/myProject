@@ -244,5 +244,6 @@ if($rows > 0) {
 	$smarty->assign('svltyps', $svltyps);
 }
 
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

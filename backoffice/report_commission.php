@@ -286,7 +286,6 @@ function getSvlPrices($date, $custype_id) {
 	return $svlData;
 }
 
-
-
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

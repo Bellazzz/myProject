@@ -158,5 +158,6 @@ if($rows > 0) {
 	$smarty->assign('prdtypGrps', $prdtypGrps);
 }
 
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

@@ -117,7 +117,6 @@ if(isset($_POST['submit'])) {
 	}
 }
 
-
-
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

@@ -88,5 +88,6 @@ if($rows > 0) {
 	$smarty->assign('wdwtyps', $wdwtyps);
 }
 
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

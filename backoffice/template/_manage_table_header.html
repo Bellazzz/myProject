@@ -19,7 +19,7 @@
         {/if}
         {if $emp_privileges.manage_website}
         <li>
-            <a href="manage_system.php" {if $tplName == 'manage_system.html'}class="selected"{/if}>
+            <a href="manage_system.php" {if $tplName == 'manage_system.html' || $tplName == 'backup.html'}class="selected"{/if}>
                 <img src="../img/backoffice/nav-web.png"><br>
                 จัดการระบบ
             </a>
@@ -27,7 +27,7 @@
         {/if}
         {if $emp_privileges.view_report}
 		<li>
-            <a href="report.php" {if $tplName == 'report.html'}class="selected"{/if}>
+            <a href="report.php" {if $tplName == 'report.html' || $tplName == 'report_commission.html' || $tplName == 'report_income.html'|| $tplName == 'report_overtime.html' || $tplName == 'report_top_product.html' || $tplName == 'report_top_package.html' || $tplName == 'report_top_massage.html' || $tplName == 'report_top_service_lists.html' || $tplName == 'report_top_withdraw.html'}class="selected"{/if}>
                 <img src="../img/backoffice/nav-authen.png"><br>
                 ออกรายงาน
             </a>

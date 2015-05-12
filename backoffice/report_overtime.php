@@ -138,5 +138,6 @@ function toMin($time) {
 	return $min;
 }
 
+$smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>
