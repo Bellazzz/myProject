@@ -1,7 +1,12 @@
 <?php
+if($createDB){
+	$exportType = 'createDB-';
+} else {
+	$exportType = 'backupDB-';
+}
 date_default_timezone_set('Asia/Bangkok');
 header("Content-type: text/html; charset=utf-8;");
-header("Content-Disposition: attachment; filename='db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql');
+header("Content-Disposition: attachment; filename='".$exportType."projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql');
 require('../config/config.php');
 require('../common/common_constant.php');
 

@@ -48,21 +48,53 @@ function backup_tables($host,$user,$pass,$name,$tables = '*', $createDB = false)
 		$row2 = mysql_fetch_row(mysql_query('SHOW CREATE TABLE '.$table));
 		$row2 = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $row2);
 		$return.= "\n\n".$row2[1].";\n\n";
+
+		// Get key field name
+		$resultKeyField = mysql_query("SHOW KEYS FROM $table WHERE Key_name =  'PRIMARY'");
+		$keyFieldRecord = mysql_fetch_assoc($resultKeyField);
+		$keyFieldName = $keyFieldRecord['Column_name'];
 		
 		for ($i = 0; $i < $num_fields; $i++)  {
-			while($row = mysql_fetch_row($result)) {
-				$return.= 'INSERT INTO '.$table.' VALUES(';
-				for($j=0; $j<$num_fields; $j++) {
-					if(is_null($row[$j])) {
-						$return .= 'NULL';
-					} else {
-						$row[$j] = addslashes($row[$j]);
-						$row[$j] = ereg_replace("\n","\\n",$row[$j]);
-						if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+			while($row = mysql_fetch_assoc($result)) {
+				if($createDB) {
+					// สร้าง database ใหม่
+					$j = 0;
+					$return.= 'INSERT INTO '.$table.' VALUES(';
+					foreach ($row as $fieldName => $value) {
+						if(is_null($value)) {
+							$return .= 'NULL';
+						} else {
+							$value = addslashes($value);
+							$value = ereg_replace("\n","\\n",$value);
+							if (isset($value)) { $return.= '"'.$value.'"' ; } else { $return.= '""'; }
+						}
+						if ($j<(count($row)-1)) { $return.= ','; }
+						$j++;
 					}
-					if ($j<($num_fields-1)) { $return.= ','; }
+					$return.= ");\n";
+				} else {
+					// สำรองข้อมูล
+					$j = 0;
+					$keyValue = '';
+					$return .= "UPDATE $table SET ";
+					foreach ($row as $fieldName => $value) {
+						if($fieldName == $keyFieldName) {
+							$keyValue = $value;
+						} else {
+							$return .= "$fieldName = ";
+							if(is_null($value)) {
+								$return .= 'NULL';
+							} else {
+								$value = addslashes($value);
+								$value = ereg_replace("\n","\\n",$value);
+								if (isset($value)) { $return.= '"'.$value.'"' ; } else { $return.= '""'; }
+							}
+							if ($j<(count($row)-1)) { $return.= ','; }
+						}
+						$j++;
+					}
+					$return .= " WHERE $keyFieldName = '$keyValue';\n";
 				}
-				$return.= ");\n";
 			}
 		}
 		$return.="\n\n\n";
@@ -77,10 +109,16 @@ function backup_tables($host,$user,$pass,$name,$tables = '*', $createDB = false)
 	if(substr($driveSelected, -1) != "/") {
 		$driveSelected .= "/";
 	}
-	$folderName = "db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His');
-	$filename = "db-projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql';
+	if($createDB){
+		$exportType = 'createDB-';
+	} else {
+		$exportType = 'backupDB-';
+	}
+	$folderName = $exportType."projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His');
+	$filename = $exportType."projectSpa-".date('dm').((int)date('Y')+543).'-'.date('His').'.sql';
 	$filePath = $driveSelected.$folderName.'/'.$filename;
 	$dirname = dirname($filePath);
+
 	if (!is_dir($dirname))
 	{
 	    if(mkdir($dirname, 0755, true)) {
