@@ -83,7 +83,21 @@
         					$('.addCartSuccess').slideDown(500);
         				}, 500);
         			} else if(response == 'FAIL') {
-        				alert('เกิดข้อผิดพลาด!');
+        				parent.showActionDialog({
+		                    title: 'ป้อนข้อมูลไม่ครบ',
+		                    message: 'กรุณาป้อนข้อมูลให้ครบก่อนทำการจองค่ะ',
+		                    actionList: [
+		                        {
+		                            id: 'ok',
+		                            name: 'ตกลง',
+		                            func:
+		                            function() {
+		                                parent.hideActionDialog();
+		                            }
+		                        }
+		                    ],
+		                    boxWidth: 400
+		                });
         			} else {
         				alert(response);
         			}
