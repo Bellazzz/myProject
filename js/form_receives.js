@@ -96,6 +96,7 @@ function changeOrderId() {
 									$('#receives-product-list-container').html(response);
 									addEventRecPrdTable();
 									calculate();
+									$('#rec_date').focusout();
 								} else {
 									alert('no return data.');
 								}
@@ -131,6 +132,7 @@ function changeOrderId() {
 					$('#receives-product-list-container').html(response);
 					addEventRecPrdTable();
 					calculate();
+					$('#rec_date').focusout();
 				} else {
 					alert('no return data.');
 				}

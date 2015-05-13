@@ -73,6 +73,7 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                maxDate             : '{/literal}{$nowDateTmp}{literal}',
                 onSelectDate: 
                 function(){
                   $('#wdw_date').blur();
@@ -92,6 +93,62 @@
                         prd_id          : valuesDetail[i].prd_id,
                         wdwdtl_amount   : valuesDetail[i].wdwdtl_amount,
                         unit_name       : valuesDetail[i].unit_name
+                    });
+                }
+            }
+
+            // Check date
+            $('#wdw_date').change(function(){
+                checkDate($(this));
+            });
+
+            function checkDate(self) {
+                // Skip check
+                if(self.val() == '') {
+                    return;
+                }
+
+                // Get Real date
+                var selfRealDate = self.val();
+                if(isDateThaiFormat(selfRealDate)) {
+                    selfRealDate = getRealDate(selfRealDate);
+                } else {
+                    selfRealDate = tmpDateToRealDate(selfRealDate);
+                }
+
+                // Compare date
+                var selfStrFormat = getDateString(selfRealDate, null);
+                var selfDate  = new Date(selfStrFormat);
+                var nowDate   = new Date();
+                if(selfDate.getTime() > nowDate.getTime()) {
+                    showAlertInvalidDate(self);
+                }
+            }
+
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = 'วันที่เบิกไม่ถูกต้อง';
+                var messageTxt  = 'ไม่สามารถป้อนวันที่เบิกล่วงหน้าได้ กรุณาแก้ไขวันที่เบิกใหม่ค่ะ';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
                     });
                 }
             }
@@ -130,7 +187,7 @@
                 prdRowHTML += '         <input name="wdwdtl_id[]" type="hidden" value="' + data.wdwdtl_id + '">';
             }
                 prdRowHTML += '         <span class="prd_unit_name">' + unitName + '</span>'
-                            + '         <button class="removeProductBtn button button-icon button-icon-delete" onclick="removeProduct(\'' + randNum + '\')"></button>'
+                            + '         <button class="removeProductBtn button button-icon button-icon-delete" onclick="removeProduct(\'' + randNum + '\')">ลบ</button>'
                             + '     </td>'
                             + '</tr>'
                             + '<tr id="errMsgRow_' + randNum + '" class="errMsgRow">'
@@ -488,14 +545,15 @@
                     <span id="err-emp_id-require" class="errInputMsg err-emp_id">โปรดเลือกพนักงานที่เบิก</span>
                 </td>
             </tr>
-            <td>
+            <tr {if !$session_emp_admin}style="display:none;"{/if}>
+                <td colspan="2">
                     <label class="input-required">วันที่เบิก</label>
                     <input id="wdw_date" name="wdw_date" type="text" class="mbk-dtp-th form-input full" value="{if $values.wdw_date}{$values.wdw_date}{else}{$nowDate}{/if}" require>
                 </td>
             </tr>
             <tr class="errMsgRow">
                 <td>
-                    <span id="err-ord_date-require" class="errInputMsg full err-ord_date">โปรดเลือกวันที่เบิก</span>
+                    <span id="err-wdw_date-require" class="errInputMsg full err-wdw_date">โปรดเลือกวันที่เบิก</span>
                 </td>
             </tr>
             <tr>

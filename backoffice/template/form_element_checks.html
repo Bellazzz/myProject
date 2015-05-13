@@ -45,6 +45,7 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                maxDate: '{/literal}{$nowDateTmp}{literal}',
                 onSelectDate: 
                 function(){
                   $('#elechk_date').blur();
@@ -53,9 +54,71 @@
              $('#elechk_time').datetimepicker({
                 datepicker:false,
                 format:'H:i',
-                minTime:'06:00',
-                step:30
+                minTime:'08:30',
+                maxTime: '20:05',
+                step:5,
+                onSelectTime:
+                function() {
+                    checkDate($('#elechk_date'));
+                }
             });
+
+            // Check date
+            $('#elechk_date').change(function(){
+                checkDate($(this));
+            });
+
+            function checkDate(self) {
+                // Skip check
+                if(self.val() == '') {
+                    return;
+                }
+
+                // Get Real date
+                var selfRealDate = self.val();
+                if(isDateThaiFormat(selfRealDate)) {
+                    selfRealDate = getRealDate(selfRealDate);
+                } else {
+                    selfRealDate = tmpDateToRealDate(selfRealDate);
+                }
+
+                // Compare date
+                var selfStrFormat = getDateString(selfRealDate, $('#elechk_time').val());
+                var selfDate  = new Date(selfStrFormat);
+                var nowDate   = new Date();
+                if(selfDate.getTime() > nowDate.getTime()) {
+                    showAlertInvalidDate(self);
+                }
+            }
+
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = 'วันเวลาที่ตรวจธาตุไม่ถูกต้อง';
+                var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่ตรวจธาตุล่วงหน้าได้ กรุณาแก้ไขวันเวลาที่ตรวจธาตุใหม่ค่ะ';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    $('#elechk_time').val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
         });
     </script>
     {/literal}

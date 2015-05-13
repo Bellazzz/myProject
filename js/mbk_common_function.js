@@ -18,3 +18,16 @@ Number.prototype.formatMoney = function(c, d, t){
        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
  };
 
+function getDateString(date, time) {
+    if(date == '') {
+        return false;
+    }
+
+    var dateStr = date.replace(/\//g,'-');
+    if(typeof(time) != 'undefinded' && time != '' && time !== null) {
+        dateStr += ' ' + time;
+    } else {
+        dateStr += ' 00:00:00';
+    }
+    return dateStr;
+}

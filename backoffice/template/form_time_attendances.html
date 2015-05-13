@@ -32,10 +32,13 @@
                 onSelectDate: 
                 function(){
                   $('#dateatt_in').blur();
+                  setTimeout(function() {
+                    $('#dateatt_out').val($('#dateatt_in').val());
+                  },5);
                 },
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:$('#dateatt_out').val()?unconvertThaiDate($('#dateatt_out').val()):false
+                        maxDate:'{/literal}{$nowDateTmp}{literal}'
                     })
                 },
                 timepicker:false
@@ -54,7 +57,8 @@
                 },
                 onShow:function( ct ){
                     this.setOptions({
-                        minDate:$('#dateatt_in').val()?unconvertThaiDate($('#dateatt_in').val()):false
+                        minDate:$('#dateatt_in').val()?unconvertThaiDate($('#dateatt_in').val()):false,
+                        maxDate:$('#dateatt_in').val()?unconvertThaiDate($('#dateatt_in').val()):'{/literal}{$nowDateTmp}{literal}'
                     })
                 },
                 timepicker:false
@@ -63,10 +67,10 @@
             $('#timeatt_in').datetimepicker({
                 datepicker:false,
                 format:'H:i',
-                minTime:'06:00',
+                minTime:'08:30',
                 onShow:function( ct ){
                     this.setOptions({
-                        maxTime:$('#timeatt_out').val()?$('#timeatt_out').val():'18:00'
+                        maxTime:$('#timeatt_out').val()?$('#timeatt_out').val():'20:05'
                     })
                 },
                 step:5
@@ -75,10 +79,10 @@
             $('#timeatt_out').datetimepicker({
                 datepicker:false,
                 format:'H:i',
-                maxTime:'18:00',
+                maxTime:'20:05',
                 onShow:function( ct ){
                     this.setOptions({
-                        minTime:$('#timeatt_in').val()?$('#timeatt_in').val():'06:00'
+                        minTime:$('#timeatt_in').val()?$('#timeatt_in').val():'08:30'
                     })
                 },
                 step:5
@@ -89,6 +93,99 @@
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{$values.emp_id}{literal}'
             });
+
+            // Check date
+            $('#dateatt_in').change(function(){
+                checkDate($(this), $('#dateatt_out'));
+            });
+            $('#dateatt_out').change(function() {
+                checkDate($(this), $('#dateatt_in'));
+            });
+
+            function checkDate(self, sibling) {
+                // Skip check
+                if(self.val() == '' || isDateThaiFormat(self.val())) {
+                    return;
+                }
+
+                var selfDate        = new Date(self.val());
+                var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+                var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+                var selfId          = self.attr('id');
+
+                // Check sibling
+                if(sibling.val() != '') {
+                    if(selfId == 'dateatt_in') {
+                        if(selfDate.getTime() > siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    } else if(selfId == 'dateatt_out') {
+                        if(selfDate.getTime() < siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    }
+                }
+
+                if(action == 'ADD') {
+                    // Check now date
+                    if(selfId == 'dateatt_in') {
+                        if(selfDate.getTime() > nowDate.getTime()) {
+                            showAlertInvalidDate(self, 'moreThanNow')
+                        }
+                    } else if(selfId == 'dateatt_out') {
+                        if(selfDate.getTime() > nowDate.getTime()) {
+                            showAlertInvalidDate(self, 'moreThanNow')
+                        }
+                    }
+                }
+            }
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = '';
+                var messageTxt  = '';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(selfId == 'dateatt_in') {
+                    titleTxt    = 'วันที่เข้างานไม่ถูกต้อง';
+                    descTxt     = 'ป้อนวันที่เข้างานใหม่';
+                    if(errType == 'overSibling') {
+                        messageTxt  = 'วันที่เข้างานไม่สามารถอยู่หลังวันที่ออกงานได้ค่ะ';
+                    } else if(errType == 'moreThanNow') {
+                        messageTxt  = 'ไม่สามารถป้อนวันที่เข้างานล่วงหน้าได้ค่ะ';
+                    }
+                } else if(selfId == 'dateatt_out') {
+                    titleTxt    = 'วันที่ออกงานไม่ถูกต้อง';
+                    descTxt     = 'ป้อนวันที่ออกงานใหม่';
+                    if(errType == 'overSibling') {
+                        messageTxt  = 'วันที่ออกงานไม่สามารถอยู่ก่อนหน้าวันที่เข้างานได้ค่ะ';
+                    } else if(errType == 'moreThanNow') {
+                        messageTxt  = 'ไม่สามารถป้อนวันที่ออกงานล่วงหน้าได้ค่ะ';
+                    }
+                }
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
         });
     </script>
     {/literal}
@@ -135,7 +232,7 @@
             <tr>
                 <td>
                     <label>วันที่ออก</label>
-                    <input id="dateatt_out" name="dateatt_out" type="text" class="mbk-dtp-th form-input half" value="{$values.dateatt_out}">
+                    <input id="dateatt_out" name="dateatt_out" type="text" class="mbk-dtp-th form-input half" value="{if $values.dateatt_out}{$values.dateatt_out}{else}{$nowDate}{/if}">
                 </td>
                 <td>
                     <label>เวลาที่ออก</label>
