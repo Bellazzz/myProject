@@ -9,6 +9,11 @@
    * arrows
    */
 }
+@media (max-width: 991px) {
+  #banner-section {
+    margin-top: -20px;
+  }
+}
 /* line 5, ../sass/responsive-carousel.scss */
 #banner-section .carousel {
   position: relative;
@@ -16,6 +21,23 @@
   height: 370px;
   overflow: hidden;
 }
+@media (max-width: 480px) {
+  #banner-section .carousel {
+    height: 200px;
+  }
+}
+@media (min-width: 768px) {
+  #banner-section .carousel {
+    height: 370px;
+  }
+}
+@media (min-width: 992px) {
+  #banner-section .carousel {
+    height: 500px;
+  }
+}
+
+
 /* line 17, ../sass/responsive-carousel.scss */
 #banner-section .indicators {
   width: 100%;
@@ -29,6 +51,8 @@
 #banner-section .indicators li {
   width: 16px;
   height: 16px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
   border-radius: 8px;
   margin-right: 15px;
   cursor: pointer;
@@ -44,27 +68,48 @@
 }
 /* line 44, ../sass/responsive-carousel.scss */
 #banner-section .indicators li.active {
-  background-color: #7edd32;
+  background-color: #8AC007;
 }
 /* line 48, ../sass/responsive-carousel.scss */
 #banner-section .indicators li.active:hover {
-  background-color: #7edd32;
+  background-color: #8AC007;
 }
 /* line 56, ../sass/responsive-carousel.scss */
 #banner-section .arrow {
-  font-size: 22px;
+  font-size: 40px;
   position: absolute;
   top: 50%;
   color: white;
-  background-color: rgb(138, 192, 7);
-  padding: 20px 10px;
+  background-color: rgba(138, 192, 7, .6);
+  padding: 20px 15px;
   z-index: 5;
   cursor: pointer;
-  transition: border-color 0.3s ease-out;
+  transition: all 0.3s ease-out;
+  margin-top: -40px;
+}
+@media (max-width: 480px) {
+  #banner-section .arrow {
+    font-size: 40px;
+    margin-top: -40px;
+    padding: 20px 8px;
+    background-color: rgba(138, 192, 7, .4);
+  }
+}
+@media (min-width: 768px) {
+  #banner-section .arrow {
+    font-size: 30px;
+    margin-top: -30px;
+  }
+}
+@media (min-width: 992px) {
+  #banner-section .arrow {
+    font-size: 40px;
+    margin-top: -40px;
+  }
 }
 /* line 67, ../sass/responsive-carousel.scss */
 #banner-section .arrow:hover {
-  border-color: #7edd32;
+  background-color: rgb(138, 192, 7);
 }
 /* line 72, ../sass/responsive-carousel.scss */
 #banner-section .arrow-left {
@@ -103,6 +148,8 @@
   left: 0;
   z-index: 1;
   opacity: 0;
+  background-size: cover;
+  background-position: center;
 }
 /* line 105, ../sass/responsive-carousel.scss */
 .carousel-inner .slide img {
