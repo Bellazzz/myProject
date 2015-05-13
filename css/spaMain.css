@@ -485,7 +485,7 @@ color: #8AC007;
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.2);
-    z-index: 100;
+    z-index: 10000;
     top:0;
 }
 .action-dialog {
@@ -498,13 +498,19 @@ color: #8AC007;
     z-index: 8;
     box-shadow: 0 0 20px 0px rgba(0,0,0,0.5);
     padding: 25px;
+    border: 2px solid rgba(0,0,0,0.3);
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
 }
 .action-dialog > h2 {
     font-size:  30px;
     font-family: ThaiSansNeue-Bold;
-}
-.action-dialog > h2 {
-  margin-top: 0;
+    padding: 15px 20px;
+    margin: -25px;
+    margin-bottom: 0;
+    color: #8AC007;
+    border-bottom: 2px solid #eeeeee;
 }
 .action-dialog .message {
     color: #205081;
@@ -517,7 +523,7 @@ color: #8AC007;
 
 .action-dialog .action-btn{
     width: 100%;
-    border: 1px solid #98a3a6;
+    border: 2px solid #b2b2b2;
     background: #f8f8f8;
     margin-top: 10px;
     color: #666;
@@ -528,6 +534,13 @@ color: #8AC007;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    font-family: Arial, sans-serif;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
 }
 .action-dialog .action-btn:hover{
     background: #ddd;
@@ -535,7 +548,8 @@ color: #8AC007;
 .action-dialog .action-btn h1 {
     font-size: 16px;
     margin: 0;
-    color: #444;
+    color: #555;
+    font-family: Arial, sans-serif;
 }
 
 /*

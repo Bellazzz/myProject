@@ -21,6 +21,7 @@
     <script type="text/javascript" src="inc/datetimepicker/mbk.datetimepickerThai.js"></script>
     <script src="inc/Flat-UI-master/dist/js/flat-ui.min.js"></script>
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
+    <script src="js/mbk_common_function.js"></script>
     <script src="js/spaMain.js"></script>
     <script src="js/shop.js"></script>
     <style type="text/css">
@@ -101,6 +102,70 @@
 		$('#s2id_bkgemp_id .select2-chosen').text(bkgemp_fullname);
 		$('#bkgemp_id').val('{/literal}{$bkgemp_id}{literal}');
 		{/literal}{/if}{literal}
+
+
+		// Check date
+        $('#bkg_date').change(function(){
+            checkDate($(this));
+        });
+        $('#bkg_time').change(function(){
+            checkDate($('#bkg_date'));
+            $('#bkg_time').focusout();
+        });
+
+        function checkDate(self) {
+            // Skip check
+            if(self.val() == '' || $('#bkg_time').val() == '') {
+                return;
+            }
+
+            // Get Real date
+            var selfRealDate = self.val();
+            if(isDateThaiFormat(selfRealDate)) {
+                selfRealDate = getRealDate(selfRealDate);
+            } else {
+                selfRealDate = tmpDateToRealDate(selfRealDate);
+            }
+
+            // Compare date
+            var selfStrFormat = getDateString(selfRealDate, $('#bkg_time').val());
+            var selfDate  = new Date(selfStrFormat);
+            var nowDate   = new Date();
+            if(selfDate.getTime() < nowDate.getTime()) {
+                showAlertInvalidDate(self);
+            }
+        }
+
+        function showAlertInvalidDate(self, errType) {
+            var titleTxt    = 'วันเวลาที่จองไม่ถูกต้อง';
+            var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่จองย้อนหลังได้ กรุณาแก้ไขวันเวลาที่จองใหม่ค่ะ';
+            var descTxt     = 'แก้ไขวันที่ และเวลาที่จองใหม่';
+            var selfId      = self.attr('id');
+
+            if(parent.$('.action-dialog-container').length <= 0) {
+                parent.showActionDialog({
+                    title: titleTxt,
+                    message: messageTxt,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: descTxt,
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                self.val('');
+                                $('#bkg_time').val('');
+                                $('#s2id_bkg_time .select2-chosen').text('เลือกเวลาที่จอง');
+                                checkForShowBkgEmp();
+                                self.focus();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        }
     });
 
 	function checkForShowBkgEmp() {
@@ -258,7 +323,7 @@
 			    			<div class="form-group">
 			    				<label class="input-required">เวลาที่จอง</label>
 				            	<select id="bkg_time" class="form-control select select-primary" data-toggle="select" name="bkg_time" value="{$bkg_time}">
-				            		<option value="">เวลาที่จอง</option>
+				            		<option value="">เลือกเวลาที่จอง</option>
 					            	{foreach from=$times key=i item=time}
 					            		{if $time == $bkg_time}
 					            		<option value="{$time}" selected>{$time} น.</option>

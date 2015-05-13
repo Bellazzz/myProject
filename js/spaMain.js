@@ -82,3 +82,7 @@ function showActionDialog(dialog) {
         dialog.success();
     }
 }
+
+function hideActionDialog() {
+    $('.action-dialog-container').remove();
+}
