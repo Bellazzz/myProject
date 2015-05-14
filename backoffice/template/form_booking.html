@@ -287,6 +287,7 @@
         var pkgsvlData      = {/literal}{$pkgsvlData|@json_encode}{literal};
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
         var nowDate       = '{/literal}{$nowDate}{literal}';
+        var nowDateTmp    = '{/literal}{$nowDateTmp}{literal}';
 
         // Set valuesDetail
         {/literal}
@@ -383,6 +384,7 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                maxDate: '{/literal}{$nowDateTmp}{literal}',
                 onSelectDate: 
                 function(){
                   $('#bkg_date').blur();
@@ -404,7 +406,14 @@
             });
             $('#bkg_time').datetimepicker({
                 datepicker:false,
-                format:'H:i'
+                format:'H:i',
+                minTime:'08:30',
+                maxTime: '20:05',
+                step:5,
+                onSelectTime:
+                function() {
+                    checkDate($('#bkg_date'));
+                }
             });
             $('#bkg_transfer_time').datetimepicker({
                 datepicker:false,
@@ -419,6 +428,64 @@
             {/literal}{if $displayPaymentForm}{literal}
             $('#addPaymentDetailBtn').click();
             {/literal}{/if}{literal}
+
+
+            // Check date
+            $('#bkg_date').change(function(){
+                checkDate($(this));
+            });
+
+            function checkDate(self) {
+                // Skip check
+                if(self.val() == '') {
+                    return;
+                }
+
+                // Get Real date
+                var selfRealDate = self.val();
+                if(isDateThaiFormat(selfRealDate)) {
+                    selfRealDate = getRealDate(selfRealDate);
+                } else {
+                    selfRealDate = tmpDateToRealDate(selfRealDate);
+                }
+
+                // Compare date
+                var selfStrFormat = getDateString(selfRealDate, $('#bkg_time').val());
+                var selfDate  = new Date(selfStrFormat);
+                var nowDate   = new Date();
+                if(selfDate.getTime() > nowDate.getTime()) {
+                    showAlertInvalidDate(self);
+                }
+            }
+
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = 'วันเวลาที่ทำการจองไม่ถูกต้อง';
+                var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่ทำการจองล่วงหน้าได้ กรุณาแก้ไขวันเวลาที่ทำการจองใหม่ค่ะ';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    $('#bkg_time').val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
         });
     </script>
     {/literal}
@@ -678,11 +745,11 @@
             </tr>
             <tr>
                 <td>
-                    <label class="input-required">วันที่จอง</label>
+                    <label class="input-required">วันที่ทำจอง</label>
                       <input id="bkg_date" name="bkg_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_date}{$values.bkg_date}{else}{$nowDate}{/if}" require>
                 </td>
                 <td>
-                    <label class="input-required">เวลาที่จอง</label>
+                    <label class="input-required">เวลาที่ทำจอง</label>
                       <input id="bkg_time" name="bkg_time" type="text" class="form-input half" value="{if $values.bkg_time}{$values.bkg_time}{else}{$nowTime}{/if}" require>
                 </td>
             </tr>

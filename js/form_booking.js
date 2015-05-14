@@ -406,6 +406,7 @@ function addPackage(data) {
         closeOnDateSelect   :true,
         scrollInput         :false,
         yearOffset          :543,
+        minDate             : nowDateTmp,
         onSelectDate: 
         function(){
           $('#' + inputDateId).blur();
@@ -414,7 +415,14 @@ function addPackage(data) {
     });
     $('#' + inputTimeId).datetimepicker({
         datepicker:false,
-        format:'H:i'
+        format:'H:i',
+        minTime:'08:30',
+        maxTime: '20:05',
+        step:30,
+        onSelectTime:
+        function() {
+            checkDate($('#' + inputDateId));
+        }
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
@@ -458,6 +466,64 @@ function addPackage(data) {
             type: 'pkg'
         });
     });
+
+    // Check date
+    $('#' + inputDateId).change(function(){
+        checkDate($(this));
+    });
+
+    function checkDate(self) {
+        // Skip check
+        if(self.val() == '' || $('#' + inputTimeId).val() == '') {
+            return;
+        }
+
+        // Get Real date
+        var selfRealDate = self.val();
+        if(isDateThaiFormat(selfRealDate)) {
+            selfRealDate = getRealDate(selfRealDate);
+        } else {
+            selfRealDate = tmpDateToRealDate(selfRealDate);
+        }
+
+        // Compare date
+        var selfStrFormat = getDateString(selfRealDate, $('#' + inputTimeId).val());
+        var selfDate  = new Date(selfStrFormat);
+        var nowDate   = new Date();
+        if(selfDate.getTime() < nowDate.getTime()) {
+            showAlertInvalidDate(self);
+        }
+    }
+
+    function showAlertInvalidDate(self, errType) {
+        var titleTxt    = 'วันเวลาที่มาใช้บริการไม่ถูกต้อง';
+        var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่มาใช้บริการย้อนหลังได้ กรุณาแก้ไขวันเวลาที่มาใช้บริการใหม่ค่ะ';
+        var descTxt     = '';
+        var selfId      = self.attr('id');
+
+        if(parent.$('.action-dialog-container').length <= 0) {
+            parent.showActionDialog({
+                title: titleTxt,
+                message: messageTxt,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: descTxt,
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            self.val('');
+                            $('#' + inputTimeId).val('');
+                            self.focusout();
+                            self.focus();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+    }
 }
 
 function removePackage(randNum) {
@@ -676,6 +742,7 @@ function addServiceList(data) {
         closeOnDateSelect   :true,
         scrollInput         :false,
         yearOffset          :543,
+        minDate             : nowDateTmp,
         onSelectDate: 
         function(){
           $('#' + inputDateId).blur();
@@ -684,7 +751,14 @@ function addServiceList(data) {
     });
     $('#' + inputTimeId).datetimepicker({
         datepicker:false,
-        format:'H:i'
+        format:'H:i',
+        minTime:'08:30',
+        maxTime: '20:05',
+        step:30,
+        onSelectTime:
+        function() {
+            checkDate($('#' + inputDateId));
+        }
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
@@ -728,6 +802,64 @@ function addServiceList(data) {
             type: 'svl'
         });
     });
+
+    // Check date
+    $('#' + inputDateId).change(function(){
+        checkDate($(this));
+    });
+
+    function checkDate(self) {
+        // Skip check
+        if(self.val() == '' || $('#' + inputTimeId).val() == '') {
+            return;
+        }
+
+        // Get Real date
+        var selfRealDate = self.val();
+        if(isDateThaiFormat(selfRealDate)) {
+            selfRealDate = getRealDate(selfRealDate);
+        } else {
+            selfRealDate = tmpDateToRealDate(selfRealDate);
+        }
+
+        // Compare date
+        var selfStrFormat = getDateString(selfRealDate, $('#' + inputTimeId).val());
+        var selfDate  = new Date(selfStrFormat);
+        var nowDate   = new Date();
+        if(selfDate.getTime() < nowDate.getTime()) {
+            showAlertInvalidDate(self);
+        }
+    }
+
+    function showAlertInvalidDate(self, errType) {
+        var titleTxt    = 'วันเวลาที่มาใช้บริการไม่ถูกต้อง';
+        var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่มาใช้บริการย้อนหลังได้ กรุณาแก้ไขวันเวลาที่มาใช้บริการใหม่ค่ะ';
+        var descTxt     = '';
+        var selfId      = self.attr('id');
+
+        if(parent.$('.action-dialog-container').length <= 0) {
+            parent.showActionDialog({
+                title: titleTxt,
+                message: messageTxt,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: descTxt,
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            self.val('');
+                            $('#' + inputTimeId).val('');
+                            self.focusout();
+                            self.focus();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+    }
 }
 
 function removeServiceList(randNum) {

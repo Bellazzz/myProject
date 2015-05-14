@@ -166,6 +166,7 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                maxDate: '{/literal}{$nowDateTmp}{literal}',
                 onSelectDate: 
                 function(){
                   $('#sale_date').blur();
@@ -175,8 +176,72 @@
              $('#sale_time').datetimepicker({
                 datepicker:false,
                 format:'H:i:s',
-                step: 5
+                minTime:'08:30',
+                maxTime: '20:05',
+                step: 5,
+                onSelectTime:
+                function() {
+                    checkDate($('#sale_date'));
+                }
             });
+
+
+            // Check date
+            $('#sale_date').change(function(){
+                checkDate($(this));
+            });
+
+            function checkDate(self) {
+                // Skip check
+                if(self.val() == '') {
+                    return;
+                }
+
+                // Get Real date
+                var selfRealDate = self.val();
+                if(isDateThaiFormat(selfRealDate)) {
+                    selfRealDate = getRealDate(selfRealDate);
+                } else {
+                    selfRealDate = tmpDateToRealDate(selfRealDate);
+                }
+
+                // Compare date
+                var selfStrFormat = getDateString(selfRealDate, $('#sale_time').val());
+                var selfDate  = new Date(selfStrFormat);
+                var nowDate   = new Date();
+                if(selfDate.getTime() > nowDate.getTime()) {
+                    showAlertInvalidDate(self);
+                }
+            }
+
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = 'วันเวลาที่ขายไม่ถูกต้อง';
+                var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่ขายล่วงหน้าได้ กรุณาแก้ไขวันเวลาที่ขายใหม่ค่ะ';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    $('#sale_time').val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
        
         });
     </script>
