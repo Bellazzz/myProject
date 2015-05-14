@@ -178,17 +178,16 @@
                 format:'H:i:s',
                 minTime:'08:30',
                 maxTime: '20:05',
-                step: 5,
-                onSelectTime:
-                function() {
-                    checkDate($('#sale_date'));
-                }
+                step: 5
             });
 
 
             // Check date
             $('#sale_date').change(function(){
                 checkDate($(this));
+            });
+            $('#sale_time').change(function(){
+                checkDate($('#sale_date'));
             });
 
             function checkDate(self) {

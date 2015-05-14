@@ -56,16 +56,15 @@
                 format:'H:i',
                 minTime:'08:30',
                 maxTime: '20:05',
-                step:5,
-                onSelectTime:
-                function() {
-                    checkDate($('#elechk_date'));
-                }
+                step:5
             });
 
             // Check date
             $('#elechk_date').change(function(){
                 checkDate($(this));
+            });
+            $('#elechk_time').change(function(){
+                checkDate($('#elechk_date'));
             });
 
             function checkDate(self) {

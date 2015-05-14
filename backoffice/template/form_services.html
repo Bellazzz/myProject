@@ -168,6 +168,8 @@
             position: absolute; 
             margin-left: 10px;
             display: none;
+            top: 21px;
+            left: 520px;
         }
         .inlineBlock {
             display: inline-block !important;
@@ -313,6 +315,7 @@
                 closeOnDateSelect   :true,
                 scrollInput         :false,
                 yearOffset          :543,
+                maxDate: '{/literal}{$nowDateTmp}{literal}',
                 onShow: 
                 function() {
                     saveSerDate();
@@ -327,9 +330,70 @@
              $('#ser_time').datetimepicker({
                 datepicker:false,
                 format:'H:i',
-                minTime:'06:00',
-                maxTime: '21:00'
+                minTime:'08:30',
+                maxTime: '20:05',
+                step:5
             });
+
+             // Check date
+            $('#ser_date').change(function(){
+                checkDate($(this));
+            });
+            $('#ser_time').change(function(){
+                checkDate($('#ser_date'));
+            });
+
+            function checkDate(self) {
+                // Skip check
+                if(self.val() == '') {
+                    return;
+                }
+
+                // Get Real date
+                var selfRealDate = self.val();
+                if(isDateThaiFormat(selfRealDate)) {
+                    selfRealDate = getRealDate(selfRealDate);
+                } else {
+                    selfRealDate = tmpDateToRealDate(selfRealDate);
+                }
+
+                // Compare date
+                var selfStrFormat = getDateString(selfRealDate, $('#ser_time').val());
+                var selfDate  = new Date(selfStrFormat);
+                var nowDate   = new Date();
+                if(selfDate.getTime() > nowDate.getTime()) {
+                    showAlertInvalidDate(self);
+                }
+            }
+
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = 'วันเวลาที่บันทึกข้อมูลไม่ถูกต้อง';
+                var messageTxt  = 'ไม่สามารถป้อนวันเวลาที่บันทึกข้อมูลล่วงหน้าได้ กรุณาแก้ไขวันเวลาที่บันทึกข้อมูลใหม่ค่ะ';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    $('#ser_time').val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
         });
     </script>
     {/literal}
@@ -526,7 +590,7 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
+                <td colspan="2" style="position:relative;">
                     <label>รหัสการจอง</label>
                     <div id="bkg_id" class="selectReferenceJS form-input full"></div>
                     <img class="pullBkgId-loader" src="../img/loading.gif">

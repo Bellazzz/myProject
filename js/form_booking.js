@@ -418,11 +418,7 @@ function addPackage(data) {
         format:'H:i',
         minTime:'08:30',
         maxTime: '20:05',
-        step:30,
-        onSelectTime:
-        function() {
-            checkDate($('#' + inputDateId));
-        }
+        step:30
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
@@ -470,6 +466,9 @@ function addPackage(data) {
     // Check date
     $('#' + inputDateId).change(function(){
         checkDate($(this));
+    });
+    $('#' + inputTimeId).change(function(){
+        checkDate($('#' + inputDateId));
     });
 
     function checkDate(self) {
@@ -754,11 +753,7 @@ function addServiceList(data) {
         format:'H:i',
         minTime:'08:30',
         maxTime: '20:05',
-        step:30,
-        onSelectTime:
-        function() {
-            checkDate($('#' + inputDateId));
-        }
+        step:30
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
@@ -806,6 +801,9 @@ function addServiceList(data) {
     // Check date
     $('#' + inputDateId).change(function(){
         checkDate($(this));
+    });
+    $('#' + inputTimeId).change(function(){
+        checkDate($('#' + inputDateId));
     });
 
     function checkDate(self) {

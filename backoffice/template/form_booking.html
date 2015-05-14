@@ -409,11 +409,7 @@
                 format:'H:i',
                 minTime:'08:30',
                 maxTime: '20:05',
-                step:5,
-                onSelectTime:
-                function() {
-                    checkDate($('#bkg_date'));
-                }
+                step:5
             });
             $('#bkg_transfer_time').datetimepicker({
                 datepicker:false,
@@ -433,6 +429,9 @@
             // Check date
             $('#bkg_date').change(function(){
                 checkDate($(this));
+            });
+            $('#bkg_time').change(function(){
+                checkDate($('#bkg_date'));
             });
 
             function checkDate(self) {
