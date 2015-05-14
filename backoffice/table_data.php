@@ -19,6 +19,7 @@ $filter 		= '';
 $filterRetroact = '';
 $filterExpired 	= '';
 $where			= '';
+$whereAllRecord = '';
 $like			= '';
 $order			= '';
 $limit 			= '';
@@ -354,6 +355,7 @@ switch ($tableName) {
 			$where .= " AND $like";
 		} else {
 			$where .= " AND t.dateatt_in >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE dateatt_in >= '$retroactDate' ";
 		}
 		$sql = "SELECT t.timeatt_id,
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
@@ -378,6 +380,7 @@ switch ($tableName) {
 			$where .= " AND $like";
 		} else {
 			$where .= " AND p.payroll_date >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE payroll_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT p.payroll_id,
 				p.payroll_date,
@@ -405,6 +408,7 @@ switch ($tableName) {
 			$where .= " AND $like";
 		} else {
 			$where .= " AND s.ser_date >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE ser_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT s.ser_id,
 				s.bkg_id,
@@ -485,7 +489,9 @@ switch ($tableName) {
 				$like	= str_replace('eletyp_id', 'et.eletyp_name', $like);
 			}
 			$where .= " AND $like";
+		} else {
 			$where .= " AND ec.elechk_date >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE elechk_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT ec.elechk_id,
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
@@ -580,7 +586,9 @@ switch ($tableName) {
 			}
 			$like	= str_replace('wdwtyp_id', 'wt.wdwtyp_name', $like);
 			$where .= " AND $like";
+		} else {
 			$where .= " AND w.wdw_date >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE wdw_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT w.wdw_id,
 				CONCAT(eg.emp_name, '  ', eg.emp_surname) emp_give_id,
@@ -615,7 +623,9 @@ switch ($tableName) {
 				$like = "(e.emp_name like '%$searchInput%' OR e.emp_surname like '%$searchInput%') ";
 			}
 			$where .= " AND $like";
+		} else {
 			$where .= " AND s.sale_date >= '$retroactDate' ";
+			$whereAllRecord .= " WHERE sale_date >= '$retroactDate' ";
 		}
 		$sql = "SELECT s.sale_id,
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
@@ -871,7 +881,7 @@ if($tableName == 'grant_privileges') {
 	$sqlAllRecord = str_replace($txtSelect, $newSelect, $sql);
 	$sqlAllRecord = str_replace($txtLimit, '', $sqlAllRecord);
 } else {
-	$sqlAllRecord 		= "SELECT COUNT(*) allRecords FROM $tableName";
+	$sqlAllRecord 		= "SELECT COUNT(*) allRecords FROM $tableName $whereAllRecord";
 }
 $resultAllRecord 	= mysql_query($sqlAllRecord, $dbConn);
 $allRecordsRows 	= mysql_fetch_assoc($resultAllRecord);
