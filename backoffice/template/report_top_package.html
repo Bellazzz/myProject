@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
     <script type="text/javascript">
@@ -56,6 +57,27 @@
                 }
             });
         });
+        $('#print-btn').click(function() {
+            if($('.printArea').length > 0) {
+                printElemBOF($('.printArea'));
+            } else {
+                parent.showActionDialog({
+                    title: 'ไม่พบข้อมูลสำหรับพิมพ์รายงาน',
+                    message: 'ไม่สามารถพิมพ์ได้เนื่องจากไม่พบข้อมูลสำหรับพิมพ์รายงาน',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        });
     });
     </script>
 	{/literal}
@@ -69,6 +91,20 @@
                 <img src="../img/report/report1.png" width="45px">
                 รายงานแพ็คเกจเรียงลำดับตามความนิยม
              </h1>
+            <br>
+            <div class="toolbar-container clearfix">
+                <ul class="toolbar-menu">
+                    <li>
+                        <a id="back-btn" href="report.php">
+                            <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+                        </a>
+                        <a id="print-btn">
+                            <i class="fa fa-print"></i> พิมพ์
+                        </a>
+                        
+                    </li>
+                </ul>
+            </div>
             <br><br>
             
             <form method="post" action="report_top_package.php" class="mbk-form-input-normal">
@@ -95,6 +131,7 @@
             <center>
             {if $report}
             <div class="printArea">
+            <center>
                 <h3>รายงานแพ็คเกจเรียงลำดับตามความนิยม</h3>
                 <br />
                 เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
@@ -138,6 +175,7 @@
                         </tr>
                     </tfoot>
                 </table>
+            </center>
             </div>
             {else}
             ไม่พบข้อมูลเพื่อออกรายงานในช่วงเวลาดังกล่าว
@@ -145,10 +183,6 @@
             </center>
         </div>
 	</div>
-    <br><br>
-    <center>
-    <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
-    </center>
 </div>
 
 <!-- end page-->

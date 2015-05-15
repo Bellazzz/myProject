@@ -31,3 +31,27 @@ function getDateString(date, time) {
     }
     return dateStr;
 }
+
+function printElemBOF(elem) {
+    var params = [
+        'height='+screen.height,
+        'width='+screen.width,
+        'fullscreen=yes' // only works in IE, but here for completeness
+    ].join(',');
+
+    var mywindow = window.open('', 'my div', params);
+    mywindow.document.write('<html><head><title>my div</title>');
+    mywindow.document.write('<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="../css/lazybingo.css">');
+    /*optional stylesheet*/ //mywindow.document.write('<link rel="stylesheet" href="main.css" type="text/css" />');
+    mywindow.document.write('</head><body >');
+    mywindow.document.write(elem.html());
+    mywindow.document.write('</body></html>');
+
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10
+
+    mywindow.print();
+    mywindow.close();
+
+    return true;
+}
