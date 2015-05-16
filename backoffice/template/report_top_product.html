@@ -11,8 +11,10 @@
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../inc/datetimepicker/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_common_function.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <script type="text/javascript" src="../js/jquery.table2excel.js"></script>
     <style type="text/css">
     .even-row {
         background-color: #f1f1f1 !important;
@@ -70,6 +72,48 @@
             var index = $(this).attr('data-index');
             $('.selectPrdTypTable tbody input[data-index="' + index + '"]').prop('checked', $(this).prop('checked'));
         });
+        $('#print-btn').click(function() {
+            if($('.printArea').length > 0) {
+                printElemBOF($('.printArea'));
+            } else {
+                parent.showActionDialog({
+                    title: 'ไม่พบข้อมูลสำหรับพิมพ์รายงาน',
+                    message: 'ไม่สามารถพิมพ์ได้เนื่องจากไม่พบข้อมูลสำหรับพิมพ์รายงาน',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        });
+        $('#exportExcel-btn').click(function() {
+            if($('.printArea').length > 0) {
+                tableToExcel('exportTable', 'รายงานสรุปยอดขายผลิตภัณฑ์ เครื่องดื่ม และอาหาร');
+            } else {
+                parent.showActionDialog({
+                    title: 'ไม่พบข้อมูลสำหรับดาวโหลด',
+                    message: 'ไม่สามารถดาวโหลดได้เนื่องจากไม่พบข้อมูลสำหรับดาวโหลด',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            }
+        });
     });
     </script>
 	{/literal}
@@ -83,6 +127,23 @@
                 <img src="../img/report/report3.png" width="45px">
                 รายงานสรุปยอดขายผลิตภัณฑ์ เครื่องดื่ม และอาหาร
             </h1>
+            <br>
+            <div class="toolbar-container clearfix">
+                <ul class="toolbar-menu">
+                    <li>
+                        <a id="back-btn" href="report.php">
+                            <i class="fa fa-arrow-circle-left"></i> ย้อนกลับ
+                        </a>
+                        <a id="print-btn">
+                            <i class="fa fa-print"></i> พิมพ์
+                        </a>
+                        <a id="exportExcel-btn">
+                            <i class="fa fa-download"></i> ดาวโหลด(Excel)
+                        </a>
+                        
+                    </li>
+                </ul>
+            </div>
             <br><br>
             
             <form method="post" action="report_top_product.php" class="mbk-form-input-normal">
@@ -144,13 +205,23 @@
             <center>
             {if $report}
             <div class="printArea">
-                <h3>รายงานยอดขายผลิตภัณฑ์</h3>
-                <br />
-                เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
-                สิ้นสุดวันที่: {$endDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
-                วันที่พิมพ์รายงาน: {$nowDate_th}
-                <table class="report-top-table" cellpadding="0" cellspacing="0">
+            <center>
+                <table id="exportTable" class="report-top-table" cellpadding="0" cellspacing="0">
                     <thead>
+                        <tr class="headTable">
+                            <td colspan="8" align="center">
+                                <h3>รายงานยอดขายผลิตภัณฑ์ เครื่องดื่ม และอาหาร</h3>
+                            </td>
+                        </tr>
+                        <tr class="headTable"><td></td><td></td><td></td><td></td></tr>
+                        <tr class="headTable">
+                            <td colspan="8" align="center">
+                                เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                                สิ้นสุดวันที่: {$endDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                                วันที่พิมพ์รายงาน: {$nowDate_th}
+                            </td>
+                        </tr>
+                        <tr class="headTable"><td></td><td></td><td></td><td></td></tr>
                         <tr>
                             <th>ลำดับ</th>
                             <th>ประเภท</th>
@@ -191,15 +262,11 @@
                         </tr>
                     </tfoot>
                 </table>
+            </center>
             </div>
             {else}
             ไม่พบข้อมูลเพื่อออกรายงานในช่วงเวลาดังกล่าว
             {/if}
-            </center>
-            <br><br>
-            <center>
-            <a href="report.php"><button class="button button-icon button-icon-back"> ย้อนกลับ</button></a>
-            </center>
         </div>
 	</div>
 </div>
