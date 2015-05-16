@@ -1820,7 +1820,7 @@ datetimepicker
 .report-top-table tr {
     border-bottom: 1px solid #E7E9EC;
 }
-.report-top-table thead tr {
+.report-top-table thead tr th {
     font-family: ThaiSansNeue-Bold;
     font-weight: bold;
     font-size: 20px;
@@ -1829,6 +1829,12 @@ datetimepicker
 }
 .report-top-table tbody tr:nth-child(odd) {
   background-color: #f1f1f1;
+}
+.report-top-table thead tr.headTable {
+    border:none;
+}
+.report-top-table thead tr td {
+    border:none;
 }
 .report-top-table.report-massage tbody tr:nth-child(odd) {
   background-color: white;
