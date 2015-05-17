@@ -33,7 +33,13 @@ $sql = "SELECT 		s.svl_id,
 		FROM 		service_lists s,
 					service_list_types t 
 		WHERE 		s.svltyp_id = t.svltyp_id AND 
-					s.svl_id = '$id'";
+					s.svl_id = '$id' AND 
+					s.svl_start <= '$nowDate' AND 
+					(
+						s.svl_stop IS NULL OR 
+						s.svl_stop >= '$nowDate'
+					) AND 
+					s.svl_type = 1";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -54,7 +60,7 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 						svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 					) AND 
 					svlprmdtl.svl_id ='$id' AND 
-					svlprm.custype_id = 'CT2'";
+					svlprm.custype_id = '".$_SESSION['custype_id']."'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

@@ -38,7 +38,12 @@ if($sort == 'POPULAR') {
 }
 
 // Find all record
-$sql = "SELECT COUNT(*) AS allRecord FROM packages WHERE pkg_stop IS NULL OR pkg_stop >= '$nowDate'";
+$sql = "SELECT 	COUNT(*) AS allRecord FROM packages 
+		WHERE 	pkg_start <= '$nowDate' AND 
+				(
+					pkg_stop IS NULL OR 
+					pkg_stop >= '$nowDate'
+				)";
 $result = mysql_query($sql, $dbConn);
 $record = mysql_fetch_assoc($result);
 $allRecord = $record['allRecord'];
@@ -77,8 +82,11 @@ $sql = "SELECT 		pkg_id,
 					pkg_desc,
 					pkg_picture 
 		FROM 		packages 
-		WHERE 		pkg_stop IS NULL OR 
-					pkg_stop >= '$nowDate' 
+		WHERE 		pkg_start <= '$nowDate' AND 
+					(
+						pkg_stop IS NULL OR 
+						pkg_stop >= '$nowDate'
+					) 
 		$order";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
@@ -115,7 +123,8 @@ $sql = "SELECT 		pkgprmdtl.pkg_id,
 						pkgprmdtl.pkgprmdtl_enddate IS NULL OR
 						pkgprmdtl.pkgprmdtl_enddate >= '$nowDate'
 					) AND 
-					pkgprmdtl.pkg_id IN (".implode(',', $pkgIds).")";
+					pkgprmdtl.pkg_id IN (".implode(',', $pkgIds).") AND 
+					pkgprm.custype_id = '".$_SESSION['custype_id']."'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

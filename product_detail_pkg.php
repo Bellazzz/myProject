@@ -29,7 +29,12 @@ $sql = "SELECT 		pkg_id,
 					pkg_start,
 					pkg_stop 
 		FROM 		packages  
-		WHERE 		pkg_id = '$id'";
+		WHERE 		pkg_id = '$id' AND 
+					pkg_start <= '$nowDate' AND 
+					(
+						pkg_stop IS NULL OR 
+						pkg_stop >= '$nowDate'
+					)";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -67,7 +72,7 @@ $sql = "SELECT 		pkgprmdtl.pkg_id,
 						pkgprmdtl.pkgprmdtl_enddate >= '$nowDate'
 					) AND 
 					pkgprmdtl.pkg_id ='$id' AND 
-					pkgprm.custype_id = 'CT2'";
+					pkgprm.custype_id = '".$_SESSION['custype_id']."'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
