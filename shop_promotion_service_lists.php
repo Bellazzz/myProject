@@ -89,10 +89,13 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 					svlprmdtl.svlprmdtl_startdate, 
 					svlprmdtl.svlprmdtl_enddate,
 					svlprmdtl.svlprmdtl_discout,
-					svlprmdtl.svlprmdtl_discout_type 
+					svlprmdtl.svlprmdtl_discout_type,
+					ct.custype_name  
 		FROM 		service_list_promotion_details svlprmdtl,
-					service_list_promotions svlprm, service_lists ss 
+					service_list_promotions svlprm, service_lists ss,
+					customer_types ct 
 		WHERE 		svlprmdtl.svlprm_id = svlprm.svlprm_id AND 
+					svlprm.custype_id = ct.custype_id AND 
 					svlprmdtl.svlprmdtl_startdate <= '$nowDate' AND 
 					(
 						svlprmdtl.svlprmdtl_enddate IS NULL OR
@@ -100,7 +103,7 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 					) AND 
 					svlprmdtl.svl_id IN (".implode(',', $svlIds).")
 		AND 		svlprmdtl.svl_id  = ss.svl_id 
-		ORDER BY  	svlprm .svlprm_id DESC, svlprmdtl.svlprmdtl_id ";
+		ORDER BY  	svlprm.svlprm_id DESC, svlprmdtl.svlprmdtl_id ";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -113,6 +116,7 @@ if($rows > 0) {
 			$svlList[$svlprm_id]['svlprm_name'] = $record['svlprm_name'];
 			$svlList[$svlprm_id]['svlprm_pic'] = $record['svlprm_pic'];
 			$svlList[$svlprm_id]['svlprm_desc'] = $record['svlprm_desc'];
+			$svlList[$svlprm_id]['custype_name'] = $record['custype_name'];
 			$svlList[$svlprm_id]['svlprmdtl'] = array();
 		}
 

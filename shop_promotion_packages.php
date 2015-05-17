@@ -129,10 +129,13 @@ $sql = "SELECT 		pkgprmdtl.pkg_id,
 					pkgprmdtl.pkgprmdtl_startdate,
 					pkgprmdtl.pkgprmdtl_enddate,
 					pkgprmdtl.pkgprmdtl_discout,
-					pkgprmdtl.pkgprmdtl_discout_type 
+					pkgprmdtl.pkgprmdtl_discout_type,
+					ct.custype_name  
 		FROM 		package_promotion_details pkgprmdtl,
-					package_promotions pkgprm, packages p 
+					package_promotions pkgprm, packages p,
+					customer_types ct 
 		WHERE 		pkgprmdtl.pkgprm_id = pkgprm.pkgprm_id AND 
+					pkgprm.custype_id = ct.custype_id AND 
 					pkgprmdtl.pkgprmdtl_startdate <= '$nowDate' AND 
 					(
 						pkgprmdtl.pkgprmdtl_enddate IS NULL OR
@@ -154,6 +157,7 @@ if($rows > 0) {
 			$pkgList[$pkgprm_id]['pkgprm_name'] = $record['pkgprm_name'];
 			$pkgList[$pkgprm_id]['pkgprm_pic'] = $record['pkgprm_pic'];
 			$pkgList[$pkgprm_id]['pkgprm_desc'] = $record['pkgprm_desc'];
+			$pkgList[$pkgprm_id]['custype_name'] = $record['custype_name'];
 			$pkgList[$pkgprm_id]['pkgprmdtl'] = array();
 		}
 
