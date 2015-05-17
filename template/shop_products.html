@@ -107,7 +107,19 @@
 		                <label class="expired">
 		                	{if $prd.prmprd_startdate != ''}
 		                		{if $prd.prmprd_enddate != ''}
-			                	สิ้นสุดโปรโมชั่น:{$prd.prmprd_enddate}
+			                	สิ้นสุดโปรโมชั่น: {$prd.prmprd_enddate}
+			                	{else}
+			                	ไม่มีกำหนดสิ้นสุดโปรโมชั่น
+			                	{/if}
+		                	{/if}
+		                </label>
+		              </div>
+		              <div class="list-description">
+		                <p>{$prd.prd_desc}</p>
+		                <label class="expired">
+		                	{if $prd.prmprd_startdate != ''}
+		                		{if $prd.prmprd_enddate != ''}
+			                	สิ้นสุดโปรโมชั่น: {$prd.prmprd_enddate}
 			                	{else}
 			                	ไม่มีกำหนดสิ้นสุดโปรโมชั่น
 			                	{/if}
