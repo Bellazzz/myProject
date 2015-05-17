@@ -22,5 +22,12 @@ if (isset($_COOKIE['cusRememberMe'])) {
     setcookie('cus_email', null, -1, '/');
     setcookie('cus_fullname', null, -1, '/');
 }
+
+if(isset($_SESSION['bookingSvl'])) {
+    unset($_SESSION['bookingSvl']);
+}
+if(isset($_SESSION['bookingPkg'])) {
+    unset($_SESSION['bookingPkg']);
+}
 header("location:index.php");
 ?>

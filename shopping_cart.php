@@ -49,7 +49,7 @@ if(isset($_SESSION['bookingSvl']) && is_array($_SESSION['bookingSvl'])) {
 								svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 							) AND 
 							svlprmdtl.svl_id IN (".implode(',', $svlIds).") AND 
-							svlprm.custype_id = 'CT2'";
+							svlprm.custype_id = '".$_SESSION['custype_id']."'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {
@@ -118,7 +118,7 @@ if(isset($_SESSION['bookingPkg']) && is_array($_SESSION['bookingPkg'])) {
 								pkgprmdtl.pkgprmdtl_enddate >= '$nowDate'
 							) AND 
 							pkgprmdtl.pkg_id IN (".implode(',', $pkgIds).") AND 
-							pkgprm.custype_id = 'CT2'";
+							pkgprm.custype_id = '".$_SESSION['custype_id']."'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {
