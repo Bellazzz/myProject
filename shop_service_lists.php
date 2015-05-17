@@ -38,7 +38,13 @@ if($sort == 'POPULAR') {
 }
 
 // Find all record
-$sql = "SELECT COUNT(*) AS allRecord FROM service_lists";
+$sql = "SELECT 	COUNT(*) AS allRecord FROM service_lists 
+		WHERE 	svl_start <= '$nowDate' AND 
+				(
+					svl_stop IS NULL OR 
+					svl_stop >= '$nowDate'
+				)  AND 
+				svl_type = 1";
 $result = mysql_query($sql, $dbConn);
 $record = mysql_fetch_assoc($result);
 $allRecord = $record['allRecord'];
@@ -78,6 +84,12 @@ $sql = "SELECT 		svl_id,
 					svl_desc,
 					svl_picture 
 		FROM 		service_lists 
+		WHERE 		svl_start <= '$nowDate' AND 
+					(
+						svl_stop IS NULL OR 
+						svl_stop >= '$nowDate'
+					) AND 
+					svl_type = 1 
 		$order";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
@@ -108,7 +120,8 @@ $sql = "SELECT 		svlprmdtl.svl_id,
 						svlprmdtl.svlprmdtl_enddate IS NULL OR
 						svlprmdtl.svlprmdtl_enddate >= '$nowDate'
 					) AND 
-					svlprmdtl.svl_id IN (".implode(',', $svlIds).")";
+					svlprmdtl.svl_id IN (".implode(',', $svlIds).") AND 
+					svlprm.custype_id = '".$_SESSION['custype_id']."'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

@@ -67,6 +67,9 @@
 	if(isset($_SESSION['cus_fullname'])) {
 		$smarty->assign('session_cus_fullname', $_SESSION['cus_fullname']);
 	}
+	// Get customer type
+	$cusRecord = new TableSpa('customers', $session_cus_id);
+	$_SESSION['custype_id'] = $cusRecord->getFieldValue('custype_id');
 
 	//Get data to show
 	$spaRecord 	= new TableSpa('spa', 'SA01');
