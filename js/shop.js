@@ -12,13 +12,6 @@ $(document).ready(function() {
 		$('.productList .item').addClass('list-view');
 	});
 
-	$('select[name="itemDisplay"]').change(function() {
-		window.location = getShopPath('service_lists');
-	});
-	$('select[name="sort"]').change(function() {
-		window.location = getShopPath('service_lists');
-	});
-
 	$('.addCartSuccess').slideUp(0);
 
 	$('input[name="persons"]').focus(function() {
@@ -36,6 +29,10 @@ function getShopPath(category) {
 	var page = 1;
 	if(category == 'packages') {
 		path = 'shop_packages.php'
+	} else if(category == 'products') {
+		path = 'shop_products.php'
+	} else if(category == 'foods') {
+		path = 'shop_foods.php'
 	}
 	var itemDisplay = $('select[name="itemDisplay"]').val();
 	var sort = $('select[name="sort"]').val();

@@ -19,6 +19,16 @@
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
     <script src="js/spaMain.js"></script>
     <script src="js/shop.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    	$('select[name="itemDisplay"]').change(function() {
+			window.location = getShopPath('packages');
+		});
+		$('select[name="sort"]').change(function() {
+			window.location = getShopPath('packages');
+		});
+    });
+    </script>
 </head>
 <body class="header-fixed">
 {include file="_header.html"}
