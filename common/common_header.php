@@ -69,7 +69,11 @@
 	}
 	// Get customer type
 	$cusRecord = new TableSpa('customers', $session_cus_id);
-	$_SESSION['custype_id'] = $cusRecord->getFieldValue('custype_id');
+	if($cusRecord->getFieldValue('custype_id') == '') {
+		$_SESSION['custype_id'] = 'CT1'; // Default is normal user
+	} else {
+		$_SESSION['custype_id'] = $cusRecord->getFieldValue('custype_id');
+	}
 
 	//Get data to show
 	$spaRecord 	= new TableSpa('spa', 'SA01');

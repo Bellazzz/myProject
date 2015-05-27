@@ -60,111 +60,79 @@
 	<div class="container">
 		<div class="row">
 			<div class="top-product">
-				<div class="col-sm-6">
-			    	<h2 class="section-title">
-			    		<span>รายการบริการยอดนิยม</span>
-			    	</h2>
-			        <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL001.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">นวดน้ำมันอโรม่า</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
+				<div class="col-md-6">
+					<div class="col-xs-12">
+				    	<h2 class="section-title">
+				    		<span>รายการบริการยอดนิยม</span>
+				    	</h2>
+			    	</div>
+			    	{foreach from=$topSvlList key=i item=svl}
+			    	<div class="thumb-product col-xs-12">
+			    		<div class="col-xs-4 col-sm-2 col-md-3">
+			    			{if $svl.svl_picture != ''}
+				        	<div class="thumb-product-img" style="background-image:url('img/service_lists/{$svl.svl_picture}')"></div>
+				        	{else}
+				        	<div class="thumb-product-img" style="background-image:url('img/shopItemDefault-100.png')"></div>
+				        	{/if}
+			    		</div>
+			    		<div class="col-xs-8 col-sm-10 col-md-9">
+			    			<div class="thumb-product-in">
+		                        <h4><a href="product_detail_svl.php?id={$svl.svl_id}">{$svl.svl_name}</a></h4>
+		                        <span class="thumb-product-type">{$svl.svl_desc}</span>
+		                    </div>
+		                    <ul class="list-inline overflow-h">
+		                    	{if $svl.svl_prmPrice}
+		                    	<li class="thumb-product-price line-through">{$svl.svl_price|number_format:2:".":","} บาท</li>
+		                        <li class="thumb-product-price">{$svl.svl_prmPrice|number_format:2:".":","} บาท</li>
+		                    	{else}
+		                    	<li class="thumb-product-price">{$svl.svl_price|number_format:2:".":","} บาท</li>
+		                    	{/if}
+		                        <li class="thumb-product-purchase">
+		                        	<a href="product_detail_svl.php?id={$svl.svl_id}" title="หยิบใส่ตระกร้า">
+		                        		<i class="fa fa-shopping-cart"></i>
+		                        	</a>
+		                        </li>
+		                    </ul>    
+			    		</div>
 	                </div>
-	                <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL002.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">Yuketen</a> – <a href="shop-ui-inner.html">Derby Shoe</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
-	                </div>
-	                <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL003.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">Yuketen</a> – <a href="shop-ui-inner.html">Derby Shoe</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
-	                </div>
+			    	{/foreach}
 			    </div>
-			    <div class="col-sm-6">
-			    	<h2 class="section-title">
-			    		<span>แพ็คเกจยอดนิยม</span>
-			    	</h2>
-			        <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL004.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">Yuketen</a> – <a href="shop-ui-inner.html">Derby Shoe</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
+			    <div class="col-md-6">
+			    	<div class="col-xs-12">
+				    	<h2 class="section-title">
+				    		<span>แพ็คเกจยอดนิยม</span>
+				    	</h2>
+			    	</div>
+			    	{foreach from=$topPkgList key=i item=pkg}
+			    	<div class="thumb-product col-xs-12">
+			    		<div class="col-xs-4 col-sm-2 col-md-3">
+			    			{if $pkg.pkg_picture != ''}
+				        	<div class="thumb-product-img" style="background-image:url('img/packages/{$pkg.pkg_picture}')"></div>
+				        	{else}
+				        	<div class="thumb-product-img" style="background-image:url('img/shopItemDefault-100.png')"></div>
+				        	{/if}
+			    		</div>
+			    		<div class="col-xs-8 col-sm-10 col-md-9">
+			    			<div class="thumb-product-in">
+		                        <h4><a href="product_detail_pkg.php?id={$pkg.pkg_id}">{$pkg.pkg_name}</a></h4>
+		                        <span class="thumb-product-type">{$pkg.pkg_desc}</span>
+		                    </div>
+		                    <ul class="list-inline overflow-h">
+		                    	{if $pkg.pkg_prmPrice}
+		                    	<li class="thumb-product-price line-through">{$pkg.pkg_price|number_format:2:".":","} บาท</li>
+		                        <li class="thumb-product-price">{$pkg.pkg_prmPrice|number_format:2:".":","} บาท</li>
+		                    	{else}
+		                    	<li class="thumb-product-price">{$pkg.pkg_price|number_format:2:".":","} บาท</li>
+		                    	{/if}
+		                        <li class="thumb-product-purchase">
+		                        	<a href="product_detail_pkg.php?id={$pkg.pkg_id}" title="หยิบใส่ตระกร้า">
+		                        		<i class="fa fa-shopping-cart"></i>
+		                        	</a>
+		                        </li>
+		                    </ul>    
+			    		</div>
 	                </div>
-	                <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL005.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">Yuketen</a> – <a href="shop-ui-inner.html">Derby Shoe</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
-	                </div>
-	                <div class="thumb-product">
-			        	<div class="thumb-product-img" style="background-image:url('img/service_lists/SL006.jpeg')"></div>
-	                    <div class="thumb-product-in">
-	                        <h4><a href="shop-ui-inner.html">Yuketen</a> – <a href="shop-ui-inner.html">Derby Shoe</a></h4>
-	                        <span class="thumb-product-type">Footwear - Oxfords</span>
-	                    </div>
-	                    <ul class="list-inline overflow-h">
-	                        <li class="thumb-product-price line-through">$75.00</li>
-	                        <li class="thumb-product-price">$65.00</li>
-	                        <li class="thumb-product-purchase">
-	                        	<a href="#" title="หยิบใส่ตระกร้า">
-	                        		<i class="fa fa-shopping-cart"></i>
-	                        	</a>
-	                        </li>
-	                    </ul>    
-	                </div>
+			    	{/foreach}
 			    </div>
 			</div>
 		</div>

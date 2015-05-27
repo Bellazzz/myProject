@@ -247,7 +247,6 @@ padding: 4px 8px;
   border: 1px solid #8AC007;
 }
 .top-product .thumb-product .thumb-product-img {
-  float: left;
   width: 100px;
   height: 100px;
   margin-right: 25px;
@@ -262,6 +261,12 @@ padding: 4px 8px;
 .top-product .thumb-product-type {
   color: #999;
   font-size: 14px;
+  display: block;
+  height: 1.5em;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-bottom: 5px;
 }
 .top-product .thumb-product-purchase {
   float: right;
