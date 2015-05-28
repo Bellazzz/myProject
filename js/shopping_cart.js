@@ -32,7 +32,32 @@ $(document).ready(function() {
 
 	$('.deleteBtn').click(function() {
 		var name = $(this).attr('data-name');
-		return confirm('คุณต้องการลบ "' + name + '" ออกจากการจองใช่หรือไม่?');
+		var path = $(this).attr('href');
+		parent.showActionDialog({
+            title: 'ลบรายการที่จอง',
+            message: 'คุณต้องการลบ "' + name + '" ออกจากการจองใช่หรือไม่?',
+            actionList: [
+                {
+                    id: 'ok',
+                    name: 'ตกลง',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                        window.location = path;
+                    }
+                },
+                {
+                    id: 'cancel',
+                    name: 'ยกเลิก',
+                    func:
+                    function() {
+                        parent.hideActionDialog();
+                    }
+                }
+            ],
+            boxWidth: 400
+        });
+        return false;
 	});
 });
 

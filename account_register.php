@@ -10,7 +10,7 @@ $sexList = array();
 $sql = "SELECT 		sex_id,
 					sex_name  
 		FROM 		sex 
-		ORDER BY 	sex_name ASC";
+		ORDER BY 	sex_id ASC";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
@@ -23,11 +23,12 @@ if($rows > 0) {
 $titleList = array();
 $sql = "SELECT 		t.title_id,
 					t.title_name,
-					IFNULL(s.sex_id,'') sex_id 
+					IFNULL(s.sex_id,'') sex_id,
+					IFNULL(s.sex_name,'') sex_name 
 		FROM 		titles t 
 		LEFT JOIN 	sex s 
 		ON          t.sex_id = s.sex_id 
-		ORDER BY 	t.title_name ASC";
+		ORDER BY 	t.title_id ASC";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {

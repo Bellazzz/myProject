@@ -1346,8 +1346,9 @@ h2.block-title-2, .formBox h3, .block-title-2 {
 }
 
 .errInputMsg {
-  margin-top: -10px;
-  margin-bottom: 15px;
+  display: none;
+  margin-top: 2px;
+  margin-bottom: 10px;
   color: #D80000;
 }
 .errInputMsg:before {
@@ -1362,4 +1363,16 @@ h2.block-title-2, .formBox h3, .block-title-2 {
 label.input-required:before {
   content: "* ";
   color: #D80000;
+}
+
+.form-control.has-error {
+  border-color: #e74c3c;
+  box-shadow: none;
+}
+
+.select2-container-disabled.select-primary .select2-choice, .select2-container-disabled.select-primary .select2-choice:hover, .select2-container-disabled.select-primary .select2-choice:focus, .select2-container-disabled.select-primary .select2-choice:active {
+  color: #71808E;
+  cursor: default;
+  background-color: #f4f6f6;
+  border-color: #d5dbdb;
 }
