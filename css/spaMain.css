@@ -1376,3 +1376,39 @@ label.input-required:before {
   background-color: #f4f6f6;
   border-color: #d5dbdb;
 }
+
+.myAccountList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.myAccountList li {
+  text-align: center;
+}
+.myAccountList .thumbnail {
+  padding: 10px 0 0;
+}
+.thumbnail {
+  display: block;
+  padding: 4px;
+  margin-bottom: 20px;
+  line-height: 1.42857143;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  -webkit-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+.myAccountList li a {
+  font-size: 14px;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+.myAccountList li a i {
+  display: block;
+  clear: both;
+  font-size: 44px;
+  margin-bottom: 10px;
+}
