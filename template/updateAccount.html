@@ -37,11 +37,11 @@
         $(document).ready(function() {
         $('#error-message').slideUp(0);
 
-        $('#register-btn').click(function() {
+        $('#update-btn').click(function() {
           if(!checkRequiredInput()) {
             // No input error
             $.ajax({
-              url: 'common/ajaxCustomerRegister.php',
+              url: 'common/ajaxCustomerUpdate.php',
               type: 'POST',
               data: {
                 'formData' : $('#form-login').serialize()
@@ -50,16 +50,15 @@
               function(response) {
                 if(response == 'PASS') {
                   parent.showActionDialog({
-                      title: 'สมัครสมาชิกเรียบร้อยแล้ว',
-                      message: 'ขอบคุณสำหรับการสมัครสมาชิก ตอนนี้คุณสามารถเข้าสู่ระบบเพื่อทำการจองบริการต่างๆ ได้แล้ว',
+                      title: 'บันทึกข้อมูลเรียบร้อยแล้ว',
                       actionList: [
                           {
                               id: 'ok',
-                              name: 'เข้าสู่ระบบ',
+                              name: 'ตกลง',
                               func:
                               function() {
                                   parent.hideActionDialog();
-                                  document.location.href = 'account_login.php';
+                                  document.location.href = 'myaccount.php';
                               }
                           }
                       ],
@@ -68,7 +67,7 @@
                 } else if(response == 'NOT_PASS') {
                   parent.showActionDialog({
                       title: 'เกิดข้อผิดพลาด',
-                      message: 'เกิดข้อผิดพลาด การสมัครสมาชิกล้มเหลว',
+                      message: 'เกิดข้อผิดพลาด การแก้ไขข้อมูลล้มเหลว',
                       actionList: [
                           {
                               id: 'ok',
@@ -136,7 +135,21 @@
         $('#title_id').change(function() {
           setSexId();
         });
-        setSexId();
+
+        // Default title_id 
+        for(i in titleList) {
+          var defaultTitleId = '{/literal}{$cusData.title_id}{literal}';
+          var defaultSexId = '{/literal}{$cusData.sex_id}{literal}';
+
+          if(titleList[i].title_id == defaultTitleId) {
+            $('#s2id_title_id .select2-chosen').text(titleList[i].title_name);
+            $('#title_id').val(titleList[i].title_id);
+            setSexId();
+            var sexName = $('#sex_id option[value="' + defaultSexId + '"]').text();
+            $('#s2id_sex_id .select2-chosen').text(sexName);
+            $('#sex_id').val(defaultSexId);
+          }
+        }
 
         $('#cus_pass').focusout(function() {
           checkEqualPassword();
@@ -186,18 +199,19 @@
       <div class="breadcrumbDiv col-md-12 col-lg-12">
         <ul class="breadcrumb">
               <li><a href="index.php"><span class="fui-home"></span> หน้าแรก</a></li>
-              <li class="active">สมัครสมาชิก</li>
+              <li><a href="myaccount.php">บัญชีของฉัน</a></li>
+              <li class="active">ข้อมูลส่วนตัว</li>
            </ul>
       </div>
     </div>
     <div class="row">
   
-    <div class="col-lg-12 col-md-12 col-sm-7">
-      <h1 class="section-title-inner"><span><i class="fa fa-user"></i> สมัครสมาชิก</span></h1>
+    <div class="col-xs-12 col-sm-7 col-md-12">
+      <h1 class="section-title-inner"><span><i class="fa fa-user"></i> ข้อมูลส่วนตัวของฉัน</span></h1>
+      <h2 class="block-title-2"><span>กรุณาแก้ไขข้อมูลส่วนตัวของคุณ เมื่อมีการเปลี่ยนแปลง</span></h2>
       <form id="form-login" role="form" class="logForm" onsubmit="return false;">
       <div class="row userInfo">
         <div class="col-xs-12 col-md-6">
-          <h2 class="block-title-2"><span>สมัครสมาชิกเพื่อทำการจองรายการบริการและแพ็คเกจ</span></h2>
           <span id="error-message"></span>
             <div class="form-group">
               
@@ -216,60 +230,50 @@
               </select>
 
               <label class="input-required">ชื่อ</label>
-              <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name" require valuepattern="character">
+              <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name" require value="{$cusData.cus_name}" valuepattern="character">
               <span id="err-cus_name-require" class="errInputMsg err-cus_name">โปรดป้อนชื่อ</span>
               <span id="err-cus_name-character" class="errInputMsg err-cus_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
              
               <label class="input-required">นามสกุล</label>
-              <input id="cus_surname" name="cus_surname" type="text" class="form-control" placeholder="Enter your surname" require valuepattern="character">
+              <input id="cus_surname" name="cus_surname" type="text" class="form-control" placeholder="Enter your surname" require valuepattern="character" value="{$cusData.cus_surname}">
               <span id="err-cus_surname-require" class="errInputMsg err-cus_surname">โปรดป้อนนามสกุล</span>
               <span id="err-cus_surname-character" class="errInputMsg err-cus_surname">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
-              
+
               <label class="input-required">ที่อยู่</label>
-              <input id="cus_addr" name="cus_addr" type="text" class="form-control" placeholder="Enter your address" require>
+              <input id="cus_addr" name="cus_addr" type="text" class="form-control" placeholder="Enter your address" require value="{$cusData.cus_addr}">
               <span id="err-cus_addr-require" class="errInputMsg err-cus_addr">โปรดป้อนที่อยู่</span>
-              
-              <label class="input-required">เบอร์โทรศัพท์</label>
-              <input id="cus_tel" name="cus_tel" type="text" class="form-control" placeholder="Enter your telephone number" require valuepattern="tel" maxlength="10">
-              <span id="err-cus_tel-require" class="errInputMsg err-cus_tel">โปรดป้อนเบอร์โทรศัพท์</span>
-              <span id="err-cus_tel-tel" class="errInputMsg half err-cus_tel">โปรดกรอกเบอร์โทรเป็นตัวเลข 10 หลัก</span>
-
-              <label>วันเกิด</label>
-              <input id="cus_birthdate" name="cus_birthdate" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$birthday}">
-
-               <label>Facebook(Link)</label>
-              <input id="cus_facebook" name="cus_facebook" type="text" class="form-control" placeholder="Enter your Facebook link">
-
-               <label>Line(ID)</label>
-              <input id="cus_line" name="cus_line" type="text" class="form-control" placeholder="Enter your Line ID">
             </div>
         </div>
 
         <div class="col-xs-12 col-md-6">
-          <h2 class="block-title-2"> ข้อมูลการเข้าสู่ระบบ </h2>
-              <label class="input-required">Email Address</label>
-              <input id="cus_email" name="cus_email" type="email" class="form-control" placeholder="Enter email address" require valuepattern="email">
-              <span id="err-cus_email-require" class="errInputMsg err-cus_email">โปรดป้อนอีเมล</span>
-              <span id="err-cus_email-email" class="errInputMsg err-cus_email">รูปแบบอีเมลไม่ถูกต้องค่ะ</span>
+              <label class="input-required">เบอร์โทรศัพท์</label>
+              <input id="cus_tel" name="cus_tel" type="text" class="form-control" placeholder="Enter your telephone number" require valuepattern="tel" maxlength="10" value="{$cusData.cus_tel}">
+              <span id="err-cus_tel-require" class="errInputMsg err-cus_tel">โปรดป้อนเบอร์โทรศัพท์</span>
+              <span id="err-cus_tel-tel" class="errInputMsg half err-cus_tel">โปรดกรอกเบอร์โทรเป็นตัวเลข 10 หลัก</span>
 
-              <label class="input-required">รหัสผ่าน</label>
-              <input id="cus_pass" name="cus_pass" type="password" class="form-control" placeholder="Enter password" require>
-              <span id="err-cus_pass-require" class="errInputMsg err-cus_pass">โปรดป้อนรหัสผ่าน</span>
+              <label>วันเกิด</label>
+              <input id="cus_birthdate" name="cus_birthdate" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$cusData.cus_birthdate}">
 
-              <label class="input-required">ยืนยันรหัสผ่าน</label>
-              <input id="comfirm_pasword" name="comfirm_pasword" type="password" class="form-control" placeholder="Enter confirm password " require>
-              <span id="err-comfirm_pasword-require" class="errInputMsg err-comfirm_pasword">โปรดป้อนรหัสผ่านอีกครั้ง</span>
-              <span id="err-comfirm_pasword-notEqual" class="errInputMsg err-comfirm_pasword">โปรดป้อนรหัสผ่านให้ตรงกันค่ะ</span>
+               <label>Facebook(Link)</label>
+              <input id="cus_facebook" name="cus_facebook" type="text" class="form-control" placeholder="Enter your Facebook link" value="{$cusData.cus_facebook}">
+
+               <label>Line(ID)</label>
+              <input id="cus_line_id" name="cus_line_id" type="text" class="form-control" placeholder="Enter your Line ID" value="{$cusData.cus_line_id}">
 
               <hr class="hr hr30">
-              <button id="register-btn" class="btn btn-primary btn-lg btn-block" type="submit"><i class="fa fa-sign-in"></i> สมัครสมาชิก</button>
+              <button id="update-btn" class="btn btn-primary btn-lg btn-block" type="submit"><i class="fa fa-save"></i> บันทึก</button>
             </div>
           </form>
         </div>
       </div>
       <!--/row end--> 
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-5"> </div>
+    <div class="col-lg-12 clearfix">
+      <ul class="pageBtnList">
+        <li class="next pull-left"><a href="myaccount.php"><i class="fa fa-long-arrow-left"></i> กลับไปยังบัญชีของฉัน</a></li>
+        <li class="next pull-right"><a href="index.php"><i class="fa fa-home"></i> ทำการจองต่อ</a></li>
+      </ul>
+    </div>
   </div>	
   </div>
 </div>

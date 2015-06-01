@@ -186,93 +186,30 @@
       <div class="breadcrumbDiv col-md-12 col-lg-12">
         <ul class="breadcrumb">
               <li><a href="index.php"><span class="fui-home"></span> หน้าแรก</a></li>
-              <li class="active">สมัครสมาชิก</li>
+              <li class="active">บัญชีของฉัน</li>
            </ul>
       </div>
     </div>
     <div class="row">
-  
-    <div class="col-lg-12 col-md-12 col-sm-7">
-      <h1 class="section-title-inner"><span><i class="fa fa-user"></i> สมัครสมาชิก</span></h1>
-      <form id="form-login" role="form" class="logForm" onsubmit="return false;">
-      <div class="row userInfo">
-        <div class="col-xs-12 col-md-6">
-          <h2 class="block-title-2"><span>สมัครสมาชิกเพื่อทำการจองรายการบริการและแพ็คเกจ</span></h2>
-          <span id="error-message"></span>
-            <div class="form-group">
-              
-              <label class="input-required">คำนำหน้าชื่อ</label>
-              <select id="title_id" class="form-control select select-primary" data-toggle="select" name="title_id">
-                {foreach from=$titleList key=i item=title}
-                  <option value="{$title.title_id}">{$title.title_name}</option>
-                {/foreach}
-              </select>
-
-              <label>เพศ</label>
-              <select id="sex_id" class="form-control select select-primary" data-toggle="select" name="sex_id">
-                {foreach from=$sexList key=i item=sex}
-                  <option value="{$sex.sex_id}" >{$sex.sex_name}</option>
-                {/foreach}
-              </select>
-
-              <label class="input-required">ชื่อ</label>
-              <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name" require valuepattern="character">
-              <span id="err-cus_name-require" class="errInputMsg err-cus_name">โปรดป้อนชื่อ</span>
-              <span id="err-cus_name-character" class="errInputMsg err-cus_name">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
-             
-              <label class="input-required">นามสกุล</label>
-              <input id="cus_surname" name="cus_surname" type="text" class="form-control" placeholder="Enter your surname" require valuepattern="character">
-              <span id="err-cus_surname-require" class="errInputMsg err-cus_surname">โปรดป้อนนามสกุล</span>
-              <span id="err-cus_surname-character" class="errInputMsg err-cus_surname">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
-              
-              <label class="input-required">ที่อยู่</label>
-              <input id="cus_addr" name="cus_addr" type="text" class="form-control" placeholder="Enter your address" require>
-              <span id="err-cus_addr-require" class="errInputMsg err-cus_addr">โปรดป้อนที่อยู่</span>
-              
-              <label class="input-required">เบอร์โทรศัพท์</label>
-              <input id="cus_tel" name="cus_tel" type="text" class="form-control" placeholder="Enter your telephone number" require valuepattern="tel" maxlength="10">
-              <span id="err-cus_tel-require" class="errInputMsg err-cus_tel">โปรดป้อนเบอร์โทรศัพท์</span>
-              <span id="err-cus_tel-tel" class="errInputMsg half err-cus_tel">โปรดกรอกเบอร์โทรเป็นตัวเลข 10 หลัก</span>
-
-              <label>วันเกิด</label>
-              <input id="cus_birthdate" name="cus_birthdate" type="text" class="form-control mbk-dtp-th" placeholder="Enter your birthday" value="{$birthday}">
-
-               <label>Facebook(Link)</label>
-              <input id="cus_facebook" name="cus_facebook" type="text" class="form-control" placeholder="Enter your Facebook link">
-
-               <label>Line(ID)</label>
-              <input id="cus_line" name="cus_line" type="text" class="form-control" placeholder="Enter your Line ID">
-            </div>
-        </div>
-
-        <div class="col-xs-12 col-md-6">
-          <h2 class="block-title-2"> ข้อมูลการเข้าสู่ระบบ </h2>
-              <label class="input-required">Email Address</label>
-              <input id="cus_email" name="cus_email" type="email" class="form-control" placeholder="Enter email address" require valuepattern="email">
-              <span id="err-cus_email-require" class="errInputMsg err-cus_email">โปรดป้อนอีเมล</span>
-              <span id="err-cus_email-email" class="errInputMsg err-cus_email">รูปแบบอีเมลไม่ถูกต้องค่ะ</span>
-
-              <label class="input-required">รหัสผ่าน</label>
-              <input id="cus_pass" name="cus_pass" type="password" class="form-control" placeholder="Enter password" require>
-              <span id="err-cus_pass-require" class="errInputMsg err-cus_pass">โปรดป้อนรหัสผ่าน</span>
-
-              <label class="input-required">ยืนยันรหัสผ่าน</label>
-              <input id="comfirm_pasword" name="comfirm_pasword" type="password" class="form-control" placeholder="Enter confirm password " require>
-              <span id="err-comfirm_pasword-require" class="errInputMsg err-comfirm_pasword">โปรดป้อนรหัสผ่านอีกครั้ง</span>
-              <span id="err-comfirm_pasword-notEqual" class="errInputMsg err-comfirm_pasword">โปรดป้อนรหัสผ่านให้ตรงกันค่ะ</span>
-
-              <hr class="hr hr30">
-              <button id="register-btn" class="btn btn-primary btn-lg btn-block" type="submit"><i class="fa fa-sign-in"></i> สมัครสมาชิก</button>
-            </div>
-          </form>
-        </div>
+      <div class="col-lg-9 col-md-9 col-sm-7">
+        <h1 class="section-title-inner"><span><i class="fa fa-unlock-alt"></i> บัญชีของฉัน</span></h1>
+        <h2 class="block-title-2"><span>ยินดีต้อนรับสู่บัญชีของคุณ คุณสามารถจัดการข้อมูลส่วนตัว และดูประวัติการจองของคุณได้</span></h2>
+        <ul class="myAccountList row">
+            <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4  text-center ">
+              <div class="thumbnail equalheight" style="height: 116px;"> <a title="Orders" href="booking_history.php"><i class="fa fa-calendar"></i> ประวัติการจอง </a> </div>
+            </li>
+            <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4  text-center ">
+              <div class="thumbnail equalheight" style="height: 116px;"> <a title="Personal information" href="updateAccount.php"><i class="fa fa-cog"></i> ข้อมูลส่วนตัว</a> </div>
+            </li>
+            <li class="col-lg-2 col-md-2 col-sm-3 col-xs-4  text-center ">
+              <div class="thumbnail equalheight" style="height: 116px;"> <a title="Reset password" href="resetPassword.php"><i class="fa fa-lock"></i> เปลี่ยนรหัสผ่าน</a> </div>
+            </li>
+          </ul>
       </div>
-      <!--/row end--> 
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-5"> </div>
-  </div>	
+    <!--/row end--> 
   </div>
-</div>
+</div>	
 {include file="_footer.html"}
 </body>
 </script>

@@ -7,7 +7,7 @@ $formData		= array();
 parse_str($_REQUEST['formData'], $formData);
 
 $cusRecord = new TableSpa('customers', array(
-	'X1',
+	$formData['sex_id'],
 	'CT1',
 	$formData['title_id'],
 	$formData['cus_name'],
