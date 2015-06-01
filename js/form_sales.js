@@ -52,7 +52,9 @@ $(document).ready(function() {
     $('input[name="sale_discout_type"]').click(checkSaleDiscout);
 
     //Cal change money
-    $('#sale_pay_price').change(calSummary);
+    $('#sale_pay_price').change(function() {
+        calChangeMoney(parseFloat($('#sale_total_price').val()));
+    });
 });
 
 function saveOldPrdPrmGrp() {
@@ -732,6 +734,7 @@ function calSummary() {
     totalPrice -= sale_discout + sale_prm_discout + saleDiscoutPrm;
     totalPrice = Math.ceil(totalPrice);
     $('#sale_total_price').val(totalPrice.formatMoney(2, '.', ''));
+    $('#sale_pay_price').val(totalPrice.formatMoney(2, '.', ''));
     
     calChangeMoney(totalPrice);
 }

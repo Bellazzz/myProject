@@ -74,3 +74,9 @@ function tableToExcel(table, name) {
     document.body.removeChild(link);
     //window.location.href = uri + base64(format(template, ctx))
 }
+
+function selectWhenClick(elem) {
+    elem.click(function() {
+        this.select();
+    });
+}
