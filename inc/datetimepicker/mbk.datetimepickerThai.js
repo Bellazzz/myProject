@@ -301,3 +301,21 @@ function tmpDateToRealDate(tmpDate) {
 	var realDate = year + '/' + month + '/' + date;
 	return(realDate);
 }
+
+function getRealDateJS(input) {
+	/*** Set date th to date eng ***/
+	var dateTH = input;
+	for(j in monthsTH) {
+	  	if(dateTH.indexOf(monthsTH[j]) != -1) {
+	  		var dateEN 		= dateTH.replace(monthsTH[j], j);
+	  		var datetimeEN 	= new Date(dateEN);
+	  		var date 		=	datetimeEN.getDate();
+	  		var month 		= datetimeEN.getMonth();
+	  		var year = datetimeEN.getFullYear()-543;
+	  		// Concat
+	  		var realDate = month + '/' + date + '/' + year;
+
+	  		return(realDate);
+	  	}
+	}
+}

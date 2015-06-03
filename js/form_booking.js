@@ -267,10 +267,14 @@ function addPackage(data) {
     // Create HTML and append
     var pkgRowHTML  = '<tr class="package-row">'
                     + '     <td width="350px">'
-                    + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                    + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;" data-randNum="' + randNum + '"></div>'
                     + '     </td>'
-                    + '     <td align="right" style="padding-right:20px;width:110px;"><span id="pkg_min_' + randNum + '" class="pkg_min_txt">' + pkg_min + '</span> นาที'
-                    + '		<td align="right" style="padding-right:20px;"><span class="pkg_unit_price">' + unitPrice + '</span>'
+                    + '     <td align="right" style="padding-right:20px;width:110px;">'
+                    + '         <span id="pkg_min_' + randNum + '" class="pkg_min_txt">' + pkg_min + '</span> นาที'
+                    + '         <input type="hidden" name="serpkg_min[]" value="' + pkg_min + '">'
+                    + '         <input type="hidden" name="serpkg_time_end[]">'
+                    + '     </td>'
+                    + '		<td align="right" style="padding-right:20px;"><span class="pkg_unit_price">' + unitPrice + '</span></td>'
                     + '     <td style="padding-left:40px;">';
 
     // add input package amount
@@ -331,7 +335,7 @@ function addPackage(data) {
                     + '                         <label class="input-required">วันที่</label> <input id="' + inputDateId + '" name="bkgpkg_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgpkg_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '">'
+                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgpkg_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgpkg_time + '" data-randNum="' + randNum + '">'
                     + '                     </td>'
                     + '                     <td>'
                     + '                         <span class="err-bkgemp-require errInputMsg half" data-type="pkg" data-randNum="' + randNum + '">ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว</span>'
@@ -410,6 +414,9 @@ function addPackage(data) {
         onSelectDate: 
         function(){
           $('#' + inputDateId).blur();
+          setTimeout(function() {
+            setPkgTimeEnd(inputKeyId);
+          },10);
         },
         timepicker:false
     });
@@ -422,6 +429,9 @@ function addPackage(data) {
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
+    $('#' + inputTimeId).focusout(function() {
+        setPkgTimeEnd(inputKeyId); // Set time end
+    });
     $('#' + inputDateId).parent().parent().parent().parent().parent().parent().find('.com-list-title').click(function() {
         var stat = $(this).attr('data-status');
         if(stat == "1") {
@@ -605,10 +615,14 @@ function addServiceList(data) {
     // Create HTML and append
     var svlRowHTML  = '<tr class="service-list-row">'
                     + '     <td width="350px">'
-                    + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
+                    + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;" data-randNum="' + randNum + '"></div>'
                     + '     </td>'
-                    + '     <td align="right" style="padding-right:20px;width:110px;"><span id="svl_min_' + randNum + '" class="svl_min_txt">' + svl_min + '</span> นาที'
-                    + '		<td align="right" style="padding-right:20px;"><span class="svl_unit_price">' + unitPrice + '</span>'
+                    + '     <td align="right" style="padding-right:20px;width:110px;">'
+                    + '         <span id="svl_min_' + randNum + '" class="svl_min_txt">' + svl_min + '</span> นาที'
+                    + '         <input type="hidden" name="sersvl_min[]" value="' + svl_min + '">'
+                    + '         <input type="hidden" name="sersvl_time_end[]">'
+                    + '     </td>'
+                    + '		<td align="right" style="padding-right:20px;"><span class="svl_unit_price">' + unitPrice + '</span></td>'
                     + '     <td style="padding-left:40px;">';
 
     // add input package amount
@@ -668,7 +682,7 @@ function addServiceList(data) {
                     + '                         <label class="input-required">วันที่</label> <input id="' + inputDateId + '" name="bkgsvl_date[]" type="text" class="mbk-dtp-th form-input half" require value="' + bkgsvl_date + '">'
                     + '                     </td>'
                     + '                     <td>'
-                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '">'
+                    + '                         <label class="input-required">เวลา</label> <input id="' + inputTimeId + '" name="bkgsvl_time[]" type="text" class="form-input half" require style="width:80px;" value="' + bkgsvl_time + '" data-randNum="' + randNum + '">'
                     + '                     </td>'
                     + '                     <td>'
                     + '                         <span class="err-bkgemp-require errInputMsg half" data-type="svl" data-randNum="' + randNum + '">ไม่มีพนักงานที่สามารถให้บริการได้ในวันเวลาดังกล่าว</span>'
@@ -745,6 +759,9 @@ function addServiceList(data) {
         onSelectDate: 
         function(){
           $('#' + inputDateId).blur();
+          setTimeout(function() {
+            setSvlTimeEnd(inputKeyId);
+          },10);
         },
         timepicker:false
     });
@@ -757,6 +774,9 @@ function addServiceList(data) {
     });
     $('#' + inputDateId).focusout(validateInput);
     $('#' + inputTimeId).focusout(validateInput);
+    $('#' + inputTimeId).focusout(function() {
+        setSvlTimeEnd(inputKeyId); // Set time end
+    });
     $('#' + inputDateId).parent().parent().parent().parent().parent().parent().find('.com-list-title').click(function() {
         var stat = $(this).attr('data-status');
         if(stat == "1") {
@@ -910,6 +930,8 @@ function pullPkgUnitPrice(inputKeyId) {
     if(typeof(pkgID) != 'undefined' && pkgID != '') {
         var pkgUnitPrice = $('#' + inputKeyId).parent().parent().find('.pkg_unit_price');
         var pkgMinTxt = $('#' + inputKeyId).parent().parent().find('.pkg_min_txt');
+        var pkgMinInput = $('#' + inputKeyId).parent().parent().find('input[name="serpkg_min[]"]');
+        var serpkgTimeInput = $('#' + inputKeyId).parent().parent().find('input[name="serpkg_time[]"]');
         var unitPrice    = '';
         var pkg_min = '';
 
@@ -921,8 +943,10 @@ function pullPkgUnitPrice(inputKeyId) {
             }
         }
 
+        setPkgTimeEnd(inputKeyId, pkg_min);
         pkgUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
         pkgMinTxt.text(pkg_min.formatMoney(0, '', ','));
+        pkgMinInput.val(pkg_min);
         calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgpkg_total_price_tmp[]"]'), 'packages');
     }
 }
@@ -933,6 +957,8 @@ function pullSvlUnitPrice(inputKeyId) {
     if(typeof(svlID) != 'undefined' && svlID != '') {
         var svlUnitPrice = $('#' + inputKeyId).parent().parent().find('.svl_unit_price');
         var svlMinTxt = $('#' + inputKeyId).parent().parent().find('.svl_min_txt');
+        var svlMinInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_min[]"]');
+        var sersvlTimeInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time[]"]');
         var unitPrice    = '';
         var svl_min = '';
 
@@ -944,9 +970,184 @@ function pullSvlUnitPrice(inputKeyId) {
             }
         }
 
+        setSvlTimeEnd(inputKeyId, svl_min);
         svlUnitPrice.text(unitPrice.formatMoney(2, '.', ','));
         svlMinTxt.text(svl_min.formatMoney(0, '', ','));
+        svlMinInput.val(svl_min);
         calSumPriceInput($('#' + inputKeyId).parent().parent().find('input[name="bkgsvl_total_price_tmp[]"]'), 'service_lists');
+    }
+}
+
+function setPkgTimeEnd(inputKeyId, pkgMin) {
+    var serpkgTimeId = '#pkg_time_' + $('#' + inputKeyId).attr('data-randNum');
+    var serpkgTimeInput = $(serpkgTimeId);
+    var pkg_min = pkgMin;
+    if(typeof(pkg_min) == 'undefined') {
+        var pkgID = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+        if(typeof(pkgID) != 'undefined' && pkgID != '') {
+            for(i in refPkgData) {
+                if(refPkgData[i].refValue == pkgID) {
+                    pkg_min = parseInt(refPkgData[i].pkg_min);
+                    break;
+                }
+            }
+        }
+    }
+
+    // cal time end
+    if(serpkgTimeInput.val() != '') {
+        var serpkgTimeEndInput = $('#' + inputKeyId).parent().parent().find('input[name="serpkg_time_end[]"]');
+        var endTime = addMinutes(serpkgTimeInput.val(), pkg_min);
+        serpkgTimeEndInput.val(endTime);
+        checkTimeOverlap({
+            inputKeyId: inputKeyId,
+            type: 'packages'
+        });
+    }
+}
+
+function setSvlTimeEnd(inputKeyId, svlMin) {
+    var sersvlTimeId = '#svl_time_' + $('#' + inputKeyId).attr('data-randNum');
+    var sersvlTimeInput = $(sersvlTimeId);
+    var svl_min = svlMin;
+    if(typeof(svl_min) == 'undefined') {
+        var svlID = $('#' + inputKeyId).find('.selectReferenceJS-input').val();
+        if(typeof(svlID) != 'undefined' && svlID != '') {
+            for(i in refSvlData) {
+                if(refSvlData[i].refValue == svlID) {
+                    svl_min = parseInt(refSvlData[i].svl_min);
+                    break;
+                }
+            }
+        }
+    }
+
+    // cal time end
+    if(sersvlTimeInput.val() != '') {
+        var sersvlTimeEndInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
+        var endTime = addMinutes(sersvlTimeInput.val(), svl_min);
+        sersvlTimeEndInput.val(endTime);
+        checkTimeOverlap({
+            inputKeyId: inputKeyId,
+            type: 'service_lists'
+        });
+    }
+}
+
+function checkTimeOverlap(data) {
+    var timeList = Array();
+    var timeOverlapList = Array();
+    var inputTime = '';
+    var inputTimeEnd = '';
+    var selectRefVal = '';
+    var pkgName = '';
+    var randNum = $('#' + data.inputKeyId).attr('data-randNum');
+    var inputTimeId = '';
+    var inputDate = '';
+
+    if(data.type == 'service_lists') {
+        selectRefVal = $('#' + data.inputKeyId).parent().parent().find('.selectReferenceJS-input').val();
+    } else if(data.type == 'packages') {
+        selectRefVal = $('#' + data.inputKeyId).find('.selectReferenceJS-input').val();
+        pkgName = $('#' + data.inputKeyId).find('.selectReferenceJS-text').text();
+    }
+
+    if(selectRefVal == '') {
+        return;
+    }
+    
+    if(data.type == 'service_lists') {
+        inputTime = $('#svl_time_' + randNum);
+        inputTimeEnd = $('#' + data.inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
+        inputDate = inputTime.parent().parent().find('input[name="bkgsvl_date[]"]');
+    } else if(data.type == 'packages') {
+        inputTime = $('#pkg_time_' + randNum);
+        inputTimeEnd = $('#' + data.inputKeyId).parent().parent().find('input[name="serpkg_time_end[]"]');
+        inputDate = inputTime.parent().parent().find('input[name="bkgpkg_date[]"]');
+    }
+
+    // get time list of service list
+    allInputTimeSvl = $('#booking-service-list-table').find('input[name="bkgsvl_time[]"]');
+    allInputTimeSvl.each(function() {
+        if($(this).attr('id') != inputTime.attr('id')) {
+            var eachRandNum = $(this).attr('data-randNum');
+            timeList.push({
+                name: $('#svl_id_' + eachRandNum).find('.selectReferenceJS-text').text(),
+                date: $(this).parent().parent().find('input[name="bkgsvl_date[]"]').val(),
+                timeStart: $(this).val(),
+                timeEnd: $('#svl_id_' + eachRandNum).parent().parent().find('input[name="sersvl_time_end[]"]').val()
+            });
+        }
+    });
+
+    // get time list of package
+    allInputTimePkg = $('#booking-package-table').find('input[name="bkgpkg_time[]"]');
+    allInputTimePkg.each(function() {
+        if($(this).attr('id') != inputTime.attr('id')) {
+            var eachRandNum = $(this).attr('data-randNum');
+            timeList.push({
+                name: $('#pkg_id_' + eachRandNum).find('.selectReferenceJS-text').text(),
+                date: $(this).parent().parent().find('input[name="bkgpkg_date[]"]').val(),
+                timeStart: $(this).val(),
+                timeEnd: $('#pkg_id_' + eachRandNum).parent().parent().find('input[name="serpkg_time_end[]"]').val()
+            });
+        }
+    });
+    
+    // Check overlap
+    var now = new Date();
+    var timeStart = new Date(getRealDateJS(inputDate.val()) + ' ' + inputTime.val() + ':00');
+    var timeEnd = new Date(getRealDateJS(inputDate.val()) + ' ' + inputTimeEnd.val() + ':00');
+    var tmpTimeStart, tmpTimeEnd, tmpDate;
+
+    for(i in timeList) {
+        tmpDate = getRealDateJS(timeList[i].date);
+        tmpTimeStart = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeStart + ':00');
+        tmpTimeEnd = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeEnd + ':00');
+        if(((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
+            (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) || 
+            timeStart <= tmpTimeStart && timeEnd >= tmpTimeEnd) {
+            var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
+            var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
+            var txt = timeList[i].name + ' (' + timeList[i].date + ' เวลา ' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
+            timeOverlapList.push(txt);
+        }
+    }
+
+    // Show alert dialogBox
+    if(timeOverlapList.length > 0) {
+        inputTime.addClass('required');
+        var svlName = $('#' + data.inputKeyId).parent().parent().find('.selectReferenceJS-text').text();
+        var timeStartTxt = timeStart.getHours() + ':' + (timeStart.getMinutes()<10?'0':'') + timeStart.getMinutes();
+        var timeEndTxt = timeEnd.getHours() + ':' + (timeEnd.getMinutes()<10?'0':'') + timeEnd.getMinutes();
+        var msg = 'คุณกำหนดให้ ';
+        msg += svlName + ' มีการใช้บริการวันที่ ' + inputDate.val() + ' เวลา ' + timeStartTxt + ' น. - ' + timeEndTxt + ' น. ซึ่งซ้อนทับกับรายการดังต่อไปนี้ <ul>';
+        for(i in timeOverlapList) {
+            msg += '<li>' + timeOverlapList[i] + '</li>';
+        }
+        msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว';
+        if(parent.$('.action-dialog').length == 0) {
+            parent.showActionDialog({
+                title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: 'ป้อนเวลาที่ใช้บริการใหม่',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            inputTime.val('');
+                            inputTimeEnd.val('');
+                            inputTime.focus();
+                        }
+                    }
+                ],
+                boxWidth: 700
+            });
+        }
+        
     }
 }
 
