@@ -172,7 +172,7 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 					<a title="ใบแสดงข้อมูลการจอง">
 						<i class="fa fa-file-text-o" onclick="openPrintBookingPaper('<?=$code?>')"></i>
 					</a>
-					<?php if($displayEditBtn && ($filter == 'PENDING_CHECK' || $filter == 'PENDING_PAYMENT')) { ?>
+					<?php if($displayEditBtn && ($filter == 'PENDING_CHECK' || $filter == 'PENDING_PAYMENT' || $filter == 'PENDING_SERVICE')) { ?>
 					<a title="แก้ไข">
 						<i class="fa fa-pencil" onclick="openFormTable('EDIT', '<?=$code?>')"></i>
 					</a>

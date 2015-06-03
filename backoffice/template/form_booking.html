@@ -158,7 +158,7 @@
             margin: 0 !important;
         }
         {/literal}
-        {if $values.status_id == 'S02' && $action == 'EDIT'}
+        {if ($values.status_id == 'S02' || $values.status_id == 'S03') && $action == 'EDIT'}
         {literal}
             .hideOnEditPayment {
                 display: none !important;

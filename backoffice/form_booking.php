@@ -395,7 +395,7 @@ if(!$_REQUEST['ajaxCall']) {
 	}
 
 	// Hide edit button from status
-	if($values['status_id'] != 'S01' && $values['status_id'] != 'S02') {
+	if($values['status_id'] != 'S01' && $values['status_id'] != 'S02' && $values['status_id'] != 'S03') {
 		$hideEditButton = 'true';
 	}
 
@@ -515,7 +515,15 @@ if(!$_REQUEST['ajaxCall']) {
 		}
 		// Init booking status
 		array_push($values['fieldName'], 'status_id');
-		array_push($values['fieldValue'], 'S01');
+		if(in_array('bnkacc_id', $values['fieldName']) && in_array('bkg_transfer_date', $values['fieldName']) && 
+			in_array('bkg_transfer_time', $values['fieldName']) && in_array('bkg_transfer_money', $values['fieldName'])) {
+			// insert with transfer data
+			array_push($values['fieldValue'], 'S03');
+		} else {
+			// Default status
+			array_push($values['fieldValue'], 'S01');
+		}
+		
 
 		// Insert booking
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
