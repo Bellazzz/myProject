@@ -34,6 +34,22 @@
     .importMsg.error {
         color: #D80000;
     }
+    .importLog-header {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+        font-family: ThaiSansNeue-Bold;
+        font-size: 25px;
+    }
+    .importLog-body {
+        padding: 20px;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+        background: #F5F5F5;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        max-height: 500px;
+        overflow-y: auto;
+    }
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
@@ -77,6 +93,8 @@
         $('#importFile').change(function() {
             $('.importMsg').css('display','none');
             $('.errMsg').css('display','none');
+            $('.importLog-header').css('display','none');
+            $('.importLog-body').css('display','none');
         });
 
         $('#dest-default').click(function() {
@@ -211,6 +229,11 @@
                 <br/>
                 <font class="importMsg error"><i class="fa fa-exclamation-circle"></i> เกิดข้อผิดพลาด กรุณาตรวจสอบไฟล์ที่นำเข้าข้อมูล<br /></font>
                 <span class="errMsg">{$errMsg}</span>
+                {/if}
+                {if $importLog}
+                    <br><br>
+                    <font class="importLog-header">ผลการนำเข้าข้อมูล</font>
+                    <div class="importLog-body">{$importLog}</div>
                 {/if}
             </div>
 
