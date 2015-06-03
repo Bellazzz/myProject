@@ -123,7 +123,7 @@ if($rows > 0) {
 }
 
 $times = array();
-for($i=9; $i<=20; $i++) {
+for($i=9; $i<=18; $i++) {
 	$time = '';
 	if($i < 10) {
 		$time .= '0';

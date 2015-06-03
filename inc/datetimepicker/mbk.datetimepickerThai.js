@@ -310,7 +310,7 @@ function getRealDateJS(input) {
 	  		var dateEN 		= dateTH.replace(monthsTH[j], j);
 	  		var datetimeEN 	= new Date(dateEN);
 	  		var date 		=	datetimeEN.getDate();
-	  		var month 		= datetimeEN.getMonth();
+	  		var month 		= datetimeEN.getMonth()+1;
 	  		var year = datetimeEN.getFullYear()-543;
 	  		// Concat
 	  		var realDate = month + '/' + date + '/' + year;

@@ -1102,8 +1102,8 @@ function checkTimeOverlap(data) {
 
     for(i in timeList) {
         tmpDate = getRealDateJS(timeList[i].date);
-        tmpTimeStart = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeStart + ':00');
-        tmpTimeEnd = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeEnd + ':00');
+        tmpTimeStart = new Date(tmpDate + ' ' + timeList[i].timeStart + ':00');
+        tmpTimeEnd = new Date(tmpDate + ' ' + timeList[i].timeEnd + ':00');
         if(((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
             (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) || 
             timeStart <= tmpTimeStart && timeEnd >= tmpTimeEnd) {

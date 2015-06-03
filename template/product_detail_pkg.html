@@ -120,7 +120,9 @@
 
 		// Check date
         $('#bkg_date').change(function(){
-            checkDate($(this));
+            setTimeout(function(){
+            	hideTimeToday();
+            }, 5);
         });
         $('#bkg_time').change(function(){
             checkDate($('#bkg_date'));
@@ -266,6 +268,38 @@
 	        var after = date;
 	    }
 	    return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
+	}
+
+	function hideTimeToday () {
+		// Skip
+		if($('#bkg_date').val() == '') {
+			return;
+		}
+
+		var now = new Date();
+		var nowDate = (now.getMonth()+1) + '/' +now.getDate()+ '/' + now.getFullYear();
+		var bkgDate = getRealDateJS($('#bkg_date').val());
+
+		// Check for hide time
+		var optionHTML = '<option value="">เลือกเวลาที่จอง</option>';
+		for(i=9; i<=18; i++) {
+			var eachDate = new Date(bkgDate + ' ' + i + ':00:00');
+			var num = '';
+			if(i < 10) {
+				num += '0';
+			}
+			num += i;
+			if(nowDate == bkgDate) {
+				if(eachDate >= now) {
+					optionHTML += '<option value="' + num + ':00">' + num + ':00 น.</option>';
+				}
+			} else {
+				optionHTML += '<option value="' + num + ':00">' + num + ':00 น.</option>';
+			}
+		}
+		$('#bkg_time').html(optionHTML);
+		$('#bkg_time').val('');
+		$('#s2id_bkg_time .select2-chosen').text('เลือกเวลาที่จอง');
 	}
     </script>
     {/literal}
