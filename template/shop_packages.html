@@ -189,9 +189,9 @@
 	            	<li class="previous"><a href="{$prevPageLink}" class="fui-arrow-left"></a></li>
 	              	{for $foo=1 to $allPage}
 	              		{if $foo == $page}
-	              		<li class="active"><a href="shop_packages?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
+	              		<li class="active"><a href="shop_packages.php?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
 	              		{else}
-	              		<li><a href="shop_packages?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
+	              		<li><a href="shop_packages.php?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
 	              		{/if}
 					{/for}
 	                <li class="next"><a href="{$nextPageLink}" class="fui-arrow-right"></a></li>
