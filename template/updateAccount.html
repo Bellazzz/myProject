@@ -135,6 +135,9 @@
         $('#title_id').change(function() {
           setSexId();
         });
+        $('#sex_id').change(function() {
+          $('#sex_id_hidden').val($('#sex_id').val());
+        });
 
         // Default title_id 
         for(i in titleList) {
@@ -144,10 +147,11 @@
           if(titleList[i].title_id == defaultTitleId) {
             $('#s2id_title_id .select2-chosen').text(titleList[i].title_name);
             $('#title_id').val(titleList[i].title_id);
-            setSexId();
             var sexName = $('#sex_id option[value="' + defaultSexId + '"]').text();
             $('#s2id_sex_id .select2-chosen').text(sexName);
             $('#sex_id').val(defaultSexId);
+
+            setSexId();
           }
         }
 
@@ -178,6 +182,8 @@
         } else {
           $('#sex_id').prop('disabled', false);
         }
+
+        $('#sex_id_hidden').val($('#sex_id').val());
       }
 
       function getSexOfTitle(titleId) {
@@ -228,6 +234,7 @@
                   <option value="{$sex.sex_id}" >{$sex.sex_name}</option>
                 {/foreach}
               </select>
+              <input id="sex_id_hidden" type="hidden" name="sex_id_hidden">
 
               <label class="input-required">ชื่อ</label>
               <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name" require value="{$cusData.cus_name}" valuepattern="character">

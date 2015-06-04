@@ -8,7 +8,7 @@ parse_str($_REQUEST['formData'], $formData);
 
 $cusRecord = new TableSpa('customers', $_SESSION['cus_id']);
 $cusRecord->setFieldValue('title_id', $formData['title_id']);
-$cusRecord->setFieldValue('sex_id', $formData['sex_id']);
+$cusRecord->setFieldValue('sex_id', $formData['sex_id_hidden']);
 $cusRecord->setFieldValue('cus_name', $formData['cus_name']);
 $cusRecord->setFieldValue('cus_surname', $formData['cus_surname']);
 $cusRecord->setFieldValue('cus_addr', $formData['cus_addr']);
@@ -22,5 +22,6 @@ if($cusRecord->commit()) {
 } else {
 	echo "NOT_PASS";
 	echo mysql_error($dbConn);
+	print_r($formData);
 }
 ?>
