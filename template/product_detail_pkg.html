@@ -337,12 +337,12 @@
 			    </div>
 			    <div class="product-time">
 			    	<i class="fa fa-clock-o"></i> 
-			    	{if $prdData.pkg_hr > 0 || $prdData.pkg_min > 0}
-			    		{if $prdData.pkg_hr > 0}
-			    			{$prdData.pkg_hr} ชั่วโมง
+			    	{if $prdData.hr > 0 || $prdData.min > 0}
+			    		{if $prdData.hr > 0}
+			    			{$prdData.hr} ชั่วโมง
 			    		{/if}
-			    		{if $prdData.pkg_min > 0}
-			    			{$prdData.pkg_min} นาที
+			    		{if $prdData.min > 0}
+			    			{$prdData.min} นาที
 			    		{/if}
 			    	{else}
 			    	-
