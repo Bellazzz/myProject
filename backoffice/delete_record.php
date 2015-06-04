@@ -1,4 +1,6 @@
 <?php
+$keySelected = $_POST['keySelected'];
+$tableName = $_POST['tableName'];
 if(!isset($keySelected) || $keySelected == '') {
 	echo 'NO_RECORD_SELECTED';
 	exit();
