@@ -117,7 +117,8 @@ $sql = "SELECT  pm.prmprd_id,
 	    		pm.prmprd_enddate  IS NULL OR
 	    		pm.prmprd_enddate  >= '$nowDate' 
 			) 
- 		AND 	pm.prd_id IN (".implode(',', $prdIds).")";
+ 		AND 	pm.prd_id IN (".implode(',', $prdIds).") 
+ 		AND 	pp.prdprm_type = 'ลดราคา'";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
