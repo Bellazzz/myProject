@@ -990,7 +990,7 @@ function openPayBox() {
 					+ '						<tr>'
 					+ '							<td>รับมา</td>'
 					+ '							<td>'
-					+ ' 							<input id="payMoney-input" type="text" class="pos-input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">'
+					+ ' 							<input id="payMoney-input" type="text" maxlength="7" class="pos-input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">'
 					+ '							</td>'
 					+ '						</tr>'
 					+ '						<tr class="changement-row">'
