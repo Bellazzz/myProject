@@ -581,7 +581,7 @@ function dbClose() {
 				'fieldNameList'	=> array(
 						'timeatt_id'	  => 'รหัสการเข้าออกงาน',
 						'emp_id'	      => 'ชื่อ-นามสกุลพนักงาน',
-						'dateatt_in'      => 'วันที่เข้า',
+						'dateatt_in'      => 'วันที่เข้า-ออกงาน',
 						'timeatt_in'      => 'เวลาที่เข้า',
 						'dateatt_out'	  => 'วันที่ออก',
 						'timeatt_out'	  => 'เวลาที่ออก'
@@ -631,8 +631,8 @@ function dbClose() {
 				'keyLength'		=> 15,
 				'fieldNameList'	=> array(
 						'bkg_id'	  			  => 'รหัสการจอง',
-						'cus_id'	        	  => 'ชื่อ-นามสกุลผู้ใช้บริการ',
-						'emp_id' 		    	  => 'ชื่อ-นามสกุลพนักงาน',
+						'cus_id'	        	  => 'ผู้ใช้บริการ',
+						'emp_id' 		    	  => 'พนักงานที่รับการจอง',
 						'status_id'         	  => 'สถานะการจอง',
 						'bnkacc_id'	        	  => 'เลขบัญชีธนาคาร',
 						'bkg_transfer_date'  	  => 'วันที่โอน',
@@ -876,7 +876,7 @@ function dbClose() {
 
 		case 'orders':
 			 return array(
-				'tableNameTH'	=> 'การสั่งซื้อ',
+				'tableNameTH'	=> 'การสั่งซื้อผลิตภัณฑ์',
 				'keyFieldName'  => 'ord_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'OR',
@@ -919,7 +919,7 @@ function dbClose() {
 
 		case 'receives':
 			 return array(
-				'tableNameTH'	=> 'การรับ',
+				'tableNameTH'	=> 'การรับผลิตภัณฑ์',
 				'keyFieldName'  => 'rec_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'RE',
@@ -960,7 +960,7 @@ function dbClose() {
 
 		case 'withdraws':
 			 return array(
-				'tableNameTH'	=> 'การเบิก',
+				'tableNameTH'	=> 'การเบิกผลิตภัณฑ์',
 				'keyFieldName'  => 'wdw_id',
 				'keyFieldType'	=> 2, 
 				'keyChar'		=> 'W',

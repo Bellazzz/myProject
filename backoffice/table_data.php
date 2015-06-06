@@ -361,7 +361,7 @@ switch ($tableName) {
 				CONCAT(e.emp_name, '  ', e.emp_surname) emp_id,
 				t.dateatt_in,
 				SUBSTRING(t.timeatt_in,1,5) as timeatt_in,
-				t.dateatt_out,
+				-- t.dateatt_out,
 				SUBSTRING(t.timeatt_out,1,5) as timeatt_out  
 				FROM time_attendances t, employees e 
 				$where 

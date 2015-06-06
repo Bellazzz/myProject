@@ -212,14 +212,14 @@
             </tr>
 			<tr>
                 <td>
-                    <label class="input-required">วันที่เข้า</label>
+                    <label class="input-required">วันที่เข้า-ออกงาน</label>
 				    <input id="dateatt_in" name="dateatt_in" type="text" class="mbk-dtp-th form-input half" value="{if $values.dateatt_in}{$values.dateatt_in}{else}{$nowDate}{/if}" require>
 
 			    </td>
 			    <td>
-				    <label class="input-required">เวลาที่เข้า</label>
-				    <input id="timeatt_in" name="timeatt_in" type="text" class="form-input half" value="{if $values.timeatt_in}{$values.timeatt_in}{else}{$nowTime}{/if}" require>
-			    </td>
+                    <!-- <label>วันที่ออก</label> -->
+                    <input type="hidden" id="dateatt_out" name="dateatt_out" class="mbk-dtp-th form-input half" value="{if $values.dateatt_out}{$values.dateatt_out}{else}{$nowDate}{/if}">
+                </td>
 		    </tr>
             <tr class="errMsgRow">
                 <td>
@@ -231,8 +231,8 @@
             </tr>
             <tr>
                 <td>
-                    <label>วันที่ออก</label>
-                    <input id="dateatt_out" name="dateatt_out" type="text" class="mbk-dtp-th form-input half" value="{if $values.dateatt_out}{$values.dateatt_out}{else}{$nowDate}{/if}">
+                    <label class="input-required">เวลาที่เข้า</label>
+                    <input id="timeatt_in" name="timeatt_in" type="text" class="form-input half" value="{if $values.timeatt_in}{$values.timeatt_in}{else}{$nowTime}{/if}" require>
                 </td>
                 <td>
                     <label>เวลาที่ออก</label>
