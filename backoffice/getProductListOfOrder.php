@@ -31,7 +31,6 @@ $err 	= mysql_error($dbConn);
 for($i=0; $i<$rows; $i++) {
 	$orddtlRecord = mysql_fetch_assoc($result);
 	$prdList[$orddtlRecord['prd_id']] = array(
-		'no' 				=> $i+1,
 		'orddtl_id' 		=> $orddtlRecord['orddtl_id'],
 		'prd_id' 			=> $orddtlRecord['prd_id'],
 		'prd_name' 			=> $orddtlRecord['prd_name'],
@@ -70,7 +69,9 @@ for($i=0; $i<$rows; $i++) {
 }
 
 $ordPrdList = array();
+$no = 1;
 foreach ($prdList as $key => $value) {
+	$value['no'] = $no++;
 	array_push($ordPrdList, $value);
 }
 $smarty->assign('ordPrdList', $ordPrdList);
