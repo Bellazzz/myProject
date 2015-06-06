@@ -114,7 +114,8 @@ if(!$_REQUEST['ajaxCall']) {
 												prd_name refText,
 												unit_name  
 									FROM 		products p, units u 
-									WHERE 		p.unit_id = u.unit_id  
+									WHERE 		p.unit_id = u.unit_id AND 
+												p.prd_amount IS NOT NULL 
 									ORDER BY 	refText ASC";
 					$refField 	= 'prd_id';
 					break;
