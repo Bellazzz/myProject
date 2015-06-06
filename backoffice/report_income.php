@@ -24,32 +24,76 @@ if(isset($_POST['submit'])) {
 	}
 
 	// Query Report
-	// Find services
 	$report = array();
 	$serTotalPrice = 0;
 	$saleTotalPrice = 0;
 	$totalPrice = 0;
-	$sql = "SELECT 		IFNULL(SUM(bp.bkgpkg_total_price), 0) pkgTotalPrice,
-						IFNULL(SUM(bs.bkgsvl_total_price), 0) svlTotalPrice 
-			FROM 		booking b 
-						LEFT JOIN 
-						booking_packages bp 
-						ON b.bkg_id = bp.bkg_id 
-						LEFT JOIN 
-						booking_service_lists bs 
-						ON b.bkg_id = bs.bkg_id 
-			WHERE 		b.status_id NOT IN ('S01','S02','S06') AND 
-						b.bkg_transfer_date IS NOT NULL AND 
-						b.bkg_transfer_date >= '$startDate' AND 
-						b.bkg_transfer_date <= '$endDate'";
+	
+	// Find service lists
+	$sql = "SELECT a.sumPrice - IFNULL(b.discout,0) AS sumTotal
+		FROM 
+			( SELECT sl.svl_id, st.svltyp_id, SUM( ss.sersvl_total_price ) AS sumPrice
+			FROM service_service_lists ss, service_lists sl, service_list_types st, 
+			     services s 
+			WHERE sl.svl_id = ss.svl_id AND 
+			 	  sl.svltyp_id = st.svltyp_id AND 
+ 				  ss.ser_id = s.ser_id AND 
+				  s.ser_date >= '$startDate' AND 
+				  s.ser_date <= '$endDate' AND 
+				  (
+				  		sl.svl_hr  != 0 || 
+				  		sl.svl_min != 0
+				  ) 
+			GROUP BY sl.svl_id ) a 
+			LEFT JOIN 
+			(SELECT sd.svl_id, SUM( sp.sersvlprm_discout_total ) AS discout
+			FROM service_service_list_promotions sp, service_list_promotion_details sd
+			WHERE sp.svlprmdtl_id = sd.svlprmdtl_id
+			GROUP BY sd.svl_id ) b 
+			ON a.svl_id = b.svl_id";
 
 	$result = mysql_query($sql, $dbConn);
 	$rows   = mysql_num_rows($result);
 	if($rows > 0) {
-		$record = mysql_fetch_assoc($result);
-		$report['pkgTotalPrice'] = number_format($record['pkgTotalPrice'], 2);
-		$report['svlTotalPrice'] = number_format($record['svlTotalPrice'], 2);
-		$serTotalPrice += $record['pkgTotalPrice'] + $record['svlTotalPrice'];
+		$report['svlTotalPrice'] = 0;
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$report['svlTotalPrice'] += $record['sumTotal'];
+			$serTotalPrice += $record['sumTotal'];
+			// $report['pkgTotalPrice'] = number_format($record['pkgTotalPrice'], 2);
+		}
+		$report['svlTotalPrice'] = number_format($report['svlTotalPrice'], 2);
+	}
+
+	// Find packages
+	$sql = "SELECT a.sumPrice - IFNULL(b.sumDiscout,0) AS sumTotal 
+			FROM (
+				SELECT p.pkg_id, SUM( sp.serpkg_total_price ) AS sumPrice 
+				FROM packages p, service_packages sp, services s
+				WHERE p.pkg_id = sp.pkg_id AND 
+					  sp.ser_id = s.ser_id AND 
+					  s.ser_date >= '$startDate' AND 
+					  s.ser_date <= '$endDate' 
+				GROUP BY p.pkg_id
+				) a 
+				LEFT JOIN
+				(SELECT pd.pkg_id, SUM( sp.serpkgprm_discout_total ) AS sumDiscout
+				FROM service_package_promotions sp, package_promotion_details pd
+				WHERE pd.pkgprmdtl_id = sp.pkgprmdtl_id
+				GROUP BY pd.pkg_id
+				) b
+				ON a.pkg_id = b.pkg_id";
+
+	$result = mysql_query($sql, $dbConn);
+	$rows   = mysql_num_rows($result);
+	if($rows > 0) {
+		$report['pkgTotalPrice'] = 0;
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$report['pkgTotalPrice'] += $record['sumTotal'];
+			$serTotalPrice += $record['sumTotal'];
+		}
+		$report['pkgTotalPrice'] = number_format($report['pkgTotalPrice'], 2);
 	}
 
 	// Find sales

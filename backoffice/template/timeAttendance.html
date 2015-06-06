@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="../js/mbk_common_function.js"></script>
 	<script type="text/javascript" src="../inc/datetimepicker/mbk.datetimepickerThai.js"></script>
 	<script type="text/javascript" src="../js/timeAttendance.js"></script>
+	
 	<script type="text/javascript">
 		var nowDate = '{/literal}{$nowDate}{literal}';
 		var advertisingList = {/literal}{$advertisingList|@json_encode}{literal};
@@ -72,5 +73,10 @@
 		</tr>
 	</table>
 </div>
+<div style="display:none">
+	<button id="view-fullscreen">Fullscreen</button>
+    <button id="cancel-fullscreen">Cancel fullscreen</button>
+</div>
+<script type="text/javascript" src="../js/fullscreenAPI.js"></script>
 </body>
 </html>

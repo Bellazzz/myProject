@@ -93,6 +93,7 @@
 	/*
 	 * Get Privileges
 	 */
+	$emp_privileges_count = 0;
 	$emp_privileges = array(
 		'view_withdraws' 				=> false,
 		'insert_withdraws' 				=> false,
@@ -108,6 +109,7 @@
 		'manage_standard_tables'		=> false,
 		'point_of_sale'					=> false,
 		'manage_website' 				=> false,
+		'timer' 						=> false,
 
 		'manage_orders' 				=> false,
 		'manage_services' 				=> false,
@@ -140,6 +142,7 @@
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
 				$emp_privileges[$record['privlg_name']] = true;
+				$emp_privileges_count++;
 			}
 			$smarty->assign("emp_privileges", $emp_privileges);
 		}
