@@ -882,11 +882,58 @@ function openPrintServiceReceipt(serId) {
     });
 }
 
-function openPrintBookingPaper(bkgId) {
-    var src = 'printBookingPaperContainer.php?bkg_id=' + bkgId + '&hideBackButton=true';
-    openManageBox({
-        formSrc     : src,
-        widthSize   : 'full'
+function openPrintBookingPaper(bkgId, hideBackButton) {
+    $.ajax({
+        url: '../common/ajaxGetBankAccountData.php',
+        type: 'POST',
+        success:
+        function(responseJSON) {
+            var response = $.parseJSON(responseJSON);
+            if(response.status == 'PASS') {
+                // Generate input
+                var innerHtml = 'เลือกบัญชีธนาคาร:<br><select id="selectPrintBnkacc" style="padding:6px 10px;">';
+                for(i in response.data) {
+                  innerHtml += '<option value="' + response.data[i].bnkacc_id + '">'
+                             + response.data[i].bnkacc_name + ' (' + response.data[i].bnkacc_no + ')'
+                             + '</option>';
+                }
+                innerHtml += '</select><br><br>';
+
+                parent.showActionDialog({
+                    title: 'ใบแสดงข้อมูลการชำระเงินการจอง',
+                    message: innerHtml,
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ดูข้อมูล',
+                            func:
+                            function() {
+                                var bnkacc_id = $('#selectPrintBnkacc').val();
+                                var src = 'printBookingPaperContainer.php?bkg_id='+bkgId+'&hideBackButton='+hideBackButton+'&bnkacc_id='+bnkacc_id;
+                                hideActionDialog();
+                                openManageBox({
+                                    formSrc     : src,
+                                    widthSize   : 'full'
+                                });
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            func:
+                            function() {
+                                hideActionDialog();
+                            }
+                        }
+                    ],
+                    boxWidth: 500
+                });
+            } else if(response.status == 'EMPTY') {
+                alert('ไม่พบข้อมูลบัญชีธนาคาร');
+            } else {
+                alert(response.status);
+            }
+        }
     });
 }
 

@@ -100,6 +100,22 @@ if($rows > 0) {
 	$smarty->assign('pkgList', $pkgList);
 }
 
+// Get bank account
+$bnkaccList = array();
+$sql = "SELECT 		bnkacc_id,
+					bnkacc_no,
+					bnkacc_name 
+		FROM 		bank_accounts 
+		ORDER BY 	bnkacc_name";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		array_push($bnkaccList, mysql_fetch_assoc($result));
+	}
+	$smarty->assign('bnkaccList', $bnkaccList);
+}
+
 
 
 $smarty->assign('displayPayment', $displayPayment);

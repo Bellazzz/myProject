@@ -170,7 +170,7 @@
 {/if}
 <center>
 	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:100px; height:100px;" ><br>
-	<span class="receipt-title">ใบแสดงข้อมูลการจอง</span><br>
+	<span class="receipt-title">ใบแสดงข้อมูลการชำระเงินการจอง</span><br>
 	<span class="spa-name">{$spaData.spa_name}</span><p></p>
 	<span>วันเวลาที่ทำการจอง : {$bkgData.bkg_date_th} &nbsp; เวลา {$bkgData.bkg_time} น.</span><br><br>
 </center>
@@ -182,15 +182,15 @@
 			</thead>
 			<tbody>
 			<tr>
-				<td>รหัสการจอง</td>
+				<td>รหัสการจอง:</td>
 				<td>{$bkgData.bkg_id}</td>
 			</tr>
 			<tr>
-				<td>ผู้จอง</td>
+				<td>ผู้จอง:</td>
 				<td>{$bkgData.cus_fullName}</td>
 			</tr>
 			<tr>
-				<td>สถานะการจอง</td>
+				<td>สถานะการจอง:</td>
 				<td>
 					{if $bkgData.status_id == 'S02'}
 	                  <span class="statusHL statusHL-darkYellow">{$bkgData.bkgstat_name}</span>
@@ -208,7 +208,7 @@
 	                  <span class="statusHL statusHL-gray">{$bkgData.bkgstat_name}</span>
 	                {/if}
 				</td>
-				<tr>
+				<tr style="visibility:hidden;">
 				<td>ราคาสุทธิ</td>
 				<td><span class="total-price">{$bkgData.bkg_total_price|number_format:2:".":","} บาท</span></td>
 			</tr>
@@ -219,41 +219,23 @@
 	<div class="half" style="float:right;">
 		<table>
 			<thead>
-				<th colspan="2">ข้อมูลการชำระเงิน</th>
+				<th colspan="2">ข้อมูลบัญชีธนาคารเพื่อโอนเงิน</th>
 			</thead>
 			<tbody>
 			<tr>
-				<td>บัญชีธนาคาร</td>
-				<td>
-					{if $bkgData.bnkacc_name != ''}
-						{$bkgData.bnkacc_name}
-					{else}
-					-
-					{/if}
-				</td>
+				<td>ชื่อบัญชี:</td>
+				<td>{$bnkaccData.bnkacc_name}</td>
 			</tr>
 			<tr>
-				<td>วันที่โอน</td>
-				<td>
-					{if $bkgData.bkg_transfer_date_th}
-						{$bkgData.bkg_transfer_date_th}
-					{else}
-					-
-					{/if}
-				</td>
+				<td>เลขที่บัญชี:</td>
+				<td>{$bnkaccData.bnkacc_no}</td>
 			</tr>
 			<tr>
-				<td>เวลาที่โอน</td>
-				<td>
-					{if $bkgData.bkg_transfer_time != ''}
-						{$bkgData.bkg_transfer_time} น.
-					{else}
-					-
-					{/if}
-				</td>
+				<td>สาขา:</td>
+				<td>{$bnkaccData.bnkacc_branch}</td>
 			</tr>
 			<tr>
-				<td>จำนวนเงินที่โอน</td>
+				<td>รวมยอดที่ต้องชำระ:</td>
 				<td><span class="total-price">{$bkgData.bkg_total_price|number_format:2:".":","} บาท</span></td>
 			</tr>
 			</tbody>

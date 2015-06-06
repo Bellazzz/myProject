@@ -36,6 +36,10 @@
 				    <a id="printServiceReceipt-btn" href="printServiceReceiptContainer.php?ser_id={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
 				    </a>
+				    {elseif $tableName == 'booking' && $emp_privileges.manage_booking}
+				    <a id="printBookingPaper-btn" onclick="parent.openPrintBookingPaper('{$code}')">
+					    <i class="fa fa-file-text-o"></i> ใบแสดงข้อมูลการชำระเงินการจอง
+				    </a>
 				    {/if}
 				    
 				    {if !$hideEditButton}
