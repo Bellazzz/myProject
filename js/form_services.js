@@ -738,8 +738,8 @@ function addServiceListOfPackage(data) {
             datepicker:false,
             format:'H:i',
             step: 5,
-            minTime:'06:00',
-            maxTime: '21:00'
+            minTime:'09:00',
+            maxTime: '19:05'
         });
         $('#' + inputTimeId).focusout(validateInput);
         $('#' + inputTimeId).focusout(function() {
@@ -1061,8 +1061,8 @@ function addServiceList(data) {
         datepicker:false,
         format:'H:i',
         step: 5,
-        minTime:'06:00',
-        maxTime: '21:00'
+        minTime:'09:00',
+        maxTime: '19:05'
     });
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
