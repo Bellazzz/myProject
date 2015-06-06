@@ -57,6 +57,15 @@ $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	$record = mysql_fetch_assoc($result);
 	$prdData['allMin'] = $record['allMin'];
+	$sumMin = $prdData['allMin'];
+	$sumHr = 0;
+
+	for($j=$prdData['allMin']; $j>=60; $j-=60) {
+		$sumHr++;
+		$sumMin-=60;
+	}
+	$prdData['hr'] = $sumHr;
+	$prdData['min'] = $sumMin;
 }
 
 // Get package promotion detail data

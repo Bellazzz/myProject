@@ -146,22 +146,19 @@ if($rows > 0) {
 }
 
 // Get package sum time
-$sql = "SELECT 		ps.pkg_id,
-					SUM(s.svl_hr) AS pkg_hr,
-					SUM(s.svl_min) AS pkg_min 
-		FROM 		package_service_lists ps,
-					service_lists s 
-		WHERE 		ps.svl_id = s.svl_id AND 
-					ps.pkg_id IN (".implode(',', $pkgIds).") 
-		GROUP BY 	ps.pkg_id";
+$sql = "SELECT 		pkg_id,
+					IFNULL(pkgsvl_hr,0) * 60 + IFNULL(pkgsvl_min,0) allMin 
+		FROM 		package_service_lists 
+		WHERE 		pkg_id IN (".implode(',', $pkgIds).") 
+		GROUP BY 	pkg_id";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);
 if($rows > 0) {
 	for($i=0; $i<$rows; $i++) {
 		$record = mysql_fetch_assoc($result);
 		$pkg_id = $record['pkg_id'];
-		$sumHr  = $record['pkg_hr'];
-		$sumMin = $record['pkg_min'];
+		$sumMin = $record['allMin'];
+		$sumHr = 0;
 
 		for($j=$sumMin; $j>=60; $j-=60) {
 			$sumHr++;

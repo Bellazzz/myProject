@@ -44,13 +44,6 @@
             $('#addProjectBtn').click(addProduct);
 
             selectReferenceJS({
-                elem            : $('#ser_id'),
-                data            : {/literal}{$referenceData["services"]|@json_encode}{literal},
-                defaultValue    : '{/literal}{$values.ser_id}{literal}',
-                showClearBtn    : true,
-                clearBtnText    : 'ไม่ระบุ'
-            });
-            selectReferenceJS({
                 elem            : $('#emp_id'),
                 data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{/if}{literal}'

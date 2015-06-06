@@ -96,7 +96,7 @@ if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
 	// Find overtime
 	if($otr_bath_per_hour != null) {
 		$sql = "SELECT 		dateatt_in,
-							timeatt_in,
+							SUBSTRING(timeatt_in,1,5) timeatt_in,
 							SUBSTRING(timeatt_out,1,5) timeatt_out 
 				FROM 		time_attendances 
 				WHERE 		emp_id = '$emp_id' AND 
@@ -106,22 +106,27 @@ if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
 		if($rows > 0) {
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
-				$minAttTimeOut = toMin($record['timeatt_out']);
+				$minAttTimeIn = toMin($record['timeatt_in']);
+				$minAttTimeOut = toMin($record['timeatt_out']); // 867
 				$curDay = getSpaCurrentDay($record['dateatt_in']);
 
 				if($curDay == 'วันหยุดสปา') {
-					$minOtrTimeStart = toMin($otr_otstarttime_dayoff);
-					$minOtrTimeEnd = toMin($otr_otendtime_dayoff);
+					$minOtrTimeStart = toMin($otr_otstarttime_dayoff); // 480
+					$minOtrTimeEnd = toMin($otr_otendtime_dayoff); // 1200
 				} else {
 					$minOtrTimeStart = toMin($otr_otstarttime_daywork);
 					$minOtrTimeEnd = toMin($otr_otendtime_daywork);
 				}
 
 				if($minAttTimeOut >= $minOtrTimeStart) {
+					if($minAttTimeIn < $minOtrTimeStart)
+						$minAttTimeIn = $minOtrTimeStart;
 					if($minAttTimeOut > $minOtrTimeEnd)
 						$minAttTimeOut = $minOtrTimeEnd;
 
-					$differ = (int)($minAttTimeOut - $minOtrTimeStart) / 60;
+					$differ = ($minAttTimeOut - $minAttTimeIn) / 60;
+					$decimalDiffer = $differ - floor($differ);
+					$differ = $decimalDiffer >= 0.5 ? floor($differ)+1 : floor($differ);
 					$response['sumOvertime'] += $differ * $otr_bath_per_hour;
 				}
 			}

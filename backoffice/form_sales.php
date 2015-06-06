@@ -210,6 +210,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$sqlRefData = "	SELECT 		emp_id refValue,
 												CONCAT(emp_name, ' ', emp_surname) refText 
 									FROM 		employees 
+									WHERE 		pos_id = 'P04' 
 									ORDER BY 	refText ASC";
 					$refField 	= 'emp_id';
 					break;
