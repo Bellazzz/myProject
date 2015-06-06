@@ -34,19 +34,19 @@ if(isset($_POST['submit'])) {
 		$sql = "SELECT * , sumPrice - sumDiscout AS sumRealPrice
 				FROM (
 
-					SELECT pt.prdtyp_name,pt.prdtyp_id, p.prd_name, p.prd_price, SUM( a.saledtl_amount ) AS sumAmount, SUM( a.saledtl_price ) AS sumPrice, SUM( a.discout ) AS sumDiscout, a.sale_date 
+					SELECT pt.prdtyp_name,pt.prdtyp_id, p.prd_name, p.prd_price, SUM( a.saledtl_amount ) AS sumAmount, SUM( a.saledtl_price ) AS sumPrice, SUM( a.discout ) AS sumDiscout 
 					FROM (
 
 						SELECT sd.saledtl_id, sd.prd_id, sd.saledtl_amount, sd.saledtl_price, IFNULL( sp.saleprmdtl_discout, 0 ) discout, s.sale_date 
 						FROM sale_details sd 
 						JOIN sales s ON sd.sale_id = s.sale_id 
-						LEFT JOIN sale_promotion_details sp ON sd.saledtl_id = sp.saledtl_id
-						)a, products p, product_types pt, sales s
+						LEFT JOIN sale_promotion_details sp ON sd.saledtl_id = sp.saledtl_id 
+						WHERE s.sale_date >=  '$startDate' 
+						AND s.sale_date <=  '$endDate' 
+						)a, products p, product_types pt 
 				WHERE a.prd_id = p.prd_id AND 
 				p.prdtyp_id = pt.prdtyp_id AND 
-				pt.prdtyp_id in (".implode(',', $prdtypSelected).") AND 
-				a.sale_date >= '$startDate' AND 
-				a.sale_date <= '$endDate' 
+				pt.prdtyp_id in (".implode(',', $prdtypSelected).") 
 				GROUP BY p.prd_id 
 				ORDER BY pt.prdtyp_name, p.prd_name )b";
 		$result = mysql_query($sql, $dbConn);
