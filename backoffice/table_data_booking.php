@@ -169,8 +169,8 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 					<input type="checkbox" value="<?=$code?>" name="table-record[]" class="mbk-checkbox" onclick="checkRecord(this)">
 				</td>
 				<td class="action-col">
-					<a title="ใบแสดงข้อมูลการจอง">
-						<i class="fa fa-file-text-o" onclick="openPrintBookingPaper('<?=$code?>')"></i>
+					<a title="ใบแสดงข้อมูลการชำระเงินการจอง">
+						<i class="fa fa-file-text-o" onclick="openPrintBookingPaper('<?=$code?>','true')"></i>
 					</a>
 					<?php if($displayEditBtn && ($filter == 'PENDING_CHECK' || $filter == 'PENDING_PAYMENT' || $filter == 'PENDING_SERVICE')) { ?>
 					<a title="แก้ไข">

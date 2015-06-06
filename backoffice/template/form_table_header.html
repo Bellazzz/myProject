@@ -36,6 +36,10 @@
 				    <a id="printServiceReceipt-btn" href="printServiceReceiptContainer.php?ser_id={$code}">
 					    <i class="fa fa-file-text-o"></i> ใบเสร็จ
 				    </a>
+				    {elseif $tableName == 'booking' && $emp_privileges.manage_booking}
+				    <a id="printBookingPaper-btn" onclick="parent.openPrintBookingPaper('{$code}')">
+					    <i class="fa fa-file-text-o"></i> ใบแสดงข้อมูลการชำระเงินการจอง
+				    </a>
 				    {/if}
 				    
 				    {if !$hideEditButton}
@@ -65,12 +69,15 @@
 	    	<li><a id="changeBpkgStatus-pending_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรอใช้บริการ</a></li>
 	    	{elseif $tableName == 'booking' && $values.status_id == 'S03' || $values.status_id == 'S04'}
 	    	<li><a id="changeBpkgStatus-remain_service-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นใช้บริการไม่ครบตามที่จอง</a></li>
-	    	{elseif $tableName == 'orders' && $values.ordstat_id == 'OS02'}
-	    	<li><a id="changeOrdStatus-remain_order-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรับไม่ครบตามที่สั่งซื้อ</a></li>
 	    	{/if}
 
 	    	{if $tableName == 'booking' && $values.status_id == 'S01' || $values.status_id == 'S02'}
 	    	<li><a id="changeBpkgStatus-cancel-btn"><i class="fa fa-trash-o"></i> ยกเลิกการจอง</a></li>
+	    	{/if}
+	    {/if}
+	    {if $action == 'VIEW_DETAIL' && $emp_privileges.manage_orders}
+	    	{if $tableName == 'orders' && $values.ordstat_id == 'OS02'}
+	    	<li><a id="changeOrdStatus-remain_order-btn"><i class="fa fa-refresh"></i> เปลี่ยนสถานะเป็นรับไม่ครบตามที่สั่งซื้อ</a></li>
 	    	{/if}
 	    {/if}
 		</ul>

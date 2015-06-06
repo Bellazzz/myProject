@@ -6,6 +6,7 @@ $subDir	 = WEB_ROOTDIR.'/backoffice/';
 include('../common/common_header.php');
 
 $bkg_id 		= $_GET['bkg_id'];
+$bnkacc_id 		= $_GET['bnkacc_id'];
 $printImmediately = true;
 
 if(hasValue($bkg_id)) {
@@ -106,7 +107,16 @@ if(hasValue($bkg_id)) {
 		}
 		$smarty->assign('pkgList', $pkgList);
 	}
-	
+
+	// Get bank account data
+	$bnkaccRecord = new TableSpa('bank_accounts', $bnkacc_id);
+	$bnkaccData = array(
+		'bnkacc_no' 	=> $bnkaccRecord->getFieldValue('bnkacc_no'),
+		'bnkacc_name'	=> $bnkaccRecord->getFieldValue('bnkacc_name'),
+		'bnkacc_branch'	=> $bnkaccRecord->getFieldValue('bnkacc_branch')
+	);
+	$smarty->assign('bnkaccData', $bnkaccData);
+	$smarty->assign('bnkacc_id', $bnkacc_id);
 
 
 }
