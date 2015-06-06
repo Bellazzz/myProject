@@ -104,14 +104,14 @@
                       <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
                           <label for="bkg_transfer_money"> จำนวนเงินที่โอน</label>
-                          <input type="text" value="{$bkgData.bkg_transfer_money}" name="bkg_transfer_money" class="form-control" id="bkg_transfer_money" placeholder="จำนวนเงินที่โอน">
+                          <input type="text" name="bkg_transfer_money" class="form-control" id="bkg_transfer_money" placeholder="จำนวนเงินที่โอน" value="{if $bkgData.bkg_transfer_money == ''}{$bkgData.bkg_total_price}{else}{$bkgData.bkg_transfer_money}{/if}">
                         </div>
                       </div>
 
                       <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
                           <label for="bkg_transfer_date">วันที่โอน</label>
-                          <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" placeholder="วันที่โอน" class="form-control mbk-dtp-th" value="{$bkgData.bkg_transfer_date}">
+                          <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" placeholder="วันที่โอน" class="form-control mbk-dtp-th" value="{if $bkgData.bkg_transfer_date != ''}{$bkgData.bkg_transfer_date}{else}{$nowDate}{/if}">
                         </div>
                       </div>
                       <div class="col-xs-12 col-sm-6">

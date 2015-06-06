@@ -45,11 +45,43 @@
                     <table class="bkgHistory-table">
                       <thead>
                         <tr>
-                          <th>รหัสการจอง</th>
-                          <th>ราคาสุทธิ</th>
-                          <th>วันที่จอง</th>
+                          <th>
+                            {if $sort == 'ID_ASC'}
+                            <a href="booking_history.php?sort=ID_DESC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-asc">รหัสการจอง</a>
+                            {elseif $sort == 'ID_DESC'}
+                            <a href="booking_history.php?sort=ID_ASC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-desc">รหัสการจอง</a>
+                            {else}
+                            <a href="booking_history.php?sort=ID_DESC&page={$foo}&itemDisplay={$itemDisplay}">รหัสการจอง</a>
+                            {/if}
+                          </th>
+                          <th>
+                            {if $sort == 'PRICE_ASC'}
+                            <a href="booking_history.php?sort=PRICE_DESC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-asc">ราคาสุทธิ</a>
+                            {elseif $sort == 'PRICE_DESC'}
+                            <a href="booking_history.php?sort=PRICE_ASC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-desc">ราคาสุทธิ</a>
+                            {else}
+                            <a href="booking_history.php?sort=PRICE_DESC&page={$foo}&itemDisplay={$itemDisplay}">ราคาสุทธิ</a>
+                            {/if}
+                          </th>
+                          <th>
+                            {if $sort == 'DATE_ASC'}
+                            <a href="booking_history.php?sort=DATE_DESC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-asc">วันที่จอง</a>
+                            {elseif $sort == 'DATE_DESC'}
+                            <a href="booking_history.php?sort=DATE_ASC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-desc">วันที่จอง</a>
+                            {else}
+                            <a href="booking_history.php?sort=DATE_DESC&page={$foo}&itemDisplay={$itemDisplay}">วันที่จอง</a>
+                            {/if}
+                          </th>
                           <th>เวลาที่จอง</th>
-                          <th>สถานะ</th>
+                          <th>
+                            {if $sort == 'STATUS_ASC'}
+                            <a href="booking_history.php?sort=STATUS_DESC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-asc">สถานะ</a>
+                            {elseif $sort == 'STATUS_DESC'}
+                            <a href="booking_history.php?sort=STATUS_ASC&page={$foo}&itemDisplay={$itemDisplay}" class="header-sorter-desc">สถานะ</a>
+                            {else}
+                            <a href="booking_history.php?sort=STATUS_ASC&page={$foo}&itemDisplay={$itemDisplay}">สถานะ</a>
+                            {/if}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -81,7 +113,28 @@
                       </tbody>
                     </table>
                   </div>
-                    
+                    <div class="col-xs-12 clearfix">
+                      <div class="productList-footer">
+                        {if $allPage > 1}
+                        <div class="pagination pull-left">
+                            <ul>
+                              <li class="previous"><a href="{$prevPageLink}" class="fui-arrow-left"></a></li>
+                                {for $foo=1 to $allPage}
+                                  {if $foo == $page}
+                                  <li class="active"><a href="booking_history.php?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
+                                  {else}
+                                  <li><a href="booking_history.php?sort={$sort}&page={$foo}&itemDisplay={$itemDisplay}">{$foo}</a></li>
+                                  {/if}
+                        {/for}
+                                <li class="next"><a href="{$nextPageLink}" class="fui-arrow-right"></a></li>
+                            </ul>
+                        </div>
+                        {/if}
+                        <div class="pull-right">
+                          แสดงรายการที่ {$startPage}{if $endPage}–{$endPage}{/if} จากทั้งหมด {$allRecord} รายการ
+                        </div>
+                      </div>
+                    </div>
                     <div class="col-lg-12 clearfix">
                       <ul class="pageBtnList">
                         <li class="next pull-left"><a href="myaccount.php"><i class="fa fa-long-arrow-left"></i> กลับไปยังบัญชีของฉัน</a></li>
