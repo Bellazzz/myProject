@@ -1919,6 +1919,11 @@ datetimepicker
 }
 .report-total-column {
     padding: 8px 5px;
+    background: #C6EC6B;
+    font-weight: bold;"
+}
+.report-subtotal-column {
+    padding: 8px 5px;
     background: #DBEFAC;
     font-weight: bold;"
 }

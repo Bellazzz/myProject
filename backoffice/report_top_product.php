@@ -100,12 +100,27 @@ if(isset($_POST['submit'])) {
 					$curPrdTypName = $value['prdtyp_name'];
 				}
 			}
+
+			// Discout sale
+			$sumDiscoutSale = 0.00;
+			$sql = "SELECT SUM(sale_discout) sumSale_discout 
+					FROM 	sales 
+					WHERE 	sale_date >=  '$startDate' AND 
+							sale_date <=  '$endDate'";
+			$result = mysql_query($sql, $dbConn);
+			$rows   = mysql_num_rows($result);
+			if($rows > 0) {
+				$record = mysql_fetch_assoc($result);
+				$sumDiscoutSale = $record['sumSale_discout'];
+			}
 				
 			$smarty->assign('report', $report);
 			$smarty->assign('totalAmount', number_format($totalAmount));
 			$smarty->assign('totalPrice', number_format($totalPrice, 2));
 			$smarty->assign('totalDiscout', number_format($totalDiscout, 2));
 			$smarty->assign('totalRealPrice', number_format($totalRealPrice, 2));
+			$smarty->assign('sumDiscoutSale', number_format($sumDiscoutSale, 2));
+			$smarty->assign('totalRealPrice2', number_format($totalRealPrice - $sumDiscoutSale, 2));
 		}
 	}
 }

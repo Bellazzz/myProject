@@ -254,11 +254,25 @@
                             <td class="space-column"></td>
                             <td class="space-column"></td>
                             <td class="space-column"></td>
-                            <td align="right" class="report-total-column">รวม</td>
-                            <td align="right" class="report-total-column">{$totalAmount}</td>
-                            <td align="right" class="report-total-column">{$totalPrice}</td>
-                            <td align="right" class="report-total-column">{$totalDiscout}</td>
-                            <td align="right" class="report-total-column">{$totalRealPrice}</td>
+                            <td align="right" class="report-subtotal-column">รวม</td>
+                            <td align="right" class="report-subtotal-column">{$totalAmount}</td>
+                            <td align="right" class="report-subtotal-column">{$totalPrice}</td>
+                            <td align="right" class="report-subtotal-column">{$totalDiscout}</td>
+                            <td align="right" class="report-subtotal-column">{$totalRealPrice}</td>
+                        </tr>
+                        <tr>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td align="right" colspan="4" style=";border-color: white;border-right: 1px solid #999;"><b>ส่วนลดการขาย</b></td>
+                            <td align="right" style="background-color: rgb(253, 184, 184)"><b>{$sumDiscoutSale}</b></td>
+                        </tr>
+                        <tr>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td class="space-column"></td>
+                            <td align="right" colspan="4" style="border-color: white;border-right: 1px solid #999;"><b>ราคาสุทธิ</b></td>
+                            <td align="right" class="report-total-column">{$totalRealPrice2}</td>
                         </tr>
                     </tfoot>
                 </table>
