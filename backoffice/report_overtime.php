@@ -71,7 +71,8 @@ if(isset($_POST['submit'])) {
 							SUBSTRING(timeatt_out,1,5) timeatt_out 
 				FROM 		time_attendances 
 				WHERE 		emp_id = '$curEmp_id' AND 
-							dateatt_in like '$monthly%'";
+							dateatt_in >= '$startDate' AND 
+							dateatt_in <= '$endDate'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {
