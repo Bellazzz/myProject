@@ -831,11 +831,11 @@
             <tr>
                 <td>
                     <label>วันที่โอน</label>
-                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{$values.bkg_transfer_date}">
+                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_transfer_date}{$values.bkg_transfer_date}{else}{$nowDate}{/if}">
                 </td>
                 <td>
                     <label>เวลาที่โอน</label>
-                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{$values.bkg_transfer_time}">
+                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{if $values.bkg_transfer_time}{$values.bkg_transfer_time}{else}{$nowTime}{/if}">
                 </td>
             </tr>
             <tr>

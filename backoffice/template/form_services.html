@@ -472,7 +472,8 @@
                     <th style="text-align:center;">ลำดับ</th>
                     <th>รหัสแพ็คเกจ</th>
                     <th class="txtLong-col">ชื่อแพ็คเกจ</th>
-                    <th>ครั่งละ(บาท)</th>
+                    <th>พนักงานที่ให้บริการ</th>
+                    <th>ราคาต่อรายการ(บาท)</th>
                     <th>จำนวน(ครั้ง)</th>
                     <th>ส่วนลด(บาท)</th>
                     <th>ราคารวม(บาท)</th>
@@ -488,6 +489,13 @@
                         </a>
                     </td>
                     <td align="left" class="txtLong-col">{$serpkg.pkg_name}</td>
+                    <td align="left">
+                        {if $bkgpkg.emp_fullname != ''}
+                            {$bkgpkg.emp_fullname}
+                        {else}
+                            -
+                        {/if}
+                    </td>
                     <td align="right">{$serpkg.pkg_price}</td>
                     <td align="right">{$serpkg.serpkg_amount}</td>
                     <td align="right">{$serpkg.serpkg_discout|number_format:2:".":","}</td>
@@ -509,6 +517,7 @@
                     <th style="text-align:center;">ลำดับ</th>
                     <th>รหัสรายการบริการ</th>
                     <th class="txtLong-col">ชื่อรายการบริการ</th>
+                    <th>พนักงานที่ให้บริการ</th>
                     <th>ครั่งละ(บาท)</th>
                     <th>จำนวน(ครั้ง)</th>
                     <th>ส่วนลด(บาท)</th>
@@ -525,6 +534,13 @@
                         </a>
                     </td>
                     <td align="left" class="txtLong-col">{$sersvl.svl_name}</td>
+                    <td align="left">
+                        {if $bkgpkg.emp_fullname != ''}
+                            {$bkgpkg.emp_fullname}
+                        {else}
+                            -
+                        {/if}
+                    </td>
                     <td align="right">{$sersvl.svl_price}</td>
                     <td align="right">{$sersvl.sersvl_amount}</td>
                     <td align="right">{$sersvl.sersvl_discout|number_format:2:".":","}</td>
