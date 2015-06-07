@@ -308,6 +308,10 @@
 				<td><div id="pos_id" class="selectReferenceJS text"></div></td>
 			</tr>
 			<tr>
+				<td>ฐานเงินเดือน :</td>
+				<td>{$values.emp_salary|number_format:2:".":","} บาท</td>
+			</tr>
+			<tr>
 				<td>ที่อยู่ :</td>
 				<td>{if $values.emp_addr}{$values.emp_addr}{else}-{/if}</td>
 			</tr>
@@ -332,7 +336,7 @@
 	{else}	 	
 	<!-- ADD, EDIT -->	 	 	 	 	 	
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="pos_id,title_id,emp_name,emp_surname,emp_addr,emp_tel,emp_indate,sex_id">
+	<input type="hidden" name="requiredFields" value="pos_id,title_id,emp_name,emp_surname,emp_addr,emp_tel,emp_indate,sex_id,emp_salary">
     <input type="hidden" name="uniqueFields" value="emp_email">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
@@ -396,6 +400,19 @@
                 </td>
                 <td>
                 	<span id="err-emp_indate-require" class="errInputMsg half err-emp_indate">โปรดป้อนวันที่เข้าทำงาน</span>
+                </td>
+            </tr>
+            <tr>
+				<td colspan="2">
+					<label class="input-required">ฐานเงินเดือน</label>
+					<input id="emp_salary" name="emp_salary" type="text" class="form-input full" value="{$values.emp_salary}" valuepattern="money" require>
+	
+				</td>
+			</tr>
+			<tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-emp_salary-require" class="errInputMsg err-emp_salary">โปรดป้อนฐานเงินเดือน</span>
+                    <span id="err-emp_salary-money" class="errInputMsg err-emp_salary">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
                 </td>
             </tr>
 			<tr>
