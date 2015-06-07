@@ -198,6 +198,10 @@ if(!$viewPrivileges && !$displayAddBtn && !$displayEditBtn && !$displayDeleteBtn
 						?>
 							<td field="<?=$field?>" class="real-col">-</td>
 						<?
+					} else if($field == 'emp_id') {
+						?>
+							<td field="<?=$field?>">จองผ่านเว็บไซต์</td>
+						<?
 					} else {
 						?>
 							<td field="<?=$field?>">-</td>

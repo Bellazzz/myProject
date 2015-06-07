@@ -9,10 +9,6 @@ if(hasValue($_POST['bkg_id']) && hasValue($_POST['status_id'])) {
 
 	$sql = "UPDATE 	booking 
 			SET 	status_id = '$status_id' ";
-	if($status_id == 'S03' && isset($_SESSION['emp_id'])) {
-		$emp_id = $_SESSION['emp_id'];
-		$sql .= ", emp_id = '$emp_id' ";
-	}
 	$sql .= " WHERE bkg_id = '$bkg_id'";
 	$result = mysql_query($sql, $dbConn);
 	if($result) {
