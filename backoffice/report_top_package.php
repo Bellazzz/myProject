@@ -37,7 +37,7 @@ if(isset($_POST['submit'])) {
 						s.ser_date >= '$startDate' AND 
 						s.ser_date <= '$endDate' 
 			GROUP BY 	p.pkg_id 
-			ORDER BY 	amount DESC";
+			ORDER BY 	amount DESC, p.pkg_name ASC";
 	$result = mysql_query($sql, $dbConn);
 	$rows   = mysql_num_rows($result);
 	if($rows > 0) {
