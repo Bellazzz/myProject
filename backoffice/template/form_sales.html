@@ -146,7 +146,7 @@
             
             selectReferenceJS({
                 elem            : $('#emp_id'),
-                data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
+                data            : {/literal}{if $action == 'VIEW_DETAIL'}{$referenceData["employees"]|@json_encode}{else}{$referenceData["employeesSale"]|@json_encode}{/if}{literal},
                 defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
             });
             selectReferenceJS({

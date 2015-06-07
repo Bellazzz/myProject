@@ -1023,7 +1023,7 @@ function dbClose() {
 				'deleteTxtField'	=> array('sale_id','sale_date','sale_time'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการขายรหัส %f1 ที่ขายในวันที่ %f2 เวลา %f3 น. ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> 'การขายวันที่ %f1 เวลา %f3 ของรหัการขาย %f2',
-				'referenceData'			=> array('employees','products','product_promotion_groups')
+				'referenceData'			=> array('employees','employeesSale','products','product_promotion_groups')
 			);
 			break;
 
