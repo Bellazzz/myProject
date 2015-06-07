@@ -1469,6 +1469,7 @@ label.article-title {
 .selectReferenceJS .clear-value-btn {
     padding: 5px 15px;
     width: 100%;
+    background: #EFEFEF;
 }
 .selectReferenceJS:not(.text) .selectReferenceJS-text, .selectReferenceJS .option-container li .text {
     width: 100%;

@@ -821,7 +821,7 @@ function addPkgCommission(data) {
     // Create select reference
     selectReferenceJS({
         elem            : $('#' + inputKeyId),
-        data            : refEmpData,
+        data            : refEmpMasseuseData,
         defaultValue    : selectRefDefault,
         onOptionSelect  :
         function() {
@@ -1191,7 +1191,7 @@ function addServiceListCommission(data) {
     // Create select reference
     selectReferenceJS({
         elem            : $('#' + inputKeyId),
-        data            : refEmpData,
+        data            : refEmpMasseuseData,
         defaultValue    : selectRefDefault,
         onOptionSelect  :
         function() {

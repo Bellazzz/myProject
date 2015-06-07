@@ -288,6 +288,7 @@
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
         var nowDate       = '{/literal}{$nowDate}{literal}';
         var nowDateTmp    = '{/literal}{$nowDateTmp}{literal}';
+        var nowTime       = '{/literal}{$nowTime}{literal}';
 
         // Set valuesDetail
         {/literal}
@@ -321,15 +322,17 @@
                 selectReferenceJS({
                     elem            : $('#emp_id'),
                     data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}',
+                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{/if}{literal}',
                     showClearBtn    : true,
-                    clearBtnText    : 'ไม่ระบุ'
+                    clearBtnText    : 'จองผ่านเว็บไซต์'
                 });
             } else {
                 selectReferenceJS({
                     elem            : $('#emp_id'),
                     data            : {/literal}{$referenceData["employees"]|@json_encode}{literal},
-                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{else}{$session_emp_id}{/if}{literal}'
+                    defaultValue    : '{/literal}{if $values.emp_id}{$values.emp_id}{elseif $action == "ADD"}{$session_emp_id}{/if}{literal}',
+                    showClearBtn    : true,
+                    clearBtnText    : 'จองผ่านเว็บไซต์'
                 });
             }
             
@@ -417,13 +420,24 @@
             });
 
             $('#addPaymentDetailBtn').click(function() {
-                $(this).css('display', 'none');
-                $('.paymentDetail').css('display', 'table');
+                displayPaymentData();
+                setDefaultPaymentData();
             });
 
             {/literal}{if $displayPaymentForm}{literal}
-            $('#addPaymentDetailBtn').click();
+            displayPaymentData();
             {/literal}{/if}{literal}
+
+            function displayPaymentData() {
+                $('#addPaymentDetailBtn').css('display', 'none');
+                $('.paymentDetail').css('display', 'table');
+            }
+            function setDefaultPaymentData() {
+                $('#bkg_transfer_date').val(nowDateTmp);
+                $('#bkg_transfer_time').val(nowTime);
+                $('#bkg_transfer_date').focusout();
+                $('#bkg_transfer_money').val($('#bkg_total_price').val());
+            }
 
 
             // Check date
@@ -716,7 +730,7 @@
     {else}      
     <!-- ADD, EDIT -->             
     <form id="form-table" name="form-table" onsubmit="return false;">
-    <input type="hidden" name="requiredFields" value="cus_id,emp_id,bkg_total_price,bkg_date,bkg_time">
+    <input type="hidden" name="requiredFields" value="cus_id,bkg_total_price,bkg_date,bkg_time">
     <table class="mbk-form-input-normal hideOnEditPayment" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr>
@@ -732,8 +746,8 @@
             </tr>
             <tr {if !$session_emp_admin}style="display:none;"{/if}>
                 <td colspan="2">
-                    <label class="input-required">พนักงานที่รับการจอง</label>
-                    <div id="emp_id" class="selectReferenceJS form-input full" require></div>
+                    <label>พนักงานที่รับการจอง</label>
+                    <div id="emp_id" class="selectReferenceJS form-input full"></div>
                 </td>
             </tr>
             <tr>
@@ -831,11 +845,11 @@
             <tr>
                 <td>
                     <label>วันที่โอน</label>
-                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_transfer_date}{$values.bkg_transfer_date}{else}{$nowDate}{/if}">
+                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_transfer_date}{$values.bkg_transfer_date}{/if}">
                 </td>
                 <td>
                     <label>เวลาที่โอน</label>
-                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{if $values.bkg_transfer_time}{$values.bkg_transfer_time}{else}{$nowTime}{/if}">
+                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{if $values.bkg_transfer_time}{$values.bkg_transfer_time}{/if}">
                 </td>
             </tr>
             <tr>
