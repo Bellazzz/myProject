@@ -491,11 +491,11 @@
                     </td>
                     <td align="left" class="txtLong-col">{$serpkg.pkg_name}</td>
                     <td align="left">
-                        {if $bkgpkg.emp_fullname != ''}
-                            {$bkgpkg.emp_fullname}
-                        {else}
-                            -
-                        {/if}
+                        <ul style="margin:0;">
+                            {foreach from=$serpkg.employees key=i item=emp_fullname}
+                                <li>{$emp_fullname}</li>
+                            {/foreach}
+                        </ul>
                     </td>
                     <td align="right">{$serpkg.pkg_price}</td>
                     <td align="right">{$serpkg.serpkg_amount}</td>
@@ -536,11 +536,11 @@
                     </td>
                     <td align="left" class="txtLong-col">{$sersvl.svl_name}</td>
                     <td align="left">
-                        {if $bkgpkg.emp_fullname != ''}
-                            {$bkgpkg.emp_fullname}
-                        {else}
-                            -
-                        {/if}
+                        <ul style="margin:0;">
+                            {foreach from=$sersvl.employees key=i item=emp_fullname}
+                                <li>{$emp_fullname}</li>
+                            {/foreach}
+                        </ul>
                     </td>
                     <td align="right">{$sersvl.svl_price}</td>
                     <td align="right">{$sersvl.sersvl_amount}</td>

@@ -263,7 +263,9 @@ if(!$_REQUEST['ajaxCall']) {
 
 		// Get service_packages data
 		$serpkgData = array();
-		$sql = "SELECT 	sp.pkg_id,
+		$serpkgIds = array();
+		$sql = "SELECT 	sp.serpkg_id,
+						sp.pkg_id,
 		 				p.pkg_name,
 		 				p.pkg_price,
 		 				FORMAT(sp.serpkg_amount, 0) serpkg_amount,
@@ -286,12 +288,15 @@ if(!$_REQUEST['ajaxCall']) {
 			);
 			$subtotal		+= $record['serpkg_total_price'];
 			$totalAmount 	+= $record['serpkg_amount'];
+			array_push($serpkgIds, $record['serpkg_id']);
 		}
 		
 		// Get service_service_lists data
 		$sersvlData = array();
+		$sersvlIds = array();
 		$allSvl = 0;
-		$sql = "SELECT 	ss.svl_id,
+		$sql = "SELECT 	ss.sersvl_id,
+						ss.svl_id,
 		 				s.svl_name,
 		 				s.svl_price,
 		 				FORMAT(ss.sersvl_amount, 0) sersvl_amount,
@@ -314,6 +319,7 @@ if(!$_REQUEST['ajaxCall']) {
 			);
 			$subtotal		+= $record['sersvl_total_price'];
 			$totalAmount 	+= $record['sersvl_amount'];
+			array_push($sersvlIds, $record['sersvl_id']);
 		}
 
 		// Get service package promotions data
@@ -349,7 +355,50 @@ if(!$_REQUEST['ajaxCall']) {
 			$sersvlData[$record['svl_id']]['sersvl_discout'] 	 += $record['sersvlprm_discout_total']; 
 			$sersvlData[$record['svl_id']]['sersvl_total_price'] -= $record['sersvlprm_discout_total']; 
 		}
+
+		// Get service list detail data
+		if(count($sersvlIds) > 0) {
+			$sersvlIds = wrapSingleQuote($sersvlIds);
+			$sql = "SELECT 		sd.svl_id,
+								CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname 
+					FROM 		service_list_details sd,
+								employees e 
+					WHERE 		sd.emp_id = e.emp_id AND 
+								sd.sersvl_id IN (".implode(',', $sersvlIds).")";
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				if(!isset($sersvlData[$record['svl_id']]['employees'])) {
+					$sersvlData[$record['svl_id']]['employees'] = array();
+				}
+				array_push($sersvlData[$record['svl_id']]['employees'], $record['emp_fullname']);
+			}
+		}
 		
+		// Get package detail data
+		if(count($serpkgIds) > 0) {
+			$serpkgIds = wrapSingleQuote($serpkgIds);
+			$sql = "SELECT 		ps.pkg_id,
+								CONCAT(e.emp_name, ' ', e.emp_surname) emp_fullname 
+					FROM 		service_service_list_times st,
+								package_details pd,
+								package_service_lists ps,
+								employees e 
+					WHERE 		st.sersvt_id = pd.sersvt_id AND 
+								st.pkgsvl_id = ps.pkgsvl_id AND 
+								pd.emp_id = e.emp_id AND 
+								st.serpkg_id IN (".implode(',', $serpkgIds).")";
+			$result = mysql_query($sql, $dbConn);
+			$rows 	= mysql_num_rows($result);
+			for($i=0; $i<$rows; $i++) {
+				$record = mysql_fetch_assoc($result);
+				if(!isset($serpkgData[$record['pkg_id']]['employees'])) {
+					$serpkgData[$record['pkg_id']]['employees'] = array();
+				}
+				array_push($serpkgData[$record['pkg_id']]['employees'], $record['emp_fullname']);
+			}
+		}
 
 		$smarty->assign('viewSerpkgData', $serpkgData);
 		$smarty->assign('viewSersvlData', $sersvlData);

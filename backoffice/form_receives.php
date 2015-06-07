@@ -244,7 +244,8 @@ if(!$_REQUEST['ajaxCall']) {
 					$sqlRefData = "	SELECT 		ord_id refValue,
 												ord_id refText 
 									FROM 		orders 
-									WHERE 		ordstat_id != 'OS03' 
+									WHERE 		ordstat_id != 'OS03' AND 
+												ordstat_id != 'OS04'
 									ORDER BY 	refText DESC";
 					$refField 	= 'ord_id';
 					break;
