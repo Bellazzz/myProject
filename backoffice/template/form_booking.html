@@ -288,6 +288,7 @@
         var curCustypeId  = '{/literal}{if $custype_id}{$custype_id}{/if}{literal}';
         var nowDate       = '{/literal}{$nowDate}{literal}';
         var nowDateTmp    = '{/literal}{$nowDateTmp}{literal}';
+        var nowTime       = '{/literal}{$nowTime}{literal}';
 
         // Set valuesDetail
         {/literal}
@@ -419,13 +420,24 @@
             });
 
             $('#addPaymentDetailBtn').click(function() {
-                $(this).css('display', 'none');
-                $('.paymentDetail').css('display', 'table');
+                displayPaymentData();
+                setDefaultPaymentData();
             });
 
             {/literal}{if $displayPaymentForm}{literal}
-            $('#addPaymentDetailBtn').click();
+            displayPaymentData();
             {/literal}{/if}{literal}
+
+            function displayPaymentData() {
+                $('#addPaymentDetailBtn').css('display', 'none');
+                $('.paymentDetail').css('display', 'table');
+            }
+            function setDefaultPaymentData() {
+                $('#bkg_transfer_date').val(nowDateTmp);
+                $('#bkg_transfer_time').val(nowTime);
+                $('#bkg_transfer_date').focusout();
+                $('#bkg_transfer_money').val($('#bkg_total_price').val());
+            }
 
 
             // Check date
@@ -833,11 +845,11 @@
             <tr>
                 <td>
                     <label>วันที่โอน</label>
-                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_transfer_date}{$values.bkg_transfer_date}{else}{$nowDate}{/if}">
+                    <input id="bkg_transfer_date" name="bkg_transfer_date" type="text" class="mbk-dtp-th form-input half" value="{if $values.bkg_transfer_date}{$values.bkg_transfer_date}{/if}">
                 </td>
                 <td>
                     <label>เวลาที่โอน</label>
-                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{if $values.bkg_transfer_time}{$values.bkg_transfer_time}{else}{$nowTime}{/if}">
+                    <input id="bkg_transfer_time" name="bkg_transfer_time" type="text" class="form-input half" value="{if $values.bkg_transfer_time}{$values.bkg_transfer_time}{/if}">
                 </td>
             </tr>
             <tr>
