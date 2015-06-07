@@ -30,7 +30,7 @@ if(isset($_POST['submit'])) {
 	$totalPrice = 0;
 	
 	// Find service lists
-	$sql = "SELECT a.sumPrice - IFNULL(b.discout,0) AS sumTotal
+	$sql = "SELECT a.sumPrice AS sumTotal
 		FROM 
 			( SELECT sl.svl_id, st.svltyp_id, SUM( ss.sersvl_total_price ) AS sumPrice
 			FROM service_service_lists ss, service_lists sl, service_list_types st, 
@@ -66,7 +66,7 @@ if(isset($_POST['submit'])) {
 	}
 
 	// Find packages
-	$sql = "SELECT a.sumPrice - IFNULL(b.sumDiscout,0) AS sumTotal 
+	$sql = "SELECT a.sumPrice AS sumTotal 
 			FROM (
 				SELECT p.pkg_id, SUM( sp.serpkg_total_price ) AS sumPrice 
 				FROM packages p, service_packages sp, services s
@@ -142,15 +142,32 @@ if(isset($_POST['submit'])) {
 		$sumDiscoutSale = $record['sumSale_discout'];
 	}
 
+	// Discout service
+	$serTotalPriceReal = 0;
+	$sumDiscoutSer = 0.00;
+	$sql = "SELECT SUM(ser_prm_discout) sumSer_discout 
+			FROM 	services 
+			WHERE 	ser_date >=  '$startDate' AND 
+					ser_date <=  '$endDate'";
+	$result = mysql_query($sql, $dbConn);
+	$rows   = mysql_num_rows($result);
+	if($rows > 0) {
+		$record = mysql_fetch_assoc($result);
+		$sumDiscoutSer = $record['sumSer_discout'];
+	}
+
 	$saleTotalPriceReal = $saleTotalPrice - $sumDiscoutSale;
+	$serTotalPriceReal = $serTotalPrice - $sumDiscoutSer;
 	$totalPrice += $serTotalPrice + $saleTotalPriceReal;
 
 	$smarty->assign('report', $report);
 	$smarty->assign('serTotalPrice', number_format($serTotalPrice, 2));
 	$smarty->assign('saleTotalPrice', number_format($saleTotalPrice, 2));
 	$smarty->assign('saleTotalPriceReal', number_format($saleTotalPriceReal, 2));
+	$smarty->assign('serTotalPriceReal', number_format($serTotalPriceReal, 2));
 	$smarty->assign('totalPrice', number_format($totalPrice, 2));
 	$smarty->assign('sumDiscoutSale', number_format($sumDiscoutSale, 2));
+	$smarty->assign('sumDiscoutSer', number_format($sumDiscoutSer, 2));
 }
 
 $smarty->assign('tplName', $tplName);
