@@ -425,6 +425,13 @@ if(!$_REQUEST['ajaxCall']) {
 		$insertResult 		  = true;
 		$errTxt 			  = '';
 
+		// Cal sale_discout
+		$sale_discout = 0;
+		foreach ($formData['saleprmdsdtl_discout'] as $key => $discout) {
+			$sale_discout += $discout;
+		}
+		$formData['sale_discout'] = $sale_discout;
+
 		// Push values to array
 		foreach($formData as $fieldName => $value) {
 			if(in_array($fieldName, $fieldListEn)) {
@@ -440,6 +447,8 @@ if(!$_REQUEST['ajaxCall']) {
 				array_push($values['fieldValue'], $value);
 			}
 		}
+
+
 
 		// Insert Sales
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
@@ -535,6 +544,13 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord 	= new TableSpa($tableName, $code);
 		$updateResult  	= true;
 		$errTxt 		= '';
+
+		// Cal sale_discout
+		$sale_discout = 0;
+		foreach ($formData['saleprmdsdtl_discout'] as $key => $discout) {
+			$sale_discout += $discout;
+		}
+		$formData['sale_discout'] = $sale_discout;
 
 		// Set all field value
 		foreach($formData as $fieldName => $value) {

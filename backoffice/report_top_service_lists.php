@@ -36,7 +36,7 @@ if(isset($_POST['submit'])) {
 						ss.svl_id = sl.svl_id AND 
 						s.ser_date >= '$startDate' AND s.ser_date <= '$endDate' 
 			GROUP BY 	sl.svl_id 
-			ORDER BY 	amount DESC";
+			ORDER BY 	amount DESC, sl.svl_name ASC";
 	$result = mysql_query($sql, $dbConn);
 	$rows   = mysql_num_rows($result);
 	if($rows > 0) {
