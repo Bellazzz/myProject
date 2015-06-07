@@ -743,7 +743,7 @@ function dbClose() {
 				'deleteTxtField'		=> array('cus_id','ser_date'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการใช้บริการของ %f1 ในวันที่ %f2 ใช่หรือไม่?',
 				'deleteTxtPatternMin' 	=> '%f1 ใช้บริการวันที่ %f2',
-				'referenceData'			=> array('employees','customers','customer_types','booking','beds','pay_types','packages', 'service_lists')
+				'referenceData'			=> array('employees','employeesMasseuse','customers','customer_types','booking','beds','pay_types','packages', 'service_lists')
 
 			);
 			break;
