@@ -104,14 +104,16 @@ if(isset($_POST['submit'])) {
 				}
 
 				// Push to report array
-				array_push($report, array(
-					'dateatt_in' 	=> dateThaiFormat($record['dateatt_in']),
-					'timeatt_in' 	=> $record['timeatt_in'].' น.',
-					'timeatt_out' 	=> $record['timeatt_out'].' น.',
-					'hours_ot'		=> $differ.' ชั่วโมง',
-					'ot_rate'		=> $otr_bath_per_hour,
-					'ot_bath'		=> number_format($differ * $otr_bath_per_hour,2) 
-				));
+				if($differ > 0) {
+					array_push($report, array(
+						'dateatt_in' 	=> dateThaiFormat($record['dateatt_in']),
+						'timeatt_in' 	=> $record['timeatt_in'].' น.',
+						'timeatt_out' 	=> $record['timeatt_out'].' น.',
+						'hours_ot'		=> $differ.' ชั่วโมง',
+						'ot_rate'		=> $otr_bath_per_hour,
+						'ot_bath'		=> number_format($differ * $otr_bath_per_hour,2) 
+					));
+				}
 			}
 			$smarty->assign('report', $report);
 			$smarty->assign('sumOvertime', number_format($sumOvertime,2));
