@@ -19,7 +19,8 @@ $bkgDetails = array(
 
 // Get booking packages
 $sql = "SELECT 		pkg_id,
-					emp_id 
+					emp_id,
+					SUBSTRING(bkgpkg_time,1,5) bkgpkg_time 
 		FROM 		booking_packages 
 		WHERE 		bkg_id = '$bkg_id' AND 
 					bkgpkg_status != 2 AND 
@@ -34,7 +35,8 @@ if($rows > 0) {
 
 // Get booking service_lists
 $sql = "SELECT 		svl_id,
-					emp_id 
+					emp_id,
+					SUBSTRING(bkgsvl_time,1,5) bkgsvl_time 
 		FROM 		booking_service_lists 
 		WHERE 		bkg_id = '$bkg_id' AND 
 					bkgsvl_status != 2 AND 

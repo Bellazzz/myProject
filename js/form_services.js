@@ -441,6 +441,7 @@ function pullBkgPkgAndBkgSvl(success) {
                     pkg_qty         : 1,
                     bkgemp_id       : response.pkg[a].emp_id
                 });
+                setDefaultBkgPkgTime(response.pkg[a].pkg_id, response.pkg[a].bkgpkg_time);
             }
             for(b in response.svl) {
                 addServiceList({
@@ -448,7 +449,8 @@ function pullBkgPkgAndBkgSvl(success) {
                     pullSvl      : true,
                     svl_id       : response.svl[b].svl_id,
                     svl_qty      : 1,
-                    bkgemp_id    : response.svl[b].emp_id
+                    bkgemp_id    : response.svl[b].emp_id,
+                    sersvl_time  : response.svl[b].bkgsvl_time
                 });
             }
 
@@ -459,6 +461,23 @@ function pullBkgPkgAndBkgSvl(success) {
                 success();
             }
         }
+    });
+}
+
+function setDefaultBkgPkgTime(pkg_id, startTime) {
+    var index = 0;
+    var tmpId = '';
+    $('input[name="pkgCom_' + pkg_id + '_sersvt_time[]"]').each(function() {
+        if(index == 0) {
+            $(this).val(startTime);
+        } else {
+            // Continue time
+            var beforeEndTime = $('#'+tmpId).parent().find('input[name="sersvt_time_end[]"]').val();
+            $(this).val(beforeEndTime);
+        }
+        tmpId = $(this).attr('id');
+        $(this).focusout();
+        index++;
     });
 }
 
@@ -706,6 +725,7 @@ function addServiceListOfPackage(data) {
                           + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
                           + '   <div class="time-cont">'
                           + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
+                          + '       - <span class="sersvt_time_end_txt">??:??</span>'
                           + '       <input type="hidden" name="sersvt_time_end[]">'
                           + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
 
@@ -738,8 +758,8 @@ function addServiceListOfPackage(data) {
             datepicker:false,
             format:'H:i',
             step: 5,
-            minTime:'09:00',
-            maxTime: '19:05'
+            minTime:'08:30',
+            maxTime: '19:35'
         });
         $('#' + inputTimeId).focusout(validateInput);
         $('#' + inputTimeId).focusout(function() {
@@ -938,7 +958,10 @@ function addServiceList(data) {
                     + '     <td width="350px">'
                     + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                     + '     </td>'
-                    + '     <td><input id="' + inputTimeId + '" type="text" name="sersvl_time[]" class="form-input" value="' + time + '" style="width:150px;" require></td>'
+                    + '     <td style="white-space: nowrap;">'
+                    + '         <input id="' + inputTimeId + '" type="text" name="sersvl_time[]" class="form-input" value="' + time + '" style="width:80px;" require>'
+                    + '         <span style="display:inline-block"> - <span class="sersvl_time_end_txt">??:??</span></span>'
+                    + '     </td>'
                     + '     <td align="right" style="padding-right:20px;">'
                     + '         <span class="svl_min_txt">' + svl_min + ' นาที</span>'
                     + '         <input type="hidden" name="sersvl_min[]" value="' + svl_min + '">'
@@ -1061,8 +1084,8 @@ function addServiceList(data) {
         datepicker:false,
         format:'H:i',
         step: 5,
-        minTime:'09:00',
-        maxTime: '19:05'
+        minTime:'08:30',
+        maxTime: '19:35'
     });
     // Check Input required and pattern
     $('#' + inputQtyId).focusout(validateInput);
@@ -1503,11 +1526,14 @@ function setSvlTimeEnd(inputKeyId, svlMin) {
     // cal time end
     if(sersvlTimeInput.val() != '') {
         var sersvlTimeEndInput = $('#' + inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
+        var sersvlTimeEndText = $('#' + inputKeyId).parent().parent().find('.sersvl_time_end_txt');
         var endTime = addMinutes(sersvlTimeInput.val(), svl_min);
         sersvlTimeEndInput.val(endTime);
+        sersvlTimeEndText.text(endTime);
         checkTimeOverlap({
             inputKeyId: inputKeyId,
-            type: 'service_lists'
+            type: 'service_lists',
+            textTimeEnd: sersvlTimeEndText,
         });
     }
 }
@@ -1531,13 +1557,16 @@ function setPkgTimeEnd(inputpkgTimeInput, svlMin) {
     // cal time end
     if(inputpkgTimeInput.val() != '') {
         var serpkgTimeEndInput = inputpkgTimeInput.parent().find('input[name="sersvt_time_end[]"]');
+        var serpkgTimeEndText = inputpkgTimeInput.parent().find('.sersvt_time_end_txt');
         var endTime = addMinutes(inputpkgTimeInput.val(), svl_min);
         var inputKeyId = 'pkg_id_' + inputpkgTimeInput.attr('data-parentNum');
         serpkgTimeEndInput.val(endTime);
+        serpkgTimeEndText.text(endTime);
         checkTimeOverlap({
             inputKeyId: inputKeyId,
             inputTime: inputpkgTimeInput,
             inputTimeEnd: serpkgTimeEndInput,
+            textTimeEnd: serpkgTimeEndText,
             type: 'packages'
         });
     }
@@ -1559,6 +1588,7 @@ function checkTimeOverlap(data) {
     var timeOverlapList = Array();
     var inputTime = '';
     var inputTimeEnd = '';
+    var textTimeEnd = data.textTimeEnd;
     var selectRefVal = '';
     var pkgName = '';
 
@@ -1615,8 +1645,8 @@ function checkTimeOverlap(data) {
         tmpTimeStart = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeStart + ':00');
         tmpTimeEnd = new Date(now.getMonth()+ '/' +now.getDate()+ '/' +now.getFullYear() + ' ' + timeList[i].timeEnd + ':00');
 
-        if((timeStart >= tmpTimeStart && timeStart <= tmpTimeEnd) || 
-            (timeEnd >= tmpTimeStart  && timeEnd <= tmpTimeEnd)) {
+        if((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
+            (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) {
             var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
             var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
             var txt = timeList[i].name + ' (' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
@@ -1656,6 +1686,7 @@ function checkTimeOverlap(data) {
                             parent.hideActionDialog();
                             inputTime.val('');
                             inputTimeEnd.val('');
+                            textTimeEnd.text('??:??');
                             inputTime.focus();
                         }
                     }
