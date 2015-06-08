@@ -753,6 +753,11 @@ function addServiceListOfPackage(data) {
         
         svlPkgTd.find('.pkgsvl-list-container').append(pkgsvlHTML);
 
+        // Set sersvl end time
+        if(typeof(data.setTime) != 'undefined' && typeof(sersvtData[data.pkg_id][svl_id]) != 'undefined') {
+            setPkgTimeEnd($('#sersvt_time_' + data.pkg_id + '_' + svl_id), data.pkg_id); // Set time end
+        }
+
         // create time picker
         $('#sersvt_time_' + data.pkg_id + '_' + svl_id).datetimepicker({
             datepicker:false,
