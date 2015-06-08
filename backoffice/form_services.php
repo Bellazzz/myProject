@@ -1121,15 +1121,29 @@ if(!$_REQUEST['ajaxCall']) {
 				// Update or Add package_details
 				if(isset($formData['pkgCom_'.$pkg_id.'_svl_id']) && is_array($formData['pkgCom_'.$pkg_id.'_svl_id'])) {
 					foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
-						// Update service_service_list_times
-						$sersvt_id = $formData['sersvt_id'][$key];
-						$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
-						$sersvtRecord = new TableSpa('service_service_list_times', $sersvt_id);
-						$sersvtRecord->setFieldValue('sersvt_time', $sersvt_time);
-						if(!$sersvtRecord->commit()) {
-							$updateResult = false;
-							$errTxt .= 'EDIT_SERVICE_SERVICE_LIST_TIMES['.($key+1).']_FAIL\n';
-							$errTxt .= mysql_error($dbConn).'\n\n';
+						if(isset($formData['sersvt_id_'.$pkg_id][$key])) {
+							// Update service_service_list_times
+							$sersvt_id = $formData['sersvt_id_'.$pkg_id][$key];
+							$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+							$sersvtRecord = new TableSpa('service_service_list_times', $sersvt_id);
+							$sersvtRecord->setFieldValue('sersvt_time', $sersvt_time);
+							if(!$sersvtRecord->commit()) {
+								$updateResult = false;
+								$errTxt .= 'EDIT_SERVICE_SERVICE_LIST_TIMES['.($key+1).']_FAIL\n';
+								$errTxt .= mysql_error($dbConn).'\n\n';
+							}
+						} else {
+							// Insert service_service_list_times
+							$pkgsvl_id 	  = $pkgsvlDataList[$pkg_id][$svl_id]['pkgsvl_id'];
+							$sersvt_time  = $formData['pkgCom_'.$pkg_id.'_sersvt_time'][$key];
+							$sersvtValues = array($serpkg_id, $pkgsvl_id, $sersvt_time);
+							$sersvtRecord 		= new TableSpa('service_service_list_times', $sersvtValues);
+							if(!$sersvtRecord->insertSuccess()) {
+								$insertResult = false;
+								$errTxt .= 'INSERT_SERVICE_SERVICE_LIST_TIMES['.($key+1).']_FAIL\n';
+								$errTxt .= mysql_error($dbConn).'\n\n';
+							}
+							$sersvt_id = $sersvtRecord->getKey();
 						}
 
 						foreach ($formData['pkgCom_'.$pkg_id.'_'.$svl_id.'_emp_id'] as $comKey => $comEmp_id) {

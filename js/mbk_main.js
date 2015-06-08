@@ -578,7 +578,10 @@ function selectReferenceJS(select) {
         if(searchTool && searchInput.val() != '') {
             // Search
             options = $.grep(data, function(el) {
-                return el.refText.indexOf(searchText) > -1;
+                if(typeof(searchText) == 'string') {
+                    searchText = searchText.toLowerCase();
+                }
+                return el.refText.toLowerCase().indexOf(searchText) > -1;
             });
         } else {
             // Get all data
