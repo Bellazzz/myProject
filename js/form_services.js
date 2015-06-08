@@ -763,7 +763,7 @@ function addServiceListOfPackage(data) {
         });
         $('#' + inputTimeId).focusout(validateInput);
         $('#' + inputTimeId).focusout(function() {
-            setPkgTimeEnd($(this)); // Set time end
+            setPkgTimeEnd($(this), data.pkg_id); // Set time end
         });
 
         if(addPkgCom) {
@@ -1538,15 +1538,16 @@ function setSvlTimeEnd(inputKeyId, svlMin) {
     }
 }
 
-function setPkgTimeEnd(inputpkgTimeInput, svlMin) {
+function setPkgTimeEnd(inputpkgTimeInput, pkg_id, svlMin) {
     var svl_min = svlMin;
     if(typeof(svl_min) == 'undefined') {
         var svlID = inputpkgTimeInput.parent().parent().find('.svl_id').val();
         if(typeof(svlID) != 'undefined' && svlID != '') {
-            for(i in pkgsvlData) {
-                for(j in pkgsvlData[i]) {
-                    if(pkgsvlData[i][j].svl_id == svlID) {
-                        svl_min = parseInt(pkgsvlData[i][j].allMin);
+
+            for(a in pkgsvlData) {
+                for(b in pkgsvlData[a]) {
+                    if(a == pkg_id && pkgsvlData[a][b].svl_id == svlID) {
+                        svl_min = parseInt(pkgsvlData[a][b].allMin);
                         break;
                     }
                 }
