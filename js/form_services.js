@@ -725,7 +725,7 @@ function addServiceListOfPackage(data) {
                           + '   <div class="name-cont">' + no + '. <span class="pkgsvl_name">' + svl_name + '</span></div>'
                           + '   <div class="time-cont">'
                           + '       เวลาที่ใช้บริการ <input id="' + inputTimeId + '" type="text" name="pkgCom_' + data.pkg_id + '_sersvt_time[]" class="form-input sersvt_time" value="' + time + '" data-parentNum="' + data.parentRandNum + '" require>'
-                          + '       - <span class="sersvt_time_end_txt">??:??</span>'
+                          + '       - <span class="sersvt_time_end_txt">??:??</span> น.'
                           + '       <input type="hidden" name="sersvt_time_end[]">'
                           + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
 
@@ -965,7 +965,7 @@ function addServiceList(data) {
                     + '     </td>'
                     + '     <td style="white-space: nowrap;">'
                     + '         <input id="' + inputTimeId + '" type="text" name="sersvl_time[]" class="form-input" value="' + time + '" style="width:80px;" require>'
-                    + '         <span style="display:inline-block"> - <span class="sersvl_time_end_txt">??:??</span></span>'
+                    + '         <span style="display:inline-block"> - <span class="sersvl_time_end_txt">??:??</span> น.</span>'
                     + '     </td>'
                     + '     <td align="right" style="padding-right:20px;">'
                     + '         <span class="svl_min_txt">' + svl_min + ' นาที</span>'

@@ -257,8 +257,6 @@ if(!$_REQUEST['ajaxCall']) {
 				$values[$field] = '-';
 			}
 		}
-		// Date thai format
-		$values['ser_date_th'] = dateThaiFormat($values['ser_date']);
 		$smarty->assign('values', $values);
 
 		// Get service_packages data
