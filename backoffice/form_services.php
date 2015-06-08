@@ -954,6 +954,8 @@ if(!$_REQUEST['ajaxCall']) {
 		$oldSerPkgPrmList = array();
 		$oldPkgDtlList 		= array();
 		$newPkgDtlList 		= array();
+		$oldSerSvtList = array();
+		$newSerSvtList = array();
 		// Find old service_packages
 		$sql = "SELECT serpkg_id FROM service_packages WHERE ser_id = '$code'";
 		$result = mysql_query($sql, $dbConn);
@@ -961,6 +963,15 @@ if(!$_REQUEST['ajaxCall']) {
 		for($i=0; $i<$rows; $i++) {
 			$oldServicePkgRecord = mysql_fetch_assoc($result);
 			array_push($oldServicePkgList, $oldServicePkgRecord['serpkg_id']);
+		}
+		// Find old service_service_list_times
+		$tmpSerPkgIds = wrapSingleQuote($oldServicePkgList);
+		$sql = "SELECT sersvt_id FROM service_service_list_times WHERE serpkg_id IN (".implode(',', $tmpSerPkgIds).")";
+		$result = mysql_query($sql, $dbConn);
+		$rows 	= mysql_num_rows($result);
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			array_push($oldSerSvtList, $record['sersvt_id']);
 		}
 		// Find old service_package_promotions
 		$sql = "SELECT serpkgprm_id, pkgprmdtl_id FROM service_package_promotions WHERE ser_id = '$code'";
@@ -977,9 +988,16 @@ if(!$_REQUEST['ajaxCall']) {
 				array_push($newServicePkgList, $newserpkg_id);
 			}
 		}
-		// Find new service_package_promotions
 		if(isset($formData['pkg_id']) && is_array($formData['pkg_id'])) {
 			foreach ($formData['pkg_id'] as $key => $pkg_id) {
+				// Find new service_service_list_times
+				foreach ($formData['pkgCom_'.$pkg_id.'_svl_id'] as $key => $svl_id) {
+					if(isset($formData['sersvt_id_'.$pkg_id][$key])) {
+						array_push($newSerSvtList, $formData['sersvt_id_'.$pkg_id][$key]);
+					}
+				}
+
+				// Find new service_package_promotions
 				if(hasValue($formData['prmSale_'.$pkg_id.'_pkgprmdtl_id'])) {
 					array_push($newPkgPrmDtlList, $formData['prmSale_'.$pkg_id.'_pkgprmdtl_id']);
 				}
@@ -1014,6 +1032,19 @@ if(!$_REQUEST['ajaxCall']) {
 				if(!$pkgDtlRecord->delete()) {
 					$updateResult = false;
 					$errTxt .= "DELETE_PACKAGE_DETAILS[$oldpkgdtl_id]_FAIL\n";
+					$errTxt .= mysql_error($dbConn).'\n\n';
+				}
+			}
+		}
+
+		// Check for delete service_service_list_times
+		foreach ($oldSerSvtList as $key => $oldSerSvt_id) {
+			if(!in_array($oldSerSvt_id, $newSerSvtList)) {
+				// Delete service_service_list_times
+				$serSvtRecord 	= new TableSpa('service_service_list_times', $oldSerSvt_id);
+				if(!$serSvtRecord->delete()) {
+					$updateResult = false;
+					$errTxt .= "DELETE_SERVICE_SERVICE_LIST_TIMES[$oldSerSvt_id]_FAIL\n";
 					$errTxt .= mysql_error($dbConn).'\n\n';
 				}
 			}

@@ -1586,7 +1586,7 @@ function addMinutes(time, addMin) {
     } else {
         var after = date;
     }
-    return after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
+    return (after.getHours()<10?'0':'') + after.getHours() + ':' + (after.getMinutes()<10?'0':'') + after.getMinutes();
 }
 
 function checkTimeOverlap(data) {
