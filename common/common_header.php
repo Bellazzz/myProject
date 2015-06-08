@@ -168,4 +168,9 @@
 	}
 	$smarty->assign('amountItemInCart', $amountItemInCart);
 	$smarty->assign('totalPriceInCart', $totalPriceInCart);
+
+	// Session remind product min amount
+	if(isset($_SESSION['hideRemindPrdMinAmount'])) {
+		$smarty->assign('session_hideRemindPrdMinAmount', $_SESSION['hideRemindPrdMinAmount']);
+	}
 ?>

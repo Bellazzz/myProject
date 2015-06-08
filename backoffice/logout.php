@@ -21,5 +21,8 @@ if(isset($_SESSION['emp_surname'])) {
 if(isset($_SESSION['emp_pos_name'])) {
 	unset($_SESSION['emp_pos_name']);
 }
+if(isset($_SESSION['hideRemindPrdMinAmount'])) {
+	unset($_SESSION['hideRemindPrdMinAmount']);
+}
 header("location:login.php");
 ?>

@@ -956,7 +956,7 @@ function remindProductMinAmount() {
             var response = $.parseJSON(responseJSON);
             if(response.status == 'OUT_OF_STOCK') {
                 var msg = 'ผลิตภัณฑ์ดังต่อไปนี้มีจำนวนคงเหลือน้อยกว่าจำนวนที่กำหนดไว้'
-                        + response.outOfStockListHtml;
+                        + response.outOfStockListHtml + '<br><label><input id="hideRemindProductMinAmount" type="checkbox"> ไม่ต้องแสดงการแจ้งเตือนนี้อีก</label>';
                 parent.showActionDialog({
                     title: 'ผลิตภัณฑ์คงเหลือน้อยกว่ากำหนด',
                     message: msg,
@@ -967,10 +967,13 @@ function remindProductMinAmount() {
                             desc: 'เปิดฟอร์มการสั่งซื้อ',
                             func:
                             function() {
-                                hideActionDialog();
                                 $('#tn-orders').parent().parent().parent().find('.tree-view-root').click();
                                 $('#tn-orders').click();
                                 $('#add-record-btn').click();
+                                if($('#hideRemindProductMinAmount').prop('checked')) {
+                                    hideRemindProductMinAmount();
+                                }
+                                hideActionDialog();
                             }
                         },
                         {
@@ -979,6 +982,9 @@ function remindProductMinAmount() {
                             desc: 'ปิดหน้าต่างนี้',
                             func:
                             function() {
+                                if($('#hideRemindProductMinAmount').prop('checked')) {
+                                    hideRemindProductMinAmount();
+                                }
                                 hideActionDialog();
                             }
                         }
@@ -986,6 +992,16 @@ function remindProductMinAmount() {
                     boxWidth: 500
                 });
             }
+        }
+    });
+}
+
+function hideRemindProductMinAmount() {
+    $.ajax({
+        url: '../common/ajaxNotShowRemindProductMinAmount.php',
+        type: 'POST',
+        success:
+        function(responseJSON) {
         }
     });
 }
