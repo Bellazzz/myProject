@@ -10,24 +10,29 @@ include('common/common_header.php');
 $oneMonthAgo = date('Y-m-d', strtotime('-1 months'));
 $svlIds = array();
 $topSvlList = array();
-$sql = "SELECT 		sl.svl_name,
-					sl.svl_id,
-					sl.svl_desc,
-					sl.svl_price,
-					sl.svl_picture,
-					SUM(ss.sersvl_amount) AS amount 
-		FROM 		services s JOIN 
-					service_service_lists ss ON ss.ser_id = s.ser_id RIGHT JOIN 
-					service_lists sl ON ss.svl_id = sl.svl_id 
-		WHERE 		s.ser_date IS NULL OR s.ser_date >= '$oneMonthAgo' AND 
-					sl.svl_start <= '$nowDate' AND 
-					(
-						sl.svl_stop IS NULL OR 
-						sl.svl_stop >= '$nowDate'
-					) 
-		GROUP BY 	sl.svl_id 
-		ORDER BY 	amount DESC, svl_name  
-		LIMIT 		5";
+$sql = "SELECT 		svl.svl_name, 
+					svl.svl_id, 
+					svl.svl_desc, 
+					svl.svl_price, 
+					svl.svl_picture, 
+					a.amount 
+		FROM 		(
+						SELECT 		ss.svl_id, 
+									SUM( ss.sersvl_amount ) AS amount 
+						FROM 		services s 
+									JOIN service_service_lists ss ON ss.ser_id = s.ser_id 
+						WHERE 		s.ser_date IS NULL 
+									OR s.ser_date >=  '$oneMonthAgo'
+						GROUP BY 	ss.svl_id 
+					) a 
+					RIGHT JOIN service_lists svl ON a.svl_id = svl.svl_id 
+		WHERE  		svl.svl_start <=  '$nowDate' 
+					AND (
+						svl.svl_stop IS NULL 
+						OR svl.svl_stop >=  '$nowDate'
+					)
+		ORDER BY 	a.amount DESC , svl.svl_name 
+		LIMIT 5";
 $result = mysql_query($sql, $dbConn);
 $rows   = mysql_num_rows($result);
 if($rows > 0) {
@@ -85,24 +90,29 @@ if($rows > 0) {
 // Find top 5 packages
 $pkgIds = array();
 $topPkgList = array();
-$sql = "SELECT 		pkg.pkg_name,
-					pkg.pkg_id,
-					pkg.pkg_desc,
-					pkg.pkg_price,
-					pkg.pkg_picture,
-					SUM(sp.serpkg_amount) AS amount 
-		FROM 		services s JOIN 
-					service_packages sp ON sp.ser_id = s.ser_id RIGHT JOIN 
-					packages pkg ON sp.pkg_id = pkg.pkg_id 
-		WHERE 		s.ser_date IS NULL OR s.ser_date >= '$oneMonthAgo' AND 
-					pkg.pkg_start <= '$nowDate' AND 
-					(
-						pkg.pkg_stop IS NULL OR 
-						pkg.pkg_stop >= '$nowDate'
-					) 
-		GROUP BY 	pkg.pkg_id 
-		ORDER BY 	amount DESC, pkg_name  
-		LIMIT 		5";
+$sql = "SELECT 		pkg.pkg_name, 
+					pkg.pkg_id, 
+					pkg.pkg_desc, 
+					pkg.pkg_price, 
+					pkg.pkg_picture, 
+					a.amount 
+		FROM 		(
+						SELECT 		sp.pkg_id, 
+									SUM( sp.serpkg_amount ) AS amount 
+						FROM 		services s 
+									JOIN service_packages sp ON sp.ser_id = s.ser_id 
+						WHERE 		s.ser_date IS NULL 
+									OR s.ser_date >=  '$oneMonthAgo'
+						GROUP BY 	sp.pkg_id 
+					) a 
+					RIGHT JOIN packages pkg ON a.pkg_id = pkg.pkg_id 
+		WHERE  		pkg.pkg_start <=  '$nowDate' 
+					AND (
+						pkg.pkg_stop IS NULL 
+						OR pkg.pkg_stop >=  '$nowDate'
+					)
+		ORDER BY 	a.amount DESC , pkg.pkg_name 
+		LIMIT 5"; 
 $result = mysql_query($sql, $dbConn);
 $rows   = mysql_num_rows($result);
 if($rows > 0) {
