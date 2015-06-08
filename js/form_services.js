@@ -730,7 +730,7 @@ function addServiceListOfPackage(data) {
                           + '       <span id="err-' + inputTimeId + '-require" class="errInputMsg half err-' + inputTimeId + '" >โปรดป้อนเวลาที่ใช้บริการ</span>';
 
             if(sersvt_id != '') {
-                pkgsvlHTML += '<input type="hidden" name="sersvt_id[]" value="' + sersvt_id + '">';
+                pkgsvlHTML += '<input type="hidden" name="sersvt_id_' + data.pkg_id + '[]" value="' + sersvt_id + '">';
             }
 
                 pkgsvlHTML+= '  </div>' 
