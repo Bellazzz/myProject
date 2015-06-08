@@ -213,10 +213,11 @@ function dbClose() {
 						'bnkacc_id'		=> 'รหัสบัญชีธนาคาร',
 						'bnkacc_no'		=> 'เลขบัญชี',
 						'bnkacc_name'	=> 'ชื่อบัญชี',
+						'bnkacc_bank'	=> 'ชื่อธนาคาร',
 						'bnkacc_branch' => 'สาขา',
 						'bnkacc_type'	=> 'ประเภทบัญชี'
 				),
-				'searchFields'	=> array('bnkacc_no','bnkacc_name'),
+				'searchFields'	=> array('bnkacc_no','bnkacc_name','bnkacc_bank','bnkacc_type'),
 				'deleteTxtField'=> array('bnkacc_name')
 			);
 			break;
