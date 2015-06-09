@@ -137,6 +137,10 @@
           setSexId();
         });
         setSexId();
+        $('#sex_id').change(function() {
+          $('#sex_id_hidden').val($('#sex_id').val());
+        });
+        
 
         $('#cus_pass').focusout(function() {
           checkEqualPassword();
@@ -165,6 +169,8 @@
         } else {
           $('#sex_id').prop('disabled', false);
         }
+
+        $('#sex_id_hidden').val($('#sex_id').val());
       }
 
       function getSexOfTitle(titleId) {
@@ -214,6 +220,7 @@
                   <option value="{$sex.sex_id}" >{$sex.sex_name}</option>
                 {/foreach}
               </select>
+              <input id="sex_id_hidden" type="hidden" name="sex_id_hidden">
 
               <label class="input-required">ชื่อ</label>
               <input id="cus_name" name="cus_name" type="text" class="form-control" placeholder="Enter your name" require valuepattern="character">
