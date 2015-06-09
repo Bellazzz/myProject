@@ -268,8 +268,35 @@ function saveTimeAtt() {
 		function(response) {
 			if(response == 'PASS') {
 				closeClockInOutBox();
-				focusBarcodeInput();
-				alert('บันทึกข้อมูลเรียบร้อย :)');
+				showActionDialog({
+                    title: 'บันทึกข้อมูลเรียบร้อย',
+                    message: 'จะปิดหน้านี้อัตโนมัติใน <span id="countDown">3</span> วินาที',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ปิด',
+                            func:
+                            function() {
+                                hideActionDialog();
+                                focusBarcodeInput();
+                            }
+                        }
+                    ],
+                    boxWidth: 400,
+                    success:
+                    function() {
+                    	var countDown = 2;
+                    	var myTimer = setInterval(function(){
+                    		$('#countDown').text(countDown);
+                    		countDown--;
+                    		if(countDown <0) {
+                    			clearInterval(myTimer);
+                    			hideActionDialog();
+                    			focusBarcodeInput();
+                    		}
+                    	}, 1000);
+                    }
+                });
 			} else if(response == 'FAIL') {
 				alert('fail');
 			} else {

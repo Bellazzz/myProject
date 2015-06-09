@@ -1,0 +1,54 @@
+/* Action dialog */
+.action-dialog-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+    z-index: 8;
+}
+.action-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -175px;
+    width: 350px;
+    background: white;
+    z-index: 8;
+    box-shadow: 0 0 20px 0px rgba(0,0,0,0.5);
+    padding: 25px;
+}
+.action-dialog > h2 {
+    font-size:  30px;
+    font-family: ThaiSansNeue-Bold;
+}
+.action-dialog > h2, .action-dialog .message {
+    color: #205081;
+    display: block;
+    max-height: 280px;
+    width: 100%;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.action-dialog .action-btn{
+    width: 100%;
+    border: 1px solid #98a3a6;
+    background: #f8f8f8;
+    margin-top: 10px;
+    color: #666;
+    padding: 10px;
+    line-height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.action-dialog .action-btn:hover{
+    background: #ddd;
+}
+.action-dialog .action-btn h1 {
+    font-size: 16px;
+    margin: 0;
+    color: #444;
+}
