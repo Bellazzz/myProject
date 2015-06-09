@@ -5,6 +5,8 @@ $tableName		= 'orders';
 $code			= $_REQUEST['code'];
 $hideEditButton = $_REQUEST['hideEditButton'];
 $hideBackButton = $_REQUEST['hideBackButton'];
+$addPrdAuto 	= $_GET['addPrdAuto'];
+$getMoreAmount 	= $_GET['getMoreAmount'];
 
 include('../config/config.php');
 $tplName = "form_$tableName.html";
@@ -157,6 +159,29 @@ if(!$_REQUEST['ajaxCall']) {
 	}
 	if($hideBackButton == 'true') {
 		$smarty->assign('hideBackButton', true);
+	}
+
+	// Add product auto
+	if(isset($addPrdAuto)) {
+		$addPrdAutoList = array();
+		$tmpAddPrdAutoList = split(',', $addPrdAuto);
+		foreach ($tmpAddPrdAutoList as $key => $prd_id) {
+			array_push($addPrdAutoList, $prd_id);
+		}
+		if(count($addPrdAutoList) > 0) {
+			$smarty->assign('addPrdAutoList', $addPrdAutoList);
+		}
+	}
+	// Get more amount
+	if(isset($getMoreAmount)) {
+		$getMoreAmountList = array();
+		$tmpGetMoreAmountList = split(',', $getMoreAmount);
+		foreach ($tmpGetMoreAmountList as $key => $amount) {
+			array_push($getMoreAmountList, $amount);
+		}
+		if(count($getMoreAmountList) > 0) {
+			$smarty->assign('getMoreAmountList', $getMoreAmountList);
+		}
 	}
 
 	$smarty->assign('action', $action);

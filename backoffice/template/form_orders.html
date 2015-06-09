@@ -30,6 +30,8 @@
         var ajaxUrl         = 'form_orders.php';
         var valuesDetail    = '';
         var refPrdData      = {/literal}{$referenceData["products"]|@json_encode}{literal};
+        var addPrdAutoList  = {/literal}{$addPrdAutoList|@json_encode}{literal};
+        var getMoreAmountList  = {/literal}{$getMoreAmountList|@json_encode}{literal};
 
         // Set valuesDetail
         {/literal}
@@ -111,9 +113,20 @@
 
             // Create product input
             if(action == 'ADD') {
-                addProduct({
-                    defaultValue : false
-                });
+                if(addPrdAutoList.length <= 0) {
+                    // Add product auto 1 list
+                    addProduct({
+                        defaultValue : false
+                    });
+                } else {
+                    // Add product auto from remind min amount
+                    for(i in addPrdAutoList) {
+                        addProduct({
+                            autoSelectPrd : addPrdAutoList[i],
+                            getMoreAmount: getMoreAmountList[i]
+                        });
+                    }
+                }
             } else if(action == 'EDIT') {
                 for(i in valuesDetail) {
                      addProduct({
@@ -300,10 +313,17 @@
 
             // add input product amount
             if(data.defaultValue) {
-                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" value="' + data.prd_qty + '" maxlength="6" size="6" valuepattern="number" require style="text-align:right; width:80px;">';
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" value="' + data.prd_qty + '" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
                 selectRefDefault = data.prd_id;
+            } else if(data.getMoreAmount) {
+                prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" value="' + data.getMoreAmount + '" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
             } else {
                 prdRowHTML += '         <input id="' + inputQtyId + '" name="prd_qty[]" type="text" class="form-input half" maxlength="6" size="6" valuepattern="numberMoreThanZero" require style="text-align:right; width:80px;">';
+            }
+
+            // auto select product
+            if(data.autoSelectPrd) {
+                selectRefDefault = data.autoSelectPrd;
             }
 
             // add order detail id for update

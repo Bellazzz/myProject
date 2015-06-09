@@ -5,11 +5,13 @@ $tableName		= $_REQUEST['tableName'];
 $code			= $_REQUEST['code'];
 $hideEditButton = $_REQUEST['hideEditButton'];
 $hideBackButton = $_REQUEST['hideBackButton'];
+$addPrdAuto 	= $_GET['addPrdAuto'];
+$getMoreAmount 	= $_GET['getMoreAmount'];
 
 // Check table
 switch ($tableName) {
 	case 'orders':
-		header("location:form_orders.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
+		header("location:form_orders.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton&addPrdAuto=$addPrdAuto&getMoreAmount=$getMoreAmount");
 		break;
 
 	case 'receives':

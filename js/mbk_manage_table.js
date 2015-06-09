@@ -769,9 +769,9 @@ function closeManageBox() {
     $('#manage-box').css('display', 'none');
 }
 
-function openFormTable(action, code) {
+function openFormTable(action, code, params) {
     var src = 'form_table.php' + '?action=' + action + '&tableName=' + this.table.name
-            + '&hideBackButton=true';
+            + '&hideBackButton=true' + params;
     if (typeof(code) != 'undefinded' && code != null) {
         src += '&code=' + code;
     }
@@ -967,9 +967,23 @@ function remindProductMinAmount() {
                             desc: 'เปิดฟอร์มการสั่งซื้อ',
                             func:
                             function() {
+                                // Get auto select prd_id
+                                var autoSelectPrdIds = Array();
+                                $('input[name="outOfStockPrdIds[]"]').each(function() {
+                                    autoSelectPrdIds.push($(this).val());
+                                });
+                                var addPrdAutoParams = autoSelectPrdIds.join(',');
+
+                                // Get more amount
+                                var getMoreAmounts = Array();
+                                $('input[name="getMoreAmounts[]"]').each(function() {
+                                    getMoreAmounts.push($(this).val());
+                                });
+                                var getMoreAmountParams = getMoreAmounts.join(',');
+
                                 $('#tn-orders').parent().parent().parent().find('.tree-view-root').click();
                                 $('#tn-orders').click();
-                                $('#add-record-btn').click();
+                                openFormTable('ADD', null, '&addPrdAuto='+addPrdAutoParams+'&getMoreAmount='+getMoreAmountParams);
                                 if($('#hideRemindProductMinAmount').prop('checked')) {
                                     hideRemindProductMinAmount();
                                 }
