@@ -710,6 +710,17 @@ function addEventSelectReferenceJSLi(select) {
  */
  function uploadImageInput(data) {
 	 var imgData = Array();
+     var txtDeleteImg = 'ลบ';
+     var txtChangeImg = 'เปลี่ยนรูปภาพ';
+     var txtChooseImg = 'เลือกรูปภาพ';
+
+     // Init text
+     if(data.txtDeleteImg) 
+        txtDeleteImg = data.txtDeleteImg;
+    if(data.txtChangeImg) 
+        txtChangeImg = data.txtChangeImg;
+    if(data.txtChooseImg) 
+        txtChooseImg = data.txtChooseImg;
 
      // Initial
     var inner   = '<div class="desc">'
@@ -717,9 +728,9 @@ function addEventSelectReferenceJSLi(select) {
                 + '     JPG, JPEG, PNG'
                 + '</div>'
                 + '<ul class="control">'
-                + '     <li class="clearImgBtn">ลบ</li>'
-                + '     <li class="editImgBtn">เปลี่ยนรูปภาพ</li>'
-                + '     <li class="chooseImgBtn">เลือกรูปภาพ</li>'
+                + '     <li class="clearImgBtn">'+txtDeleteImg+'</li>'
+                + '     <li class="editImgBtn">'+txtChangeImg+'</li>'
+                + '     <li class="chooseImgBtn">'+txtChooseImg+'</li>'
                 + '</ul>';
     $(data.area).html(inner);
 	 

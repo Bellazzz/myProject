@@ -49,7 +49,9 @@
           input: $('input[name="bkg_transfer_evidence"]'),
           selector: $('#bkg_transfer_evidence_file'),
           defaultValue: '{/literal}{if $bkgData.bkg_transfer_evidence}img/booking/{$bkgData.bkg_transfer_evidence}?rand={$randNum}{/if}{literal}',
-          fromRoot: true
+          fromRoot: true,
+          txtChooseImg: 'เพิ่มหลักฐานการโอนเงิน',
+          txtChangeImg: 'เปลี่ยนหลักฐานการโอนเงิน'
       });
     })
     </script>
