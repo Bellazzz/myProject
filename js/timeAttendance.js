@@ -144,12 +144,43 @@ function pullEmpData(empId){
 				timeatt_in 	= response.timeatt_in;
 				dateatt_out = response.dateatt_out;
 				timeatt_out = response.timeatt_out;
-				showClockInOutBox();
+				if(typeof(response.dateMiss) != 'undefinded') {
+					showClockInOutBox(response.dateMiss);
+				} else {
+					showClockInOutBox();
+				}
 				clearBarcodeInput();
 			}else if (response.status == 'FAIL'){
 				clearBarcodeInput();
-				focusBarcodeInput();
-				alert('ไม่พบพนักงานรหัสนี้');
+				showActionDialog({
+                    title: 'ไม่พบพนักงานรหัสนี้',
+                    message: 'จะปิดหน้านี้อัตโนมัติใน <span id="countDown">3</span> วินาที',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ปิด',
+                            func:
+                            function() {
+                                hideActionDialog();
+                                focusBarcodeInput();
+                            }
+                        }
+                    ],
+                    boxWidth: 400,
+                    success:
+                    function() {
+                    	var countDown = 2;
+                    	var myTimer = setInterval(function(){
+                    		$('#countDown').text(countDown);
+                    		countDown--;
+                    		if(countDown <0) {
+                    			clearInterval(myTimer);
+                    			hideActionDialog();
+                    			focusBarcodeInput();
+                    		}
+                    	}, 1000);
+                    }
+                });
 			}else{
 				alert(response.status);
 			}
@@ -157,7 +188,7 @@ function pullEmpData(empId){
 	});
 }
 
-function showClockInOutBox(){
+function showClockInOutBox(dateMiss){
 	var randNum 	= parseInt(Math.random()*1000); 
 	var msg 		= '';
 	var buttonTxt  	= '';
@@ -184,8 +215,13 @@ function showClockInOutBox(){
 						+ '							<span class="posName">ตำแหน่ง ' + pos_name + '</span>'
 						+ '						</div>'
 						+ '					</div>'
-						+ '				</div>'
-						+ '				' + msg
+						+ '				</div>';
+
+	if(typeof(dateMiss) != 'undefined') {
+		clockInOutHTML += '<div class="missEnter"><div class="missEnter-inner">คุณไม่ได้แสกนบัตรออกงาน<br>ในวันที่ ' + dateMiss + ' กรุณาติดต่อผู้ดูแลระบบ</div></div>'
+	}
+	
+	clockInOutHTML	   += '				' + msg
 						+ '				<span class="password-err-require password-err">กรุณาป้อนรหัสผ่าน</span>'
 						+ '				<span class="password-err-invalid password-err">รหัสผ่านที่คุณป้อนไม่ถูกต้อง โปรดลองอีกครั้ง</span>'
 						+ '				<input id="passInput" type="password" class="passInput"><br><br>'
