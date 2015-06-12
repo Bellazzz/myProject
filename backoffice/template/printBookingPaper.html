@@ -169,7 +169,9 @@
 <body>
 {/if}
 <center>
+	{if $spaData.spa_logo != ''}
 	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:100px; height:100px;" ><br>
+	{/if}
 	<span class="receipt-title">ใบแสดงข้อมูลการชำระเงินการจอง</span><br>
 	<span class="spa-name">{$spaData.spa_name}</span><p></p>
 	<span>วันเวลาที่ทำการจอง : {$bkgData.bkg_date_th} &nbsp; เวลา {$bkgData.bkg_time} น.</span><br><br>

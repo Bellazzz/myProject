@@ -383,7 +383,8 @@ function dbClose() {
 						'spa_tel'		=> 'เบอร์โทรศัพท์',
 						'spa_fax'		=> 'แฟ็กซ์',
 						'spa_logo'		=> 'รูปภาพ',
-						'spa_email'		=> 'E-mail'
+						'spa_email'		=> 'E-mail',
+						'spa_status'	=> 'สถานะ'
 				),
 				'hiddenFields'	=> array('spa_addr','spa_logo'),
 				'searchFields'	=> array('spa_name'),

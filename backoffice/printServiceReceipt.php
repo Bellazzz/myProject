@@ -14,20 +14,33 @@ $printImmediately = true;
 
 if(hasValue($ser_id)) {
 	// Get spa data
-	$spaRecord 	= new TableSpa('spa', 'SA01');
-	$spaData 	= array(
-		'spa_name' 	=> $spaRecord->getFieldValue('spa_name'),
-		'spa_addr' 	=> $spaRecord->getFieldValue('spa_addr'),
-		'spa_tel' 	=> $spaRecord->getFieldValue('spa_tel'),
-		'spa_fax' 	=> $spaRecord->getFieldValue('spa_fax'),
-		'spa_email' => $spaRecord->getFieldValue('spa_email'),
-		'spa_logo'  => $spaRecord->getFieldValue('spa_logo'),
-	);
-	// Check null
-	$spaData['spa_fax'] 	= $spaData['spa_fax'] 	== '' ? '-' : $spaData['spa_fax'];
-	$spaData['spa_email'] 	= $spaData['spa_email'] == '' ? '-' : $spaData['spa_email'];
-	$spaData['spa_logo'] 	= $spaData['spa_logo']  == '' ? ''  : $spaData['spa_logo'];
-
+	$sql = "SELECT 		spa_name,
+						spa_addr,
+						spa_tel,
+						spa_fax,
+						spa_email,
+						spa_logo 
+			FROM 		spa 
+			WHERE 		spa_status = 1 
+			ORDER BY 	spa_name 
+			LIMIT 1";
+	$result = mysql_query($sql);
+	$rows 	= mysql_num_rows($result);
+	if($rows > 0) {
+		$record = mysql_fetch_assoc($result);
+		$spaData 	= array(
+			'spa_name' 	=> $record['spa_name'],
+			'spa_addr' 	=> $record['spa_addr'],
+			'spa_tel' 	=> $record['spa_tel'],
+			'spa_fax' 	=> $record['spa_fax'],
+			'spa_email' => $record['spa_email'],
+			'spa_logo'  => $record['spa_logo']
+		);
+		// Check null
+		$spaData['spa_fax'] 	= $spaData['spa_fax'] 	== '' ? '-' : $spaData['spa_fax'];
+		$spaData['spa_email'] 	= $spaData['spa_email'] == '' ? '-' : $spaData['spa_email'];
+		$spaData['spa_logo'] 	= $spaData['spa_logo']  == '' ? ''  : $spaData['spa_logo'];
+	}
 	$smarty->assign('spaData', $spaData);
 
 	// Get services data

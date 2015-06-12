@@ -28,6 +28,10 @@
 				selector: $('#spa_logo_file'),
 				defaultValue: '{/literal}{if $values.spa_logo}../img/spa/{$values.spa_logo}?rand={$randNum}{/if}{literal}'
 			});
+			// Default value of radio input
+            if(action == 'EDIT') {
+                $('input[name="spa_status"][value="{/literal}{$values.spa_status}{literal}"]').click();
+            }
 		});
     </script>
     {/literal}
@@ -67,6 +71,16 @@
 			<tr>
 				<td>โทรสาร :</td>
 				<td>{$values.spa_fax}</td>
+			</tr>
+			<tr>
+				<td>สถานะ :</td>
+				<td>
+					{if $values.spa_status}
+					ใช้งานอยู่
+					{else}
+					ไม่ได้ใช้งาน
+					{/if}
+				</td>
 			</tr>
 		</tbody>
 	</table>
@@ -127,6 +141,18 @@
                     <span id="err-spa_email-email" class="errInputMsg err-spa_email">รูปแบบอีเมลไม่ถูกต้อง</span>
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">สถานะการใช้งาน</label>
+                    <label style="display: inline-block;">
+                        <input id="spa_status_show" type="radio" name="spa_status" value="1" checked> ใช้งาน
+                    </label> &nbsp;
+                    <label style="display: inline-block;">
+                        <input id="spa_status_unshow" type="radio" name="spa_status" value="0"> ไม่ใช้งาน
+                    </label>
+                    <br><br>
+                </td>
+            </tr>
 			<tr>
 				<td colspan="2">
 					<label>รูปภาพสปา</label>
@@ -134,6 +160,7 @@
 					<input type="hidden" name="spa_logo" value="{$values.spa_logo}">
 				</td>
 			</tr>
+			
 		</tbody>
 	</table>
 	

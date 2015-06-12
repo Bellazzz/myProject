@@ -496,7 +496,6 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if($tableRecord->insertSuccess()) {
 			$response['status'] = 'ADD_PASS';
-			// afterPass();
 			echo json_encode($response);
 		} else {
 			$response['status'] = 'ADD_FAIL';
@@ -521,26 +520,10 @@ if(!$_REQUEST['ajaxCall']) {
 		// Commit
 		if($tableRecord->commit()) {
 			$response['status'] = 'EDIT_PASS';
-			// afterPass();
 			echo json_encode($response);
 		} else {
 			$response['status'] = 'EDIT_FAIL';
 			echo json_encode($response);
-		}
-	}
-}
-function afterPass() {
-	global $dbConn, $tableName, $formData, $action, $tableRecord;
-
-	if($tableName == 'bank_accounts' && $formData['bnkacc_status'] == 1) {
-		$bnkacc_id = $tableRecord->getKey();
-		// Not active orthers
-		$sql = "UPDATE bank_accounts SET bnkacc_status = 0 WHERE bnkacc_id != '$bnkacc_id'";
-		if(!mysql_query($sql, $dbConn)) {
-			if($action == 'ADD')
-				$response['status'] = 'ADD_FAIL';
-			else if($action == 'EDIT') 
-				$response['status'] = 'EDIT_FAIL';
 		}
 	}
 }
