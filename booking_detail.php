@@ -106,6 +106,7 @@ $sql = "SELECT 		bnkacc_id,
 					bnkacc_no,
 					bnkacc_name 
 		FROM 		bank_accounts 
+		WHERE 		bnkacc_status = 1 
 		ORDER BY 	bnkacc_name";
 $result = mysql_query($sql, $dbConn);
 $rows 	= mysql_num_rows($result);

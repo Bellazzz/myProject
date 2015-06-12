@@ -215,7 +215,8 @@ function dbClose() {
 						'bnkacc_name'	=> 'ชื่อบัญชี',
 						'bnkacc_bank'	=> 'ชื่อธนาคาร',
 						'bnkacc_branch' => 'สาขา',
-						'bnkacc_type'	=> 'ประเภทบัญชี'
+						'bnkacc_type'	=> 'ประเภทบัญชี',
+						'bnkacc_status' => 'สถานะ'
 				),
 				'searchFields'	=> array('bnkacc_no','bnkacc_name','bnkacc_bank','bnkacc_type'),
 				'deleteTxtField'=> array('bnkacc_name')

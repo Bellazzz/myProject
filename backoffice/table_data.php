@@ -156,6 +156,21 @@ switch ($tableName) {
 				$order";
 		break;
 
+	case 'bank_accounts':
+		if(hasValue($like)) {
+			$where .= " WHERE $like";
+		}
+		$sql = "SELECT bnkacc_id,
+				bnkacc_no,
+				bnkacc_name,
+				bnkacc_branch,
+				bnkacc_type,
+				IF(bnkacc_status,'ใช้งานอยู่','ไม่ได้ใช้งาน') bnkacc_status 
+				FROM bank_accounts 
+				$where 
+				$order";
+		break;
+
 	case 'titles':
 		$where = 'LEFT JOIN sex s ON t.sex_id = s.sex_id ';
 		if(hasValue($like)) {

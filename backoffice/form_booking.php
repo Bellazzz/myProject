@@ -261,6 +261,7 @@ if(!$_REQUEST['ajaxCall']) {
 					$sqlRefData = "	SELECT 		bnkacc_id refValue,
 												bnkacc_name refText 
 									FROM 		bank_accounts 
+									WHERE 		bnkacc_status = 1  
 									ORDER BY 	refText ASC";
 					$refField 	= 'bnkacc_id';
 					break;
