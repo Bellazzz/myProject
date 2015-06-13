@@ -9,7 +9,7 @@ include('../common/common_header.php');
 
 $startDate 		= '';
 $endDate 		= '';
-$curEmp_id = '';
+$emp_ids = array();
 
 if(isset($_POST['submit'])) {
 	// Get input data
@@ -23,19 +23,17 @@ if(isset($_POST['submit'])) {
 		$smarty->assign('endDate', $endDate);
 		$smarty->assign('endDate_th', dateThaiFormat($endDate));
 	}
-	if(isset($_POST['curEmp_id'])) {
-		$curEmp_id = $_POST['curEmp_id'];
-		$smarty->assign('curEmp_id', $curEmp_id);
+	if(isset($_POST['emp_ids'])) {
+		$emp_ids = $_POST['emp_ids'];
 	}
 
-	// Find employee full name
-	$empRecord = new TableSpa('employees', $curEmp_id);
-	$smarty->assign('empFullName', $empRecord->getFieldValue('emp_name')." ".$empRecord->getFieldValue('emp_surname'));
-
-
 	// Query Report
+	$tmpEmp_ids = wrapSingleQuote($emp_ids);
 	$report = array();
-	$sql = "SELECT 		s.ser_date date, 
+	$sql = "SELECT 		e.emp_id, CONCAT(e.emp_name,' ',e.emp_surname) empFullName, a.* FROM 
+			(
+			SELECT 		sd.emp_id,
+						s.ser_date date, 
 						s.cus_id, 
 						c.custype_id,
 						CONCAT(c.cus_name, ' ', c.cus_surname) customer, 
@@ -55,11 +53,12 @@ if(isset($_POST['submit'])) {
 						ss.ser_id = s.ser_id AND 
 						sd.svl_id = svl.svl_id AND 
 						s.cus_id = c.cus_id AND 
-						sd.emp_id = '$curEmp_id' AND 
+						sd.emp_id IN (".implode(',', $tmpEmp_ids).") AND 
 						s.ser_date >= '$startDate' AND 
 						s.ser_date <= '$endDate'
 			UNION ALL 
-			SELECT 		s.ser_date date, 
+			SELECT 		pkgdtl.emp_id,
+						s.ser_date date, 
 						s.cus_id, 
 						c.custype_id,
 						CONCAT(c.cus_name, ' ', c.cus_surname) customer, 
@@ -83,10 +82,12 @@ if(isset($_POST['submit'])) {
 						sersvt.serpkg_id = serpkg.serpkg_id AND 
 						serpkg.ser_id = s.ser_id AND 
 						s.cus_id = c.cus_id AND 
-						pkgdtl.emp_id = '$curEmp_id' AND 
+						pkgdtl.emp_id IN (".implode(',', $tmpEmp_ids).") AND 
 						s.ser_date >= '$startDate' AND 
 						s.ser_date <= '$endDate' 
-			ORDER BY 	date, TIME";
+			) a 
+			JOIN employees e ON a.emp_id = e.emp_id 
+			ORDER BY 	empFullName, date, TIME";
 	$result = mysql_query($sql, $dbConn);
 	$rows   = mysql_num_rows($result);
 	if($rows > 0) {
@@ -124,26 +125,32 @@ if(isset($_POST['submit'])) {
 			$totalCom += $record['com'];
 
 			// set format
-			$record['com'] 			= number_format($record['com'],2);
-			$record['realPrice'] 	= number_format($record['realPrice'],2);
+			$record['txtCom'] 		= number_format($record['com'],2);
+			$record['txtRealPrice'] = number_format($record['realPrice'],2);
 			
 			array_push($report, $record);
 
 
-			if(!isset($countDate[$record['date']])) {
-				$countDate[$record['date']] = 0;
+			if(!isset($countDate[$record['emp_id']][$record['date']])) {
+				$countDate[$record['emp_id']][$record['date']] = 0;
 				$noDate++;
 			}
-			$countDate[$record['date']]++;
+			$countDate[$record['emp_id']][$record['date']]++;
 		}
 
+		$curEmp = '';
 		$curDate = '';
 		$curCus = '';
+		$subTotalRealPrice = 0;
+		$subTotalCom = 0;
 		foreach ($report as $key => $value) {
+			// rowspan date
 			if($curDate != $value['date']) {
-				$report[$key]['dateRowspan'] = $countDate[$value['date']];
+				$report[$key]['dateRowspan'] = $countDate[$value['emp_id']][$value['date']];
 				$curDate = $value['date'];
 			}
+
+			// rowspan customer
 			if($curCus != $value['customer']) {
 				$curCus = $value['customer'];
 				$i = $key;
@@ -155,7 +162,32 @@ if(isset($_POST['submit'])) {
 				if($cusRowSpan > 0)
 					$report[$key]['cusRowspan'] = $cusRowSpan;
 			}
+
+			// employee header
+			if($curEmp != $value['emp_id']) {
+				$report[$key]['empHeader'] = true;
+			}
+
+			// Cal sub total
+			if($key == 0 || $curEmp == $value['emp_id']) {
+				$subTotalRealPrice += $value['realPrice'];
+				$subTotalCom += $value['com'];
+			} else {
+				if(isset($report[$key-1])) {
+					$report[$key-1]['subTotalRealPrice'] = number_format($subTotalRealPrice,2);
+					$report[$key-1]['subTotalCom'] = number_format($subTotalCom,2);
+					$subTotalRealPrice = $value['realPrice'];
+					$subTotalCom = $value['com'];
+				}
+			}
+
+			$curEmp = $value['emp_id']; 
 		}
+
+		// Cal sub total last employee
+		$report[count($report)-1]['subTotalRealPrice'] = number_format($subTotalRealPrice,2);
+		$report[count($report)-1]['subTotalCom'] = number_format($subTotalCom,2);
+
 		$smarty->assign('report', $report);
 		$smarty->assign('totalRealPrice', number_format($totalRealPrice,2));
 		$smarty->assign('totalCom', number_format($totalCom,2));
@@ -286,6 +318,7 @@ function getSvlPrices($date, $custype_id) {
 	return $svlData;
 }
 
+$smarty->assign('emp_ids', $emp_ids);
 $smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>
