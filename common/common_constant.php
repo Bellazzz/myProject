@@ -613,9 +613,11 @@ function dbClose() {
 						'payroll_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
 						'payroll_overtime'		=> 'ค่าล่วงเวลา(บาท)',
 						'payroll_monthly'		=> 'ประจำเดือน-ปี',
-						'payroll_date'			=> 'วันที่จ่ายเงินเดือน'
+						'payroll_date'			=> 'วันที่จ่ายเงินเดือน',
+						'payroll_startdate'		=> 'วันที่เริ่มต้น',
+						'payroll_enddate'		=> 'วันที่สิ้นสุด'
 				),
-				'hiddenFields'	=> array('payroll_commission','payroll_overtime','emp_give_id'),
+				'hiddenFields'	=> array('payroll_commission','payroll_overtime','emp_give_id','payroll_startdate','payroll_enddate'),
 				'searchFields'	=> array('emp_id','payroll_monthly','payroll_salary'),
 				'deleteTxtField'	=> array('emp_id','payroll_monthly'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการจ่ายเงินเดือนของ %f1 ประจำเดือน %f2 ใช่หรือไม่?',
