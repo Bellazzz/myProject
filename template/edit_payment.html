@@ -23,6 +23,11 @@
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
     <script src="js/mbk_main.js"></script>
     <script src="js/spaMain.js"></script>
+    <style type="text/css">
+    .uploadImageArea.hasImage .editImgBtn {
+      display: none;
+    }
+    </style>
     <script type="text/javascript">
     $(document).ready(function() {
       $('#bkg_transfer_date').datetimepicker({
@@ -132,7 +137,7 @@
                         </div>
                       </div>
 
-                      <div class="col-xs-12" style="margin-bottom:20px;">
+                      <div class="col-xs-12" style="margin-bottom:10px;">
                         <div id="bkg_transfer_evidence" class="uploadImageArea full"></div>
                         <input type="hidden" name="bkg_transfer_evidence" value="{$bkgData.bkg_transfer_evidence}">
                       </div>
