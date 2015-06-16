@@ -126,6 +126,7 @@ if(hasValue($bkg_id)) {
 	$bnkaccData = array(
 		'bnkacc_no' 	=> $bnkaccRecord->getFieldValue('bnkacc_no'),
 		'bnkacc_name'	=> $bnkaccRecord->getFieldValue('bnkacc_name'),
+		'bnkacc_bank'	=> $bnkaccRecord->getFieldValue('bnkacc_bank'),
 		'bnkacc_branch'	=> $bnkaccRecord->getFieldValue('bnkacc_branch')
 	);
 	$smarty->assign('bnkaccData', $bnkaccData);
