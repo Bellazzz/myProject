@@ -20,6 +20,10 @@
             text-overflow: ellipsis;
             overflow: hidden;
         }
+        .prd_amount {
+            margin-top: 5px;
+            display: inline-block;
+        }
     </style>
     <script type="text/javascript">
         // Global variables
@@ -122,8 +126,7 @@
                     // Add product auto from remind min amount
                     for(i in addPrdAutoList) {
                         addProduct({
-                            autoSelectPrd : addPrdAutoList[i],
-                            getMoreAmount: getMoreAmountList[i]
+                            autoSelectPrd : addPrdAutoList[i]
                         });
                     }
                 }
@@ -295,6 +298,7 @@
             var randNum;
             var selectRefDefault = '';
             var unitName = '';
+            var prdAmount = '';
             do {
                 randNum     = parseInt(Math.random()*1000);
             } while($('#prd_id_' + randNum).length > 0);
@@ -303,13 +307,17 @@
             if(typeof(data.unit_name) != 'undefined' && data.unit_name != '') {
                 unitName = data.unit_name;
             }
+            if(typeof(data.prdAmount) != 'undefined' && data.prdAmount != '') {
+                prdAmount = data.prdAmount;
+            }
 
             // Create HTML and append
             var prdRowHTML  = '<tr class="product-row">'
                             + '     <td width="350px">'
                             + '         <div id="' + inputKeyId + '" class="selectReferenceJS form-input half" require style="width:350px;"></div>'
                             + '     </td>'
-                            + '     <td>';
+                            + '     <td align="right"><span class="prd_amount">' + prdAmount + '</span></td>'
+                            + '     <td style="padding-left:20px;">';
 
             // add input product amount
             if(data.defaultValue) {
@@ -364,6 +372,10 @@
                 function() {
                     $('input[name="' + inputKeyId + '"]').attr('name', 'prd_id[]');
                     setAllOrdPrd();
+
+                    if(data.autoSelectPrd) {
+                        pullUnitName(inputKeyId);
+                    }
                 },
                 group           : 'products'
             });
@@ -461,16 +473,20 @@
             
             if(typeof(prdID) != 'undefined' && prdID != '') {
                 var prdUnitName = $('#' + inputKeyId).parent().parent().find('.prd_unit_name');
+                var prdAmount = $('#' + inputKeyId).parent().parent().find('.prd_amount');
                 var unitName    = '';
+                var amount = '';
 
                 for(i in refPrdData) {
                     if(refPrdData[i].refValue == prdID) {
                         unitName = refPrdData[i].unit_name;
+                        amount = parseFloat(refPrdData[i].prd_amount).formatMoney(0, '', ',');
                         break;
                     }
                 }
 
                 prdUnitName.text(unitName);
+                prdAmount.text(amount);
             }
         }
 
@@ -782,11 +798,12 @@
 
     <label class="article-title">รายละเอียดการสั่งซื้อ</label>
     รายการผลิตภัณฑ์ทั้งหมด <span id="allOrdPrd"></span> รายการ<br><br>
-    <table id="order-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:600px;">
+    <table id="order-detail-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td><label class="input-required">ผลิตภัณฑ์</label></td>
-                <td><label class="input-required">จำนวน</label></td>
+                <td><label>คงเหลือ</label></td>
+                <td style="padding-left:20px;"><label class="input-required">จำนวน</label></td>
             </tr>
         </tbody>
     </table>
