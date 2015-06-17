@@ -17,7 +17,23 @@
 	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
     <script type="text/javascript" src="../js/jquery.table2excel.js"></script>
     <script type="text/javascript">
+    var refEmpData = {/literal}{$refEmpData|@json_encode}{literal};
+    var emp_ids = {/literal}{$emp_ids|@json_encode}{literal};
+
     $(document).ready(function() {
+        $('#addEmpBtn').click(function() {
+            addEmployee();
+        });
+
+        // Set default employee
+        if(emp_ids.length > 0) {
+            for(i in emp_ids) {
+                addEmployee(emp_ids[i]);
+            }
+        } else {
+            addEmployee();
+        }
+
         selectReferenceJS({
             elem            : $('#curEmp_id'),
             data            : {/literal}{$refEmpData|@json_encode}{literal},
@@ -107,6 +123,103 @@
             }
         });
     });
+
+    function addEmployee(defaultValue) {
+        var randNum;
+        var selectRefDefault = '';
+        if(typeof(defaultValue) != 'undefined') {
+            selectRefDefault = defaultValue;
+        }
+
+        do {
+            randNum     = parseInt(Math.random()*1000);
+        } while($('#emp_id_' + randNum).length > 0);
+        var inputKeyId  = 'emp_id_' + randNum;
+
+        // Create HTML and append
+        var empRowHTML  = '<tr class="emp-row">'
+                        + '     <td><div id="' + inputKeyId + '" class="selectReferenceJS form-input" require style="width:450px;"></div></td>'
+                        + '     <td style="padding-left:0;"><button class="removeEmpBtn button button-icon button-icon-delete" onclick="removeEmployee(\'' + randNum + '\')" style="margin-left:20px;" type="button">ลบ</button></td>'
+                        + '</tr>'
+                        + '<tr id="' + inputKeyId + '_errRow">'
+                        + '     <td>'
+                        + '         <span id="err-' + inputKeyId + '-require" class="errInputMsg err-' + inputKeyId + '">'
+                        + '             โปรดเลือกพนักงาน'
+                        + '         </span>'
+                        + '     </td>'
+                        + '</tr>';
+        $('#employee-table tbody').append(empRowHTML);
+
+        selectReferenceJS({
+            elem            : $('#' + inputKeyId),
+            data            : refEmpData,
+            searchTool      : true,
+            defaultValue    : selectRefDefault,
+            success         : 
+            function() {
+                $('input[name="' + inputKeyId + '"]').attr('name', 'emp_ids[]');
+            },
+            group           : 'employees'
+        });
+    }
+
+    function removeEmployee(randNum) {
+        if($('.removeEmpBtn').length > 1) {
+            var selectRef   = $('#emp_id_' + randNum);
+            var tr          = selectRef.parent().parent();
+            var txt         = selectRef.find('.selectReferenceJS-text').text();
+            var val         = selectRef.find('.selectReferenceJS-input').val();
+            var msg         = '';
+            if(val != '') {
+                msg = 'คุณต้องการลบพนักงาน ' + txt + ' ออกจากรายงานนี้ใช่หรือไม่?';
+            } else {
+                msg = 'คุณต้องการลบพนักงานที่เลือกออกจากรายงานนี้ใช่หรือไม่?';
+            }
+            parent.showActionDialog({
+                title: 'ลบพนักงาน',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: 'ลบพนักงานนี้ออกจากรายงาน',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            tr.remove();
+                            $('#emp_id_' + randNum + '_errRow').remove();
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'ยกเลิกการลบ',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        } else {
+            parent.showActionDialog({
+                title: 'ไม่สามารถลบพนักงานได้',
+                message: 'การออกรายงานต้องมีพนักงานอย่างน้อย 1 คนค่ะ',
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                        }
+                    }
+                ],
+                boxWidth: 400
+            });
+        }
+    }
     </script>
 	{/literal}
 </head>
@@ -139,15 +252,13 @@
             <br><br>
             
             <form method="post" action="report_commission.php" class="mbk-form-input-normal">
-                <table>
-                    <tr>
-                        <td colspan="2">พนักงาน</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <div id="curEmp_id" class="selectReferenceJS form-input full" require></div>
-                        </td>
-                    </tr>
+                <label class="article-title">พนักงานที่ต้องการออกรายงาน</label>
+                <table id="employee-table" class="mbk-form-input-normal" cellpadding="0" cellspacing="0" style="width:250px;margin-bottom:0;">
+                    <tbody>
+                    </tbody>
+                </table>
+                <button id="addEmpBtn" class="button button-icon button-icon-add" type="button">เพิ่มพนักงาน</button>
+                <table style="margin-top: 20px;">
                     <tr>
                         <td>เริ่มวันที่</td>
                         <td>สิ้นสุดวันที่</td>
@@ -205,21 +316,35 @@
                     </thead>
                     <tbody>
                         {foreach from=$report key=i item=c}
-                        <tr>
-                            {if $c.dateRowspan}
-                            <td rowspan="{$c.dateRowspan}" valign="top">{$c.dateTH}</td>
+                            {if $c.empHeader}
+                            <tr>
+                                <td colspan="9" style="font-weight:bold;">{$c.empFullName}</td>
+                            </tr>
                             {/if}
-                            {if $c.cusRowspan}
-                            <td rowspan="{$c.cusRowspan}" valign="top">{$c.customer}</td>
+                            <tr>
+                                {if $c.dateRowspan}
+                                <td rowspan="{$c.dateRowspan}" valign="top">{$c.dateTH}</td>
+                                {/if}
+                                {if $c.cusRowspan}
+                                <td rowspan="{$c.cusRowspan}" valign="top">{$c.customer}</td>
+                                {/if}
+                                <td>{$c.svl_name}</td>
+                                <td>{$c.time} น.</td>
+                                <td>{$c.timeEnd} น.</td>
+                                <td align="right">{$c.txtRealPrice}</td>
+                                <td align="right">{$c.comRate}%</td>
+                                <td align="right">{$c.devidePer}%</td>
+                                <td align="right">{$c.txtCom}</td>
+                            </tr>
+                            {if $c.subTotalRealPrice && $c.subTotalCom}
+                            <tr style="background:#f1f1f1;font-weight:bold;">
+                                <td colspan="5" align="right">รวม</td>
+                                <td align="right">{$c.subTotalRealPrice}</td>
+                                <td></td>
+                                <td></td>
+                                <td align="right">{$c.subTotalCom}</td>
+                            </tr>
                             {/if}
-                            <td>{$c.svl_name}</td>
-                            <td>{$c.time} น.</td>
-                            <td>{$c.timeEnd} น.</td>
-                            <td align="right">{$c.realPrice}</td>
-                            <td align="right">{$c.comRate}%</td>
-                            <td align="right">{$c.devidePer}%</td>
-                            <td align="right">{$c.com}</td>
-                        </tr>
                         {/foreach}
                     </tbody>
                     <tfoot>

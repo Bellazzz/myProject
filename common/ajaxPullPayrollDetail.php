@@ -8,9 +8,12 @@ $response = array(
 	'sumOvertime' => 0
 );
 
-if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
+if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly']) 
+	&& hasValue($_POST['payroll_startdate']) && hasValue($_POST['payroll_enddate'])) {
 	$emp_id = $_POST['emp_id'];
 	$payroll_monthly = $_POST['payroll_monthly'];
+	$payroll_startdate = $_POST['payroll_startdate'];
+	$payroll_enddate = $_POST['payroll_enddate'];
 	$monthly = str_replace('/','-', substr($payroll_monthly, 0, 7));
 
 	// Find employee salary
@@ -35,7 +38,8 @@ if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
 			WHERE 		pkgdtl.sersvt_id = st.sersvt_id AND 
 						st.serpkg_id = sp.serpkg_id AND 
 						sp.ser_id = s.ser_id AND 
-						ser_date like '$monthly%' AND 
+						s.ser_date >= '$payroll_startdate' AND 
+						s.ser_date <= '$payroll_enddate' AND 
 						pkgdtl.emp_id = '$emp_id'";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
@@ -53,7 +57,8 @@ if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
 						services s 
 			WHERE 		sd.sersvl_id = ss.sersvl_id AND 
 						ss.ser_id = s.ser_id AND 
-						ser_date like '$monthly%' AND 
+						s.ser_date >= '$payroll_startdate' AND 
+						s.ser_date <= '$payroll_enddate' AND 
 						sd.emp_id = '$emp_id'";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
@@ -100,7 +105,8 @@ if(hasValue($_POST['emp_id']) && hasValue($_POST['payroll_monthly'])) {
 							SUBSTRING(timeatt_out,1,5) timeatt_out 
 				FROM 		time_attendances 
 				WHERE 		emp_id = '$emp_id' AND 
-							dateatt_in like '$monthly%'";
+							dateatt_in >= '$payroll_startdate' AND 
+							dateatt_in <= '$payroll_enddate'";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {

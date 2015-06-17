@@ -163,7 +163,7 @@
 	<h2 id="spa_name_1" class="spa_name">{$spaData.spa_name}</h2>
 	<p id="spa_contact_1">
 		{$spaData.spa_addr}<br>
-		โทรศัพท์ : {$spaData.spa_tel} โทรสาร : {$spaData.spa_fax} อีเมล : {$spaData.spa_email}
+		โทรศัพท์ : {$spaData.spa_tel} {if $spaData.spa_fax != '-'}โทรสาร : {$spaData.spa_fax}{/if} {if $spaData.spa_email != '-'}อีเมล : {$spaData.spa_email}{/if}
 	</p>
 	<h2 id="purchaseTxt_1" class="purchaseTxt">ใบสั่งซื้อผลิตภัณฑ์</h2>
 	<div id="ordDataTable_1" class="order-data-table-container clearfix">

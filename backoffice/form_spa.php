@@ -118,6 +118,7 @@ if(!$_REQUEST['ajaxCall']) {
 		$tableRecord = new TableSpa($tableName, $values['fieldName'], $values['fieldValue']);
 		if($tableRecord->insertSuccess()) {
 			$response['status'] = 'ADD_PASS';
+			afterPass();
 			echo json_encode($response);
 		} else {
 			$response['status'] = 'ADD_FAIL';
@@ -165,10 +166,26 @@ if(!$_REQUEST['ajaxCall']) {
 		// Commit
 		if($tableRecord->commit()) {
 			$response['status'] = 'EDIT_PASS';
+			afterPass();
 			echo json_encode($response);
 		} else {
 			$response['status'] = 'EDIT_FAIL';
 			echo json_encode($response);
+		}
+	}
+}
+function afterPass() {
+	global $dbConn, $tableName, $formData, $action, $tableRecord;
+
+	if($tableName == 'spa' && $formData['spa_status'] == 1) {
+		$spa_id = $tableRecord->getKey();
+		// Not active orthers
+		$sql = "UPDATE spa SET spa_status = 0 WHERE spa_id != '$spa_id'";
+		if(!mysql_query($sql, $dbConn)) {
+			if($action == 'ADD')
+				$response['status'] = 'ADD_FAIL';
+			else if($action == 'EDIT') 
+				$response['status'] = 'EDIT_FAIL';
 		}
 	}
 }

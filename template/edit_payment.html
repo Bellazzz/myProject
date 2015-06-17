@@ -23,6 +23,11 @@
     <script src="inc/Flat-UI-master/docs/assets/js/application.js"></script>
     <script src="js/mbk_main.js"></script>
     <script src="js/spaMain.js"></script>
+    <style type="text/css">
+    .uploadImageArea.hasImage .editImgBtn {
+      display: none;
+    }
+    </style>
     <script type="text/javascript">
     $(document).ready(function() {
       $('#bkg_transfer_date').datetimepicker({
@@ -68,14 +73,14 @@
                   <li><a href="myaccount.php">บัญชีของฉัน</a></li>
                   <li><a href="booking_history.php">ประวัติการจอง</a></li>
                   <li><a href="booking_detail.php?bkg_id={$bkgData.bkg_id}">{$bkgData.bkg_id}</a></li>
-                  <li class="active">แก้ไขข้อมูลการชำระเงิน</li>
+                  <li class="active">ป้อนข้อมูลการชำระเงิน</li>
                </ul>
           </div>
         </div>
 
         <div class="row">
             <div class="col-lg-8">
-              <h1 class="section-title-inner"><span><i class="fa fa-list-alt"></i> แก้ไขข้อมูลการชำระเงิน </span></h1>
+              <h1 class="section-title-inner"><span><i class="fa fa-list-alt"></i> ป้อนข้อมูลการชำระเงิน </span></h1>
                   {if !$editError}
                   <div class="col-lg-12">
                     <h2 class="block-title-2"> ข้อมูลการชำระเงิน  </h2>
@@ -132,7 +137,7 @@
                         </div>
                       </div>
 
-                      <div class="col-xs-12" style="margin-bottom:20px;">
+                      <div class="col-xs-12" style="margin-bottom:10px;">
                         <div id="bkg_transfer_evidence" class="uploadImageArea full"></div>
                         <input type="hidden" name="bkg_transfer_evidence" value="{$bkgData.bkg_transfer_evidence}">
                       </div>

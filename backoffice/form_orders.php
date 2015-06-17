@@ -114,7 +114,8 @@ if(!$_REQUEST['ajaxCall']) {
 				case 'products':
 					$sqlRefData = "	SELECT 		prd_id refValue,
 												prd_name refText,
-												unit_name  
+												unit_name,
+												prd_amount   
 									FROM 		products p, units u 
 									WHERE 		p.unit_id = u.unit_id AND 
 												p.prd_amount IS NOT NULL 

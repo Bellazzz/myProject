@@ -52,6 +52,27 @@ if($rows > 0){
 		$response['timeatt_out'] 	= $record['timeatt_out'];
 	}
 
+	// Get yesterday time attendance
+	$yesterday = date('Y-m-d', strtotime('-1 days'));
+	$sql = "SELECT 	dateatt_in,
+					timeatt_in,
+					dateatt_out,
+					timeatt_out 
+			FROM 	time_attendances 
+			WHERE 	emp_id = '$emp_id' AND 
+					dateatt_in = '$yesterday' AND 
+					(
+						dateatt_out IS NULL OR 
+						timeatt_out IS NULL
+					)";
+	$result = mysql_query($sql, $dbConn);
+	$rows   = mysql_num_rows($result);
+	echo mysql_error($dbConn);
+	if($rows > 0) {
+		$record = mysql_fetch_assoc($result);
+		$response['dateMiss'] 	= dateThaiFormat($record['dateatt_in']);
+	}
+
 	echo json_encode($response);
 } else{
 	$response['status']   		= 'FAIL';

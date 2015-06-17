@@ -84,7 +84,9 @@
 <body>
 {/if}
 <center>
+	{if $spaData.spa_logo != ''}
 	<img src="../img/spa/{$spaData.spa_logo}?randNum={$randNum}" style="width:100px; height:100px;" ><br>
+	{/if}
 	<span class="receipt-title">ใบเสร็จรับเงิน</span><br>
 	<span class="spa-name">{$spaData.spa_name}</span><p></p>
 	<span id="ser_date_th"></span><br><br>

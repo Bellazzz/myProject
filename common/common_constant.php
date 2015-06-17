@@ -215,7 +215,8 @@ function dbClose() {
 						'bnkacc_name'	=> 'ชื่อบัญชี',
 						'bnkacc_bank'	=> 'ชื่อธนาคาร',
 						'bnkacc_branch' => 'สาขา',
-						'bnkacc_type'	=> 'ประเภทบัญชี'
+						'bnkacc_type'	=> 'ประเภทบัญชี',
+						'bnkacc_status' => 'สถานะ'
 				),
 				'searchFields'	=> array('bnkacc_no','bnkacc_name','bnkacc_bank','bnkacc_type'),
 				'deleteTxtField'=> array('bnkacc_name')
@@ -382,7 +383,8 @@ function dbClose() {
 						'spa_tel'		=> 'เบอร์โทรศัพท์',
 						'spa_fax'		=> 'แฟ็กซ์',
 						'spa_logo'		=> 'รูปภาพ',
-						'spa_email'		=> 'E-mail'
+						'spa_email'		=> 'E-mail',
+						'spa_status'	=> 'สถานะ'
 				),
 				'hiddenFields'	=> array('spa_addr','spa_logo'),
 				'searchFields'	=> array('spa_name'),
@@ -611,9 +613,11 @@ function dbClose() {
 						'payroll_commission'	=> 'ค่าคอมมิชชั่น(บาท)',
 						'payroll_overtime'		=> 'ค่าล่วงเวลา(บาท)',
 						'payroll_monthly'		=> 'ประจำเดือน-ปี',
-						'payroll_date'			=> 'วันที่จ่ายเงินเดือน'
+						'payroll_date'			=> 'วันที่จ่ายเงินเดือน',
+						'payroll_startdate'		=> 'วันที่เริ่มต้น',
+						'payroll_enddate'		=> 'วันที่สิ้นสุด'
 				),
-				'hiddenFields'	=> array('payroll_commission','payroll_overtime','emp_give_id'),
+				'hiddenFields'	=> array('payroll_commission','payroll_overtime','emp_give_id','payroll_startdate','payroll_enddate'),
 				'searchFields'	=> array('emp_id','payroll_monthly','payroll_salary'),
 				'deleteTxtField'	=> array('emp_id','payroll_monthly'),
 				'deleteTxtPatternMain' 	=> 'คุณต้องการลบการจ่ายเงินเดือนของ %f1 ประจำเดือน %f2 ใช่หรือไม่?',

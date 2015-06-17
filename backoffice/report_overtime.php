@@ -9,7 +9,7 @@ include('../common/common_header.php');
 
 $startDate 		= '';
 $endDate 		= '';
-$curEmp_id = '';
+$emp_ids = array();
 
 if(isset($_POST['submit'])) {
 	// Get input data
@@ -23,25 +23,23 @@ if(isset($_POST['submit'])) {
 		$smarty->assign('endDate', $endDate);
 		$smarty->assign('endDate_th', dateThaiFormat($endDate));
 	}
-	if(isset($_POST['curEmp_id'])) {
-		$curEmp_id = $_POST['curEmp_id'];
-		$smarty->assign('curEmp_id', $curEmp_id);
+	if(isset($_POST['emp_ids'])) {
+		$emp_ids = $_POST['emp_ids'];
 	}
 
-	// Find employee full name
-	$empRecord = new TableSpa('employees', $curEmp_id);
-	$smarty->assign('empFullName', $empRecord->getFieldValue('emp_name')." ".$empRecord->getFieldValue('emp_surname'));
-
 	// Get work time
+	$tmpEmp_ids = wrapSingleQuote($emp_ids);
 	$sumOvertime = 0;
 	$sumHours = 0;
 	$report = array();
-	$otr_otstarttime_daywork = '';
-	$otr_otendtime_daywork = '';
-	$otr_otstarttime_dayoff = '';
-	$otr_otendtime_dayoff = '';
+	$otr_otstarttime_daywork = array();
+	$otr_otendtime_daywork = array();
+	$otr_otstarttime_dayoff = array();
+	$otr_otendtime_dayoff = array();
+	$otRateData = array();
 	$otr_bath_per_hour = null;
-	$sql = "SELECT 		SUBSTRING(ot.otr_otstarttime_daywork,1,5) otr_otstarttime_daywork,
+	$sql = "SELECT 		e.emp_id,
+						SUBSTRING(ot.otr_otstarttime_daywork,1,5) otr_otstarttime_daywork,
 						SUBSTRING(ot.otr_otendtime_daywork,1,5) otr_otendtime_daywork,
 						SUBSTRING(ot.otr_otstarttime_dayoff,1,5) otr_otstarttime_dayoff,
 						SUBSTRING(ot.otr_otendtime_dayoff,1,5) otr_otendtime_dayoff,
@@ -51,33 +49,48 @@ if(isset($_POST['submit'])) {
 						overtime_rates ot 
 			WHERE 		e.pos_id = p.pos_id AND 
 						p.otr_id = ot.otr_id AND  
-						e.emp_id = '$curEmp_id'";
+						e.emp_id IN (".implode(',', $tmpEmp_ids).")";
 	$result = mysql_query($sql, $dbConn);
 	$rows 	= mysql_num_rows($result);
 	if($rows > 0) {
-		$record = mysql_fetch_assoc($result);
-		$otr_otstarttime_daywork 	= $record['otr_otstarttime_daywork'];
-		$otr_otendtime_daywork 		= $record['otr_otendtime_daywork'];
-		$otr_otstarttime_dayoff 	= $record['otr_otstarttime_dayoff'];
-		$otr_otendtime_dayoff 		= $record['otr_otendtime_dayoff'];
-		$otr_bath_per_hour 			= $record['otr_bath_per_hour'];
-
+		for($i=0; $i<$rows; $i++) {
+			$record = mysql_fetch_assoc($result);
+			$otRateData[$record['emp_id']] = array(
+				'daywork_starttime' => $record['otr_otstarttime_daywork'],
+				'daywork_endtime' 	=> $record['otr_otendtime_daywork'],
+				'dayoff_starttime' 	=> $record['otr_otstarttime_dayoff'],
+				'dayoff_endtime' 	=> $record['otr_otendtime_dayoff'],
+				'bath_per_hour' 	=> $record['otr_bath_per_hour']
+			);
+		}
 	}
 
 	// Find overtime
-	if($otr_bath_per_hour != null) {
-		$sql = "SELECT 		dateatt_in,
-							SUBSTRING(timeatt_in,1,5) timeatt_in,
-							SUBSTRING(timeatt_out,1,5) timeatt_out 
-				FROM 		time_attendances 
-				WHERE 		emp_id = '$curEmp_id' AND 
-							dateatt_in >= '$startDate' AND 
-							dateatt_in <= '$endDate'";
+	if(count($otRateData) > 0) {
+		$sql = "SELECT 		e.emp_id,
+							CONCAT(e.emp_name, ' ', e.emp_surname) empFullName,
+							t.dateatt_in,
+							SUBSTRING(t.timeatt_in,1,5) timeatt_in,
+							SUBSTRING(t.timeatt_out,1,5) timeatt_out 
+				FROM 		time_attendances t 
+							JOIN employees e 
+							ON t.emp_id = e.emp_id 
+				WHERE 		t.emp_id IN (".implode(',', $tmpEmp_ids).") AND 
+							t.dateatt_in >= '$startDate' AND 
+							t.dateatt_in <= '$endDate' 
+				ORDER BY 	empFullName, t.dateatt_in";
 		$result = mysql_query($sql, $dbConn);
 		$rows 	= mysql_num_rows($result);
 		if($rows > 0) {
 			for($i=0; $i<$rows; $i++) {
 				$record = mysql_fetch_assoc($result);
+				$emp_id = $record['emp_id'];
+				$otr_otstarttime_daywork = $otRateData[$emp_id]['daywork_starttime'];
+				$otr_otendtime_daywork = $otRateData[$emp_id]['daywork_endtime'];
+				$otr_otstarttime_dayoff = $otRateData[$emp_id]['dayoff_starttime'];
+				$otr_otendtime_dayoff = $otRateData[$emp_id]['dayoff_endtime'];
+				$otr_bath_per_hour = $otRateData[$emp_id]['bath_per_hour'];
+
 				$minAttTimeIn = toMin($record['timeatt_in']);
 				$minAttTimeOut = toMin($record['timeatt_out']); // 867
 				$curDay = getSpaCurrentDay($record['dateatt_in']);
@@ -106,19 +119,53 @@ if(isset($_POST['submit'])) {
 				// Push to report array
 				if($differ > 0) {
 					array_push($report, array(
+						'emp_id'		=> $record['emp_id'],
+						'empFullName'	=> $record['empFullName'],
 						'dateatt_in' 	=> dateThaiFormat($record['dateatt_in']),
 						'timeatt_in' 	=> $record['timeatt_in'].' น.',
 						'timeatt_out' 	=> $record['timeatt_out'].' น.',
+						'hours' 		=> $differ,
 						'hours_ot'		=> $differ.' ชั่วโมง',
 						'ot_rate'		=> $otr_bath_per_hour,
-						'ot_bath'		=> number_format($differ * $otr_bath_per_hour,2) 
+						'ot_bath'		=> $differ * $otr_bath_per_hour,
+						'ot_bath_txt'	=> number_format($differ * $otr_bath_per_hour,2)
 					));
 				}
+			} // end for
+
+			$curEmp = '';
+			$subTotalHours = 0;
+			$subTotalOvertime = 0;
+			foreach ($report as $key => $value) {
+				// employee header
+				if($curEmp != $value['emp_id']) {
+					$report[$key]['empHeader'] = true;
+				}
+
+				// Cal sub total
+				if($key == 0 || $curEmp == $value['emp_id']) {
+					$subTotalHours += $value['hours'];
+					$subTotalOvertime += $value['ot_bath'];
+				} else {
+					if(isset($report[$key-1])) {
+						$report[$key-1]['subTotalHours'] = $subTotalHours;
+						$report[$key-1]['subTotalOvertime'] = number_format($subTotalOvertime,2);
+						$subTotalHours = $value['hours'];
+						$subTotalOvertime = $value['ot_bath'];
+					}
+				}
+
+				$curEmp = $value['emp_id']; 
 			}
+
+			// Cal sub total last employee
+			$report[count($report)-1]['subTotalHours'] = $subTotalHours;
+			$report[count($report)-1]['subTotalOvertime'] = number_format($subTotalOvertime,2);
+
 			$smarty->assign('report', $report);
 			$smarty->assign('sumOvertime', number_format($sumOvertime,2));
 			$smarty->assign('sumHours', number_format($sumHours, 0).' ชั่วโมง');
-		} // end for
+		} // end if
 	}
 }
 
@@ -145,6 +192,7 @@ function toMin($time) {
 	return $min;
 }
 
+$smarty->assign('emp_ids', $emp_ids);
 $smarty->assign('tplName', $tplName);
 include('../common/common_footer.php');
 ?>

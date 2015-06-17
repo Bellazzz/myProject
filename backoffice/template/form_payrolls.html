@@ -154,6 +154,144 @@
                 timepicker:false
             });
 
+            $('#payroll_startdate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#payroll_startdate').blur();
+                },
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:$('#payroll_enddate').val()?unconvertThaiDate($('#payroll_enddate').val()):'{/literal}{$nowDateTmp}{literal}'
+                    })
+                },
+                timepicker:false
+            });
+
+            $('#payroll_enddate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#payroll_enddate').blur();
+                },
+                onShow:function( ct ){
+                    this.setOptions({
+                        minDate:$('#payroll_startdate').val()?unconvertThaiDate($('#payroll_startdate').val()):false,
+                        maxDate:'{/literal}{$nowDateTmp}{literal}'
+                    })
+                },
+                timepicker:false
+            });
+
+            // Check date
+            $('#payroll_startdate').change(function(){
+                checkDate($(this), $('#payroll_enddate'));
+                setTimeout(function() {
+                    changeEmpId();
+                },10);
+            });
+            $('#payroll_enddate').change(function() {
+                checkDate($(this), $('#payroll_startdate'));
+                setTimeout(function() {
+                    changeEmpId();
+                },10);
+            });
+
+            function checkDate(self, sibling) {
+                // Skip check
+                if(self.val() == '' || isDateThaiFormat(self.val())) {
+                    return;
+                }
+
+                var selfDate        = new Date(self.val());
+                var siblingDate     = new Date(unconvertThaiDate(sibling.val()));
+                var nowDate         = new Date(realDateToTmpDate('{/literal}{$nowDate}{literal}'));
+                var selfId          = self.attr('id');
+
+                // Check sibling
+                if(sibling.val() != '') {
+                    if(selfId == 'payroll_startdate') {
+                        if(selfDate.getTime() > siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    } else if(selfId == 'payroll_enddate') {
+                        if(selfDate.getTime() < siblingDate.getTime()) {
+                            showAlertInvalidDate(self, 'overSibling');
+                            return;
+                        }
+                    }
+                }
+
+                if(action == 'ADD') {
+                    // Check now date
+                    if(selfId == 'payroll_startdate') {
+                        if(selfDate.getTime() > nowDate.getTime()) {
+                            showAlertInvalidDate(self, 'moreThanNow')
+                        }
+                    } else if(selfId == 'payroll_enddate') {
+                        if(selfDate.getTime() > nowDate.getTime()) {
+                            showAlertInvalidDate(self, 'moreThanNow')
+                        }
+                    }
+                }
+            }
+            function showAlertInvalidDate(self, errType) {
+                var titleTxt    = '';
+                var messageTxt  = '';
+                var descTxt     = '';
+                var selfId      = self.attr('id');
+
+                if(selfId == 'payroll_startdate') {
+                    titleTxt    = 'วันที่เริ่มต้นไม่ถูกต้อง';
+                    descTxt     = 'ป้อนวันที่เริ่มต้นใหม่';
+                    if(errType == 'overSibling') {
+                        messageTxt  = 'วันที่เริ่มต้นไม่สามารถอยู่หลังวันที่สิ้นสุดได้ค่ะ';
+                    } else if(errType == 'moreThanNow') {
+                        messageTxt  = 'ไม่สามารถป้อนวันที่เริ่มต้นล่วงหน้าได้ค่ะ';
+                    }
+                } else if(selfId == 'payroll_enddate') {
+                    titleTxt    = 'วันที่สิ้นสุดไม่ถูกต้อง';
+                    descTxt     = 'ป้อนวันที่สิ้นสุดใหม่';
+                    if(errType == 'overSibling') {
+                        messageTxt  = 'วันที่สิ้นสุดไม่สามารถอยู่ก่อนหน้าวันที่เริ่มต้นได้ค่ะ';
+                    } else if(errType == 'moreThanNow') {
+                        messageTxt  = 'ไม่สามารถป้อนวันที่สิ้นสุดล่วงหน้าได้ค่ะ';
+                    }
+                }
+
+                if(parent.$('.action-dialog-container').length <= 0) {
+                    parent.showActionDialog({
+                        title: titleTxt,
+                        message: messageTxt,
+                        actionList: [
+                            {
+                                id: 'ok',
+                                name: 'ตกลง',
+                                desc: descTxt,
+                                func:
+                                function() {
+                                    parent.hideActionDialog();
+                                    self.val('');
+                                    self.focus();
+                                }
+                            }
+                        ],
+                        boxWidth: 400
+                    });
+                }
+            }
+
             if(action == "EDIT") {
                 pullEmpId();
 
@@ -252,10 +390,11 @@
         }
 
         function changeEmpId(success) {
-            $('.payrollDetail').css('display', 'none');
-            $('.pullPayrollDtl-loader').css('display', 'inline');
-            pullPayrollDetail();
-             
+            if($('#payroll_startdate').val() != '' && $('#payroll_enddate').val() != '' && $('input[name="emp_id"]').val() != '') {
+                $('.payrollDetail').css('display', 'none');
+                $('.pullPayrollDtl-loader').css('display', 'inline');
+                pullPayrollDetail();
+            }
         }
 
         function pullPayrollDetail(success) {
@@ -264,7 +403,9 @@
                 type: 'POST',
                 data: {
                     emp_id: $('input[name="emp_id"]').val(),
-                    payroll_monthly: $('#payroll_monthly').val()
+                    payroll_monthly: $('#payroll_monthly').val(),
+                    payroll_startdate: getRealDate($('#payroll_startdate').val()),
+                    payroll_enddate: getRealDate($('#payroll_enddate').val())
                 },
                 success:
                 function(responseJSON) {
@@ -435,7 +576,7 @@
     {else}
     <!-- ADD, EDIT -->        
     <form id="form-table" name="form-table" onsubmit="return false;">
-	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date,payroll_commission,payroll_overtime">
+	<input type="hidden" name="requiredFields" value="emp_id,payroll_salary,payroll_monthly,payroll_date,payroll_commission,payroll_overtime,payroll_startdate,payroll_enddate">
     <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
 	    <tbody>
             <tr {if !$session_emp_admin}style="display:none;"{/if}>
@@ -477,6 +618,26 @@
                 </td>
                 <td>
                     <span id="err-payroll_month-require" class="errInputMsg half err-payroll_month">โปรดป้อนเดือน</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="input-required">วันที่เริ่มต้น</label>
+                    <input id="payroll_startdate" name="payroll_startdate" type="text" class="mbk-dtp-th form-input half" value="{if $values.payroll_startdate}{$values.payroll_startdate}{/if}" require>
+
+                </td>
+                <td>
+                    <label class="input-required">วันที่สิ้นสุด</label>
+                    <input id="payroll_enddate" name="payroll_enddate" type="text" class="mbk-dtp-th form-input half" value="{if $values.payroll_enddate}{$values.payroll_enddate}{else}{$nowDate}{/if}" require>
+
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-payroll_startdate-require" class="errInputMsg half err-payroll_startdate">โปรดป้อนวันที่เริ่มต้น</span>
+                </td>
+                <td>
+                    <span id="err-payroll_enddate-require" class="errInputMsg half err-payroll_enddate">โปรดป้อนวันที่สิ้นสุด</span>
                 </td>
             </tr>
 			<tr>
