@@ -82,6 +82,25 @@ function dbClose() {
 			);
 			break;
 
+		case 'website_banners':
+			return array(
+				'tableNameTH'	=> 'แบนเนอร์เว็บไซต์',
+				'keyFieldName'  => 'wsb_id',
+				'keyFieldType'	=> 2,
+				'keyChar'		=> 'WB',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+					'wsb_id'		=> 'รหัสแบนเนอร์เว็บไซต์',
+					'wsb_picture'	=> 'รูปภาพแบนเนอร์เว็บไซต์',
+					'wsb_order'		=> 'ลำดับ',
+					'wsb_active'	=> 'สถานะ'
+				),
+				'hiddenFields'	=> array('wsb_active'),
+				'defaultNull' 	=> array('wsb_order'),
+				'deleteTxtField'	=> array('wsb_id')
+			);
+			break;
+
 		case 'withdraw_types':
 			return array(
 				'tableNameTH'	=> 'ประเภทการเบิก',

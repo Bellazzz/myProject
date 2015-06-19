@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <title>avertising - Backoffice</title>
+    <meta charset="UTF-8"/>
+    {literal}
+    <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> 
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> 
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+        var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_website_banners.php';
+        var maxOrder   = {/literal}{$maxOrder}{literal};
+        var thisOrder = '{/literal}{$values.wsb_order}{literal}';
+
+        $(document).ready(function() {
+            // Default value of radio input
+            if(action == 'EDIT') {
+                $('input[name="wsb_active"][value="{/literal}{$values.wsb_active}{literal}"]').click();
+            }
+            uploadImageInput({
+                area: $('#wsb_picture'),
+                input: $('input[name="wsb_picture"]'),
+                selector: $('#wsb_picture_file'),
+                defaultValue: '{/literal}{if $values.wsb_picture}../img/website_banners/{$values.wsb_picture}?rand={$randNum}{/if}{literal}'
+            });
+
+            $('#wsb_active_show').click(function() {
+                $('#wsb_order').attr('require', true);
+                $('#wsb_order_label').addClass('input-required');
+                $('#wsb_order').removeAttr('readonly');
+                $('#wsb_order').removeClass('readonly');
+            });
+
+             $('#wsb_active_unshow').click(function() {
+                $('#wsb_order').removeAttr('require');
+                $('#wsb_order').removeClass('required');
+                $('.err-wsb_order').css('display','none');
+                $('#wsb_order_label').removeClass('input-required');
+                $('#wsb_order').attr('readonly', true);
+                $('#wsb_order').addClass('readonly');
+                $('#wsb_order').val('');
+            });
+
+            {/literal}{if $action == 'EDIT' && !$values.wsb_order}{literal}
+            $('#wsb_active_unshow').click();
+            {/literal}{/if}{literal}
+        });
+
+        function beforeSaveRecord() {
+            var returnVal  = true;
+            var maxForCheck = maxOrder;
+            if(action == 'ADD') {
+                maxForCheck++;
+            }
+
+            if($('#wsb_order').val() != '' && parseInt($('#wsb_order').val()) > maxForCheck) {
+                parent.showActionDialog({
+                    title: 'ลำดับไม่ถูกต้อง',
+                    message: 'คุณป้อนลำดับเกินจำนวนที่มีอยู่ คุณต้องการที่จะ?',
+                    actionList: [
+                        {
+                            id: 'first',
+                            name: 'ตั้งรูปนี้เป็นรูปภาพแรก',
+                            func:
+                            function() {
+                                $('#wsb_order').val(1);
+                                parent.hideActionDialog();
+                                if(action == 'ADD') {
+                                    saveRecord();
+                                } else if(action == 'EDIT') {
+                                    confirmSaveRecord();
+                                }
+                            }
+                        },
+                        {
+                            id: 'last',
+                            name: 'ตั้งรูปนี้เป็นรูปสุดท้าย',
+                            func:
+                            function() {
+                                $('#wsb_order').val(maxForCheck);
+                                parent.hideActionDialog();
+                                if(action == 'ADD') {
+                                    saveRecord();
+                                } else if(action == 'EDIT') {
+                                    confirmSaveRecord();
+                                }
+                            }
+                        },
+                        {
+                            id: 'manual',
+                            name: 'กำหนดลำดับเอง',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                $('#wsb_order').val('');
+                                $('#wsb_order').focus();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            } else if($('#wsb_order').val() != thisOrder && $('#wsb_order').val() != '' && parseInt($('#wsb_order').val()) > 1 && parseInt($('#wsb_order').val()) <= maxOrder) {
+                parent.showActionDialog({
+                    title: 'แทนที่ลำดับที่มีอยู่',
+                    message: 'รูปภาพลำดับที่ ' + $('#wsb_order').val() + ' มีอยู่แล้วคุณต้องการแทนที่ด้วยรูปภาพนี้ใช่หรือไม่?',
+                    actionList: [
+                        {
+                            id: 'ok',
+                            name: 'ตกลง',
+                            desc: 'ลำดับจะเปลี่ยนแปลงอัตโนมัติ',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                if(action == 'ADD') {
+                                    saveRecord();
+                                } else if(action == 'EDIT') {
+                                    confirmSaveRecord();
+                                }
+                            }
+                        },
+                        {
+                            id: 'cancel',
+                            name: 'ยกเลิก',
+                            desc: 'กลับไปแก้ไขลำดับใหม่',
+                            func:
+                            function() {
+                                parent.hideActionDialog();
+                                $('#wsb_order').val('');
+                                $('#wsb_order').focus();
+                            }
+                        }
+                    ],
+                    boxWidth: 400
+                });
+            } else {
+                returnVal = false;
+            }
+
+            return returnVal;
+        }
+    </script>
+    {/literal}
+</head>
+<body>
+                 
+{include file="form_table_header.html"}
+<!-- {if $emp_privileges.manage_website} -->
+<div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+    <img src="{if $values.wsb_picture}../img/website_banners/{$values.wsb_picture}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+    </div>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสแบนเนอร์เว็บไซต์ :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>ลำดับ :</td>
+                <td>{if $values.wsb_order}{$values.wsb_order}{else}-{/if}</td>
+            </tr>
+            <tr>
+                <td>การแสดงหน้าเว็บไซต์ :</td>
+                <td>
+                    {if $values.wsb_active==1}
+                        <span class="statusHL statusHL-green">แสดง</span>
+                    {else}
+                        <span class="statusHL statusHL-gray">ไม่แสดง</span>
+                    {/if}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->                  
+    <form id="form-table" name="form-table" onsubmit="return false;">
+    <input type="hidden" name="requiredFields" value="wsb_picture,wsb_active">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">การแสดงหน้าเว็บไซต์</label>
+                    <label style="display: inline-block;">
+                        <input id="wsb_active_show" type="radio" name="wsb_active" value="1" checked> แสดง
+                    </label> &nbsp;
+                    <label style="display: inline-block;">
+                        <input id="wsb_active_unshow" type="radio" name="wsb_active" value="0"> ไม่แสดง
+                    </label>
+                    <br><br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span id="err-wsb_active-require" class="errInputMsg err-wsb_active">โปรดเลือกการแสดงหน้าเว็บไซต์</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label id="wsb_order_label" class="input-required">ลำดับ</label>
+                    <input id="wsb_order" name="wsb_order" type="text" class="form-input full" value="{if $action == 'ADD'}1{else}{$values.wsb_order}{/if}" maxlength="6" size="6" valuepattern="numberMoreThanZero" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-wsb_order-require" class="errInputMsg full err-wsb_order">โปรดป้อนลำดับ</span>
+                    <span id="err-wsb_order-numberMoreThanZero" class="errInputMsg full err-wsb_order">โปรดกรอกจำนวนเป็นตัวเลขตั้งแต่ 1 ขึ้นไป</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รูปภาพแบนเนอร์เว็บไซต์</label>
+                    <div id="wsb_picture" class="uploadImageArea full"></div>
+                    <input type="hidden" name="wsb_picture" value="{$values.wsb_picture}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-wsb_picture-require" class="errInputMsg full err-wsb_picture">โปรดเลือกรูปภาพแบนเนอร์เว็บไซต์</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    </form>
+    <form method="post" enctype="multipart/form-data">
+        <input id="wsb_picture_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+    </form>
+    {/if}
+</div><!-- end ftb-body -->
+<!-- {else} -->
+<!-- <div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
+</div> -->
+<!-- {/if} --><!-- end if privileges -->
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

@@ -61,6 +61,10 @@ switch ($tableName) {
 	case 'grant_privileges':
 		header("location:form_grant_privileges.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=$hideBackButton");
 		break;
+
+	case 'website_banners':
+		header("location:form_website_banners.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=true");
+		break;
 }
 
 include('../config/config.php');

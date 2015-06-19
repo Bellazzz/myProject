@@ -166,6 +166,25 @@ if($rows > 0) {
 	}
 }
 
+// Get website banner data
+$wsbList = array();
+$sql = "SELECT 		wsb_picture 
+		FROM 		website_banners 
+		WHERE 		wsb_active = 1 
+		ORDER BY 	wsb_order";
+$result = mysql_query($sql, $dbConn);
+$rows 	= mysql_num_rows($result);
+if($rows > 0) {
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		if($i==0) {
+			$record['active'] = true;
+		}
+		array_push($wsbList, $record);
+	}
+}
+$smarty->assign('wsbList', $wsbList);
+
 
 $smarty->assign('topSvlList', $topSvlList);
 $smarty->assign('topPkgList', $topPkgList);

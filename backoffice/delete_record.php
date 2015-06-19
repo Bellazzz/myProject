@@ -362,6 +362,13 @@ if($tableName == 'packages') {
 		echo "PASS";
 		exit();
 	}
+} else if($tableName == 'website_banners') {
+	foreach($keySelected as $index => $wsb_id) {
+		$tmpWsbRecord = new TableSpa('website_banners', $wsb_id);
+		$oldOrder = $tmpWsbRecord->getFieldValue('wsb_order');
+		setWbsOrderAuto($oldOrder);
+	}
+	
 }
 
 
@@ -441,6 +448,26 @@ function removeProductAmount($prd_id, $oldAmount) {
 				echo "REMOVE_PRODUCT_SHELF_AMOUNT_FAIL : $err";
 				exit();
 			}
+		}
+	}
+}
+
+function setWbsOrderAuto($oldOrder) {
+	global $dbConn;
+	$sql = "SELECT 	wsb_id, wsb_order FROM website_banners 
+			WHERE 	wsb_order > '$oldOrder' 
+					AND wsb_active = 1";
+	$result = mysql_query($sql, $dbConn);
+	$rows = mysql_num_rows($result);
+	for($i=0; $i<$rows; $i++) {
+		$record = mysql_fetch_assoc($result);
+		$wsb_id = $record['wsb_id'];
+		$wsb_order = $record['wsb_order'];
+		$wsb_order--;
+		$wsbRecord = new TableSpa('website_banners', $wsb_id);
+		$wsbRecord->setFieldValue('wsb_order', $wsb_order);
+		if(!$wsbRecord->commit()) {
+			echo 'SET_ORDER_AUTO_FAIL';
 		}
 	}
 }
