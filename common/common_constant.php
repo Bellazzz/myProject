@@ -101,6 +101,25 @@ function dbClose() {
 			);
 			break;
 
+		case 'website_aboutus':
+			return array(
+				'tableNameTH'	=> 'ข้อมูลเกี่ยวกับเรา',
+				'keyFieldName'  => 'wsa_id',
+				'keyFieldType'	=> 2,
+				'keyChar'		=> 'WB',
+				'keyLength'		=> 4,
+				'fieldNameList'	=> array(
+					'wsa_id'		=> 'รหัสข้อมูลเกี่ยวกับเรา',
+					'wsa_title'		=> 'หัวข้อหลัก',
+					'wsa_desc'		=> 'คำอธิบาย',
+					'wsa_picture'	=> 'รูปภาพ'
+				),
+				'searchFields'	=> array('wsa_title','wsa_desc'),
+				'hiddenFields'	=> array('wsa_desc','wsa_picture'),
+				'deleteTxtField'	=> array('wsa_title')
+			);
+			break;
+
 		case 'withdraw_types':
 			return array(
 				'tableNameTH'	=> 'ประเภทการเบิก',

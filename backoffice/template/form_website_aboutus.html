@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <title>avertising - Backoffice</title>
+    <meta charset="UTF-8"/>
+    {literal}
+    <link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+    <link rel="stylesheet" type="text/css" href="../inc/jquery-ui/jquery-ui.css"> 
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../inc/jquery-ui/jquery-ui.js"></script> 
+    <script type="text/javascript" src="../js/mbk_common_function.js"></script>
+    <script type="text/javascript" src="../js/mbk_main.js"></script>
+    <script type="text/javascript" src="../js/mbk_form_table.js"></script>
+    <script type="text/javascript">
+        // Global variables
+        var action      = '{/literal}{$action}{literal}';
+        var tableName   = '{/literal}{$tableName}{literal}';
+        var tableNameTH = '{/literal}{$tableNameTH}{literal}';
+        var code        = '{/literal}{$code}{literal}';
+        var ajaxUrl     = 'form_website_aboutus.php';
+
+        $(document).ready(function() {
+            uploadImageInput({
+                area: $('#wsa_picture'),
+                input: $('input[name="wsa_picture"]'),
+                selector: $('#wsa_picture_file'),
+                defaultValue: '{/literal}{if $values.wsa_picture}../img/website_aboutus/{$values.wsa_picture}?rand={$randNum}{/if}{literal}'
+            });
+        });
+    </script>
+    {/literal}
+</head>
+<body>
+                 
+{include file="form_table_header.html"}
+{if $emp_privileges.manage_website}
+<div class="ftb-body">
+    {if $action == 'VIEW_DETAIL'}
+    <!-- VIEW_DETAIL -->
+    <div class="table-view-detail-image full">
+    <img src="{if $values.wsa_picture}../img/website_aboutus/{$values.wsa_picture}?rand={$randNum}{else}../img/backoffice/no-pic.png{/if}">
+    </div>
+    <table class="table-view-detail">
+        <tbody>
+            <tr>
+                <td>รหัสข้อมูลเกี่ยวกับเรา :</td>
+                <td>{$code}</td>
+            </tr>
+            <tr>
+                <td>หัวข้อหลัก :</td>
+                <td>{$values.wsa_title}</td>
+            </tr>
+            <tr>
+                <td>คำอธิบาย :</td>
+                <td>{$values.wsa_desc}</td>
+            </tr>
+        </tbody>
+    </table>
+    {else}      
+    <!-- ADD, EDIT -->                  
+    <form id="form-table" name="form-table" onsubmit="return false;">
+    <input type="hidden" name="requiredFields" value="wsa_title,wsa_desc,wsa_picture">
+    <table class="mbk-form-input-normal" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">หัวข้อหลัก</label>
+                    <input id="wsa_title" name="wsa_title" type="text" class="form-input full" value="{$values.wsa_title}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-wsa_title-require" class="errInputMsg full err-wsa_title">โปรดป้อนหัวข้อหลัก</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label class="input-required">คำอธิบาย</label>
+                    <textarea id="wsa_desc" name="wsa_desc" type="text" class="form-input full" require rows="6">{$values.wsa_desc}</textarea>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td colspan="2">
+                    <span id="err-wsa_desc-require" class="errInputMsg err-wsa_desc">โปรดป้อนคำอธิบาย</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label>รูปภาพเกี่ยวกับเรา</label>
+                    <div id="wsa_picture" class="uploadImageArea full"></div>
+                    <input type="hidden" name="wsa_picture" value="{$values.wsa_picture}" require>
+                </td>
+            </tr>
+            <tr class="errMsgRow">
+                <td>
+                    <span id="err-wsa_picture-require" class="errInputMsg full err-wsa_picture">โปรดเลือกรูปภาพเกี่ยวกับเรา</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    </form>
+    <form method="post" enctype="multipart/form-data">
+        <input id="wsa_picture_file" type="file" name="imageFile" class="uploadImageSelector" multiple="multiple">
+    </form>
+    {/if}
+</div><!-- end ftb-body -->
+{else}
+<div class="noPrivilege-formTable-container">
+    <div class="noPrivilege-formTable-inner">
+        <i class="fa fa-lock"></i><br>คุณไม่ได้รับสิทธิ์ในการเข้าถึงข้อมูลในส่วนนี้
+    </div>
+</div>
+{/if}<!-- end if privileges -->
+</body>
+</html>
+<!--
+    [Note]
+    1. ให้ใส่ field ที่ต้องการเช็คใน input[name="requiredFields"] โดยกำหนดชื่อฟิลด์ลงใน value หากมีมากกว่า 1 field ให้คั่นด้วยเครื่องหมาย คอมม่า (,) และห้ามมีช่องว่าง เช่น value="name,surname,address" เป็นต้น
+    2. input จะต้องกำหนด id, name ให้ตรงกับชื่อฟิลด์ของตารางนั้นๆ และกำหนด value ให้มีรูปแบบ value="$values.ชื่อฟิลด์"
+-->

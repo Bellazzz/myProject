@@ -65,6 +65,10 @@ switch ($tableName) {
 	case 'website_banners':
 		header("location:form_website_banners.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=true");
 		break;
+
+	case 'website_aboutus':
+		header("location:form_website_aboutus.php?action=$action&code=$code&hideEditButton=$hideEditButton&hideBackButton=true");
+		break;
 }
 
 include('../config/config.php');

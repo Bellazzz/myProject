@@ -2,7 +2,7 @@
 session_start();
 require('check_session.php');
 include('../config/config.php');
-$tplName = 'manage_banner.html';
+$tplName = 'manage_aboutus.html';
 $subDir	 = WEB_ROOTDIR.'/backoffice/';
 
 include('../common/common_header.php');
