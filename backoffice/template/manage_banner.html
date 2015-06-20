@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spa - Backoffice</title>
+	<meta charset="utf-8"/>
+    {include file="../../common/common_headericon.html"}
+    {literal}
+	<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/lazybingo.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/mbk_main.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../js/mbk_manage_table.js"></script>
+    <style type="text/css">
+    #table-control, .page-panel, #pagingContainer {
+        padding-left: 0;
+    }
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        changeTable('website_banners');
+    });
+    </script>
+	{/literal}
+</head>
+<body>
+<div class="overlay-inner"></div>
+    <div class="overlay-full"></div>
+    <div id="manage-box">
+        <div class="manage-box-loading"></div>
+        <div class="iframe-container">
+            <iframe id="iframe-form-table" src="" height="100%" width="100%" frameBorder="0"></iframe>
+        </div>
+    </div>
+<div id="page">
+	<div id="wrapper">
+		{include file="_manage_table_header.html"}
+        <div id="table-control">
+            <div class="table-control-inner">
+                <div class="table-control-container">
+                    <div class="cur-table-name">
+                        <h1>กำลังโหลด...</h1>
+                    </div>
+                    <div>
+                        <a href="manage_system.php" style="text-decoration:none;">
+                            <button class="button button-icon button-icon-back">ย้อนกลับ</button>
+                        </a>
+                        <button id="add-record-btn" class="button button-icon button-icon-add">เพิ่ม</button>
+                        <div class="search-container">
+                            <select id="search-record-filter" class="mbk-select" name="search-record-filter">
+                            </select>
+                            <div class="mbk-input-icon">
+                                <span class="mbk-icon-16 mbk-icon-16-search"></span>
+                                <input id="search-record-input" type="text" placeholder="ค้นหา...">
+                                <span id="clear-search-record-input" class="mbk-icon-16 mbk-icon-16-clear-search"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="table-toolbar" class="clearfix">
+                        <div class="table-toolbar-inner">
+                            <span id="toolbar-curselect"></span>
+                            <button id="edit-record-btn" class="button button-icon button-icon-edit">แก้ไข</button>
+                            <button id="delete-record-btn" class="button button-icon button-icon-delete">ลบ</button>
+                            <button id="cancel-select-btn" class="button button-icon">ยกเลิก</button>
+                        </div>
+                        <div class="table-toolbar-filter"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-panel">
+            <div class="page-panel-inner">
+                <div class="page-panel-content">
+                </div>
+            </div>
+        </div>
+        <div id="pagingContainer"></div>
+	</div>
+</div>
+<!-- end page-->
+</body>
+</html>

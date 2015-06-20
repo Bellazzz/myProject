@@ -1337,6 +1337,9 @@ h2.block-title-2, .formBox h3, .block-title-2 {
 .descAbout {
    font-size: 22px;
   font-family: ThaiSansNeue-Regular;
+  height: 4.8em;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .shadowImg

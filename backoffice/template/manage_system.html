@@ -17,13 +17,33 @@
 	<div id="wrapper">
 		{include file="_manage_table_header.html"}
         <div class="mainContainer">
-            <h1><i class="fa fa-gear"></i> จัดการระบบ</h1>
+            <h1><i class="fa fa-gear"></i> จัดการเว็บไซต์</h1>
             <ul class="manage-system-list">
+                {if $session_emp_admin}
                 <li>
                     <a class="report-picture" style="background-image: url('../img/backoffice/backup.png')" href="backup.php">
                          <div class="report-info">
                              <div class="report-info-inner">
                                  <h2>สำรอง และนำเข้าข้อมูล</h2>
+                             </div>
+                        </div>
+                    </a>
+                </li>
+                {/if}
+                <li>
+                    <a class="report-picture" style="background-image: url('../img/backoffice/backup.png')" href="manage_banner.php">
+                         <div class="report-info">
+                             <div class="report-info-inner">
+                                 <h2>จัดการแบนเนอร์เว็บไซต์</h2>
+                             </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a class="report-picture" style="background-image: url('../img/backoffice/backup.png')" href="manage_aboutus.php">
+                         <div class="report-info">
+                             <div class="report-info-inner">
+                                 <h2>จัดการหน้าเกี่ยวกับเรา</h2>
                              </div>
                         </div>
                     </a>

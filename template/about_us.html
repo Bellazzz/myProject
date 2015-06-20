@@ -73,43 +73,13 @@
 
           <hr class="hr hr30">
           <div class="row animated">
-            <div class="col-lg-4 col-md-4 col-sm-6 col-sm-6">
-              <img class="img-responsive shadowImg" src="img/aboutus/about1.png" alt="img">
-              <h3 class="block-title-3 titleAbout">
-                หลากหลายรายการบริการคุณภาพ
-              </h3>
-              <p class="descAbout">
-                รายการบริการ และแพ็คเกจที่คัดสรรคมาเพื่อลูกค้าที่รักสุขภาพที่ดี ด้วยการให้บริการแบบสมัยใหม่และแพทย์แผนไทยใช้สมุนไทย
-              </p>
-              
-              
-              
-            </div>
-            
-            <div class="col-lg-4 col-md-4 col-sm-6 col-sm-6">
-              <img class="img-responsive shadowImg" src="img/aboutus/about2.png" alt="img">
-              <h3 class="block-title-3 titleAbout">
-                บริการประทับใจ 
-              </h3>
-              <p class="descAbout">
-                ให้บริการด้วยใจ เป็นกันเอง เพื่อให้ลูกค้าได้ผ่อนคลายกับการทำสปาด้วยสมุนไพรไทย พร้อมอาหารและเครื่องดื่มที่อุดมไปด้วยคุณประโยชน์จากสมุนไพรไทย
-              </p>
-              
-            </div>
-            
-            <div class="col-lg-4 col-md-4 col-sm-6 col-sm-6">
-              <img class="img-responsive shadowImg" src="img/aboutus/about3.png" alt="img">
-              <h3 class="block-title-3 titleAbout">
-                สดชื่น ผ่อนคลายกับสถานที่ 
-              </h3>
-              <p class="descAbout">
-                ตกแต่งด้วยความเรียบง่าย สบายตา น่าพักผ่อน ทำให้รู้สึกสดชื่น ผ่อนคลาย ลูกค้าจะได้รับสุขภาพที่ดีกลับบ้าน
-              </p>
-              
-            </div>
-            
-            
-            
+            {foreach from=$websiteAboutusList key=i item=wsa}
+              <div class="col-lg-4 col-md-4 col-sm-6 col-sm-6">
+                <img class="img-responsive shadowImg" src="img/website_aboutus/{$wsa.wsa_picture}" alt="img">
+                <h3 class="block-title-3 titleAbout">{$wsa.wsa_title}</h3>
+                <p class="descAbout">{$wsa.wsa_desc}</p>
+              </div>
+            {/foreach}
           </div><!--/.row-->
           
           <hr>
