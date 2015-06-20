@@ -401,15 +401,7 @@
                             boxWidth: 500
                         });
                     } else if(response.status == 'COVER') {
-                        if(action == 'ADD') {
-                            if(!hasInputError()) {
-                                saveRecord();
-                            }
-                        } else if(action == 'EDIT') {
-                            if(!hasInputError()) {
-                                confirmSaveRecord();
-                            }
-                        }
+                        confirmSave();
                     } else {
                         alert(response.status);
                     }
@@ -417,6 +409,119 @@
             });
 
             return returnVal;
+        }
+
+        function confirmSave() {
+            var prdtyp_ids = Array();
+            $('input[name="prdtyp_id[]"]').each(function() {
+                prdtyp_ids.push($(this).val());
+            });
+            $.ajax({
+                url: '../common/ajaxGetPrdPriceForSummaryPrmds.php',
+                type: 'POST',
+                data: {
+                    prdtyp_ids: prdtyp_ids
+                },
+                success:
+                function(responseJSON) {
+                    var response = $.parseJSON(responseJSON);
+                    if(response.status == 'PASS') {
+                        showSummaryDialog({
+                            maxPrice: response.maxPrice,
+                            minPrice: response.minPrice,
+                            avgPrice: response.avgPrice
+                        });
+                    } else {
+                        alert(response.status);
+                    }
+                }
+            });
+        }
+
+        function showSummaryDialog(data) {
+            // Prepare variable
+            var prmName = $('#prmds_name').val();
+            var prmGroup = $('#prdprmgrp_id').find('.selectReferenceJS-text').text();
+            var startDate = $('#prmds_startdate').val();
+            var endDate = $('#prmds_enddate').val();
+            var purchase = parseFloat($('#prmds_purchase').val()).formatMoney(2, '.', ',');
+            var discout = $('#prmds_discout').val();
+            var discoutType = $('input[name="prmds_discout_type"]:checked').val();
+            var discoutTxt = '';
+            var maxPrice = 0;
+            var minPrice = 0;
+            var avgPrice = 0;
+            var msg = 'คุณต้องการจัดโปรโมชั่นการขายที่มีรายละเอียดดังต่อไปนี้ใช่หรือไม่?<br>';
+            var okDesc = '';
+            if(action == 'ADD')
+                okDesc = 'เพิ่มโปรโมชั่นการขาย';
+            else if(action == 'EDIT')
+                okDesc = 'บันทึกโปรโมชั่นการขาย';
+
+            if(discoutType == '%') {
+                discoutTxt = discout + discoutType;
+            } else {
+                discout = parseFloat(discout).formatMoney(2, '.', ',');
+                discoutTxt = discout + ' ' + discoutType;
+            }
+
+            if(typeof(data.maxPrice) != 'undefined')
+                maxPrice = parseFloat(data.maxPrice).formatMoney(2, '.', ',')
+            if(typeof(data.minPrice) != 'undefined')
+                minPrice = parseFloat(data.minPrice).formatMoney(2, '.', ',')
+            if(typeof(data.avgPrice) != 'undefined')
+                avgPrice = parseFloat(data.avgPrice).formatMoney(2, '.', ',')
+
+            msg += '<table>'
+                 + '<tr><td><b>ชื่อโปรโมชั่น:</b></td><td>' + prmName + '</td></tr>'
+                 + '<tr><td><b>กลุ่มโปรโมชั่น:</b></td><td>' + prmGroup + '</td></tr>'
+                 + '<tr><td><b>ระยะเวลาโปรโมชั่น:</b></td><td>' + startDate + ' - ' + endDate + '</td></tr>'
+                 + '<tr><td><b>ซื้อครบ:</b></td><td>' + purchase + ' บาท' + '</td></tr>'
+                 + '<tr><td><b>รับส่วนลดทันที:</b></td><td>' + discoutTxt + '</td></tr>'
+                 + '</table><br>'
+                 + '<b>ประเภทผลิตภัณฑ์ที่คิดโปรโมชั่น:</b><br><ul>';
+            $('input[name="prdtyp_id[]"]').each(function() {
+                var prdTypeName = $(this).parent().find('.selectReferenceJS-text').text();
+                msg += '<li>' + prdTypeName + '</li>';
+            });
+            msg += '</ul><br>'
+                 + '<table>'
+                 + '<tr><td><b>ราคาสูงสุดของผลิตภัณฑ์:</b></td><td>' + maxPrice + ' บาท</td></tr>'
+                 + '<tr><td><b>ราคาต่ำสุดของผลิตภัณฑ์:</b></td><td>' + minPrice + ' บาท</td></tr>'
+                 + '<tr><td><b>ราคาเฉลี่ยของผลิตภัณฑ์:</b></td><td>' + avgPrice + ' บาท</td></tr>'
+                 + '</table>';
+
+
+            parent.showActionDialog({
+                title: 'สรุปรายละเอียดโปรโมชั่นการขาย',
+                message: msg,
+                actionList: [
+                    {
+                        id: 'ok',
+                        name: 'ตกลง',
+                        desc: okDesc,
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            if(!hasInputError()) {
+                                saveRecord();
+                            }
+                        }
+                    },
+                    {
+                        id: 'cancel',
+                        name: 'ยกเลิก',
+                        desc: 'กลับไปแก้ไขข้อมูล',
+                        func:
+                        function() {
+                            parent.hideActionDialog();
+                            $('#wsb_order').val('');
+                            $('#wsb_order').focus();
+                        }
+                    }
+                ],
+                boxWidth: 600
+            });
         }
     </script>
     {/literal}
