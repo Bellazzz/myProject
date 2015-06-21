@@ -396,6 +396,13 @@ function addPackage(data) {
         elem            : $('#' + inputEmpId),
         data            : refEmpData,
         defaultValue    : bkgpkg_emp_id,
+        onOptionSelect  : 
+        function() {
+            checkTimeOverlap({
+                inputKeyId: inputKeyId,
+                type: 'packages'
+            });
+        },
         showClearBtn    : true,
         clearBtnText    : 'ไม่ระบุ',
         success:
@@ -741,6 +748,13 @@ function addServiceList(data) {
         elem            : $('#' + inputEmpId),
         data            : refEmpData,
         defaultValue    : bkgsvl_emp_id,
+        onOptionSelect:
+        function() {
+            checkTimeOverlap({
+                inputKeyId: inputKeyId,
+                type: 'service_lists'
+            });
+        },
         showClearBtn    : true,
         clearBtnText    : 'ไม่ระบุ',
         success:
@@ -1044,6 +1058,7 @@ function checkTimeOverlap(data) {
     var randNum = $('#' + data.inputKeyId).attr('data-randNum');
     var inputTimeId = '';
     var inputDate = '';
+    var inputEmp = '';
 
     if(data.type == 'service_lists') {
         selectRefVal = $('#' + data.inputKeyId).parent().parent().find('.selectReferenceJS-input').val();
@@ -1060,10 +1075,12 @@ function checkTimeOverlap(data) {
         inputTime = $('#svl_time_' + randNum);
         inputTimeEnd = $('#' + data.inputKeyId).parent().parent().find('input[name="sersvl_time_end[]"]');
         inputDate = inputTime.parent().parent().find('input[name="bkgsvl_date[]"]');
+        inputEmp = inputTime.parent().parent().find('input[name="bkgsvl_emp_id[]"]');
     } else if(data.type == 'packages') {
         inputTime = $('#pkg_time_' + randNum);
         inputTimeEnd = $('#' + data.inputKeyId).parent().parent().find('input[name="serpkg_time_end[]"]');
         inputDate = inputTime.parent().parent().find('input[name="bkgpkg_date[]"]');
+        inputEmp = inputTime.parent().parent().find('input[name="bkgpkg_emp_id[]"]');
     }
 
     // get time list of service list
@@ -1075,7 +1092,8 @@ function checkTimeOverlap(data) {
                 name: $('#svl_id_' + eachRandNum).find('.selectReferenceJS-text').text(),
                 date: $(this).parent().parent().find('input[name="bkgsvl_date[]"]').val(),
                 timeStart: $(this).val(),
-                timeEnd: $('#svl_id_' + eachRandNum).parent().parent().find('input[name="sersvl_time_end[]"]').val()
+                timeEnd: $('#svl_id_' + eachRandNum).parent().parent().find('input[name="sersvl_time_end[]"]').val(),
+                empId: $('#bkgsvl_emp_id_' + eachRandNum).find('.selectReferenceJS-input').val()
             });
         }
     });
@@ -1089,7 +1107,8 @@ function checkTimeOverlap(data) {
                 name: $('#pkg_id_' + eachRandNum).find('.selectReferenceJS-text').text(),
                 date: $(this).parent().parent().find('input[name="bkgpkg_date[]"]').val(),
                 timeStart: $(this).val(),
-                timeEnd: $('#pkg_id_' + eachRandNum).parent().parent().find('input[name="serpkg_time_end[]"]').val()
+                timeEnd: $('#pkg_id_' + eachRandNum).parent().parent().find('input[name="serpkg_time_end[]"]').val(),
+                empId: $('#pkg_emp_id_' + eachRandNum).find('.selectReferenceJS-input').val()
             });
         }
     });
@@ -1104,13 +1123,15 @@ function checkTimeOverlap(data) {
         tmpDate = getRealDateJS(timeList[i].date);
         tmpTimeStart = new Date(tmpDate + ' ' + timeList[i].timeStart + ':00');
         tmpTimeEnd = new Date(tmpDate + ' ' + timeList[i].timeEnd + ':00');
-        if(((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
-            (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) || 
-            timeStart <= tmpTimeStart && timeEnd >= tmpTimeEnd) {
-            var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
-            var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
-            var txt = timeList[i].name + ' (' + timeList[i].date + ' เวลา ' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
-            timeOverlapList.push(txt);
+        if(inputEmp.val() != '' && inputEmp.val() == timeList[i].empId) { // Same employee
+            if(((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
+                (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) || 
+                timeStart <= tmpTimeStart && timeEnd >= tmpTimeEnd) { // Time overlap
+                var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
+                var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
+                var txt = timeList[i].name + ' (' + timeList[i].date + ' เวลา ' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
+                timeOverlapList.push(txt);
+            }
         }
     }
 
@@ -1125,7 +1146,7 @@ function checkTimeOverlap(data) {
         for(i in timeOverlapList) {
             msg += '<li>' + timeOverlapList[i] + '</li>';
         }
-        msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว';
+        msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว หรือเลือกพนักงานที่จองเป็นคนละคนกัน';
         if(parent.$('.action-dialog').length == 0) {
             parent.showActionDialog({
                 title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
@@ -1138,6 +1159,7 @@ function checkTimeOverlap(data) {
                         func:
                         function() {
                             parent.hideActionDialog();
+                            inputEmp.parent().find('.clear-value-btn').click();
                             inputTime.val('');
                             inputTimeEnd.val('');
                             inputTime.focus();
@@ -1514,10 +1536,12 @@ function hasCustomer(type) {
 
 function pullBkgEmp(data) {
     var randNum = data.empInput.attr('data-randNum');
+    var inputKeyId = '';
     var date = '';
     var time = '';
 
     if(data.type == 'svl') {
+        inputKeyId = 'svl_id_' + randNum;
         var svl_id = $('#svl_id_' + randNum).find('.selectReferenceJS-input').val();
         var svl_qty = $('#svl_qty_' + randNum).val();
         var svl_min = $('#svl_min_' + randNum).text();
@@ -1537,6 +1561,13 @@ function pullBkgEmp(data) {
                 time: time,
                 timeEnd: timeEnd,
                 empInput: data.empInput,
+                onOptionSelect: 
+                function() {
+                    checkTimeOverlap({
+                        inputKeyId: inputKeyId,
+                        type: 'service_lists'
+                    });
+                },
                 success:
                 function() {
                 }
@@ -1548,6 +1579,7 @@ function pullBkgEmp(data) {
             data.empInput.find('.selectReferenceJS-input').val('');
         }
     } else if(data.type == 'pkg') {
+        inputKeyId = 'pkg_id_' + randNum;
         var pkg_id = $('#pkg_id_' + randNum).find('.selectReferenceJS-input').val();
         var pkg_qty = $('#pkg_qty_' + randNum).val();
         var pkg_min = $('#pkg_min_' + randNum).text();
@@ -1567,6 +1599,13 @@ function pullBkgEmp(data) {
                 time: time,
                 timeEnd: timeEnd,
                 empInput: data.empInput,
+                onOptionSelect: 
+                function() {
+                    checkTimeOverlap({
+                        inputKeyId: inputKeyId,
+                        type: 'packages'
+                    });
+                },
                 success:
                 function() {
                 }
@@ -1608,7 +1647,8 @@ function ajaxPullBkgEmp(data) {
                 data.empInput.find('.option-container').html(empIdListHTML);
 
                 addEventSelectReferenceJSLi({
-                    elem : data.empInput
+                    elem : data.empInput,
+                    onOptionSelect: data.onOptionSelect
                 });
 
                 // Hide loader
