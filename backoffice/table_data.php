@@ -163,6 +163,7 @@ switch ($tableName) {
 		$sql = "SELECT bnkacc_id,
 				bnkacc_no,
 				bnkacc_name,
+				bnkacc_bank,
 				bnkacc_branch,
 				bnkacc_type,
 				IF(bnkacc_status,'ใช้งานอยู่','ไม่ได้ใช้งาน') bnkacc_status 

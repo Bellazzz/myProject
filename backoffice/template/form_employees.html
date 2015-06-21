@@ -42,6 +42,21 @@
                 },
                 timepicker:false
             });
+
+            $('#emp_enddate').datetimepicker({
+                lang                : 'th',
+                format              : 'Y/m/d',
+                timepicker          :false,
+                closeOnDateSelect   :true,
+                scrollInput         :false,
+                yearOffset          :543,
+                onSelectDate: 
+                function(){
+                  $('#emp_enddate').blur();
+                },
+                timepicker:false
+            });
+
             $('#emp_indate').change(function(){
                 checkDate($('#emp_indate'));
             });
@@ -328,6 +343,10 @@
 				<td>{if $values.emp_indate}{$values.emp_indate}{else}-{/if}</td>
 			</tr>
 			<tr>
+				<td>วันที่สิ้นสุดทำงาน :</td>
+				<td>{if $values.emp_enddate}{$values.emp_enddate}{else}-{/if}</td>
+			</tr>
+			<tr>
 				<td>E-mail(ชื่อผู้ใช้งาน) :</td>
 				<td>{if $values.emp_email}{$values.emp_email}{else}-{/if}</td>
 			</tr>
@@ -389,32 +408,35 @@
 					<label class="input-required">ตำแหน่ง</label>
 					<div id="pos_id" class="selectReferenceJS form-input half" require></div>
 				</td>
-				<td>
-					<label class="input-required">วันที่เริ่มทำงาน</label>
-					<input id="emp_indate" name="emp_indate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_indate}" require>
-				</td>
+				<td colspan="2">
+					<label class="input-required">ฐานเงินเดือน</label>
+					<input id="emp_salary" name="emp_salary" type="text" class="form-input half" value="{$values.emp_salary}" valuepattern="money" require>
+					</td>
 			</tr>
 			<tr class="errMsgRow">
                 <td>
                     <span id="err-pos_id-require" class="errInputMsg half err-pos_id">โปรดเลือกตำแหน่ง</span>
                 </td>
-                <td>
-                	<span id="err-emp_indate-require" class="errInputMsg half err-emp_indate">โปรดป้อนวันที่เข้าทำงาน</span>
+                 <td colspan="2">
+                    <span id="err-emp_salary-require" class="errInputMsg err-emp_salary">โปรดป้อนฐานเงินเดือน</span>
+                    <span id="err-emp_salary-money" class="errInputMsg err-emp_salary">โปรดกรอกตัวเลขเท่านั้น</span>
                 </td>
             </tr>
             <tr>
-				<td colspan="2">
-					<label class="input-required">ฐานเงินเดือน</label>
-					<input id="emp_salary" name="emp_salary" type="text" class="form-input full" value="{$values.emp_salary}" valuepattern="money" require>
-	
+            	<td>
+					<label class="input-required">วันที่เริ่มทำงาน</label>
+					<input id="emp_indate" name="emp_indate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_indate}" require>
+				</td>
+				<td>
+					<label>วันที่สิ้นสุดทำงาน</label>
+					<input id="emp_enddate" name="emp_enddate" type="text" class="mbk-dtp-th form-input half" value="{$values.emp_enddate}">
 				</td>
 			</tr>
 			<tr class="errMsgRow">
-                <td colspan="2">
-                    <span id="err-emp_salary-require" class="errInputMsg err-emp_salary">โปรดป้อนฐานเงินเดือน</span>
-                    <span id="err-emp_salary-money" class="errInputMsg err-emp_salary">โปรดกรอกตัวอักษรภาษาไทย หรือตัวอักษรภาษาอังกฤษเท่านั้น</span>
+				<td>
+                	<span id="err-emp_indate-require" class="errInputMsg half err-emp_indate">โปรดป้อนวันที่เข้าทำงาน</span>
                 </td>
-            </tr>
+              </tr>
 			<tr>
 				<td colspan=2>
 					<label class="input-required">ที่อยู่</label>
@@ -448,7 +470,7 @@
 		<tbody>
 			<tr>
 				<td colspan=2>
-					<label>ชื่อผู้ใช้งาน(E-mail หรือ Username ธรรมดา)</label>
+					<label>ชื่อผู้ใช้งาน(E-mail หรือ Username)</label>
 					<input id="emp_email" name="emp_email" type="text" class="form-input full" value="{$values.emp_email}">
 				</td>
 			</tr>

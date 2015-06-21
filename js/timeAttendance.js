@@ -218,7 +218,7 @@ function showClockInOutBox(dateMiss){
 						+ '				</div>';
 
 	if(typeof(dateMiss) != 'undefined') {
-		clockInOutHTML += '<div class="missEnter"><div class="missEnter-inner">คุณไม่ได้แสกนบัตรออกงาน<br>ในวันที่ ' + dateMiss + ' กรุณาติดต่อผู้ดูแลระบบ</div></div>'
+		clockInOutHTML += '<div class="missEnter"><div class="missEnter-inner">คุณไม่ได้สแกนบัตรออกงาน<br>ในวันที่ ' + dateMiss + ' กรุณาติดต่อผู้ดูแลระบบ</div></div>'
 	}
 	
 	clockInOutHTML	   += '				' + msg

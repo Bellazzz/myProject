@@ -445,7 +445,8 @@ color: #8AC007;
     left: 0;
     width: 100%;
     padding: 8px 10px;
-    background: rgba(138, 192, 7, 0.85);
+    /*background: rgba(138, 192, 7, 0.85);*/
+    background-color: #BBBBBB;
     list-style: none;
     color: white;
     -webkit-transition: all .4s;
