@@ -2022,6 +2022,7 @@ datetimepicker
     -webkit-transition: all .2s ease-in-out;
     -o-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
+    margin-left: 41px;
 }
 .manage-system-list li a:hover, .manage-system-list li a:hover i {
     color: #8AC007;
