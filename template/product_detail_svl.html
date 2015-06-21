@@ -31,6 +31,9 @@
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
+    	$('#bkgemp_id').change(function() {
+    		checkOverlap();
+    	});
     	$('#bkg_date').datetimepicker({
             lang                : 'th',
             format              : 'Y/m/d',
@@ -68,7 +71,8 @@
         			svl_name: '{/literal}{$prdData.svl_name}{literal}',
         			svl_price: $('input[name="realPrice"]').val(),
         			bkgemp_id: $('#bkgemp_id').val(),
-        			bkgemp_fullname: $('#s2id_bkgemp_id .select2-chosen').text()
+        			bkgemp_fullname: $('#s2id_bkgemp_id .select2-chosen').text(),
+        			allMin: $('#allMin').val()
         		},
         		success:
         		function(response) {
@@ -197,6 +201,8 @@
 			pullBkgEmp({
 				success:
 				function() {
+					$('#bkgemp_id').val('');
+					$('#s2id_bkgemp_id .select2-chosen').text('ไม่ระบุ');
 					$('.bkgempErrCont').fadeOut();
 					$('.bkgempCont').slideDown();
 				}
@@ -301,6 +307,104 @@
 		$('#bkg_time').val('');
 		$('#s2id_bkg_time .select2-chosen').text('เลือกเวลาที่จอง');
 	}
+
+	function checkOverlap() {
+		if($('#bkg_time').val() != '' && $('#bkg_date').val() != '' &&  $('#bkgemp_id').val() != '') {
+			$.ajax({
+		        url: 'common/ajaxPullSessionBkg.php',
+		        type: 'POST',
+		        success:
+		        function(responseJSON) {
+		            var response = $.parseJSON(responseJSON);
+		            if(response.length > 0) {
+		            	checkOverlap2(response);
+		            }
+		        }
+		    });
+		}
+	}
+
+	function checkOverlap2(sessionBkg) {
+		var timeList = Array();
+	    var timeOverlapList = Array();
+	    var inputTime = $('#bkg_time');
+	    var timeEndVal = addMinutes(parseInt(inputTime.val()), parseInt($('#allMin').val()));
+	    var inputDate = $('#bkg_date');
+	    var inputEmp = $('#bkgemp_id');
+
+	    // Get time list
+	    for(i in sessionBkg) {
+	    	timeList.push({
+                name: sessionBkg[i].name,
+                date: sessionBkg[i].bkg_date,
+                timeStart: sessionBkg[i].bkg_time,
+                timeEnd: addMinutes(sessionBkg[i].bkg_time, sessionBkg[i].allMin),
+                empId: sessionBkg[i].bkgemp_id,
+                empFullName: sessionBkg[i].bkgemp_fullname
+            });
+	    }
+
+	    // Check overlap
+	    var now = new Date();
+	    var timeStart = new Date(getRealDateJS(inputDate.val()) + ' ' + inputTime.val() + ':00');
+	    var timeEnd = new Date(getRealDateJS(inputDate.val()) + ' ' + timeEndVal + ':00');
+	    var tmpTimeStart, tmpTimeEnd, tmpDate;
+
+	    for(i in timeList) {
+	        tmpDate = timeList[i].date;
+	        tmpTimeStart = new Date(tmpDate + ' ' + timeList[i].timeStart + ':00');
+	        tmpTimeEnd = new Date(tmpDate + ' ' + timeList[i].timeEnd + ':00');
+	        if($('.product-title').text() != timeList[i].name && inputEmp.val() != '' && inputEmp.val() == timeList[i].empId) { // Same employee
+	            if(((timeStart >= tmpTimeStart && timeStart < tmpTimeEnd) || 
+	                (timeEnd > tmpTimeStart  && timeEnd <= tmpTimeEnd)) || 
+	                timeStart <= tmpTimeStart && timeEnd >= tmpTimeEnd) { // Time overlap
+
+	                var tmpTimeStartTxt = tmpTimeStart.getHours() + ':' + (tmpTimeStart.getMinutes()<10?'0':'') + tmpTimeStart.getMinutes();
+	                var tmpTimeEndTxt = tmpTimeEnd.getHours() + ':' + (tmpTimeEnd.getMinutes()<10?'0':'') + tmpTimeEnd.getMinutes();
+	                var txt = timeList[i].name + ' (' + convertThaiDate(timeList[i].date) + ' เวลา ' + tmpTimeStartTxt + ' น. - ' + tmpTimeEndTxt + ' น.)';
+	                timeOverlapList.push(txt);
+	            }
+	        }
+	    }
+
+	    // Show alert dialogBox
+	    if(timeOverlapList.length > 0) {
+	        inputTime.addClass('required');
+	        var svlName = $('.product-title').text();
+	        var timeStartTxt = timeStart.getHours() + ':' + (timeStart.getMinutes()<10?'0':'') + timeStart.getMinutes();
+	        var timeEndTxt = timeEnd.getHours() + ':' + (timeEnd.getMinutes()<10?'0':'') + timeEnd.getMinutes();
+	        var msg = 'คุณกำหนดให้ ';
+	        msg += svlName + ' มีการใช้บริการวันที่ ' + inputDate.val() + ' เวลา ' + timeStartTxt + ' น. - ' + timeEndTxt + ' น. ซึ่งซ้อนทับกับรายการดังต่อไปนี้ <ul>';
+	        for(i in timeOverlapList) {
+	            msg += '<li>' + timeOverlapList[i] + '</li>';
+	        }
+	        msg += '</ul><br>กรุณาป้อนเวลาที่ใช้บริการไม่ให้อยู่ในช่วงเวลาดังกล่าว หรือเลือกพนักงานที่จองเป็นคนละคนกัน';
+	        if(parent.$('.action-dialog').length == 0) {
+	            parent.showActionDialog({
+	                title: 'ระยะเวลาที่ใช้บริการซ้อนทับกัน',
+	                message: msg,
+	                actionList: [
+	                    {
+	                        id: 'ok',
+	                        name: 'ตกลง',
+	                        desc: 'ป้อนเวลาที่ใช้บริการใหม่',
+	                        func:
+	                        function() {
+	                            parent.hideActionDialog();
+	                            $('.bkgempCont').slideUp();
+								$('#bkgemp_id').val('');
+								$('#s2id_bkgemp_id .select2-chosen').text('ไม่ระบุ');
+	                            inputTime.val('');
+                                $('#s2id_bkg_time .select2-chosen').text('เลือกเวลาที่จอง');
+	                        }
+	                    }
+	                ],
+	                boxWidth: 700
+	            });
+	        }
+	        
+	    }
+	}
     </script>
     {/literal}
 </head>
@@ -348,6 +452,7 @@
 			    	{else}
 			    	-
 			    	{/if}
+			    	<input type="hidden" id="allMin" value="{$prdData.allMin}">
 			    </div>
 			    <div class="product-desc">
 			    	<p>{$prdData.svl_desc}</p>
