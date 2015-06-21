@@ -18,6 +18,35 @@
     <script type="text/javascript">
     
     $(document).ready(function() {
+        var curPage = 1
+        var thead = $('#reportTable_1 thead').html();
+        var tfoot = $('#reportTable_1 tfoot').html();
+        $('#reportTable_1 tfoot').remove();
+
+        while($('#reportTable_' + curPage).height() > 1000) {
+            if($('#reportTable_' + parseInt(curPage+1))) {
+                var emptyTable = '<table id="reportTable_' + parseInt(curPage+1) + '" class="report-top-table report-massage breaker" cellpadding="0" cellspacing="0"><thead>' + thead + '</thead><tbody></tbody></table>';
+                $('.printArea center').append(emptyTable);
+                $('#reportTable_' + parseInt(curPage+1)).find('.curPage').text(curPage+1);
+            }
+            while($('#reportTable_' + curPage).height() > 1000) {
+                var tr = $('#reportTable_' + curPage + ' tbody tr:last-child');
+                var trClass = tr.attr('class');
+                var trStyle = tr.attr('style');
+                var OpenTr = '<tr';
+                if(typeof(trClass) != 'undefined')
+                    OpenTr += ' class="' + trClass + '"';
+                if(typeof(trStyle) != 'undefined')
+                    OpenTr += ' style="' + trStyle + '"';
+                OpenTr += '>';
+                $('#reportTable_'+ parseInt(curPage+1) +' tbody').prepend(OpenTr + tr.html() + '</tr>');
+                tr.remove();
+            }
+            curPage++;
+        }
+        $('.allPage').text(curPage);
+        $('#reportTable_'+ curPage).append('<tfoot>' + tfoot + '</tfoot>');
+        
         $('#startDate').datetimepicker({
             lang                : 'th',
             format              : 'Y/m/d',
@@ -157,8 +186,8 @@
             {if $reportServiceList || $reportPackage}
             <div class="printArea">
             <center>
-                <table id="exportTable" class="report-top-table report-massage" cellpadding="0" cellspacing="0">
-                    <thead>
+                <table id="reportTable_1" class="report-top-table report-massage breaker" cellpadding="0" cellspacing="0">
+                    <thead style="display: table-header-group">
                         <tr class="headTable">
                             <td colspan="7" align="center">
                                 <h3>รายงานสรุปยอดการใช้บริการ</h3>
@@ -169,7 +198,8 @@
                             <td colspan="7" align="center">
                                 เริ่มวันที่: {$startDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
                                 สิ้นสุดวันที่: {$endDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
-                                วันที่พิมพ์รายงาน: {$nowDate_th}
+                                วันที่พิมพ์รายงาน: {$nowDate_th}&nbsp;&nbsp;&nbsp;&nbsp;
+                                หน้า <span class="curPage">1</span> จาก <span class="allPage">1</span>
                             </td>
                         </tr>
                         <tr class="headTable"><td></td><td></td><td></td><td></td></tr>
