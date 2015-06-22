@@ -6,7 +6,7 @@ include('common/common_header.php');
 if(hasValue($_POST['svl_id']) && hasValue($_POST['persons']) &&
 hasValue($_POST['bkg_date']) && hasValue($_POST['bkg_time']) && 
 hasValue($_POST['svl_picture']) && hasValue($_POST['svl_name']) && 
-hasValue($_POST['svl_price'])) {
+hasValue($_POST['svl_price']) && hasValue($_POST['allMin'])) {
 	$svl_id 	= $_POST['svl_id'];
 	$persons 	= $_POST['persons'];
 	$bkg_date 	= $_POST['bkg_date'];
@@ -16,6 +16,7 @@ hasValue($_POST['svl_price'])) {
 	$svl_price = $_POST['svl_price'];
 	$bkgemp_id = $_POST['bkgemp_id'];
 	$bkgemp_fullname = $_POST['bkgemp_fullname'];
+	$allMin = $_POST['allMin'];
 
 	$values = array(
 		'svl_id' 	=> $svl_id,
@@ -26,7 +27,8 @@ hasValue($_POST['svl_price'])) {
 		'svl_name' 	=> $svl_name,
 		'svl_price' => $svl_price,
 		'bkgemp_id' => $bkgemp_id,
-		'bkgemp_fullname' => $bkgemp_fullname
+		'bkgemp_fullname' => $bkgemp_fullname,
+		'allMin' => $allMin
 	);
 
 	if($bkgemp_fullname == 'ไม่ระบุ') {

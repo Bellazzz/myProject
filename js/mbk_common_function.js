@@ -43,6 +43,9 @@ function printElemBOF(elem) {
     mywindow.document.write('<html><head><title>my div</title>');
     mywindow.document.write('<link rel="stylesheet" type="text/css" href="../inc/font-awesome/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="../css/lazybingo.css">');
     /*optional stylesheet*/ //mywindow.document.write('<link rel="stylesheet" href="main.css" type="text/css" />');
+    mywindow.document.write('<style type="text/css">');
+    mywindow.document.write('.breaker:not(:first-child) {page-break-before: always;}');
+    mywindow.document.write('</style>');
     mywindow.document.write('</head><body >');
     mywindow.document.write(elem.html());
     mywindow.document.write('</body></html>');
