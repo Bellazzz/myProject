@@ -1699,13 +1699,13 @@ function showEmpScheduleBox(dialog) {
                             + '                 <div class="schedulaeCont"><div class="scheduleCont-inner">'
                             + '                     <table class="empSchedulePopup-dateTable">'
                             + '                     <thead><tr>'
+                            + '                         <th>อาทิตย์</th>'
                             + '                         <th>จันทร์</th>'
                             + '                         <th>อังคาร</th>'
                             + '                         <th>พุธ</th>'
                             + '                         <th>พฤหัส</th>'
                             + '                         <th>ศุกร์</th>'
                             + '                         <th>เสาร์</th>'
-                            + '                         <th>อาทิตย์</th>'
                             + '                     </tr></thead>'
                             + '                     <tbody>'
                             + '                     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
@@ -1771,7 +1771,7 @@ function showEmpScheduleTable(paramDate) {
 
     // Create schedule cell
     var tbodyHTML = '';
-    var dayOfWeeksTable = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun"];
+    var dayOfWeeksTable = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     var index = 0;
     var sumIndex = 0;
 
